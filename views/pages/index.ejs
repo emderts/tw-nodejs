@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Home</h1>
+    <% 
+  var printName = {};
+printName.weapon = '무기';
+printName.armor = '갑옷';
+printName.trinket = '장신구';
+printName.maxHp = '생명력';
+printName.cloak = '망토';
+printName.hpRegen = '생명력 재생';
+printName.spRegen = 'SP 재생';
+printName.spCharge = 'SP 충전';
+printName.phyAtk = '물리공격력';
+printName.magAtk = '마법공격력';
+printName.crit = '치명';
+printName.critDmg = '치명피해';
+printName.phyReduce = '물리저항';
+printName.magReduce = '마법저항';
+printName.hit = '명중';
+printName.evasion = '회피';
+if( !user ) { %>
+    <p>로그인을 해주세요.</p>
+    <a href="/login">로그인</a>
+    <a href="/join">회원가입</a>
+    <% } else { %>
+    <p><%= user.name %>으로 접속되었습니다.</p>
+    <% if( char ) { %>
+    <% for (const [key, val] of Object.entries(char)) { %>
+        <li><%= (printName[key] ? printName[key] : key) + ':' + val %></li>
+    <% }
+       } else { %>
+    <p>캐릭터가 지정되지 않았습니다. 관리자에게 문의하세요.</p>
+    <% } %> 
+    <a href="/logout">로그아웃</a>
+    <% } %> 
+</body>
+</html>
