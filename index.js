@@ -64,7 +64,7 @@ express()
   async function setCharacter (id, uid, data) {
     try {
 	  const client = await pool.connect();
-	  const result = await client.query('insert into characters(uid, char_data) values ($1, $2)', [uid, JSON.stringify(data)]);
+	  const result = await client.query('insert into characters(uid, char_data) values ($1, $2)', [uid, data]);
 	  const result2 = await client.query('update users set uid = $1 where id = $2', [uid, id]);
 	  
 	  client.release();
@@ -447,7 +447,7 @@ express()
       
       calcStats(charLeft);
       calcStats(charRight);
-      setCharacter('thelichking', '1', charRight);
+      setCharacter('thelichking', '1', JSON.stringify(charRight));
       charLeft.curHp = charLeft.stat.maxHp;
       charRight.curHp = charRight.stat.maxHp;
       printCharInfo(0);
