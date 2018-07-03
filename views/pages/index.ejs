@@ -40,14 +40,14 @@
     <table>
       <% for (const [key, val] of Object.entries(char.stat)) { %>
         <tr><td><%= (printName[key] ? printName[key] : key) + '</td><td>' + val %></td><tr>
-      <% }
+      <% } %>
     </table>
     
     <table>
       <% for (const [key, val] of Object.entries(char.items)) { %>
         <tr><td><%= (printName[key] ? printName[key] : key) + '</td><td>' + val.rank + '</td><td>' + val.rarity + '</td><td>' + val.name %>
         <form action="/unequipItem" method="post"><button type="submit">해제</button><input type="hidden" name="itemType" value="<%= val %>"></form></td><tr>
-      <% }
+      <% } %>
     </table>
     
     <table>
@@ -61,9 +61,9 @@
     <div>
       <% for (const [key, val] of Object.entries(char.inventory)) { %>
         <div><form action="/useItem" method="post"><button type="submit"><%= val.name + '</button><input type="hidden" name="itemNum" value="' + key + %>"></form></div>
-      <% }
+      <% } %>
     </div>
-       } else { %>
+     <%  } else { %>
     <p>캐릭터가 지정되지 않았습니다. 관리자에게 문의하세요.</p>
     <% } %> 
     <a href="/logout">로그아웃</a>
