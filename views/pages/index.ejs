@@ -10,32 +10,59 @@
     <h1>Home</h1>
     <% 
   var printName = {};
-printName.weapon = '무기';
-printName.armor = '갑옷';
-printName.trinket = '장신구';
-printName.maxHp = '생명력';
-printName.cloak = '망토';
-printName.hpRegen = '생명력 재생';
-printName.spRegen = 'SP 재생';
-printName.spCharge = 'SP 충전';
-printName.phyAtk = '물리공격력';
-printName.magAtk = '마법공격력';
-printName.crit = '치명';
-printName.critDmg = '치명피해';
-printName.phyReduce = '물리저항';
-printName.magReduce = '마법저항';
-printName.hit = '명중';
-printName.evasion = '회피';
-if( !user ) { %>
+  printName.weapon = '무기';
+  printName.armor = '갑옷';
+  printName.trinket = '장신구';
+  printName.maxHp = '생명력';
+  printName.hpRegen = '생명력 재생';
+  printName.spRegen = 'SP 재생';
+  printName.spCharge = 'SP 충전';
+  printName.phyAtk = '물리공격력';
+  printName.magAtk = '마법공격력';
+  printName.crit = '치명';
+  printName.critDmg = '치명피해';
+  printName.phyReduce = '물리저항';
+  printName.magReduce = '마법저항';
+  printName.hit = '명중';
+  printName.evasion = '회피';
+  
+  function getDamageText(skill) {
+    var res = skill.type === 1 ? '물리' : '마법';
+    return res + ' ' + skill.damage;
+  }
+  if( !user ) { %>
     <p>로그인을 해주세요.</p>
     <a href="/login">로그인</a>
     <a href="/join">회원가입</a>
     <% } else { %>
     <p><%= user.name %>으로 접속되었습니다.</p>
     <% if( char ) { %>
-    <% for (const [key, val] of Object.entries(char)) { %>
-        <li><%= (printName[key] ? printName[key] : key) + ':' + val %></li>
-    <% }
+    <table>
+      <% for (const [key, val] of Object.entries(char.stat)) { %>
+        <tr><td><%= (printName[key] ? printName[key] : key) + '</td><td>' + val %></td><tr>
+      <% }
+    </table>
+    
+    <table>
+      <% for (const [key, val] of Object.entries(char.items)) { %>
+        <tr><td><%= (printName[key] ? printName[key] : key) + '</td><td>' + val.rank + '</td><td>' + val.rarity + '</td><td>' + val.name %>
+        <form action="/unequipItem" method="post"><button type="submit">해제</button><input type="hidden" name="itemType" value="<%= val %>"></form></td><tr>
+      <% }
+    </table>
+    
+    <table>
+      <tr><td>가위</td><td><%= char.skill.base[0].name + '</td><td>' + getDamageText(char.skil.base[0]) %></td><td></td><tr>
+      <tr><td>바위</td><td><%= char.skill.base[1].name + '</td><td>' + getDamageText(char.skil.base[1]) %></td><td></td><tr>
+      <tr><td>보</td><td><%= char.skill.base[2].name + '</td><td>' + getDamageText(char.skil.base[2]) %></td><td></td><tr>
+      <tr><td>스페셜</td><td><%= char.skill.special.name + '</td><td>SP' + char.skill.special.cost %></td><td></td><tr>
+      <tr><td>드라이브</td><td><%= char.skill.drive.name + '</td><td>SP' + char.special.drive.cost %></td><td></td><tr>
+    </table>
+    
+    <div>
+      <% for (const [key, val] of Object.entries(char.inventory)) { %>
+        <div><form action="/useItem" method="post"><button type="submit"><%= val.name + '</button><input type="hidden" name="itemNum" value="' + key + %>"></form></div>
+      <% }
+    </div>
        } else { %>
     <p>캐릭터가 지정되지 않았습니다. 관리자에게 문의하세요.</p>
     <% } %> 

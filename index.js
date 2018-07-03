@@ -141,24 +141,28 @@ express()
   var EFFECT_TYPE_OPP_BUFF = 2;
   var EFFECT_TYPE_SELF_SP = 3;
   var EFFECT_TYPE_SELF_HP = 4;
-  var EFFECT_TYPE_ADD_HIT = 4;
+  var EFFECT_TYPE_ADD_HIT = 5;
+  
+  var DURATION_TYPE_TURN_START = 1;
+  var DURATION_TYPE_TURN_END = 0;
   
   var printName = {};
-printName.weapon = '무기';
-printName.armor = '갑옷';
-printName.trinket = '장신구';
-printName.maxHp = '생명력';
-printName.hpRegen = '생명력 재생';
-printName.spRegen = 'SP 재생';
-printName.spCharge = 'SP 충전';
-printName.phyAtk = '물리공격력';
-printName.magAtk = '마법공격력';
-printName.crit = '치명';
-printName.critDmg = '치명피해';
-printName.phyReduce = '물리저항';
-printName.magReduce = '마법저항';
-printName.hit = '명중';
-printName.evasion = '회피';
+  printName.weapon = '무기';
+  printName.armor = '갑옷';
+  printName.trinket = '장신구';
+  printName.maxHp = '생명력';
+  printName.hpRegen = '생명력 재생';
+  printName.spRegen = 'SP 재생';
+  printName.spCharge = 'SP 충전';
+  printName.phyAtk = '물리공격력';
+  printName.magAtk = '마법공격력';
+  printName.crit = '치명';
+  printName.critDmg = '치명피해';
+  printName.phyReduce = '물리저항';
+  printName.magReduce = '마법저항';
+  printName.hit = '명중';
+  printName.evasion = '회피';
+  
 //var battleModule = 
  // {
     var charLeft = {};
@@ -437,13 +441,13 @@ printName.evasion = '회피';
       effectObj.chance = 1;
       effectObj.buffCode = 20092;
       effectObj.buffDur = 8;
-      effectObj.value = 3;
+      effectObj.value = 0.02;
       skillObj.effect.push(effectObj); 
       charRight.skill.special = skillObj;
       
       calcStats(charLeft);
       calcStats(charRight);
-      //setCharacter('thelichking', '1', charRight);
+      setCharacter('thelichking', '1', charRight);
       charLeft.curHp = charLeft.stat.maxHp;
       charRight.curHp = charRight.stat.maxHp;
       printCharInfo(0);
@@ -497,7 +501,7 @@ printName.evasion = '회피';
           result += '<div class="driveSkill">[ ' + winner.name + ' ] Drive Skill - [ ' + winner.skill.drive.name + ' ] 발동!</div>';
           resolveEffects(winner, loser, winner.skill.drive.effect);
         }
-        loser.curHp -= damage.value;
+        dealDamage(winner, loser, damage);
         winner.curSp += winner.stat.spCharge;
       }
 
@@ -532,9 +536,9 @@ printName.evasion = '회피';
       }
 
       for (val of findBuffByCode(winner, 2)) {
-    	if (val.id === 20101 && skill.code === 20101) {
+    	if (val.buff.id === 20101 && skill.code === 20101) {
     	  atkRat += val.value;
-      	  result += '[ ' + val.name + ' ] 효과로 공격력이 ' + val.value + ' 올랐습니다!<br>';
+      	  result += '[ ' + val.buff.name + ' ] 효과로 공격력이 ' + val.value + ' 올랐습니다!<br>';
     	}
       }
       
@@ -544,11 +548,15 @@ printName.evasion = '회피';
       var damage = (skill.damage * atkRat) * (1 - defReduce);
       damage *= randDmg;
       if (retObj.crit) {
-    	damage *= winner.critDmg;
+    	damage *= winner.stat.critDmg;
       }
       retObj.value = Math.round(damage);
       
       return retObj;
+    }
+    
+    function dealDamage(src, dst, damage) {
+      dst.curHp -= damage.value;
     }
     
     function resolveEffects(winner, loser, effects) {
@@ -557,9 +565,8 @@ printName.evasion = '회피';
     	  continue;
     	}
     	if (effects[i].code === EFFECT_TYPE_SELF_BUFF || effects[i].code === EFFECT_TYPE_OPP_BUFF) {
-    	  var buffObj = getBuffData(effects[i].buffCode);
+    	  var buffObj = getBuffData(effects[i]);
     	  buffObj.dur = effects[i].buffDur;
-    	  buffObj.value = effects[i].value;
     	  
     	  var recv = (effects[i].code === EFFECT_TYPE_SELF_BUFF) ? winner : loser;
     	  result += recv.name + getUnnun(recv.nameType) + ' [ ' + buffObj.name + ' ] 효과를 받았습니다!<br>';
@@ -602,7 +609,7 @@ printName.evasion = '회피';
             result += ' (치명타)';
           }
           result += '</span><br>';
-          loser.curHp -= damage.value;
+          dealDamage(winner, loser, damage);
       	}
       }
     }
@@ -617,7 +624,7 @@ printName.evasion = '회피';
     function resolveTurnBeginChar(chara) {
      
       for (buff of chara.buffs) {
-    	if (buff.durOff === 1) {
+    	if (buff.durOff === DURATION_TYPE_TURN_START) {
     	  buff.dur--;
     	}
     	if (buff.dur >= 0) {
@@ -642,95 +649,129 @@ printName.evasion = '회피';
       }
      
       for (buff of chara.buffs) {
-    	if (buff.durOff === 0) {
+    	if (buff.durOff === DURATION_TYPE_TURN_END) {
     	  buff.dur--;
     	}
     	if (buff.dur >= 0) {
-    	  if (buff.code === 1) {
-    		var stackMpl = buff.stack ? buff.stack : 1;
-    		buff.damage = buff.value;
-    		var damage = calcDamage(opp, chara, buff);
-    		damage.value *= stackMpl;
-    		
-            result += '<span class="skillDamage">' + chara.name + getUnnun(chara.nameType) + ' [ ' + buff.name + ' ] 효과로 ' + damage.value + '대미지를 입었습니다!';
-            if (damage.crit) {
-          	  result += ' (치명타)';
+    	  for (eff of buff.effect) {
+            if (eff.code === 1) {
+              var stackMpl = buff.stack ? buff.stack : 1;
+              eff.damage = eff.value * stackMpl;
+              var damage = calcDamage(opp, chara, eff);
+              
+              result += '<span class="skillDamage">' + chara.name + getUnnun(chara.nameType) + ' [ ' + buff.name + ' ] 효과로 ' + damage.value + '대미지를 입었습니다!';
+              if (damage.crit) {
+          	    result += ' (치명타)';
+              }
+              result += '</span><br>';
+              dealDamage(opp, chara, damage);
+    	    } else if (eff.code === 4) {
+        	  var stackMpl = buff.stack ? buff.stack : 1;
+              eff.damage = eff.value * stackMpl;
+              var damage = calcDamage(chara, opp, eff);
+        		
+              result += '<span class="skillDamage">' + opp.name + getUnnun(opp.nameType) + ' [ ' + buff.name + ' ] 효과로 ' + damage.value + '대미지를 입었습니다!';
+              if (damage.crit) {
+                result += ' (치명타)';
+              }
+              result += '</span><br>';
+              dealDamage(chara, opp, damage);
             }
-            result += '</span><br>';
-            chara.curHp -= damage.value;
-    	  } else if (buff.code === 4) {
-    		var stackMpl = buff.stack ? buff.stack : 1;
-    		buff.damage = buff.value;
-    		var damage = calcDamage(chara, opp, buff);
-    		damage.value *= stackMpl;
-    		
-            result += '<span class="skillDamage">' + opp.name + getUnnun(opp.nameType) + ' [ ' + buff.name + ' ] 효과로 ' + damage.value + '대미지를 입었습니다!';
-            if (damage.crit) {
-          	  result += ' (치명타)';
-            }
-            result += '</span><br>';
-            opp.curHp -= damage.value;
     	  }
     	}
       }
       chara.buffs = chara.buffs.filter(x => (x.dur > 0) || (x.dur === null));
     }
     
-    function getBuffData(code) {
+    function getBuffData(eff) {
       var retObj = {};
-      retObj.id = code;
-      switch (code) {
+      retObj.id = eff.buffCode;
+      switch (eff.buffCode) {
       case 4 : 
         retObj.name = '기절';
-        retObj.code = 104;
         retObj.nameType = NAME_KOR_END_CONS;
-    	retObj.durOff = 1;
+    	retObj.durOff = DURATION_TYPE_TURN_START;
+      	retObj.effect = [];
+      	var effectObj = {};
+      	effectObj.code = 104;
+      	retObj.effect.push(effectObj);
         break;
       case 20101 : 
       	retObj.name = '혼돈의 힘';
-      	retObj.code = 2;
       	retObj.nameType = NAME_KOR_END_CONS;
-  	    retObj.durOff = 1;
+  	    retObj.durOff = DURATION_TYPE_TURN_START;
+      	retObj.effect = [];
+      	var effectObj = {};
+      	effectObj.code = 2;
+      	effectObj.value = eff.value;
+      	effectObj.buff = retObj;
+      	retObj.effect.push(effectObj);
       	break;
       case 20102 : 
       	retObj.name = '파괴됨';
       	retObj.nameType = NAME_KOR_END_CONS;
-      	retObj.code = 1;
-      	retObj.type = 2;
       	retObj.stackType = 1;
-  	    retObj.durOff = 1;
+  	    retObj.durOff = DURATION_TYPE_TURN_START;
+      	retObj.effect = [];
+      	var effectObj = {};
+      	effectObj.code = 1;
+      	effectObj.value = eff.value;
+      	effectObj.type = DAMAGE_TYPE_MAGICAL;
+      	retObj.effect.push(effectObj);
       	break;
       case 20103 : 
       	retObj.name = '지옥불길';
       	retObj.nameType = NAME_KOR_END_CONS;
-      	retObj.code = 1;
-      	retObj.type = 2;
-  	    retObj.durOff = 1;
+  	    retObj.durOff = DURATION_TYPE_TURN_START;
       	retObj.stackType = 3;
+      	retObj.effect = [];
+      	var effectObj = {};
+      	effectObj.code = 1;
+      	effectObj.value = eff.value;
+      	effectObj.type = DAMAGE_TYPE_MAGICAL;
+      	retObj.effect.push(effectObj);
       	break;
       case 20091 : 
         retObj.name = '서리 폭풍우';
         retObj.nameType = NAME_KOR_NO_END_CONS;
       	retObj.stackType = 1;
-        retObj.code = 3;
-        retObj.key = 'hpRegen';
-  	    retObj.durOff = 1;
+  	    retObj.durOff = DURATION_TYPE_TURN_START;
+      	retObj.effect = [];
+      	var effectObj = {};
+      	effectObj.code = 3;
+      	effectObj.value = eff.value;
+      	effectObj.key = 'hpRegen';
+      	effectObj.buff = retObj;
+      	retObj.effect.push(effectObj);
         break;
       case 20092 : 
         retObj.name = '사자의 군대';
         retObj.nameType = NAME_KOR_NO_END_CONS;
-      	retObj.code = 4;
-      	retObj.type = 0;
       	retObj.stack = 8;
-  	    retObj.durOff = 1;
+  	    retObj.durOff = DURATION_TYPE_TURN_START;
+      	retObj.effect = [];
+      	var effectObj = {};
+      	effectObj.code = 4;
+      	effectObj.value = eff.value;
+      	effectObj.type = DAMAGE_TYPE_PHYSICAL;
+      	retObj.effect.push(effectObj);
+      	effectObj = {};
+      	effectObj.code = 5;
+      	effectObj.value = eff.value;
+      	retObj.effect.push(effectObj);
         break;
       case 20093 : 
         retObj.name = '서리한 포식';
         retObj.nameType = NAME_KOR_END_CONS;
-        retObj.code = 3;
-        retObj.key = 'spRegen';
       	retObj.stackType = 2;
       	retObj.stack = 1;
+      	retObj.effect = [];
+      	var effectObj = {};
+      	effectObj.code = 3;
+      	effectObj.value = eff.value;
+      	effectObj.key = 'spRegen';
+      	effectObj.buff = retObj;
+      	retObj.effect.push(effectObj);
         break;
       }
       
@@ -738,10 +779,10 @@ printName.evasion = '회피';
     }
     
     function findBuffByCode(chara, code) {
-      if (!chara.buffs) {
+      if (!chara.buffs || chara.buffs.length === 0) {
     	return [];
       }
-      return chara.buffs.filter(x => (x.code === code));
+      return chara.buffs.map(x => x.effect).reduce((acc, val) => acc.concat(val)).filter(x => (x.code == code));
     }
     
     function calcStats(chara) {
@@ -755,7 +796,7 @@ printName.evasion = '회피';
       }
 
       for (val of findBuffByCode(chara, 3)) {
-  		var stackMpl = val.stack ? val.stack : 1;
+  		var stackMpl = val.buff.stack ? val.buff.stack : 1;
     	chara.stat[val.key] += val.value * stackMpl;
       }
     }
