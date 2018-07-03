@@ -27,6 +27,7 @@ express()
   .post('/join', procJoin)
   .get('/logout', procLogout)
   .post('/unequipItem', procUnequip)
+  .post('/useItem', procUseItem)
   .get('/test', (req, res) => res.send(_doBattle()))
   .listen(PORT, () => console.log(`Listening on ${ PORT }`))
 
@@ -134,7 +135,41 @@ express()
 		  chara = JSON.parse(resultChar.rows[0].char_data);
 		  var tgtObj = chara.items[body.itemType];
 		  chara.items[body.itemType] = undefined;
+		  calcStats(chara);
 		  chara.inventory.push(tgtObj);
+		  await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(chara), result.rows[0].uid]);
+	    }
+	  }
+      client.release();
+      res.redirect('/');
+    } catch (err) {
+      console.error(err);
+      res.send('내부 오류');
+    }
+  }
+  
+  async function procUseItem (req, res) {
+    try {
+      var chara;
+      const body = req.body;
+      const client = await pool.connect();
+	  const result = await client.query('select * from users where id = $1', [req.session.userUid]);
+	  if (result.rows.length > 0) {
+		const resultChar = await client.query('select char_data from characters where uid = $1', [result.rows[0].uid]);
+	    if (resultChar.rows.length > 0) {
+		  chara = JSON.parse(resultChar.rows[0].char_data);
+		  calcStats(chara);
+		  var tgtObj = chara.inventory[body.itemNum];
+		  if (tgtObj.type < 10) {
+			chara.inventory.splice(body.itemNum, 1);
+			var itemType = (tgtObj.type === ITEM_TYPE_WEAPON) ? 'weapon' : ((tgtObj.type === ITEM_TYPE_ARMOR) ? 'armor' : 'trinket');
+			var curItem = chara.items[itemType];
+			if (curItem) {
+			  chara.items[itemType] = undefined;
+			  chara.inventory.push(curItem);				
+			}
+			chara.items[itemType] = tgtObj;
+		  }
 		  await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(chara), result.rows[0].uid]);
 	    }
 	  }
