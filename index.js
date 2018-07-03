@@ -26,6 +26,7 @@ express()
   .get('/join', (req, res) => res.render('pages/join'))
   .post('/join', procJoin)
   .get('/logout', procLogout)
+  .post('/unequipItem', procUnequip)
   .get('/test', (req, res) => res.send(_doBattle()))
   .listen(PORT, () => console.log(`Listening on ${ PORT }`))
 
@@ -115,6 +116,30 @@ express()
     	const result = await client.query('insert into users(id, password, name, uid) values ($1, $2, $3, $4)', [body.userId, hash, body.userName, null]);
       }      
       client.release();
+    } catch (err) {
+      console.error(err);
+      res.send('내부 오류');
+    }
+  }
+  
+  async function procUnequip (req, res) {
+    try {
+      var chara;
+      const body = req.body;
+      const client = await pool.connect();
+	  const result = await client.query('select * from users where id = $1', [req.session.userUid]);
+	  if (result.rows.length > 0) {
+		const resultChar = await client.query('select char_data from characters where uid = $1', [result.rows[0].uid]);
+	    if (resultChar.rows.length > 0) {
+		  chara = JSON.parse(resultChar.rows[0].char_data);
+		  var tgtObj = chara.items[body.itemType];
+		  chara.items[body.itemType] = undefined;
+		  chara.inventory.push(tgtObj);
+		  await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(chara), result.rows[0].uid]);
+	    }
+	  }
+      client.release();
+      res.redirect('/');
     } catch (err) {
       console.error(err);
       res.send('내부 오류');
