@@ -158,7 +158,6 @@ express()
 		const resultChar = await client.query('select char_data from characters where uid = $1', [result.rows[0].uid]);
 	    if (resultChar.rows.length > 0) {
 		  chara = JSON.parse(resultChar.rows[0].char_data);
-		  calcStats(chara);
 		  var tgtObj = chara.inventory[body.itemNum];
 		  if (tgtObj.type < 10) {
 			chara.inventory.splice(body.itemNum, 1);
@@ -169,6 +168,7 @@ express()
 			  chara.inventory.push(curItem);				
 			}
 			chara.items[itemType] = tgtObj;
+			calcStats(chara);
 		  }
 		  await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(chara), result.rows[0].uid]);
 	    }
@@ -850,6 +850,9 @@ express()
     	chara.stat[key] = chara.base[key];
       }
       for (var key in chara.items) {
+    	if (!chara.items[key]) {
+    	  continue;
+    	}
     	for (var keyItem in chara.items[key]['stat']) {
       	  chara.stat[keyItem] += chara.items[key]['stat'][keyItem];
     	}

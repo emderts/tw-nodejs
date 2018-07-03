@@ -38,16 +38,23 @@
     <p><%= user.name %>으로 접속되었습니다.</p>
     <% if( char ) { %>
     <table>
+        <tr><td><%= char.name %></td><td><%= char.rank %>급 <%= char.level %>레벨</td></tr>
+        <tr><td>스탯 포인트</td><td><%= char.statPoint %></td></tr>
+        <tr><td>액션 포인트</td><td><%= char.actionPoint %></td></tr>
       <% for (const [key, val] of Object.entries(char.stat)) { %>
         <tr><td><%= (printName[key] ? printName[key] : key) %></td><td><%= val %></td><tr>
       <% } %>
     </table>
     
     <table>
-      <% for (const [key, val] of Object.entries(char.items)) { %>
-        <tr><td><%= (printName[key] ? printName[key] : key) %></td><td><%= val.rank %></td><td><%= val.rarity %></td><td><%= val.name %>
-        <form action="/unequipItem" method="post"><button type="submit">해제</button><input type="hidden" name="itemType" value="<%= key %>"></form></td><tr>
-      <% } %>
+        <tr><td>무기</td><td><%= char.items.weapon.rank %></td><td><%= char.items.weapon.rarity %></td><td><%= char.items.weapon.name %>
+        <form action="/unequipItem" method="post"><button type="submit">해제</button><input type="hidden" name="itemType" value="weapon"></form></td><tr>
+        <tr><td>갑옷</td><td><%= char.items.armor.rank %></td><td><%= char.items.armor.rarity %></td><td><%= char.items.armor.name %>
+        <form action="/unequipItem" method="post"><button type="submit">해제</button><input type="hidden" name="itemType" value="armor"></form></td><tr>
+        <tr><td>보조방어구</td><td><%= char.items.subarmor.rank %></td><td><%= char.items.subarmor.rarity %></td><td><%= char.items.subarmor.name %>
+        <form action="/unequipItem" method="post"><button type="submit">해제</button><input type="hidden" name="itemType" value="subarmor"></form></td><tr>
+        <tr><td>장신구</td><td><%= char.items.trinket.rank %></td><td><%= char.items.trinket.rarity %></td><td><%= char.items.trinket.name %>
+        <form action="/unequipItem" method="post"><button type="submit">해제</button><input type="hidden" name="itemType" value="trinket"></form></td><tr>
     </table>
     
     <table>
