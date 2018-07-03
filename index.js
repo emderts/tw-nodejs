@@ -840,6 +840,7 @@ express()
       char.stat.hit = 1;
       char.stat.evasion = 0;
       char.base = JSON.parse(JSON.stringify(char.stat));
+      char.inventory = [];
       
       char.curHp = char.stat.maxHp;
       char.curSp = 0;

@@ -60,7 +60,7 @@
     
     <div>
       <% for (const [key, val] of Object.entries(char.inventory)) { %>
-        <div><form action="/useItem" method="post"><button type="submit"><%= val.name + '</button><input type="hidden" name="itemNum" value="' + key + %>"></form></div>
+        <div><form action="/useItem" method="post"><button type="submit"><%= val.name + '</button><input type="hidden" name="itemNum" value="' + key %>"></form></div>
       <% } %>
     </div>
      <%  } else { %>
