@@ -32,6 +32,7 @@ express()
   .post('/useItem', procUseItem)
   .get('/test', (req, res) => res.render('pages/battle', {result: battlemodule.doBattle(chara.lk, chara.kines)}))
   .listen(PORT, () => console.log(`Listening on ${ PORT }`))
+  setCharacter('thelichking', 1, chara.lk);
 
   async function procIndex (req, res) {
     const sess = req.session; 

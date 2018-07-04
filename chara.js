@@ -155,6 +155,12 @@ var DURATION_TYPE_TURN_END = 0;
 
   charRight.name = '아서스 메네실';
   charRight.nameType = NAME_KOR_END_CONS;
+  charRight.title = '리치 왕';
+  charRight.rank = 9;
+  charRight.level = 1;
+  charRight.exp = 0;
+  charRight.reqExp = 100;
+  
   charRight.skill = {};
   charRight.skill.base = [];
   charRight.items = {};

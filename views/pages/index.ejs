@@ -17,10 +17,10 @@
       .skillInfo .charViewTitle {background-color: #ccccff; }
       .skillInfo .charViewContent {background-color: #eaeaff; }
       div.inventoryWrap {float: left; width: 750px; }
-      button.inventoryItem {width: 150px; background-color: #ffffea; }
-      button.inventoryItem:hover {background-color: #ffffcc; }
-      .itemTooltip {display: none; }
-      button:hover + div {display: block; }
+      .inventoryItem button {width: 150px; background-color: #ffffea; }
+      .inventoryItem button:hover {background-color: #ffffcc; }
+      .inventoryItem .itemTooltip {visibility: hidden; width: 120px; background-color: black; color: #fff; text-align: center; border-radius: 6px; padding: 5px 0; position: absolute; z-index: 1; }
+      .inventoryItem:hover .itemTooltip {visibility: visible; }
     </style>
 </head>
 <body>
