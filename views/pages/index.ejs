@@ -7,7 +7,9 @@
     <title>Document</title>
     <style>
       body {overflow: hidden; }
-      table {border: 1px solid black; text-align: center; float: left; }
+      table {border: 1px solid black; text-align: center; }
+      table.charInfo {float: left; }
+      div.infoViewWrap {float: left; }
       .charInfo .charViewTitle {background-color: #ffffcc; }
       .charInfo .charViewContent {background-color: #ffffea; }
       .itemInfo .charViewTitle {background-color: #ccffcc; }
@@ -15,9 +17,10 @@
       .skillInfo .charViewTitle {background-color: #ccccff; }
       .skillInfo .charViewContent {background-color: #eaeaff; }
       div.inventoryWrap {float: left; width: 750px; }
-      .inventoryItem {width: 150px; background-color: #ffffea; }
+      button.inventoryItem {width: 150px; background-color: #ffffea; }
+      button.inventoryItem:hover {background-color: #ffffcc; }
       .itemTooltip {display: none; }
-      div.inventoryItem:hover + div {display: block; }
+      button:hover + div {display: block; }
     </style>
 </head>
 <body>
@@ -60,7 +63,7 @@
         <tr><td class="charViewTitle"><%= (printName[key] ? printName[key] : key) %></td><td class="charViewContent"><%= (val > 0 && val < 1) ? val * 100 : val %></td><tr>
       <% } %>
     </table>
-    
+  <div class="infoViewWrap">
     <table class="itemInfo">
       <% if (char.items.weapon) { %>
         <tr><td class="charViewTitle">무기</td><td class="charViewContent"><%= char.items.weapon.rank %></td><td class="charViewContent"><%= char.items.weapon.rarity %></td><td class="charViewContent"><%= char.items.weapon.name %></td><td class="charViewContent">
@@ -95,18 +98,19 @@
       <tr><td class="charViewTitle">스페셜</td><td class="charViewContent"><%= char.skill.special.name %></td><td class="charViewContent">SP<%= char.skill.special.cost %></td><td class="charViewContent"></td><tr>
       <tr><td class="charViewTitle">드라이브</td><td class="charViewContent"><%= char.skill.drive.name %></td><td class="charViewContent">SP<%= char.skill.drive.cost %></td><td class="charViewContent"></td><tr>
     </table>
+  </div>
     
     <div class="inventoryWrap">
       <% for (const [key, val] of Object.entries(char.inventory)) { %>
-        <div class="inventoryItem"><form action="/useItem" method="post"><button type="submit"><%= val.name %></button><input type="hidden" name="itemNum" value="<%= key %>"></form>
-        <div class="itemTooltip"><%= Object.entries(val.stat).map(arr => { if (arr[1] > 0 && arr[1] < 1) arr[1] *= 100; return printName[arr[0]] + ' ' + arr[1]; }).join(', ') %></div>
+        <div class="inventoryItem"><form action="/useItem" method="post"><button type="submit"><%= val.name %></button><input type="hidden" name="itemNum" value="<%= key %>">
+        <div class="itemTooltip"><%= Object.entries(val.stat).map(arr => { if (arr[1] > 0 && arr[1] < 1) arr[1] *= 100; return printName[arr[0]] + ' ' + arr[1]; }).join(', ') %></div></form>
         </div>
       <% } %>
     </div>
      <%  } else { %>
     <p>캐릭터가 지정되지 않았습니다. 관리자에게 문의하세요.</p>
     <% } %> 
-    <a href="/logout">로그아웃</a>
+    <br><a href="/logout">로그아웃</a>
     <% } %> 
 </body>
 </html>

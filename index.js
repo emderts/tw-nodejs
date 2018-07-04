@@ -30,7 +30,7 @@ express()
   .get('/logout', procLogout)
   .post('/unequipItem', procUnequip)
   .post('/useItem', procUseItem)
-  .get('/test', (req, res) => res.send(battlemodule.doBattle(chara.kines, chara.lk)))
+  .get('/test', (req, res) => res.render('pages/battle', {result: battlemodule.doBattle(chara.lk, chara.kines)}))
   .listen(PORT, () => console.log(`Listening on ${ PORT }`))
 
   async function procIndex (req, res) {

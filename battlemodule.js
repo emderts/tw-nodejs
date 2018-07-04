@@ -61,18 +61,6 @@ module.exports.doBattle = function (left, right) {
 function _doBattleStart() {
   result = '';
   turnCount = 0;
-  // temp css
-  result += '<style>.turnWrap {text-align: center; }' + 
-  'span.turnCount {font-size: 20px; font-weight: bold; }' + 
-  'span.skillUseWinner {font-weight: bold; }' +
-  '.driveSkill {margin-top: 5px; font-weight: bold; }' +  
-  '.specialSkill {margin-top: 7px; font-weight: bold; }' +  
-  '.colorLeft {color: red; font-weight: bold; }' +  
-  '.colorRight {color: blue; font-weight: bold; }' +  
-  '.colorHp {color: green; }' +  
-  '.colorSp {color: blue; }' +  
-  '.charInfoWrap {width: 40%; margin: 10px auto; overflow: hidden; }' + 
-  '.charInfo {text-align: center; width: 49%; float: left; border-top: 1px solid black; }</style>';
 
   _initChar(charLeft);
   _initChar(charRight);
@@ -111,7 +99,26 @@ function _doBattleTurn() {
     }
   }
   result += '<div class="skillResolutionWrap"><span class="skillUse">';
-  if (winner == charLeft) {
+  if (findBuffByCode(winner, 10004).length > 0) {
+    if (findBuffByCode(loser, 10004).length > 0) {
+      resolveTurnBegin(winner, loser);
+      result += '아무도 공격할 수 없다!</span><br>';
+      resolveTurnEnd(winner, loser);
+      result += '</div></div>';
+      printCharInfo(1);
+      return;
+    } else {
+      var tmp = loser;
+      loser = winner;
+      winner = tmp;
+      tmp = skillFailed;
+      skillFailed = skillUsed;
+      skillUsed = tmp;
+      result += '<span class="skillUseWinner">' + winner.name + '의 [ ' + skillUsed.name + ' ]</span></span><br>';      
+    }
+  } else if (findBuffByCode(loser, 10004).length > 0) {
+    result += '<span class="skillUseWinner">' + winner.name + '의 [ ' + skillUsed.name + ' ]</span></span><br>';     
+  } else if (winner == charLeft) {
     result += '<span class="skillUseWinner">' + charLeft.name + '의 [ ' + skillUsed.name + ' ]</span> vs ' + charRight.name + '의 [ ' + skillFailed.name + ' ]</span><br>';
   } else {
     result += charLeft.name + '의 [ ' + skillFailed.name + ' ] vs <span class="skillUseWinner">' + charRight.name + '의 [ ' + skillUsed.name + ' ]</span></span><br>';
@@ -120,6 +127,7 @@ function _doBattleTurn() {
   // calc damage
   var damage = calcDamage(winner, loser, skillUsed);
   resolveTurnBegin(winner, loser);
+  
   if (damage.hit) {
     result += '<span class="skillDamage">' + winner.name + getIga(winner.nameType) + ' [ ' + skillUsed.name + ' ] ' + getUro(skillUsed.nameType) + ' ';
     result += loser.name + getUlrul(loser.nameType) + ' 공격해 ' + damage.value + '대미지를 입혔습니다!';
@@ -326,7 +334,7 @@ function getBuffData(eff) {
     retObj.durOff = DURATION_TYPE_TURN_START;
     retObj.effect = [];
     var effectObj = {};
-    effectObj.code = 104;
+    effectObj.code = 10004;
     retObj.effect.push(effectObj);
     break;
   case 20101 : 

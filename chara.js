@@ -208,7 +208,7 @@ var DURATION_TYPE_TURN_END = 0;
   skillObj.effect = [];
   effectObj = {};
   effectObj.code = EFFECT_TYPE_OPP_BUFF;
-  effectObj.chance = 0.5;
+  effectObj.chance = 1;
   effectObj.buffCode = 4;
   effectObj.buffDur = 1;
   skillObj.effect.push(effectObj);            
