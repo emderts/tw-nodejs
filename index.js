@@ -11,6 +11,7 @@ const pool = new Pool({
 }); 
 const battlemodule = require('./battlemodule');
 const chara = require('./chara');
+const cons = require('./constant');
 
 express()
   .use(express.static(path.join(__dirname, 'public')))
@@ -30,9 +31,8 @@ express()
   .get('/logout', procLogout)
   .post('/unequipItem', procUnequip)
   .post('/useItem', procUseItem)
-  .get('/test', (req, res) => res.render('pages/battle', {result: battlemodule.doBattle(chara.lk, chara.kines)}))
+  .get('/test', (req, res) => res.render('pages/battle', {result: battlemodule.doBattle(chara.psi, chara.julius)}))
   .listen(PORT, () => console.log(`Listening on ${ PORT }`))
-  setCharacter('thelichking', 1, chara.lk);
 
   async function procIndex (req, res) {
     const sess = req.session; 
@@ -41,42 +41,6 @@ express()
       user: sess.userUid+1 ? {name: sess.userName} : null,
       char: char
     }); 
-  }
-
-  async function getCharacter (id) {
-	try {
-	  var rval = null;
-	  const client = await pool.connect();
-	  const result = await client.query('select * from users where id = $1', [id]);
-	  if (result.rows.length > 0) {
-		const resultChar = await client.query('select char_data from characters where uid = $1', [result.rows[0].uid]);
-	    if (resultChar.rows.length > 0) {
-		  rval = resultChar.rows[0].char_data;
-	    }
-	  }
-	  if (rval !== null) {
-		rval = JSON.parse(rval);
-	  }
-
-	  client.release();
-	  return rval;
-	} catch (err) {
-	  console.error(err);
-	  return null;
-	}	
-  }
-
-  async function setCharacter (id, uid, data) {
-    try {
-	  const client = await pool.connect();
-	  const result = await client.query('insert into characters(uid, char_data) values ($1, $2)', [uid, data]);
-	  const result2 = await client.query('update users set uid = $1 where id = $2', [uid, id]);
-	  
-	  client.release();
-	} catch (err) {
-	  console.error(err);
-	}	
-	
   }
 
   async function procLogin (req, res) {
@@ -164,7 +128,7 @@ express()
 		  var tgtObj = chara.inventory[body.itemNum];
 		  if (tgtObj.type < 10) {
 			chara.inventory.splice(body.itemNum, 1);
-			var itemType = (tgtObj.type === ITEM_TYPE_WEAPON) ? 'weapon' : ((tgtObj.type === ITEM_TYPE_ARMOR) ? 'armor' : 'trinket');
+			var itemType = (tgtObj.type === cons.ITEM_TYPE_WEAPON) ? 'weapon' : ((tgtObj.type === cons.ITEM_TYPE_ARMOR) ? 'armor' : ((tgtObj.type === cons.ITEM_TYPE_SUBARMOR) ? 'subarmor' : 'trinket'));
 			var curItem = chara.items[itemType];
 			if (curItem) {
 			  chara.items[itemType] = undefined;
@@ -182,6 +146,42 @@ express()
       console.error(err);
       res.send('내부 오류');
     }
+  }
+
+  async function getCharacter (id) {
+    try {
+      var rval = null;
+      const client = await pool.connect();
+      const result = await client.query('select * from users where id = $1', [id]);
+      if (result.rows.length > 0) {
+        const resultChar = await client.query('select char_data from characters where uid = $1', [result.rows[0].uid]);
+        if (resultChar.rows.length > 0) {
+          rval = resultChar.rows[0].char_data;
+        }
+      }
+      if (rval !== null) {
+        rval = JSON.parse(rval);
+      }
+
+      client.release();
+      return rval;
+    } catch (err) {
+      console.error(err);
+      return null;
+    }   
+  }
+
+  async function setCharacter (id, uid, data) {
+    try {
+      const client = await pool.connect();
+      const result = await client.query('insert into characters(uid, char_data) values ($1, $2)', [uid, data]);
+      const result2 = await client.query('update users set uid = $1 where id = $2', [uid, id]);
+      
+      client.release();
+    } catch (err) {
+      console.error(err);
+    }   
+    
   }
 
   function calcStats(chara) {
