@@ -31,8 +31,38 @@ express()
   .get('/logout', procLogout)
   .post('/unequipItem', procUnequip)
   .post('/useItem', procUseItem)
-  .get('/test', (req, res) => res.render('pages/battle', {result: battlemodule.doBattle(chara.psi, chara.julius)}))
+  .get('/battleList', procBattleList)
+  .post('/doBattle', procBattle)
+  .get('/test', (req, res) => res.render('pages/battle', {result: battlemodule.doBattle(chara.julius, chara.aeohelm).result}))
+  .get('/test2', (req, res) => res.send(procFullTest()))
+  .get('/test3', (req, res) => res.send(setCharacter('kemderts', 2, chara.kines)))
+  .get('/test4', (req, res) => res.send(setCharacter('thelichking', 1, chara.lk)))
   .listen(PORT, () => console.log(`Listening on ${ PORT }`))
+  
+  function procFullTest() {
+    var testChars = [chara.julius, chara.seriers, chara.aeika, chara.psi, chara.aeohelm, chara.lk];
+    var testResults = [];
+    var testTurns = [];
+    var resultStr = '';
+    for ([ind, left] of testChars.entries()) {
+      testResults.push([0, 0, 0, 0, 0, 0]);
+      testTurns.push([0, 0, 0, 0, 0, 0]);
+      for ([indr, right] of testChars.entries()) {
+        if (left == right) {
+          continue;
+        }
+        for (var i=0; i<1000; i++) {
+          var ret = battlemodule.doBattle(JSON.parse(JSON.stringify(left)), JSON.parse(JSON.stringify(right)));
+          testResults[ind][indr] += (ret.winnerLeft ? 1 : 0);
+          testTurns[ind][indr] += ret.turnCount;
+        }
+        resultStr += left.name + ' vs ' + right.name + ' : ' + testResults[ind][indr] + ', ' + testTurns[ind][indr] + '<br>';
+      }
+      resultStr += '<br>';
+    }
+    
+    return resultStr;
+}
 
   async function procIndex (req, res) {
     const sess = req.session; 
@@ -65,9 +95,56 @@ express()
 	  res.send('내부 오류');
 	}
   }
+
+  async function procBattleList(req, res) {
+    try {
+      const client = await pool.connect();
+      const result = await client.query('select * from characters where uid <> $1', [req.session.userUid]);
+      var rval = [];
+      for (val of result.rows) {
+        var charData = JSON.parse(val.char_data);
+        var obj = {};
+        obj.name = charData.name + ', ' + charData.title;
+        obj.uid = val.uid;
+        rval.push(uid);
+      } 
+      res.render('pages/battleList', {list: rval});
+      client.release();
+    } catch (err) {
+      console.error(err);
+      res.send('내부 오류');
+    }
+  }
+
+  async function procBattle(req, res) {
+    try {
+      const body = req.body;
+      const client = await pool.connect();
+      const result = await client.query('select * from characters', []);
+      var rval = [];
+      var left, right;
+      for (val of result.rows) {
+        if (val.uid === req.session.userUid) {
+          left = JSON.parse(val.char_data);
+        } else if (val.uid === body.charUid) {
+          right = JSON.parse(val.char_data);
+        }
+      } 
+      if (left && right) {
+        var re = battlemodule.doBattle(left, right);
+        res.render('pages/battle', {result: re.result});
+      } else {
+        res.redirect('/');
+      }
+      client.release();
+    } catch (err) {
+      console.error(err);
+      res.send('내부 오류');
+    }
+  }
   
   function procLogout (req, res) {
-	delete req.session.uid;
+	delete req.session.userUid;
 	res.redirect('/');	  
   }  
   

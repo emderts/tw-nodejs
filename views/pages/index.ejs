@@ -21,6 +21,11 @@
       .inventoryItem button:hover {background-color: #ffffcc; }
       .inventoryItem .itemTooltip {visibility: hidden; width: 120px; background-color: black; color: #fff; text-align: center; border-radius: 6px; padding: 5px 0; position: absolute; z-index: 1; }
       .inventoryItem:hover .itemTooltip {visibility: visible; }
+      .rarityUncommon {color: #4bacc6; }
+      .rarityRare {color: #8054a2; }
+      .rarityPremium {color: #00b050; }
+      .rarityUnique {color: #ff33cc; }
+      .rarityEpic {color: #f79646; }
     </style>
 </head>
 <body>
@@ -47,6 +52,38 @@
     var res = skill.type === 1 ? '물리' : '마법';
     return res + ' ' + skill.damage;
   }
+  
+  function getRarityText(rarity) {
+    var text = '';
+    var cname = 'rarity';
+    switch (rarity) {
+    case 0:
+      text = '언커먼';
+      cname += 'Uncommon';
+      break;
+    case 0:
+      text = '커먼';
+      cname += 'Common';
+      break;
+    case 0:
+      text = '레어';
+      cname += 'Rare';
+      break;
+    case 0:
+      text = '프리미엄';
+      cname += 'Premium';
+      break;
+    case 0:
+      text = '유니크';
+      cname += 'Unique';
+      break;
+    case 0:
+      text = '에픽';
+      cname += 'Epic';
+      break;
+    }
+    return '<span class="' + cname + '>' + text + '</span>';
+  }
   if( !user ) { %>
     <p>로그인을 해주세요.</p>
     <a href="/login">로그인</a>
@@ -66,25 +103,25 @@
   <div class="infoViewWrap">
     <table class="itemInfo">
       <% if (char.items.weapon) { %>
-        <tr><td class="charViewTitle">무기</td><td class="charViewContent"><%= char.items.weapon.rank %></td><td class="charViewContent"><%= char.items.weapon.rarity %></td><td class="charViewContent"><%= char.items.weapon.name %></td><td class="charViewContent">
+        <tr><td class="charViewTitle">무기</td><td class="charViewContent"><%= char.items.weapon.rank %></td><td class="charViewContent"><%= getRarityText(char.items.weapon.rarity) %></td><td class="charViewContent"><%= char.items.weapon.name %></td><td class="charViewContent">
         <form action="/unequipItem" method="post"><button type="submit">해제</button><input type="hidden" name="itemType" value="weapon"></form></td><tr>
       <% } else { %>
         <tr><td class="charViewTitle">무기</td><td class="charViewContent"></td><td class="charViewContent"></td><td class="charViewContent"></td><td class="charViewContent"></td><tr>
       <% } %>
       <% if (char.items.armor) { %>
-        <tr><td class="charViewTitle">갑옷</td><td class="charViewContent"><%= char.items.armor.rank %></td><td class="charViewContent"><%= char.items.armor.rarity %></td><td class="charViewContent"><%= char.items.armor.name %></td><td class="charViewContent">
+        <tr><td class="charViewTitle">갑옷</td><td class="charViewContent"><%= char.items.armor.rank %></td><td class="charViewContent"><%= getRarityText(char.items.armor.rarity) %></td><td class="charViewContent"><%= char.items.armor.name %></td><td class="charViewContent">
         <form action="/unequipItem" method="post"><button type="submit">해제</button><input type="hidden" name="itemType" value="armor"></form></td><tr>
       <% } else { %>
         <tr><td class="charViewTitle">갑옷</td><td class="charViewContent"></td><td class="charViewContent"></td><td class="charViewContent"></td><td class="charViewContent"></td><tr>
       <% } %>
       <% if (char.items.subarmor) { %>
-        <tr><td class="charViewTitle">보조방어구</td><td class="charViewContent"><%= char.items.subarmor.rank %></td><td class="charViewContent"><%= char.items.subarmor.rarity %></td><td class="charViewContent"><%= char.items.subarmor.name %></td><td class="charViewContent">
+        <tr><td class="charViewTitle">보조방어구</td><td class="charViewContent"><%= char.items.subarmor.rank %></td><td class="charViewContent"><%= getRarityText(char.items.subarmor.rarity) %></td><td class="charViewContent"><%= char.items.subarmor.name %></td><td class="charViewContent">
         <form action="/unequipItem" method="post"><button type="submit">해제</button><input type="hidden" name="itemType" value="subarmor"></form></td><tr>
       <% } else { %>
         <tr><td class="charViewTitle">보조방어구</td><td class="charViewContent"></td><td class="charViewContent"></td><td class="charViewContent"></td><td class="charViewContent"></td><tr>
       <% } %>
       <% if (char.items.trinket) { %>
-        <tr><td class="charViewTitle">장신구</td><td class="charViewContent"><%= char.items.trinket.rank %></td><td class="charViewContent"><%= char.items.trinket.rarity %></td><td class="charViewContent"><%= char.items.trinket.name %></td><td class="charViewContent">
+        <tr><td class="charViewTitle">장신구</td><td class="charViewContent"><%= char.items.trinket.rank %></td><td class="charViewContent"><%= getRarityText(char.items.trinket.rarity) %></td><td class="charViewContent"><%= char.items.trinket.name %></td><td class="charViewContent">
         <form action="/unequipItem" method="post"><button type="submit">해제</button><input type="hidden" name="itemType" value="trinket"></form></td><tr>
       <% } else { %>
         <tr><td class="charViewTitle">장신구</td><td class="charViewContent"></td><td class="charViewContent"></td><td class="charViewContent"></td><td class="charViewContent"></td><tr>
@@ -106,6 +143,15 @@
         <div class="itemTooltip"><%= Object.entries(val.stat).map(arr => { if (arr[1] > 0 && arr[1] < 1) arr[1] *= 100; return printName[arr[0]] + ' ' + arr[1]; }).join(', ') %></div></form>
         </div>
       <% } %>
+    </div>
+    
+    <div class="menuWrap">
+      <div class="menuItem">
+        <a href="/battleList">전투 신청</a>
+      </div>
+      <div class="menuItem">
+        <a href="/battleLogs">전투 로그 보기</a>
+      </div>
     </div>
      <%  } else { %>
     <p>캐릭터가 지정되지 않았습니다. 관리자에게 문의하세요.</p>

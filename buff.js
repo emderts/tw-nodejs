@@ -18,6 +18,29 @@ module.exports.getBuffData = function(eff) {
   retObj.durOff = cons.DURATION_TYPE_TURN_START;
   
   switch (buffCode) {
+  case 3 : 
+    retObj.name = '출혈';
+    retObj.nameType = cons.NAME_KOR_END_CONS;
+    var effectObj = {};
+    effectObj.code = 10003;
+    effectObj.isPercentMax = true;
+    effectObj.value = 0.05;
+    effectObj.buff = retObj;
+    effectObj.type = cons.DAMAGE_TYPE_ABSOLUTE;
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.code = 1;
+    effectObj.isPercentMax = true;
+    effectObj.value = 0.03;
+    effectObj.type = cons.DAMAGE_TYPE_ABSOLUTE;
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.code = 17;
+    effectObj.value = 0.15;
+    effectObj.buff = retObj;
+    effectObj.buffTarget = [201726];
+    retObj.effect.push(effectObj);
+    break;
   case 4 : 
     retObj.name = '기절';
     retObj.nameType = cons.NAME_KOR_END_CONS;
@@ -54,6 +77,7 @@ module.exports.getBuffData = function(eff) {
     retObj.nameType = cons.NAME_KOR_END_CONS;
     var effectObj = {};
     effectObj.code = 10010;
+    effectObj.buff = retObj;
     retObj.effect.push(effectObj);
     break;
   case 11 : 
@@ -171,7 +195,6 @@ module.exports.getBuffData = function(eff) {
     retObj.stackType = 1;
     retObj.isDebuff = false;
     retObj.durOff = null;
-    retObj.effect = [];
     var effectObj = {};
     effectObj.code = 6;
     effectObj.value = eff.value;
@@ -183,7 +206,6 @@ module.exports.getBuffData = function(eff) {
     retObj.nameType = cons.NAME_KOR_END_CONS;
     retObj.stackType = 1;
     retObj.isDebuff = false;
-    retObj.effect = [];
     var effectObj = {};
     effectObj.code = 7;
     effectObj.turnReduce = 1;
@@ -201,7 +223,6 @@ module.exports.getBuffData = function(eff) {
     retObj.stackType = 1;
     retObj.isDebuff = false;
     retObj.durOff = cons.DURATION_TYPE_TURN_END;
-    retObj.effect = [];
     var effectObj = {};
     effectObj.code = 9;
     retObj.effect.push(effectObj);
@@ -211,7 +232,6 @@ module.exports.getBuffData = function(eff) {
     retObj.nameType = cons.NAME_KOR_END_CONS;
     retObj.stackType = 1;
     retObj.isDebuff = false;
-    retObj.effect = [];
     var effectObj = {};
     effectObj.code = 9;
     retObj.effect.push(effectObj);
@@ -242,8 +262,16 @@ module.exports.getBuffData = function(eff) {
     retObj.effect.push(effectObj);
     effectObj = {};
     effectObj.code = 11;
-    effectObj.buffCode = 4;
-    effectObj.dur = 1;
+    effectObj.buffCode = 201706;
+    effectObj.dur = 2;
+    retObj.effect.push(effectObj);
+    break;
+  case 201706 : 
+    retObj.name = '기절';
+    retObj.nameType = cons.NAME_KOR_END_CONS;
+    retObj.isDebuff = false;
+    effectObj = {};
+    effectObj.code = 10004;
     retObj.effect.push(effectObj);
     break;
   case 20177 : 
@@ -294,6 +322,7 @@ module.exports.getBuffData = function(eff) {
     retObj.effect = [];
     var effectObj = {};
     effectObj.code = 10010;
+    effectObj.buff = retObj;
     retObj.effect.push(effectObj);
     break;
   case 201711 : 
@@ -342,7 +371,6 @@ module.exports.getBuffData = function(eff) {
     retObj.nameType = cons.NAME_KOR_END_CONS;
     retObj.durOff = null;
     retObj.isDebuff = false;
-    retObj.effect = [];
     break;
   case 201715 : 
     retObj.name = '시간 왜곡';
@@ -352,12 +380,204 @@ module.exports.getBuffData = function(eff) {
     retObj.durOff = null;
     retObj.isDebuff = false;
     retObj.stackType = 4;
-    retObj.effect = [];
     var effectObj = {};
     effectObj.code = 13;
     effectObj.chance = 1;
     effectObj.turnReduce = 1;
     effectObj.buff = retObj;
+    retObj.effect.push(effectObj);
+    break;
+  case 201716 : 
+    retObj.name = '에너지 코어';
+    retObj.nameType = cons.NAME_KOR_NO_END_CONS;
+    retObj.stack = 3;
+    retObj.durOff = null;
+    retObj.isDebuff = false;
+    break;
+  case 201717 : 
+    retObj.name = '복합 장갑';
+    retObj.nameType = cons.NAME_KOR_END_CONS;
+    retObj.stackType = 3;
+    retObj.isDebuff = false;
+    var effectObj = {};
+    effectObj.code = 3;
+    effectObj.value = 1;
+    effectObj.key = 'spRegen';
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.code = 3;
+    effectObj.value = 0.15;
+    effectObj.key = 'phyReduce';
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.code = 3;
+    effectObj.value = 0.15;
+    effectObj.key = 'magReduce';
+    retObj.effect.push(effectObj);
+    break;
+  case 201718 : 
+    retObj.name = '방벽 시스템';
+    retObj.nameType = cons.NAME_KOR_END_CONS;
+    retObj.stackType = 1;
+    retObj.isDebuff = false;
+    var effectObj = {};
+    effectObj.code = 14;
+    effectObj.buffCode = 201719;
+    effectObj.dur = null;
+    effectObj.value = 0.1;
+    effectObj.isPercent = true;
+    effectObj.key = 'maxHp';
+    retObj.effect.push(effectObj);
+    break;
+  case 201719 : 
+    retObj.name = '요새 방벽';
+    retObj.nameType = cons.NAME_KOR_END_CONS;
+    retObj.stackType = 1;
+    retObj.isDebuff = false;
+    retObj.durOff = null;
+    var effectObj = {};
+    effectObj.code = 6;
+    effectObj.value = eff.value;
+    effectObj.buff = retObj;
+    retObj.effect.push(effectObj);
+    break;
+  case 201720 : 
+    retObj.name = '출력 모드';
+    retObj.nameType = cons.NAME_KOR_NO_END_CONS;
+    retObj.stackType = 1;
+    retObj.isDebuff = false;
+    retObj.durOff = null;
+    effectObj = {};
+    effectObj.code = 3;
+    effectObj.value = 0.15;
+    effectObj.key = 'crit';
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.code = 15;
+    effectObj.buff = retObj;
+    effectObj.removeOnCrit = true;
+    retObj.effect.push(effectObj);
+    break;
+  case 201721 : 
+    retObj.name = '재구축 중..';
+    retObj.nameType = cons.NAME_KOR_END_CONS;
+    retObj.stackType = 1;
+    effectObj = {};
+    effectObj.code = 3;
+    effectObj.value = -0.5;
+    effectObj.key = 'phyReduce';
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.code = 3;
+    effectObj.value = -0.5;
+    effectObj.key = 'magReduce';
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.code = 10;
+    effectObj.value = 0;
+    effectObj.key = 'spRegen';
+    retObj.effect.push(effectObj);
+    break;
+  case 201722 : 
+    retObj.name = '프로토콜 충전';
+    retObj.nameType = cons.NAME_KOR_END_CONS;
+    retObj.stackType = 1;
+    effectObj = {};
+    effectObj.code = 16;
+    retObj.effect.push(effectObj);
+    break;
+  case 201723 : 
+    retObj.name = '방출 감전';
+    retObj.nameType = cons.NAME_KOR_END_CONS;
+    retObj.stackType = 1;
+    effectObj = {};
+    effectObj.code = 3;
+    effectObj.value = -0.25;
+    effectObj.key = 'phyReduce';
+    retObj.effect.push(effectObj);
+    break;
+  case 201724 : 
+    retObj.name = '방전';
+    retObj.nameType = cons.NAME_KOR_END_CONS;
+    effectObj = {};
+    effectObj.code = 10004;
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.code = 11;
+    effectObj.buffCode = 201725;
+    effectObj.dur = null;
+    retObj.effect.push(effectObj);
+    break;
+  case 201725 : 
+    retObj.name = '전하 충전';
+    retObj.nameType = cons.NAME_KOR_END_CONS;
+    retObj.stackType = 2;
+    retObj.stack = 1;
+    retObj.maxStack = 5;
+    retObj.isDebuff = false;
+    retObj.durOff = null;
+    effectObj = {};
+    effectObj.code = 3;
+    effectObj.value = 0.02;
+    effectObj.key = 'phyReduce';
+    effectObj.buff = retObj;
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.code = 3;
+    effectObj.value = 0.02;
+    effectObj.key = 'magReduce';
+    effectObj.buff = retObj;
+    retObj.effect.push(effectObj);
+    break;
+  case 201726 : 
+    retObj.name = '환영';
+    retObj.nameType = cons.NAME_KOR_END_CONS;
+    retObj.stackType = 3;
+    retObj.isDebuff = false;
+    effectObj = {};
+    effectObj.code = 3;
+    effectObj.value = 0.02;
+    effectObj.key = 'crit';
+    effectObj.buff = retObj;
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.code = 3;
+    effectObj.value = 0.06;
+    effectObj.key = 'evasion';
+    effectObj.buff = retObj;
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.code = 12;
+    effectObj.buff = retObj;
+    retObj.effect.push(effectObj);
+    break;
+  case 201727 : 
+    retObj.name = '조여오는 어둠';
+    retObj.nameType = cons.NAME_KOR_END_CONS;
+    retObj.stackType = 1;
+    effectObj = {};
+    effectObj.code = 3;
+    effectObj.value = -0.05;
+    effectObj.key = 'hit';
+    effectObj.buff = retObj;
+    retObj.effect.push(effectObj);
+    break;
+  case 201728 : 
+    retObj.name = '암흑';
+    retObj.nameType = cons.NAME_KOR_END_CONS;
+    retObj.stackType = 1;
+    retObj.isDebuff = false;
+    effectObj = {};
+    effectObj.code = 3;
+    effectObj.value = 0.1;
+    effectObj.key = 'crit';
+    effectObj.buff = retObj;
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.code = 15;
+    effectObj.buff = retObj;
+    effectObj.onAnyCrit = true;
+    effectObj.stealSp = 3;
     retObj.effect.push(effectObj);
     break;
   }
