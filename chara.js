@@ -5,6 +5,12 @@ const cons = require('./constant');
 
   charLeft.name = '카이네스 엠더츠';
   charLeft.nameType = cons.NAME_KOR_NO_END_CONS;
+  charLeft.title = '고대 흑마법사';
+  charLeft.rank = 9;
+  charLeft.level = 1;
+  charLeft.exp = 0;
+  charLeft.reqExp = 100;
+  
   charLeft.items = {};
   var itemObj = {};
   itemObj.name = '엠더타이드 인장 지팡이';

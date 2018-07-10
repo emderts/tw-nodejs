@@ -32,7 +32,7 @@ express()
   .post('/unequipItem', procUnequip)
   .post('/useItem', procUseItem)
   .get('/battleList', procBattleList)
-  .post('/doBattle', procBattle)
+  .post('/doBattle', procBattle )
   .get('/test', (req, res) => res.render('pages/battle', {result: battlemodule.doBattle(chara.julius, chara.aeohelm).result}))
   .get('/test2', (req, res) => res.send(procFullTest()))
   .get('/test3', (req, res) => res.send(setCharacter('kemderts', 2, chara.kines)))
@@ -106,7 +106,7 @@ express()
         var obj = {};
         obj.name = charData.name + ', ' + charData.title;
         obj.uid = val.uid;
-        rval.push(uid);
+        rval.push(obj);
       } 
       res.render('pages/battleList', {list: rval});
       client.release();

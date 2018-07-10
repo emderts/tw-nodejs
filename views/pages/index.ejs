@@ -61,28 +61,28 @@
       text = '언커먼';
       cname += 'Uncommon';
       break;
-    case 0:
+    case 1:
       text = '커먼';
       cname += 'Common';
       break;
-    case 0:
+    case 2:
       text = '레어';
       cname += 'Rare';
       break;
-    case 0:
+    case 3:
       text = '프리미엄';
       cname += 'Premium';
       break;
-    case 0:
+    case 4:
       text = '유니크';
       cname += 'Unique';
       break;
-    case 0:
+    case 5:
       text = '에픽';
       cname += 'Epic';
       break;
     }
-    return '<span class="' + cname + '>' + text + '</span>';
+    return '<span class="' + cname + '">' + text + '</span>';
   }
   if( !user ) { %>
     <p>로그인을 해주세요.</p>
@@ -103,25 +103,25 @@
   <div class="infoViewWrap">
     <table class="itemInfo">
       <% if (char.items.weapon) { %>
-        <tr><td class="charViewTitle">무기</td><td class="charViewContent"><%= char.items.weapon.rank %></td><td class="charViewContent"><%= getRarityText(char.items.weapon.rarity) %></td><td class="charViewContent"><%= char.items.weapon.name %></td><td class="charViewContent">
+        <tr><td class="charViewTitle">무기</td><td class="charViewContent"><%= char.items.weapon.rank %></td><td class="charViewContent"><%- getRarityText(char.items.weapon.rarity) %></td><td class="charViewContent"><%= char.items.weapon.name %></td><td class="charViewContent">
         <form action="/unequipItem" method="post"><button type="submit">해제</button><input type="hidden" name="itemType" value="weapon"></form></td><tr>
       <% } else { %>
         <tr><td class="charViewTitle">무기</td><td class="charViewContent"></td><td class="charViewContent"></td><td class="charViewContent"></td><td class="charViewContent"></td><tr>
       <% } %>
       <% if (char.items.armor) { %>
-        <tr><td class="charViewTitle">갑옷</td><td class="charViewContent"><%= char.items.armor.rank %></td><td class="charViewContent"><%= getRarityText(char.items.armor.rarity) %></td><td class="charViewContent"><%= char.items.armor.name %></td><td class="charViewContent">
+        <tr><td class="charViewTitle">갑옷</td><td class="charViewContent"><%= char.items.armor.rank %></td><td class="charViewContent"><%- getRarityText(char.items.armor.rarity) %></td><td class="charViewContent"><%= char.items.armor.name %></td><td class="charViewContent">
         <form action="/unequipItem" method="post"><button type="submit">해제</button><input type="hidden" name="itemType" value="armor"></form></td><tr>
       <% } else { %>
         <tr><td class="charViewTitle">갑옷</td><td class="charViewContent"></td><td class="charViewContent"></td><td class="charViewContent"></td><td class="charViewContent"></td><tr>
       <% } %>
       <% if (char.items.subarmor) { %>
-        <tr><td class="charViewTitle">보조방어구</td><td class="charViewContent"><%= char.items.subarmor.rank %></td><td class="charViewContent"><%= getRarityText(char.items.subarmor.rarity) %></td><td class="charViewContent"><%= char.items.subarmor.name %></td><td class="charViewContent">
+        <tr><td class="charViewTitle">보조방어구</td><td class="charViewContent"><%= char.items.subarmor.rank %></td><td class="charViewContent"><%- getRarityText(char.items.subarmor.rarity) %></td><td class="charViewContent"><%= char.items.subarmor.name %></td><td class="charViewContent">
         <form action="/unequipItem" method="post"><button type="submit">해제</button><input type="hidden" name="itemType" value="subarmor"></form></td><tr>
       <% } else { %>
         <tr><td class="charViewTitle">보조방어구</td><td class="charViewContent"></td><td class="charViewContent"></td><td class="charViewContent"></td><td class="charViewContent"></td><tr>
       <% } %>
       <% if (char.items.trinket) { %>
-        <tr><td class="charViewTitle">장신구</td><td class="charViewContent"><%= char.items.trinket.rank %></td><td class="charViewContent"><%= getRarityText(char.items.trinket.rarity) %></td><td class="charViewContent"><%= char.items.trinket.name %></td><td class="charViewContent">
+        <tr><td class="charViewTitle">장신구</td><td class="charViewContent"><%= char.items.trinket.rank %></td><td class="charViewContent"><%- getRarityText(char.items.trinket.rarity) %></td><td class="charViewContent"><%= char.items.trinket.name %></td><td class="charViewContent">
         <form action="/unequipItem" method="post"><button type="submit">해제</button><input type="hidden" name="itemType" value="trinket"></form></td><tr>
       <% } else { %>
         <tr><td class="charViewTitle">장신구</td><td class="charViewContent"></td><td class="charViewContent"></td><td class="charViewContent"></td><td class="charViewContent"></td><tr>
