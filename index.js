@@ -87,7 +87,7 @@ express()
       char.base[req.body.keyType] += value;
       calcStats(char);
     } 
-    await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(chara), resultUser.rows[0].uid]);
+    await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), resultUser.rows[0].uid]);
     res.redirect('/');
   }
 
@@ -325,7 +325,7 @@ express()
     if (chara.statPoint) {
       chara.statPoint = 0;
     }
-    while (chara.level < 50 && chara.exp > chara.reqExp) {
+    while (chara.level < 50 && chara.exp >= chara.reqExp) {
       chara.exp -= chara.reqExp;
       chara.level++;
       chara.statPoint += 2;

@@ -9,6 +9,7 @@
       body {overflow: hidden; }
       table {border: 1px solid black; text-align: center; }
       table.charInfo {float: left; }
+      td {padding: 3px 10px; }
       div.infoViewWrap {float: left; }
       .charInfo .charViewTitle {background-color: #ffffcc; }
       .charInfo .charViewContent {background-color: #ffffea; }
@@ -21,6 +22,8 @@
       .inventoryItem button:hover {background-color: #ffffcc; }
       .inventoryItem .itemTooltip {visibility: hidden; width: 120px; background-color: black; color: #fff; text-align: center; border-radius: 6px; padding: 5px 0; position: absolute; z-index: 1; }
       .inventoryItem:hover .itemTooltip {visibility: visible; }
+      .charViewContent .itemTooltip {visibility: hidden; width: 120px; background-color: black; color: #fff; text-align: center; border-radius: 6px; padding: 5px 0; position: absolute; z-index: 1; }
+      .charViewContent:hover .itemTooltip {visibility: visible; }
       .rarityUncommon {color: #4bacc6; }
       .rarityRare {color: #8054a2; }
       .rarityPremium {color: #00b050; }
@@ -98,7 +101,7 @@
         <tr><td class="charViewTitle">액션 포인트</td><td class="charViewContent"><%= char.actionPoint %></td></tr>
       <% for (const [key, val] of Object.entries(char.stat)) {  %>
         <tr><td class="charViewTitle"><%= (printName[key] ? printName[key] : key) %></td><td class="charViewContent"><%= (val > 0 && val < 1) ? val * 100 : val %>
-        <% if (key === 'maxHp' || key === 'phyAtk' || key === 'magAtk') { %>
+        <% if ((key === 'maxHp' || key === 'phyAtk' || key === 'magAtk') && char.statPoint > 0) { %>
           <form action="/useStatPoint" method="post"><button type="submit">+</button><input type="hidden" name="keyType" value="<%= key %>"></form>
         <% } %>
         </td><tr>
@@ -107,8 +110,11 @@
   <div class="infoViewWrap">
     <table class="itemInfo">
       <% if (char.items.weapon) { %>
-        <tr><td class="charViewTitle">무기</td><td class="charViewContent"><%= char.items.weapon.rank %></td><td class="charViewContent"><%- getRarityText(char.items.weapon.rarity) %></td><td class="charViewContent"><%= char.items.weapon.name %></td><td class="charViewContent">
-        <form action="/unequipItem" method="post"><button type="submit">해제</button><input type="hidden" name="itemType" value="weapon"></form></td><tr>
+        <tr><td class="charViewTitle">무기</td><td class="charViewContent"><%= char.items.weapon.rank %></td>
+        <td class="charViewContent"><%- getRarityText(char.items.weapon.rarity) %></td><td class="charViewContent"><%= char.items.weapon.name %></td><td class="charViewContent">
+        <form action="/unequipItem" method="post"><button type="submit">해제</button><input type="hidden" name="itemType" value="weapon"></form>
+        <div class="itemTooltip"><%= char.items.weapon.stat ? Object.entries(char.items.weapon.stat).map(arr => { if (arr[1] > 0 && arr[1] < 1) arr[1] *= 100; return printName[arr[0]] + ' ' + arr[1]; }).join(', ') : '' %></div>
+        </td><tr>
       <% } else { %>
         <tr><td class="charViewTitle">무기</td><td class="charViewContent"></td><td class="charViewContent"></td><td class="charViewContent"></td><td class="charViewContent"></td><tr>
       <% } %>
