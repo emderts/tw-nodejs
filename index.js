@@ -32,7 +32,10 @@ express()
   .post('/unequipItem', procUnequip)
   .post('/useItem', procUseItem)
   .get('/battleList', procBattleList)
-  .post('/doBattle', procBattle )
+  .post('/doBattle', procBattle)
+  .get('/battleLogs', procBattleLogList)
+  .post('/battleLog', procBattleLog)
+  .post('/useStatPoint', procUseStatPoint)
   .get('/test', (req, res) => res.render('pages/battle', {result: battlemodule.doBattle(chara.julius, chara.aeohelm).result}))
   .get('/test2', (req, res) => res.send(procFullTest()))
   .get('/test3', (req, res) => res.send(setCharacter('kemderts', 2, chara.kines)))
@@ -73,6 +76,20 @@ express()
     }); 
   }
 
+  async function procUseStatPoint (req, res) {
+    const sess = req.session; 
+    const char = await getCharacter(sess.userUid);
+    const resultUser = await client.query('select * from users where id = $1', [req.session.userUid]);
+    if (char.statPoint > 0) {
+      char.statPoint -= 1;
+      var value = (req.body.keyType ==='maxHp') ? 10 : 1;
+      char.base[req.body.keyType] += value;
+      calcStats(char);
+    } 
+    await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(chara), resultUser.rows[0].uid]);
+    res.redirect('/');
+  }
+
   async function procLogin (req, res) {
 	try {
 	  const body = req.body;
@@ -99,7 +116,8 @@ express()
   async function procBattleList(req, res) {
     try {
       const client = await pool.connect();
-      const result = await client.query('select * from characters where uid <> $1', [req.session.userUid]);
+      const resultUser = await client.query('select * from users where id = $1', [req.session.userUid]);
+      const result = await client.query('select * from characters where uid <> $1', [resultUser.rows[0].uid]);
       var rval = [];
       for (val of result.rows) {
         var charData = JSON.parse(val.char_data);
@@ -116,26 +134,57 @@ express()
     }
   }
 
+  async function procBattleLogList(req, res) {
+    try {
+      const client = await pool.connect();
+      const result = await client.query('select id, title, date from results');
+      res.render('pages/battleLogList', {list: result.rows});
+      client.release();
+    } catch (err) {
+      console.error(err);
+      res.send('내부 오류');
+    }
+  }
+
   async function procBattle(req, res) {
     try {
       const body = req.body;
       const client = await pool.connect();
-      const result = await client.query('select * from characters', []);
-      var rval = [];
+      const result = await client.query('select * from characters');
+      const resultUser = await client.query('select * from users where id = $1', [req.session.userUid]);
       var left, right;
       for (val of result.rows) {
-        if (val.uid === req.session.userUid) {
+        if (val.uid === resultUser.rows[0].uid) {
           left = JSON.parse(val.char_data);
         } else if (val.uid === body.charUid) {
           right = JSON.parse(val.char_data);
         }
       } 
       if (left && right) {
-        var re = battlemodule.doBattle(left, right);
+        var re = battlemodule.doBattle(JSON.parse(JSON.stringify(left)), JSON.parse(JSON.stringify(right)));
+        addExp(left, re.expLeft);
+        addExp(right, re.expRight);
+        await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(left),  resultUser.rows[0].uid]);
+        await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(right), body.charUid]);
+        var winner = re.winnerLeft ? left.name + ' 승리!' : (re.winnerRight ? right.name + ' 승리!' : '');
+        var battleTitle = '[ ' + left.name + ' ] vs [ ' + right.name + ' ] - ' + winner;
+        await client.query('insert into results(title, result, date) values ($1, $2, $3)', [battleTitle, re.result, new Date()]);
         res.render('pages/battle', {result: re.result});
       } else {
         res.redirect('/');
       }
+      client.release();
+    } catch (err) {
+      console.error(err);
+      res.send('내부 오류');
+    }
+  }
+
+  async function procBattleLog(req, res) {
+    try {
+      const client = await pool.connect();
+      const result = await client.query('select * from results where id = $1', [req.body.logId]);
+      res.render('pages/battle', {result: result.rows[0].result});
       client.release();
     } catch (err) {
       console.error(err);
@@ -159,6 +208,7 @@ express()
     	const salt = bcrypt.genSaltSync(10);
         const hash = bcrypt.hashSync(body.userPwd, salt); 
     	const result = await client.query('insert into users(id, password, name, uid) values ($1, $2, $3, $4)', [body.userId, hash, body.userName, null]);
+    	res.send('가입되었습니다!');
       }      
       client.release();
     } catch (err) {
@@ -261,6 +311,18 @@ express()
     
   }
 
+  function addExp(chara, exp) {
+    chara.exp += exp;
+    if (chara.statPoint) {
+      chara.statPoint = 0;
+    }
+    while (chara.level < 50 && chara.exp > chara.reqExp) {
+      chara.exp -= chara.reqExp;
+      chara.level++;
+      chara.statPoint += 2;
+    }
+  }
+  
   function calcStats(chara) {
     for (var key in chara.base) {
       chara.stat[key] = chara.base[key];
