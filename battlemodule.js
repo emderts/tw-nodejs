@@ -5,6 +5,7 @@ const JSON = require('circular-json');
 var printName = {};
 printName.weapon = '무기';
 printName.armor = '갑옷';
+printName.subarmor = '보조방어구';
 printName.trinket = '장신구';
 printName.maxHp = '생명력';
 printName.hpRegen = '생명력 재생';
@@ -66,18 +67,18 @@ function _doBattleEnd() {
   var expTurn = turnCount < 200 ? turnCount : 200;
   if (retObj.winnerLeft) {
     retObj.expLeft = Math.round(30 + 0.35 * expTurn);
-    result += '<span class="colorHp">Victory!</span><br>' + charLeft.name + '의 승리입니다!<br>경험치를 ' + retObj.expLeft + ' 획득했습니다.<br>리절트 카드 2장을 획득했습니다.';
+    result += '<span class="colorLeft">Victory!</span><br>' + charLeft.name + '의 승리입니다!<br>경험치를 ' + retObj.expLeft + ' 획득했습니다.<br>리절트 카드 2장을 획득했습니다.';
   } else {
     retObj.expLeft = Math.round(0.7 * (30 + 0.35 * expTurn));
-    result += '<span class="colorSp">Defeat...</span><br>' + charLeft.name + '의 패배입니다..<br>경험치를 ' + retObj.expLeft + ' 획득했습니다.<br>리절트 카드 1장을 획득했습니다.';    
+    result += '<span class="colorRight">Defeat...</span><br>' + charLeft.name + '의 패배입니다..<br>경험치를 ' + retObj.expLeft + ' 획득했습니다.<br>리절트 카드 1장을 획득했습니다.';    
   }
   result += '</div><div class="resultCharInfo">';
   if (retObj.winnerRight) {
     retObj.expRight = Math.round(30 + 0.35 * expTurn);
-    result += '<span class="colorHp">Victory!</span><br>' + charRight.name + '의 승리입니다!<br>경험치를 ' + retObj.expRight + ' 획득했습니다.<br>리절트 카드 2장을 획득했습니다.';
+    result += '<span class="colorLeft">Victory!</span><br>' + charRight.name + '의 승리입니다!<br>경험치를 ' + retObj.expRight + ' 획득했습니다.<br>리절트 카드 2장을 획득했습니다.';
   } else {
     retObj.expRight = Math.round(0.7 * (30 + 0.35 * expTurn));
-    result += '<span class="colorSp">Defeat...</span><br>' + charRight.name + '의 패배입니다..<br>경험치를 ' + retObj.expRight + ' 획득했습니다.<br>리절트 카드 1장을 획득했습니다.';    
+    result += '<span class="colorRight">Defeat...</span><br>' + charRight.name + '의 패배입니다..<br>경험치를 ' + retObj.expRight + ' 획득했습니다.<br>리절트 카드 1장을 획득했습니다.';    
   }
   result += '</div></div>';
   retObj.result = result;

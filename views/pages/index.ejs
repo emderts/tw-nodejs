@@ -144,7 +144,7 @@
     <div class="inventoryWrap">
       <% for (const [key, val] of Object.entries(char.inventory)) { %>
         <div class="inventoryItem"><form action="/useItem" method="post"><button type="submit"><%= val.name %></button><input type="hidden" name="itemNum" value="<%= key %>">
-        <div class="itemTooltip"><%= Object.entries(val.stat).map(arr => { if (arr[1] > 0 && arr[1] < 1) arr[1] *= 100; return printName[arr[0]] + ' ' + arr[1]; }).join(', ') %></div></form>
+        <div class="itemTooltip"><%= val.stat ? Object.entries(val.stat).map(arr => { if (arr[1] > 0 && arr[1] < 1) arr[1] *= 100; return printName[arr[0]] + ' ' + arr[1]; }).join(', ') : '' %></div></form>
         </div>
       <% } %>
     </div>

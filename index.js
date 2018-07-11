@@ -77,6 +77,7 @@ express()
   }
 
   async function procUseStatPoint (req, res) {
+    const client = await pool.connect();
     const sess = req.session; 
     const char = await getCharacter(sess.userUid);
     const resultUser = await client.query('select * from users where id = $1', [req.session.userUid]);
@@ -164,6 +165,14 @@ express()
         var re = battlemodule.doBattle(JSON.parse(JSON.stringify(left)), JSON.parse(JSON.stringify(right)));
         addExp(left, re.expLeft);
         addExp(right, re.expRight);
+        addResultCard(left);
+        addResultCard(right);
+        if (re.winnerLeft) {
+          addResultCard(left);
+        }
+        if (re.winnerRight) {
+          addResultCard(right);
+        }
         await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(left),  resultUser.rows[0].uid]);
         await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(right), body.charUid]);
         var winner = re.winnerLeft ? left.name + ' 승리!' : (re.winnerRight ? right.name + ' 승리!' : '');
@@ -321,6 +330,15 @@ express()
       chara.level++;
       chara.statPoint += 2;
     }
+  }
+
+  function addResultCard(chara) {
+    var item = {};
+    item.type = cons.ITEM_TYPE_RESULT_CARD;
+    item.name = chara.rank + '급 리절트 카드';
+    item.rank = chara.rank;
+    item.day = new Date().getDay();
+    chara.inventory.push(item);
   }
   
   function calcStats(chara) {
