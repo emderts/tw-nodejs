@@ -88,7 +88,7 @@ cron.schedule('0 0,6,12,18 * * 6-7', async function() {
     res.render('pages/index', {
       user: sess.userUid+1 ? {name: sess.userName} : null,
       char: char ? JSON.parse(char.char_data) : {},
-      actionPoint : char ? char.actionPoint : ''
+      actionPoint : char ? char.actionpoint : ''
     }); 
   }
 
@@ -104,6 +104,7 @@ cron.schedule('0 0,6,12,18 * * 6-7', async function() {
       calcStats(char);
     } 
     await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
+    client.release();
     res.redirect('/');
   }
 
@@ -122,6 +123,7 @@ cron.schedule('0 0,6,12,18 * * 6-7', async function() {
       calcStats(char);
     } 
     await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
+    client.release();
     res.redirect('/');
   }
 
@@ -185,6 +187,7 @@ cron.schedule('0 0,6,12,18 * * 6-7', async function() {
     try {
       const body = req.body;
       const client = await pool.connect();
+      const resultUser = await client.query('select * from users where id = $1', [req.session.userUid]);
       const result = await client.query('select * from characters');
       var left, right;
       var cuid, cap;
@@ -192,8 +195,9 @@ cron.schedule('0 0,6,12,18 * * 6-7', async function() {
         if (val.uid === resultUser.rows[0].uid) {
           left = JSON.parse(val.char_data);
           cuid = val.uid;
-          cap = val.actionPoint;
+          cap = val.actionpoint;
           if (cap === 0) {
+            client.release();
             res.redirect('/');
             return;
           }
