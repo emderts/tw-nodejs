@@ -88,7 +88,7 @@ cron.schedule('0 0,6,12,18 * * 6-7', async function() {
     res.render('pages/index', {
       user: sess.userUid+1 ? {name: sess.userName} : null,
       char: char ? JSON.parse(char.char_data) : {},
-      actionPoint : char ? char.actionpoint : ''
+      actionPoint : char ? char.actionPoint : ''
     }); 
   }
 
@@ -334,13 +334,15 @@ cron.schedule('0 0,6,12,18 * * 6-7', async function() {
 
   async function getCharacter (id) {
     try {
-      var rval = null;
+      var rval = {};
       const client = await pool.connect();
       const result = await client.query('select * from users where id = $1', [id]);
       if (result.rows.length > 0) {
         const resultChar = await client.query('select char_data from characters where uid = $1', [result.rows[0].uid]);
         if (resultChar.rows.length > 0) {
-          rval = resultChar.rows[0];
+          rval.char_data = resultChar.rows[0].char_data;
+          rval.actionPoint = resultChar.rows[0].actionpoint;
+          rval.uid = resultChar.rows[0].uid;
         }
       }
 
