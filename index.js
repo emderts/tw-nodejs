@@ -9,6 +9,7 @@ const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: true
 }); 
+var cron = require('node-cron');
 const battlemodule = require('./battlemodule');
 const chara = require('./chara');
 const cons = require('./constant');
@@ -36,6 +37,7 @@ express()
   .get('/battleLogs', procBattleLogList)
   .post('/battleLog', procBattleLog)
   .post('/useStatPoint', procUseStatPoint)
+  .post('/doRankup', procRankup)
   .get('/test', (req, res) => res.render('pages/battle', {result: battlemodule.doBattle(chara.julius, chara.aeohelm).result}))
   .get('/test2', (req, res) => res.send(procFullTest()))
   .get('/test3', (req, res) => res.send(setCharacter('kemderts', 2, chara.kines)))
@@ -67,27 +69,59 @@ express()
     return resultStr;
 }
 
+cron.schedule('0 0,6,12,18 * * 1-5', async function() {
+  const client = await pool.connect();
+  await client.query('update characters set actionPoint = actionPoint + 1 where actionPoint < 10');
+  client.release();  
+})
+
+cron.schedule('0 0,6,12,18 * * 6-7', async function() {
+  const client = await pool.connect();
+  await client.query('update characters set actionPoint = actionPoint + 3');
+  await client.query('update characters set actionPoint = 10 where actionPoint > 10');
+  client.release();  
+})
+
   async function procIndex (req, res) {
     const sess = req.session; 
     const char = await getCharacter(sess.userUid);
     res.render('pages/index', {
       user: sess.userUid+1 ? {name: sess.userName} : null,
-      char: char
+      char: char ? JSON.parse(char.char_data) : {},
+      actionPoint : char ? char.actionPoint : ''
     }); 
   }
 
   async function procUseStatPoint (req, res) {
     const client = await pool.connect();
     const sess = req.session; 
-    const char = await getCharacter(sess.userUid);
-    const resultUser = await client.query('select * from users where id = $1', [req.session.userUid]);
+    const charRow = await getCharacter(sess.userUid);
+    const char = JSON.parse(charRow.char_data);
     if (char.statPoint > 0) {
       char.statPoint -= 1;
       var value = (req.body.keyType ==='maxHp') ? 10 : 1;
       char.base[req.body.keyType] += value;
       calcStats(char);
     } 
-    await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), resultUser.rows[0].uid]);
+    await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
+    res.redirect('/');
+  }
+
+  async function procRankup (req, res) {
+    const client = await pool.connect();
+    const sess = req.session; 
+    const charRow = await getCharacter(sess.userUid);
+    const char = JSON.parse(charRow.char_data);
+    if (char.level >= 20 && char.rank > 1) {
+      char.level = 1;
+      char.rank--;
+      char.reqExp += 20;
+      char.base.maxHp += 150;
+      char.base.phyAtk += 10;
+      char.base.magAtk += 10;
+      calcStats(char);
+    } 
+    await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
     res.redirect('/');
   }
 
@@ -152,11 +186,17 @@ express()
       const body = req.body;
       const client = await pool.connect();
       const result = await client.query('select * from characters');
-      const resultUser = await client.query('select * from users where id = $1', [req.session.userUid]);
       var left, right;
+      var cuid, cap;
       for (val of result.rows) {
         if (val.uid === resultUser.rows[0].uid) {
           left = JSON.parse(val.char_data);
+          cuid = val.uid;
+          cap = val.actionPoint;
+          if (cap === 0) {
+            res.redirect('/');
+            return;
+          }
         } else if (val.uid === body.charUid) {
           right = JSON.parse(val.char_data);
         }
@@ -173,7 +213,7 @@ express()
         if (re.winnerRight) {
           addResultCard(right);
         }
-        await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(left),  resultUser.rows[0].uid]);
+        await client.query('update characters set char_data = $1, actionPoint = $2 where uid = $3', [JSON.stringify(left), cap-1,  cuid]);
         await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(right), body.charUid]);
         var winner = re.winnerLeft ? left.name + ' 승리!' : (re.winnerRight ? right.name + ' 승리!' : '');
         var battleTitle = '[ ' + left.name + ' ] vs [ ' + right.name + ' ] - ' + winner;
@@ -263,6 +303,10 @@ express()
 		  chara = JSON.parse(resultChar.rows[0].char_data);
 		  var tgtObj = chara.inventory[body.itemNum];
 		  if (tgtObj.type < 10) {
+		    if (Math.abs(tgtObj.rank - chara.rank) >= 2) {
+		      res.send('착용할 수 없는 급수의 아이템입니다.');
+		      return;
+		    }
 			chara.inventory.splice(body.itemNum, 1);
 			var itemType = (tgtObj.type === cons.ITEM_TYPE_WEAPON) ? 'weapon' : ((tgtObj.type === cons.ITEM_TYPE_ARMOR) ? 'armor' : ((tgtObj.type === cons.ITEM_TYPE_SUBARMOR) ? 'subarmor' : 'trinket'));
 			var curItem = chara.items[itemType];
@@ -292,11 +336,8 @@ express()
       if (result.rows.length > 0) {
         const resultChar = await client.query('select char_data from characters where uid = $1', [result.rows[0].uid]);
         if (resultChar.rows.length > 0) {
-          rval = resultChar.rows[0].char_data;
+          rval = resultChar.rows[0];
         }
-      }
-      if (rval !== null) {
-        rval = JSON.parse(rval);
       }
 
       client.release();

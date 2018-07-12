@@ -6,6 +6,9 @@ const cons = require('./constant');
   charLeft.name = '카이네스 엠더츠';
   charLeft.nameType = cons.NAME_KOR_NO_END_CONS;
   charLeft.title = '고대 흑마법사';
+  charLeft.level = 20;
+  charLeft.statPoint = 40;
+  charLeft.premiumPoint = 10;
   
   charLeft.items = {};
   var itemObj = {};
@@ -1068,7 +1071,7 @@ const cons = require('./constant');
     char.exp = 0;
     char.reqExp = 100;
     char.statPoint = 0;
-    char.actionPoint = 0;
+    char.premiumPoint = 0;
   }
   
   module.exports.kines = charLeft;

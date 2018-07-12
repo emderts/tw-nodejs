@@ -6,6 +6,10 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
     <style>
+      div {width: 500px; margin: 0 auto; }
+      .charItem button {width: 450px; background-color: #ffffea; }
+      .charItem button:hover {background-color: #ffffcc; }
+      .backLink {text-align: center; width: 40%; margin: 10px auto; overflow: hidden; }
     </style>
 </head>
 <body>
@@ -13,5 +17,6 @@
         <div class="charItem"><form action="/doBattle" method="post"><button type="submit"><%= val.name %></button><input type="hidden" name="charUid" value="<%= val.uid %>">
         </form></div>
       <% } %>
+    <div class="backLink"><a href="/">돌아가기</a></div>
 </body>
 </html> 
