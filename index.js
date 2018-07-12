@@ -87,8 +87,8 @@ cron.schedule('0 0,6,12,18 * * 6-7', async function() {
     const char = await getCharacter(sess.userUid);
     res.render('pages/index', {
       user: sess.userUid+1 ? {name: sess.userName} : null,
-      char: char ? JSON.parse(char.char_data) : {},
-      actionPoint : char ? char.actionPoint : ''
+      char: char.char_data ? JSON.parse(char.char_data) : {},
+      actionPoint : char.actionPoint
     }); 
   }
 
