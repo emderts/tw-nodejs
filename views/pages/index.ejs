@@ -101,7 +101,7 @@
       } else {
         return printName[arr[0]] + ' ' + arr[1];
       }      
-    }).join(', ');
+    }).filter(x => x.length > 0).join(', ');
   }
   if( !user ) { %>
     <p>로그인을 해주세요.</p>
@@ -122,7 +122,7 @@
         <tr><td class="charViewTitle">스탯 포인트</td><td class="charViewContent"><%= char.statPoint %></td><td class="charViewContent"></td></tr>
         <tr><td class="charViewTitle">프리미엄 포인트</td><td class="charViewContent"><%= char.premiumPoint %></td><td class="charViewContent"></td>
       <% for (const [key, val] of Object.entries(char.stat)) {  
-           if (key === 'phyAtkMax' || key === 'phyAtkMax' || key === 'phyAtkMax' || key === 'phyAtkMax') {
+           if (key === 'phyAtkMax' || key === 'phyAtkMin' || key === 'magAtkMax' || key === 'magAtkMin') {
              continue;
            } %>
         <tr><td class="charViewTitle"><%= (printName[key] ? printName[key] : key) %></td>

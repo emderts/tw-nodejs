@@ -316,7 +316,7 @@ express()
 		      if (usedRank > 1 && rand > 0.36) {
 		        usedRank--;
 		      }
-		      var tgtList = item.list.filter(x => x.rank === usedRank && (x.rarity === cons.ITEM_RARITY_COMMON || x.rarity === ITEM_RARITY_UNCOMMON));
+		      var tgtList = item.list.filter(x => x.rank === usedRank && (x.rarity === cons.ITEM_RARITY_COMMON || x.rarity === cons.ITEM_RARITY_UNCOMMON));
 		      var picked = JSON.parse(JSON.stringify(tgtList[Math.floor(Math.random() * tgtList.length)]));
 		      chara.inventory.push(picked);
 		      res.render('pages/resultCard', picked);
