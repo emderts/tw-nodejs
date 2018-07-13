@@ -16,11 +16,12 @@ fs.readFile('target.txt', 'utf8', function (err,data) {
     return console.log(err);
   }
   names = data.split('\r\n');
-  doSeat();
+  doCommons();
 });
 
 var doCommons = function() {
   var group = [9, 9, 8, 8, 8, 8, 8, 8, 8, 8];
+  var rarity = ['', 'UN'];
   var prates = [1.0, 1.1, 1.0, 1.1, 1.25, 1.375, 1.25, 1.375, 0.75, 0.825];
   var mrates = [1.0, 1.1, 1.0, 1.1, 0.75, 0.825, 0.75, 0.825, 1.25, 1.375];
 
@@ -31,7 +32,8 @@ var doCommons = function() {
   
   for ([key, val] of group.entries()) {
     for (var i = 9 - val; i < 9; i++) {
-      result += 'itemList[' + seq + '] = { id : ' + seq + ', name : \'' + names[seq] + '\', type : cons.ITEM_TYPE_WEAPON, stat : {';
+      result += 'itemList[' + seq + '] = { id : ' + seq + ', name : \'' + names[seq] + '\', type : cons.ITEM_TYPE_WEAPON, ';
+      result += 'rank : ' + (9-i) + ', rarity : cons.ITEM_RARITY_' + rarity[key % 2] + 'COMMON, stat : {';
       result += ' phyAtkMin : ' + Math.round(values[i] * prates[key] - diffs[i] * drates[key]) + ',';
       result += ' phyAtkMax : ' + Math.round(values[i] * prates[key] + diffs[i] * drates[key]) + ',';
       result += ' magAtkMin : ' + Math.round(values[i] * mrates[key] - diffs[i] * drates[key]) + ',';

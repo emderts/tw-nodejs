@@ -306,6 +306,49 @@ express()
 			}
 			chara.items[itemType] = tgtObj;
 			calcStats(chara);
+		  } else if (tgtObj.type === cons.ITEM_TYPE_RESULT_CARD) {
+		    chara.inventory.splice(body.itemNum, 1);
+		    var rand = Math.random();
+		    if (rand < 0.4) {
+		      var usedRank = tgtObj.rank;
+		      if (usedRank > 1 && rand > 0.36) {
+		        usedRank--;
+		      }
+		      var tgtList = item.list.filter(x => x.rank === usedRank && (x.rarity === cons.ITEM_RARITY_COMMON || x.rarity === ITEM_RARITY_UNCOMMON));
+		      var picked = JSON.parse(JSON.stringify(tgtList[Math.floor(Math.random() * tgtList.length)]));
+		      chara.inventory.push(picked);
+		      res.render('pages/resultCard', picked);
+		    } else if (rand < 0.5) {
+              var usedRank = tgtObj.rank;
+              if (usedRank > 1 && rand > 0.49) {
+                usedRank--;
+              }
+              var tgtList = item.list.filter(x => x.rank === usedRank && x.rarity === cons.ITEM_RARITY_RARE);
+              var picked = JSON.parse(JSON.stringify(tgtList[Math.floor(Math.random() * tgtList.length)]));
+              chara.inventory.push(picked);
+              res.render('pages/resultCard', picked);
+            } else if (rand < 0.54) {
+              var usedRank = tgtObj.rank;
+              if (usedRank > 1 && rand > 0.536) {
+                usedRank--;
+              }
+              var tgtList = item.list.filter(x => x.rank === usedRank && x.rarity === cons.ITEM_RARITY_UNIQUE);
+              var picked = JSON.parse(JSON.stringify(tgtList[Math.floor(Math.random() * tgtList.length)]));
+              chara.inventory.push(picked);
+              res.render('pages/resultCard', picked);
+            } else if (rand < 0.55) {
+              var usedRank = tgtObj.rank;
+              if (usedRank > 1 && rand > 0.549) {
+                usedRank--;
+              }
+              var tgtList = item.list.filter(x => x.rank === usedRank && x.rarity === cons.ITEM_RARITY_EPIC);
+              var picked = JSON.parse(JSON.stringify(tgtList[Math.floor(Math.random() * tgtList.length)]));
+              chara.inventory.push(picked);
+              res.render('pages/resultCard', picked);
+            } else {
+              chara.premiumPoint +- 1;
+              res.render('pages/resultCard', {name : '프리미엄 포인트 1점' });
+            }
 		  }
 		  await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(chara), result.rows[0].uid]);
 	    }
@@ -336,7 +379,7 @@ express()
       return rval;
     } catch (err) {
       console.error(err);
-      return null;
+      return {};
     }   
   }
 

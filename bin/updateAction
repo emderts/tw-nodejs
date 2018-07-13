@@ -7,11 +7,18 @@ const pool = new Pool({
 }); 
 
 const day = new Date().getDay();
-const client = await pool.connect();
-if (day >= 1 && day <= 5) {
-  await client.query('update characters set actionPoint = actionPoint + 1 where actionPoint < 10');
-} else {
-  await client.query('update characters set actionPoint = actionPoint + 3');
-  await client.query('update characters set actionPoint = 10 where actionPoint > 10');
-}
-client.release();  
+doWork();
+
+async function doWork() {
+try {
+  const client = await pool.connect();
+  if (day >= 1 && day <= 5) {
+    await client.query('update characters set actionPoint = actionPoint + 1 where actionPoint < 10');
+  } else {
+    await client.query('update characters set actionPoint = actionPoint + 3');
+    await client.query('update characters set actionPoint = 10 where actionPoint > 10');
+  }  
+  client.release();  
+  } catch (err) {
+  }
+  }
