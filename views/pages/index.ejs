@@ -87,6 +87,20 @@
     }
     return '<span class="' + cname + '">' + text + '</span>';
   }
+  
+  function getStatList(val) {
+    Object.entries(val.stat).map(arr => { if (arr[1] > 0 && arr[1] < 1) arr[1] *= 100; 
+      if (arr[0] == 'phyAtkMin') {
+        return  '물리공격력 ' + arr[1] + '-' + val.stat.phyAtkMax;
+      } else if (arr[0] == 'magAtkMin') {
+        return  '마법공격력 ' + arr[1] + '-' + val.stat.magAtkMax;        
+      } else if (arr[0] == 'phyAtkMax' || arr[0] == 'magAtkMax') {
+        return '';
+      } else {
+        return printName[arr[0]] + ' ' + arr[1];
+      }      
+    }).join(', ') + ')<br>';
+  }
   if( !user ) { %>
     <p>로그인을 해주세요.</p>
     <a href="/login">로그인</a>
@@ -123,7 +137,7 @@
         <td class="charViewContent"><%- getRarityText(char.items.weapon.rarity) %></td>
         <td class="charViewContent"><%= char.items.weapon.name %>
           <div class="itemTooltip">
-          <%= char.items.weapon.stat ? Object.entries(char.items.weapon.stat).map(arr => { if (arr[1] > 0 && arr[1] < 1) arr[1] *= 100; return printName[arr[0]] + ' ' + arr[1]; }).join(', ') : '' %>
+          <%= char.items.weapon.stat ? getStatList(char.items.weapon) : '' %>
           </div>
         </td>
         <td class="charViewContent">
@@ -138,7 +152,7 @@
         <td class="charViewContent"><%- getRarityText(char.items.armor.rarity) %></td>
         <td class="charViewContent"><%= char.items.armor.name %>
           <div class="itemTooltip">
-          <%= char.items.weapon.stat ? Object.entries(char.items.armor.stat).map(arr => { if (arr[1] > 0 && arr[1] < 1) arr[1] *= 100; return printName[arr[0]] + ' ' + arr[1]; }).join(', ') : '' %>
+          <%= char.items.armor.stat ? getStatList(char.items.armor) : '' %>
           </div>
         </td>
         <td class="charViewContent">
@@ -153,7 +167,7 @@
         <td class="charViewContent"><%- getRarityText(char.items.subarmor.rarity) %></td>
         <td class="charViewContent"><%= char.items.subarmor.name %>
           <div class="itemTooltip">
-          <%= char.items.weapon.stat ? Object.entries(char.items.subarmor.stat).map(arr => { if (arr[1] > 0 && arr[1] < 1) arr[1] *= 100; return printName[arr[0]] + ' ' + arr[1]; }).join(', ') : '' %>
+          <%= char.items.subarmor.stat ? getStatList(char.items.subarmor) : '' %>
           </div>
         </td>
         <td class="charViewContent">
@@ -168,7 +182,7 @@
         <td class="charViewContent"><%- getRarityText(char.items.trinket.rarity) %></td>
         <td class="charViewContent"><%= char.items.trinket.name %>
           <div class="itemTooltip">
-          <%= char.items.weapon.stat ? Object.entries(char.items.trinket.stat).map(arr => { if (arr[1] > 0 && arr[1] < 1) arr[1] *= 100; return printName[arr[0]] + ' ' + arr[1]; }).join(', ') : '' %>
+          <%= char.items.trinket.stat ? getStatList(char.items.trinket) : '' %>
           </div>
         </td>
         <td class="charViewContent">
@@ -191,7 +205,7 @@
     <div class="inventoryWrap">
       <% for (const [key, val] of Object.entries(char.inventory)) { %>
         <div class="inventoryItem"><form action="/useItem" method="post"><button type="submit"><%= val.name %></button><input type="hidden" name="itemNum" value="<%= key %>">
-        <div class="itemTooltip"><%= val.stat ? Object.entries(val.stat).map(arr => { if (arr[1] > 0 && arr[1] < 1) arr[1] *= 100; return printName[arr[0]] + ' ' + arr[1]; }).join(', ') : '' %></div></form>
+        <div class="itemTooltip"><%= val.stat ? getStatList(val) : '' %></div></form>
         </div>
       <% } %>
     </div>

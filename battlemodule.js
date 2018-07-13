@@ -288,6 +288,13 @@ function calcDamage(winner, loser, skill) {
       result += '[ ' + val.buff.name + ' ] 효과로 공격 계수가 ' + namt + ' 올랐습니다!<br>';
     }
   }
+  if (isPhysical) {
+    var diff = winner.stat.phyAtkMax - winner.stat.phyAtkMin;
+    atkRat += Math.floor(Math.random() * diff) + winner.stat.phyAtkMin;
+  } else {
+    var diff = winner.stat.magAtkMax - winner.stat.magAtkMin;
+    atkRat += Math.floor(Math.random() * diff) + winner.stat.magAtkMin;    
+  }
 
   retObj.hit = getRandom(winner.stat.hit - loser.stat.evasion);
   retObj.crit = getRandom(winner.stat.crit);
@@ -793,7 +800,19 @@ function printChar(chara, name, flag) {
     resultStr += '<div class="charInfoItems">';
     for (const [key, val] of Object.entries(chara.items)) {
       resultStr += printName[key] + ' : ' + val.name + '<br>(';
-      resultStr += Object.entries(val.stat).map(arr => { if (arr[1] > 0 && arr[1] < 1) arr[1] *= 100; return printName[arr[0]] + ' ' + arr[1]; }).join(', ') + ')<br>';
+      resultStr += Object.entries(val.stat).map(arr => { if (arr[1] > 0 && arr[1] < 1) arr[1] *= 100; 
+      if (arr[0] == 'phyAtkMin') {
+        return  '물리공격력 ' + arr[1] + '-' + val.stat.phyAtkMax;
+      } else if (arr[0] == 'magAtkMin') {
+        return  '마법공격력 ' + arr[1] + '-' + val.stat.magAtkMax;        
+      } else if (arr[0] == 'phyAtkMax' || arr[0] == 'magAtkMax') {
+        return '';
+      } else {
+        return printName[arr[0]] + ' ' + arr[1];
+      }
+      
+      }).join(', ') + ')<br>';
+      
     }
     resultStr += '</div>';
   }

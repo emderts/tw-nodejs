@@ -1,0 +1,17 @@
+#!/usr/bin/env node
+
+const { Pool } = require('pg');
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: true
+}); 
+
+const day = new Date().getDay();
+const client = await pool.connect();
+if (day >= 1 && day <= 5) {
+  await client.query('update characters set actionPoint = actionPoint + 1 where actionPoint < 10');
+} else {
+  await client.query('update characters set actionPoint = actionPoint + 3');
+  await client.query('update characters set actionPoint = 10 where actionPoint > 10');
+}
+client.release();  

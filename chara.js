@@ -1,5 +1,5 @@
 const cons = require('./constant');
-
+const item = require('./items');
   var charLeft = {};
   _initChar(charLeft);
 
@@ -587,21 +587,7 @@ const cons = require('./constant');
   charJulius.skill = {};
   charJulius.skill.base = [];
   charJulius.items = {};
-  itemObj = {};
-  itemObj.name = '테스터의 검 9';
-  itemObj.nameType = cons.NAME_KOR_END_CONS;
-  itemObj.type = cons.ITEM_TYPE_WEAPON;
-  itemObj.stat = {};
-  itemObj.stat.phyAtk = 11;
-  itemObj.stat.magAtk = 11;
-  itemObj.stat.maxHp = 64;
-  itemObj.stat.phyReduce = 0.01;
-  itemObj.stat.magReduce = 0.01;
-  itemObj.stat.spRegen = 1;
-  itemObj.stat.hpRegen = 1;
-  itemObj.stat.crit = 0.01;
-  itemObj.effect = [];
-  charJulius.items.weapon = itemObj;
+  charJulius.items.weapon = item.list[55];
 
   var skillObj = {};
   skillObj.code = 201711;
@@ -917,22 +903,8 @@ const cons = require('./constant');
   
   charAeohelm.skill = {};
   charAeohelm.skill.base = [];
-  charAeohelm.items = {};
-  itemObj = {};
-  itemObj.name = '테스터의 검 9';
-  itemObj.nameType = cons.NAME_KOR_END_CONS;
-  itemObj.type = cons.ITEM_TYPE_WEAPON;
-  itemObj.stat = {};
-  itemObj.stat.phyAtk = 11;
-  itemObj.stat.magAtk = 11;
-  itemObj.stat.maxHp = 64;
-  itemObj.stat.phyReduce = 0.01;
-  itemObj.stat.magReduce = 0.01;
-  itemObj.stat.spRegen = 1;
-  itemObj.stat.hpRegen = 1;
-  itemObj.stat.crit = 0.01;
-  itemObj.effect = [];
-  charAeohelm.items.weapon = itemObj;
+  charAeohelm.items = {}
+  charAeohelm.items.weapon = item.list[47];
 
   var skillObj = {};
   skillObj.code = 201721;
@@ -1063,6 +1035,10 @@ const cons = require('./constant');
     char.stat.magReduce = 0;
     char.stat.hit = 1;
     char.stat.evasion = 0;
+    char.stat.phyAtkMin = 0;
+    char.stat.phyAtkMax = 0;
+    char.stat.magAtkMin = 0;
+    char.stat.magAtkMax = 0;
     char.base = JSON.parse(JSON.stringify(char.stat));
     char.inventory = [];
     char.items = {};

@@ -9,7 +9,6 @@ const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: true
 }); 
-var cron = require('node-cron');
 const battlemodule = require('./battlemodule');
 const chara = require('./chara');
 const cons = require('./constant');
@@ -68,19 +67,6 @@ express()
     
     return resultStr;
 }
-
-cron.schedule('0 0,6,12,18 * * 1-5', async function() {
-  const client = await pool.connect();
-  await client.query('update characters set actionPoint = actionPoint + 1 where actionPoint < 10');
-  client.release();  
-})
-
-cron.schedule('0 0,6,12,18 * * 6-7', async function() {
-  const client = await pool.connect();
-  await client.query('update characters set actionPoint = actionPoint + 3');
-  await client.query('update characters set actionPoint = 10 where actionPoint > 10');
-  client.release();  
-})
 
   async function procIndex (req, res) {
     const sess = req.session; 
@@ -196,7 +182,7 @@ cron.schedule('0 0,6,12,18 * * 6-7', async function() {
           left = JSON.parse(val.char_data);
           cuid = val.uid;
           cap = val.actionpoint;
-          if (cap === 0) {
+          if (cap <= 0) {
             client.release();
             res.redirect('/');
             return;
@@ -338,7 +324,7 @@ cron.schedule('0 0,6,12,18 * * 6-7', async function() {
       const client = await pool.connect();
       const result = await client.query('select * from users where id = $1', [id]);
       if (result.rows.length > 0) {
-        const resultChar = await client.query('select char_data from characters where uid = $1', [result.rows[0].uid]);
+        const resultChar = await client.query('select * from characters where uid = $1', [result.rows[0].uid]);
         if (resultChar.rows.length > 0) {
           rval.char_data = resultChar.rows[0].char_data;
           rval.actionPoint = resultChar.rows[0].actionpoint;
@@ -357,7 +343,7 @@ cron.schedule('0 0,6,12,18 * * 6-7', async function() {
   async function setCharacter (id, uid, data) {
     try {
       const client = await pool.connect();
-      const result = await client.query('insert into characters(uid, char_data) values ($1, $2)', [uid, data]);
+      const result = await client.query('insert into characters(uid, char_data, actionpoint) values ($1, $2, 0)', [uid, data]);
       const result2 = await client.query('update users set uid = $1 where id = $2', [uid, id]);
       
       client.release();
