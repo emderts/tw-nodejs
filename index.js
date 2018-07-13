@@ -12,6 +12,7 @@ const pool = new Pool({
 const battlemodule = require('./battlemodule');
 const chara = require('./chara');
 const cons = require('./constant');
+const item = require('./items');
 
 express()
   .use(express.static(path.join(__dirname, 'public')))
@@ -41,6 +42,7 @@ express()
   .get('/test2', (req, res) => res.send(procFullTest()))
   .get('/test3', (req, res) => res.send(setCharacter('kemderts', 2, chara.kines)))
   .get('/test4', (req, res) => res.send(setCharacter('thelichking', 1, chara.lk)))
+  .get('/test5', (req, res) => res.render('pages/resultCard', {name: 'test', rarity: Math.floor(Math.random() * 5)}))
   .listen(PORT, () => console.log(`Listening on ${ PORT }`))
   
   function procFullTest() {
@@ -346,8 +348,8 @@ express()
               chara.inventory.push(picked);
               res.render('pages/resultCard', picked);
             } else {
-              chara.premiumPoint +- 1;
-              res.render('pages/resultCard', {name : '프리미엄 포인트 1점' });
+              chara.premiumPoint += 1;
+              res.render('pages/resultCard', {name : '프리미엄 포인트 1점' , rarity : cons.ITEM_RARITY_COMMON});
             }
 		  }
 		  await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(chara), result.rows[0].uid]);
@@ -386,7 +388,7 @@ express()
   async function setCharacter (id, uid, data) {
     try {
       const client = await pool.connect();
-      const result = await client.query('insert into characters(uid, char_data, actionpoint) values ($1, $2, 0)', [uid, data]);
+      const result = await client.query('insert into characters(uid, char_data, actionpoint) values ($1, $2, 5)', [uid, data]);
       const result2 = await client.query('update users set uid = $1 where id = $2', [uid, id]);
       
       client.release();

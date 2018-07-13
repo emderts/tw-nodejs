@@ -6,16 +6,89 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
     <style>
-      div {width: 500px; margin: 0 auto; }
-      .charItem button {width: 450px; background-color: #ffffea; }
-      .charItem button:hover {background-color: #ffffcc; }
+      div {text-align: center; vertical-align: middle; width: 160px; height: 242px; margin: 0 auto; }
       .backLink {text-align: center; width: 40%; margin: 10px auto; overflow: hidden; }
+      .rarityUncommon {color: #4bacc6; }
+      .rarityRare {color: #8054a2; }
+      .rarityPremium {color: #00b050; }
+      .rarityUnique {color: #ff33cc; }
+      .rarityEpic {color: #f79646; }
+      .glowRare {box-shadow: 0 10px 100px #8054a2; }
+      .glowUnique {box-shadow: 0 10px 100px #ff33cc; }
+      .glowEpic {box-shadow: 0 10px 100px #f79646; }
+      .charItem {padding-top: 100px; height: 142px; }
     </style>
 </head>
 <body>
-      <div class="charItem">
-      <%= name %>
-      </div>
+<%  function getRarityText(rarity) {
+    var text = '';
+    var cname = 'rarity';
+    switch (rarity) {
+    case 0:
+      text = '언커먼';
+      cname += 'Uncommon';
+      break;
+    case 1:
+      text = '커먼';
+      cname += 'Common';
+      break;
+    case 2:
+      text = '레어';
+      cname += 'Rare';
+      break;
+    case 3:
+      text = '프리미엄';
+      cname += 'Premium';
+      break;
+    case 4:
+      text = '유니크';
+      cname += 'Unique';
+      break;
+    case 5:
+      text = '에픽';
+      cname += 'Epic';
+      break;
+    }
+    return '<span class="' + cname + '">' + text + '</span>';
+  }
+  function getGlowText(rarity) {
+    var cname = 'glow';
+    switch (rarity) {
+    case 0:
+      cname += 'Uncommon';
+      break;
+    case 1:
+      cname += 'Common';
+      break;
+    case 2:
+      cname += 'Rare';
+      break;
+    case 3:
+      cname += 'Premium';
+      break;
+    case 4:
+      cname += 'Unique';
+      break;
+    case 5:
+      cname += 'Epic';
+      break;
+    }
+    return cname;
+  }
+%>
+<script>
+  function reveal() {
+    document.getElementById('cardBack').setAttribute('style', 'display: none');
+    document.getElementById('cardFront').setAttribute('style', 'display: block');
+  }
+</script>
+    <div class="<%= getGlowText(rarity) %>" id="cardBack" onclick="reveal();">
+    <img src="https://i.imgur.com/lFRuWeX.png">
+    </div>
+    <div class="charItem" id="cardFront" style="display: none">
+    <%- getRarityText(rarity) %><br>
+    <%= name %>
+    </div>
     <div class="backLink"><a href="/">돌아가기</a></div>
 </body>
 </html> 
