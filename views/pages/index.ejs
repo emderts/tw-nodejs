@@ -103,9 +103,9 @@
       }      
     }).filter(x => x.length > 0).join(', ');
     if (val.socket) {
-      resultStr += ' ' + val.socket.name;
+      returnStr += ' ' + val.socket.name;
     }
-    return returnStr;
+    return returnStr; 
   }
   if( !user ) { %>
     <p>로그인을 해주세요.</p>

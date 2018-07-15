@@ -299,6 +299,7 @@ express()
 		  if (tgtObj.type < 10) {
 		    if (Math.abs(tgtObj.rank - chara.rank) >= 2) {
 		      res.send('착용할 수 없는 급수의 아이템입니다.');
+		      client.release();
 		      return;
 		    }
 			chara.inventory.splice(body.itemNum, 1);
@@ -364,7 +365,7 @@ express()
 	    }
 	  }
       client.release();
-      res.redirect('/');
+      //res.redirect('/');
     } catch (err) {
       console.error(err);
       res.send('내부 오류');
@@ -385,7 +386,7 @@ express()
           var tgt = chara.inventory[body.itemNum];
           if (tgt.type < 10 && used.type === cons.ITEM_TYPE_DAYSTONE) {
             var minRank = used.level >= 3 ? 7 : (used.level === 2 ? 8 : 9); 
-            if (tgt.rank >= minRank) {
+            if (tgt.rank <= minRank) {
               if (used.day === 1 && (tgt.type === 1 || tgt.type === 2)) {
                 client.release();
                 res.send('');

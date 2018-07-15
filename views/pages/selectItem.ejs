@@ -89,11 +89,11 @@
   if (mode === 1 && inv && usedItem) { 
     var used = inv[usedItem]; 
     var minRank = used.level >= 3 ? 7 : (used.level === 2 ? 8 : 9); 
-    var tgtInv = inv.map(x => (x.rank >= minRank && x.type <= 3) ? x : {}); 
+    var tgtInv = inv.map(x => (x.rank <= minRank && x.type <= 3) ? x : {}); 
     if (used.day === 1) {
-      tgtInv.map(x => (x.type === 0 || x.type === 3) ? x : {});
+      tgtInv = tgtInv.map(x => (x.type === 0 || x.type === 3) ? x : {});
     } else if (used.day === 5) {
-      tgtInv.map(x => (x.type >= 1) ? x : {});
+      tgtInv = tgtInv.map(x => (x.type >= 1) ? x : {});
     }
     %>
     <div>
