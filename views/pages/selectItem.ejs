@@ -104,7 +104,7 @@
            if (val == {}) {
              continue;
            } %>
-        <div class="inventoryItem"><form action="/enchantItem" method="post"><button type="submit"><%= val.name %></button><input type="hidden" name="itemNum" value="<%= key %>"><input type="hidden" name="itemUsed" value="<%= itemUsed %>">
+        <div class="inventoryItem"><form action="/enchantItem" method="post"><button type="submit"><%= val.name %></button><input type="hidden" name="itemNum" value="<%= key %>"><input type="hidden" name="itemUsed" value="<%= usedItem %>">
         <div class="itemTooltip"><%= val.stat ? getStatList(val) : '' %></div></form>
         </div>
       <% } %>
