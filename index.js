@@ -535,7 +535,7 @@ express()
     }
     
     for (var key in item.socket) {
-      item.stat[key] += item.socket[key];
+      item.stat[key] += item.socket.stat[key];
     }
     
   }
