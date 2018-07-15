@@ -28,7 +28,7 @@ var doCommons = function() {
   var drates = [1.0, 1.0, 2.5, 2.5, 1.0, 1.0, 2.0, 2.0, 1.0, 1.0];
   var values = [10, 15, 22, 30, 38, 47, 58, 70, 83];
   var diffs = [2, 2, 2, 3, 3, 4, 4, 5, 6];
-  var crits = [2, 2, 3, 3, 4, 4, 5, 6, 7]
+  var crits = [0.02, 0.02, 0.03, 0.03, 0.04, 0.04, 0.05, 0.06, 0.07]
   
   for ([key, val] of group.entries()) {
     for (var i = 9 - val; i < 9; i++) {

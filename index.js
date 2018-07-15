@@ -32,6 +32,7 @@ express()
   .get('/logout', procLogout)
   .post('/unequipItem', procUnequip)
   .post('/useItem', procUseItem)
+  .post('/enchantItem', procEnchantItem)
   .get('/battleList', procBattleList)
   .post('/doBattle', procBattle)
   .get('/battleLogs', procBattleLogList)
@@ -43,6 +44,7 @@ express()
   .get('/test3', (req, res) => res.send(setCharacter('kemderts', 2, chara.kines)))
   .get('/test4', (req, res) => res.send(setCharacter('thelichking', 1, chara.lk)))
   .get('/test5', (req, res) => res.render('pages/resultCard', {name: 'test', rarity: Math.floor(Math.random() * 5)}))
+  .get('/test6', (req, res) => res.send(makeDayStone().name))
   .listen(PORT, () => console.log(`Listening on ${ PORT }`))
   
   function procFullTest() {
@@ -347,14 +349,61 @@ express()
               var picked = JSON.parse(JSON.stringify(tgtList[Math.floor(Math.random() * tgtList.length)]));
               chara.inventory.push(picked);
               res.render('pages/resultCard', picked);
-            } else {
+            } else if (rand < 0.9) {
               chara.premiumPoint += 1;
               res.render('pages/resultCard', {name : '프리미엄 포인트 1점' , rarity : cons.ITEM_RARITY_COMMON});
+            } else {
+              var picked = makeDayStone();
+              chara.inventory.push(picked);
+              res.render('pages/resultCard', picked);              
             }
+		  } else if (tgtObj.type === cons.ITEM_TYPE_DAYSTONE) {
+		    res.render('pages/selectItem', {inv : chara.inventory, mode : 1, usedItem : body.itemNum});
 		  }
 		  await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(chara), result.rows[0].uid]);
 	    }
 	  }
+      client.release();
+      res.redirect('/');
+    } catch (err) {
+      console.error(err);
+      res.send('내부 오류');
+    }
+  }
+  
+  async function procEnchantItem (req, res) {
+    try {
+      var chara;
+      const body = req.body;
+      const client = await pool.connect();
+      const result = await client.query('select * from users where id = $1', [req.session.userUid]);
+      if (result.rows.length > 0) {
+        const resultChar = await client.query('select char_data from characters where uid = $1', [result.rows[0].uid]);
+        if (resultChar.rows.length > 0) {
+          chara = JSON.parse(resultChar.rows[0].char_data);
+          var used = chara.inventory[body.itemUsed];
+          var tgt = chara.inventory[body.itemNum];
+          if (tgt.type < 10 && used.type === cons.ITEM_TYPE_DAYSTONE) {
+            var minRank = used.level >= 3 ? 7 : (used.level === 2 ? 8 : 9); 
+            if (tgt.rank >= minRank) {
+              if (used.day === 1 && (tgt.type === 1 || tgt.type === 2)) {
+                client.release();
+                res.send('');
+                return;
+              }
+              if (used.day === 5 && tgt.type >= 1) {
+                client.release();
+                res.send('');
+                return;
+              }
+              chara.inventory.splice(body.itemUsed, 1);
+              tgt.socket = used;
+              calcItemStats(tgt);
+            }
+          }
+          await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(chara), result.rows[0].uid]);
+        }
+      }
       client.release();
       res.redirect('/');
     } catch (err) {
@@ -409,11 +458,57 @@ express()
       chara.statPoint += 2;
     }
   }
+  
+  const dayStoneData = [
+                        [[[], [], [], [], []]], 
+                        [[[1, 3], [2, 5], [4, 7], [6, 9], [8, 11]]], 
+                        [[[3, 9], [6, 15], [12, 21], [18, 27], [24, 33]]], 
+                        [[[1, 3], [2, 5], [4, 7], [6, 9], [8, 11]], [[0, 1], [0, 1], [0, 1], [0, 2], [0, 2]]], 
+                        [[[1, 3], [2, 5], [4, 7], [6, 9], [8, 11]], [[0, 1], [0, 2], [1, 3], [2, 3], [2, 4]]], 
+                        [[[], [], [], [], []], [[], [], [], [], []]], 
+                        [[[], [], [], [], []]]];
+  const dayStonePrefix = ['최하급 ', '하급 ', '중급 ', '상급 ', '최상급 '];
+  const dayStoneName = ['일석', '월석', '화석', '수석', '목석', '금석', '토석'];
+  function makeDayStone() {
+    var rand = Math.random();
+    var item = {};
+    item.type = cons.ITEM_TYPE_DAYSTONE;
+    item.rarity = cons.ITEM_RARITY_RARE;
+    item.day = new Date().getDay();
+    item.level = (rand < 0.39) ? 0 : ((rand < 0.68) ? 1 : ((rand < 0.88) ? 2 : ((rand < 0.98) ? 3 : 4)));
+    item.name = dayStonePrefix[item.level] + dayStoneName[item.day];
+    item.stat = {};
+    var fval = dayStoneData[item.day][0][item.level];
+    var val = Math.floor(Math.random() * (fval[1] - fval[0]) + fval[0]);
+    switch (item.day) {
+    case 0:
+    case 1:
+      item.stat.crit = val * 0.01;
+      break;
+    case 2:
+      item.stat.phyAtk = val;
+      item.stat.magAtk = val;
+      break;
+    case 3:
+      item.stat.spCharge = val;
+      fval = dayStoneData[item.day][1][item.level];
+      val = Math.floor(Math.random() * (fval[1] - fval[0]) + fval[0]);
+      item.stat.spRegen = val;
+      break;
+    case 4:
+      item.stat.hpRegen = val;
+      fval = dayStoneData[item.day][1][item.level];
+      val = Math.floor(Math.random() * (fval[1] - fval[0]) + fval[0]);
+      item.stat.spRegen = val;
+      break;
+    }
+    return item;
+  }
 
   function addResultCard(chara) {
     var item = {};
     item.type = cons.ITEM_TYPE_RESULT_CARD;
-    item.name = chara.rank + '급 리절트 카드';
+    item.name = chara.rank + '급 리설트 카드';
     item.rank = chara.rank;
     item.day = new Date().getDay();
     chara.inventory.push(item);
@@ -431,6 +526,17 @@ express()
         chara.stat[keyItem] += chara.items[key]['stat'][keyItem];
       }
     }
+  }
+  
+  function calcItemStats(item) {
+    for (var key in item.base) {
+      item.stat[key] = item.base[key];
+    }
+    
+    for (var key in item.socket) {
+      item.stat[key] += item.socket[key];
+    }
+    
   }
 
  // }

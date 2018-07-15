@@ -90,3 +90,7 @@ itemList[84] = { id : 0, name : '﻿유니크 무기 9', type : cons.ITEM_TYPE_W
 itemList[85] = { id : 1, name : '유니크 무기 8', type : cons.ITEM_TYPE_WEAPON, rank : 8, rarity : cons.ITEM_RARITY_UNIQUE, stat : { phyAtkMin : 19, phyAtkMax : 23, magAtkMin : 19, magAtkMax : 23, crit : 2 }, effect : [] }
 itemList[86] = { id : 0, name : '﻿에픽 무기 9', type : cons.ITEM_TYPE_WEAPON, rank : 9, rarity : cons.ITEM_RARITY_EPIC, stat : { phyAtkMin : 12, phyAtkMax : 16, magAtkMin : 12, magAtkMax : 16, crit : 2 }, effect : [] }
 itemList[87] = { id : 1, name : '에픽 무기 8', type : cons.ITEM_TYPE_WEAPON, rank : 8, rarity : cons.ITEM_RARITY_EPIC, stat : { phyAtkMin : 22, phyAtkMax : 26, magAtkMin : 22, magAtkMax : 26, crit : 2 }, effect : [] }
+
+itemList.forEach(function(tgt) {
+  tgt.base = JSON.parse(JSON.stringify(tgt.stat));
+})

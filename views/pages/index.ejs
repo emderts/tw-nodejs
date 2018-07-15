@@ -20,9 +20,9 @@
       div.inventoryWrap {float: left; width: 750px; }
       .inventoryItem button {width: 150px; background-color: #ffffea; float: left; }
       .inventoryItem button:hover {background-color: #ffffcc; }
-      .inventoryItem .itemTooltip {visibility: hidden; width: 120px; background-color: black; color: #fff; text-align: center; border-radius: 6px; padding: 5px 0; position: absolute; z-index: 1; }
+      .inventoryItem .itemTooltip {visibility: hidden; width: 200px; background-color: black; color: #fff; text-align: center; border-radius: 6px; padding: 5px 0; position: absolute; z-index: 1; }
       .inventoryItem:hover .itemTooltip {visibility: visible; }
-      .charViewContent .itemTooltip {visibility: hidden; width: 120px; background-color: black; color: #fff; text-align: center; border-radius: 6px; padding: 5px 0; position: absolute; z-index: 1; }
+      .charViewContent .itemTooltip {visibility: hidden; width: 200px; background-color: black; color: #fff; text-align: center; border-radius: 6px; padding: 5px 0; position: absolute; z-index: 1; }
       .charViewContent:hover .itemTooltip {visibility: visible; }
       .rarityUncommon {color: #4bacc6; }
       .rarityRare {color: #8054a2; }
@@ -63,12 +63,12 @@
     var cname = 'rarity';
     switch (rarity) {
     case 0:
-      text = '언커먼';
-      cname += 'Uncommon';
-      break;
-    case 1:
       text = '커먼';
       cname += 'Common';
+      break;
+    case 1:
+      text = '언커먼';
+      cname += 'Uncommon';
       break;
     case 2:
       text = '레어';
@@ -91,7 +91,7 @@
   }
   
   function getStatList(val) {
-    return Object.entries(val.stat).map(arr => { if (arr[1] > 0 && arr[1] < 1) arr[1] *= 100; 
+    var returnStr = Object.entries(val.stat).map(arr => { if (arr[1] > 0 && arr[1] < 1) arr[1] *= 100; 
       if (arr[0] == 'phyAtkMin') {
         return  '물리공격력 ' + arr[1] + '-' + val.stat.phyAtkMax;
       } else if (arr[0] == 'magAtkMin') {
@@ -102,6 +102,10 @@
         return printName[arr[0]] + ' ' + arr[1];
       }      
     }).filter(x => x.length > 0).join(', ');
+    if (val.socket) {
+      resultStr += ' ' + val.socket.name;
+    }
+    return returnStr;
   }
   if( !user ) { %>
     <p>로그인을 해주세요.</p>
