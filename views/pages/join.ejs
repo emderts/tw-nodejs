@@ -4,15 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <title>ThirdWorld - 회원가입</title>
+    <style>
+      @import url(http://fonts.googleapis.com/earlyaccess/nanumgothic.css);
+      body {font-family: "Nanum Gothic", sans-serif; }
+      .loginTitle {font-size: 25px; font-weight: bold; text-shadow: 0 0 1px black; }
+      .loginWrap {margin: 15% auto; width: 245px; }
+      .loginInput {padding: 5px; }
+      .loginSubmit {border-radius: 10px; float: right; margin-top: -55px; height: 55px; width: 55px; background-color: #3bbaea; box-shadow: 0 0 3px black; cursor: pointer; }
+    </style>
 </head>
 <body>
-	<p>가입 페이지입니다. 비밀번호는 기초적으로 단방향 암호화되며 사용자명은 캐릭터와 무관한 사용자 이름입니다.</p><br>
-    <form action="/join" method="post">
-        아이디 : <input type="text" name="userId"><br/>
-        비밀번호 : <input type="password" name="userPwd"><br/>
-        사용자명 : <input type="text" name="userName"><br/>
-    <input type="submit">
+  <div class="loginWrap">
+    <span class="loginTitle">ThirdWorld</span>
+    <form action="/login" method="post">
+      <div><input type="text" class="loginInput" name="userId" placeholder="아이디" /></div>
+      <div><input type="text" class="loginInput" name="userName" placeholder="사용자명" /></div>
+      <div><input type="password" class="loginInput" name="userPwd" placeholder="비밀번호" /></div>
+      <div><input type="password" class="loginInput" name="userPwdCheck" placeholder="비밀번호 확인" /></div>
+      <input type="submit" class="loginSubmit" value="가입" />
     </form>
+    <p>비밀번호는 기초적으로 단방향 암호화되며 사용자명은 캐릭터와 무관한 사용자 이름입니다.</p>
+  </div>
 </body>
 </html> 

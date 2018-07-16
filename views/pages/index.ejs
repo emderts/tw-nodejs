@@ -4,8 +4,10 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <title>ThirdWorld</title>
     <style>
+      @import url(http://fonts.googleapis.com/earlyaccess/nanumgothic.css);
+      body {font-family: "Nanum Gothic", sans-serif; }
       table {border: 1px solid black; text-align: center; }
       table.charInfo {float: left; }
       td {padding: 3px 10px; }
@@ -112,7 +114,7 @@
       rtext += '<br>' + item.rank + '급 ' + getRarityText(item.rarity) + ' ' + printName[item.type];
       rtext += '<br>' + getStatList(item);
       if (item.socket) {
-        rtext += '<br><br>[' + item.socket.name + ']<br>' + getStatList(item.socket);
+        rtext += '<br><br>[' + item.socket.name + '] ' + getStatList(item.socket);
       }
     }
     return rtext;

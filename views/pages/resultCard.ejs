@@ -4,8 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <title>ThirdWorld - 리설트 카드</title>
     <style>
+      @import url(http://fonts.googleapis.com/earlyaccess/nanumgothic.css);
+      body {font-family: "Nanum Gothic", sans-serif; }
       div {text-align: center; vertical-align: middle; width: 160px; height: 242px; margin: 0 auto; }
       .backLink {text-align: center; width: 40%; margin: 10px auto; overflow: hidden; }
       .rarityUncommon {color: #4bacc6; }
@@ -76,19 +78,22 @@
     return cname;
   }
 %>
-<script>
-  function reveal() {
-    document.getElementById('cardBack').setAttribute('style', 'display: none');
-    document.getElementById('cardFront').setAttribute('style', 'display: block');
-  }
-</script>
-    <div class="<%= getGlowText(rarity) %>" id="cardBack" onclick="reveal();">
+  <script>
+    function reveal() {
+      document.getElementById('cardBack').setAttribute('style', 'display: none');
+      document.getElementById('cardFront').setAttribute('style', 'display: block');
+    }
+  </script>
+  
+  <div class="<%= getGlowText(rarity) %>" id="cardBack" onclick="reveal();">
     <img src="https://i.imgur.com/lFRuWeX.png">
-    </div>
-    <div class="charItem" id="cardFront" style="display: none">
+  </div>
+  <div class="charItem" id="cardFront" style="display: none">
     <%- getRarityText(rarity) %><br>
     <%= name %>
-    </div>
-    <div class="backLink"><a href="/">돌아가기</a></div>
+  </div>
+  <div class="backLink">
+    <a href="/">돌아가기</a>
+  </div>
 </body>
 </html> 

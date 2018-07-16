@@ -69,19 +69,19 @@ function _doBattleEnd() {
     var expRate = charLeft.rank > charRight.rank ? 0.9 : (charLeft.rank < charRight.rank ? 1.1 : 1.0);
     retObj.expRight = Math.round(30 + 0.35 * expTurn * expRate);
     retObj.expLeft = Math.round(30 + 0.35 * expTurn);
-    result += '<span class="colorLeft">Victory!</span><br>' + charLeft.name + '의 승리입니다!<br>경험치를 ' + retObj.expLeft + ' 획득했습니다.<br>리절트 카드 2장을 획득했습니다.';
+    result += '<span class="colorLeft">Victory!</span><br>' + charLeft.name + '의 승리입니다!<br>경험치를 ' + retObj.expLeft + ' 획득했습니다.<br>리설트 카드 2장을 획득했습니다.';
   } else {
     retObj.expLeft = Math.round(0.7 * (30 + 0.35 * expTurn));
-    result += '<span class="colorRight">Defeat...</span><br>' + charLeft.name + '의 패배입니다..<br>경험치를 ' + retObj.expLeft + ' 획득했습니다.<br>리절트 카드 1장을 획득했습니다.';    
+    result += '<span class="colorRight">Defeat...</span><br>' + charLeft.name + '의 패배입니다..<br>경험치를 ' + retObj.expLeft + ' 획득했습니다.<br>리설트 카드 1장을 획득했습니다.';    
   }
   result += '</div><div class="resultCharInfo">';
   if (retObj.winnerRight) {
     var expRate = charRight.rank > charLeft.rank ? 0.9 : (charRight.rank < charLeft.rank ? 1.1 : 1.0);
     retObj.expRight = Math.round(30 + 0.35 * expTurn * expRate);
-    result += '<span class="colorLeft">Victory!</span><br>' + charRight.name + '의 승리입니다!<br>경험치를 ' + retObj.expRight + ' 획득했습니다.<br>리절트 카드 2장을 획득했습니다.';
+    result += '<span class="colorLeft">Victory!</span><br>' + charRight.name + '의 승리입니다!<br>경험치를 ' + retObj.expRight + ' 획득했습니다.<br>리설트 카드 2장을 획득했습니다.';
   } else {
     retObj.expRight = Math.round(0.7 * (30 + 0.35 * expTurn));
-    result += '<span class="colorRight">Defeat...</span><br>' + charRight.name + '의 패배입니다..<br>경험치를 ' + retObj.expRight + ' 획득했습니다.<br>리절트 카드 1장을 획득했습니다.';    
+    result += '<span class="colorRight">Defeat...</span><br>' + charRight.name + '의 패배입니다..<br>경험치를 ' + retObj.expRight + ' 획득했습니다.<br>리설트 카드 1장을 획득했습니다.';    
   }
   result += '</div></div>';
   retObj.result = result;
@@ -811,7 +811,7 @@ function printChar(chara, name, flag) {
         return printName[arr[0]] + ' ' + arr[1];
       }
       
-      }).join(', ') + ')<br>';
+      }).filter(x => x.length > 0).join(', ') + ')<br>';
       
     }
     resultStr += '</div>';

@@ -6,6 +6,8 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>ThirdWorld - 아이템 선택</title>
     <style>
+      @import url(http://fonts.googleapis.com/earlyaccess/nanumgothic.css);
+      body {font-family: "Nanum Gothic", sans-serif; }
       div.inventoryWrap {float: left; width: 750px; max-width: 100%; }
       .inventoryItem button {width: 150px; background-color: #ffffea; float: left; }
       .inventoryItem button:hover {background-color: #ffffcc; }
@@ -16,6 +18,7 @@
       .rarityPremium {color: #00b050; }
       .rarityUnique {color: #ff33cc; }
       .rarityEpic {color: #f79646; }
+      .backLink {text-align: center; width: 40%; margin: 10px auto; overflow: hidden; }
     </style>
 </head>
 <body>
@@ -91,7 +94,7 @@
       rtext += '<br>' + item.rank + '급 ' + getRarityText(item.rarity) + ' ' + printName[item.type];
       rtext += '<br>' + getStatList(item);
       if (item.socket) {
-        rtext += '<br><br>[' + item.socket.name + ']<br>' + getStatList(item.socket);
+        rtext += '<br><br>[' + item.socket.name + '] ' + getStatList(item.socket);
       }
     }
     return rtext;
@@ -127,5 +130,8 @@
       <% } %>
     </div>
   <% } %>
+  <div class="backLink">
+    <a href="/">돌아가기</a>
+  </div>
 </body>
 </html>

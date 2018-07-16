@@ -13,37 +13,40 @@ fs.readFile('target.txt', 'utf8', function (err,data) {
   doCommons();
 });
 
-const nameConv = {무기: 'WEAPON', 천옷: 'ARMOR', 경갑옷: 'ARMOR', 중갑옷: 'ARMOR'};
-var workbook = new Excel.Workbook();
+const nameConv = {무기: 'WEAPON', 천옷: 'ARMOR', 경갑옷: 'ARMOR', 중갑옷: 'ARMOR', 
+    장갑: 'SUBARMOR', 신발: 'SUBARMOR', 방패: 'SUBARMOR', 망토: 'SUBARMOR', 장신구: 'TRINKET', 언커먼: 'UNCOMMON'};
+var workbook = new excel.Workbook();
 workbook.xlsx.readFile('target.xlsx')
   .then(function() {
     var worksheet = workbook.getWorksheet(1);
     worksheet.eachRow(function(row, rowNumber) {
-      var rowVal = row.values.filter(x => !x.length || x.length > 0);
-      if (!rowVal[0]) {
-        continue;
+      var rowVal = row.values;
+      if (!rowVal[1]) {
+        return;
       }
-      result += 'itemList[' + (seq + fseq) + '] = { id : ' + (seq + fseq) + ', name : \'' + rowVal[0] + '\', type : cons.ITEM_TYPE_';
-      result += nameConv[rowVal[1]] + ', ';
-      result += 'rank : ' + rowVal[2] + ', rarity : cons.ITEM_RARITY_' + nameConv[rowVal[3]] + ', stat : {';
-      result += rowVal[13] ? ' phyAtkMin : ' + rowVal[13] + ',' : '';
-      result += rowVal[14] ? ' phyAtkMax : ' + rowVal[14] + ',' : '';
-      result += rowVal[17] ? ' magAtkMin : ' + rowVal[17] + ',' : '';
-      result += rowVal[18] ? ' magAtkMax : ' + rowVal[18] + ',' : '';
-      result += rowVal[21] ? ' phyReduce : ' + (rowVal[21] * 0.01) + ',' : '';
-      result += rowVal[22] ? ' magReduce : ' + (rowVal[22] * 0.01) + ',' : '';
-      result += rowVal[23] ? ' maxHp : ' + rowVal[23] + ',' : '';
-      result += rowVal[24] ? ' hpRegen : ' + rowVal[24] + ',' : '';
-      result += rowVal[25] ? ' spRegen : ' + rowVal[25] + ',' : '';
-      result += rowVal[26] ? ' spCharge : ' + rowVal[26] + ',' : '';
-      result += rowVal[27] ? ' crit : ' + (rowVal[27] * 0.01) + ',' : '';
-      result += rowVal[28] ? ' critDmg : ' + (rowVal[28] * 0.01) + ',' : '';
-      result += rowVal[29] ? ' hit : ' + (rowVal[29] * 0.01) + ',' : '';
-      result += rowVal[30] ? ' evasion : ' + (rowVal[30] * 0.01) + ',' : '';
+      result += 'itemList[' + (seq + fseq) + '] = { id : ' + (seq + fseq) + ', name : \'' + rowVal[1] + '\', type : cons.ITEM_TYPE_';
+      result += nameConv[rowVal[2]] + ', ';
+      result += 'rank : ' + rowVal[3] + ', rarity : cons.ITEM_RARITY_' + nameConv[rowVal[4]] + ', stat : { ';
+      var statStrs = [];
+      statStrs.push(rowVal[14] ? 'phyAtkMin : ' + rowVal[14] : '');
+      statStrs.push(rowVal[15] ? 'phyAtkMax : ' + rowVal[15] : '');
+      statStrs.push(rowVal[18] ? 'magAtkMin : ' + rowVal[18] : '');
+      statStrs.push(rowVal[19] ? 'magAtkMax : ' + rowVal[19] : '');
+      statStrs.push(rowVal[22] ? 'phyReduce : ' + (rowVal[22] * 0.01) : '');
+      statStrs.push(rowVal[23] ? 'magReduce : ' + (rowVal[23] * 0.01) : '');
+      statStrs.push(rowVal[24] ? 'maxHp : ' + rowVal[24] : '');
+      statStrs.push(rowVal[25] ? 'hpRegen : ' + rowVal[25] : '');
+      statStrs.push(rowVal[26] ? 'spRegen : ' + rowVal[26] : '');
+      statStrs.push(rowVal[27] ? 'spCharge : ' + rowVal[27] : '');
+      statStrs.push(rowVal[28] ? 'crit : ' + (rowVal[28] * 0.01) : '');
+      statStrs.push(rowVal[29] ? 'critDmg : ' + (rowVal[29] * 0.01) : '');
+      statStrs.push(rowVal[30] ? 'hit : ' + (rowVal[30] * 0.01) : '');
+      statStrs.push(rowVal[31] ? 'evasion : ' + (rowVal[31] * 0.01) : '');
+      result += statStrs.filter(x => x.length > 0).join(', ');
       result += ' }, effect : [] };\r\n';
       seq++;
     });
-    fs.writeFile('items.txt', result);
+    fs.writeFile('itemsEx.txt', result);
   }); 
 
 var doCommons = function() {
