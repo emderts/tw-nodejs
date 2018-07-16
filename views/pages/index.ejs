@@ -6,7 +6,6 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
     <style>
-      body {overflow: hidden; }
       table {border: 1px solid black; text-align: center; }
       table.charInfo {float: left; }
       td {padding: 3px 10px; }
@@ -17,12 +16,12 @@
       .itemInfo .charViewContent {background-color: #eaffea; }
       .skillInfo .charViewTitle {background-color: #ccccff; }
       .skillInfo .charViewContent {background-color: #eaeaff; }
-      div.inventoryWrap {float: left; width: 750px; }
+      div.inventoryWrap {float: left; width: 750px; max-width: 100%; }
       .inventoryItem button {width: 150px; background-color: #ffffea; float: left; }
       .inventoryItem button:hover {background-color: #ffffcc; }
-      .inventoryItem .itemTooltip {visibility: hidden; width: 200px; background-color: black; color: #fff; text-align: center; border-radius: 6px; padding: 5px 0; position: absolute; z-index: 1; }
+      .inventoryItem .itemTooltip {visibility: hidden; width: 250px; background-color: black; color: #fff; text-align: center; border-radius: 6px; padding: 5px 0; position: absolute; z-index: 1; }
       .inventoryItem:hover .itemTooltip {visibility: visible; }
-      .charViewContent .itemTooltip {visibility: hidden; width: 200px; background-color: black; color: #fff; text-align: center; border-radius: 6px; padding: 5px 0; position: absolute; z-index: 1; }
+      .charViewContent .itemTooltip {visibility: hidden; width: 250px; background-color: black; color: #fff; text-align: center; border-radius: 6px; padding: 5px 0; position: absolute; z-index: 1; }
       .charViewContent:hover .itemTooltip {visibility: visible; }
       .rarityUncommon {color: #4bacc6; }
       .rarityRare {color: #8054a2; }
@@ -30,16 +29,14 @@
       .rarityUnique {color: #ff33cc; }
       .rarityEpic {color: #f79646; }
       div.menuWrap {float: left; }
-      .menuItem {padding: 5px; text-decoration: none; border: 2px solid black; background-color: gray; color: white; width: 150px; margin: 5px; }
+      .menuItem {padding: 5px; border: 2px solid black; background-color: gray; color: white; width: 150px; margin: 5px; text-align: center; }
+      .menuItem a {text-decoration: none; }
     </style>
 </head>
 <body>
-    <h1>Home</h1>
-    <% 
+  <h1>Home</h1>
+<% 
   var printName = {};
-  printName.weapon = '무기';
-  printName.armor = '갑옷';
-  printName.trinket = '장신구';
   printName.maxHp = '생명력';
   printName.hpRegen = '생명력 재생';
   printName.spRegen = 'SP 재생';
@@ -52,6 +49,10 @@
   printName.magReduce = '마법저항';
   printName.hit = '명중';
   printName.evasion = '회피';
+  printName[0] = '무기';
+  printName[1] = '갑옷';
+  printName[2] = '보조방어구';
+  printName[3] = '장신구';
   
   function getDamageText(skill) {
     var res = skill.type === 1 ? '물리' : '마법';
@@ -91,7 +92,7 @@
   }
   
   function getStatList(val) {
-    var returnStr = Object.entries(val.stat).map(arr => { if (arr[1] > 0 && arr[1] < 1) arr[1] *= 100; 
+    return Object.entries(val.stat).map(arr => { if (arr[1] > 0 && arr[1] < 1) arr[1] *= 100; 
       if (arr[0] == 'phyAtkMin') {
         return  '물리공격력 ' + arr[1] + '-' + val.stat.phyAtkMax;
       } else if (arr[0] == 'magAtkMin') {
@@ -102,125 +103,236 @@
         return printName[arr[0]] + ' ' + arr[1];
       }      
     }).filter(x => x.length > 0).join(', ');
-    if (val.socket) {
-      returnStr += ' ' + val.socket.name;
-    }
-    return returnStr; 
   }
-  if( !user ) { %>
+  
+  function makeTooltip(item) {
+    var rtext = '';
+    rtext += item.name;
+    if (item.type < 10) {
+      rtext += '<br>' + item.rank + '급 ' + getRarityText(item.rarity) + ' ' + printName[item.type];
+      rtext += '<br>' + getStatList(item);
+      if (item.socket) {
+        rtext += '<br><br>[' + item.socket.name + ']<br>' + getStatList(item.socket);
+      }
+    }
+    return rtext;
+  }
+  
+  if (!user) { %>
     <p>로그인을 해주세요.</p>
     <a href="/login">로그인</a>
     <a href="/join">회원가입</a>
-    <% } else { %>
-    <p><%= user.name %>으로 접속되었습니다.</p>
-    <% if( char ) { %>
+  <% } else { %>
+      <p><%= user.name %>으로 접속되었습니다.</p>
+    <% if (char) { %>
     <table class="charInfo">
-        <tr><td class="charViewTitle"><%= char.name %></td><td class="charViewContent"><%= char.title %></td><td class="charViewContent"></td></tr>
-        <tr><td class="charViewTitle"><%= char.rank %>급 <%= char.level %>레벨</td><td class="charViewContent"><%= char.exp + '/' + char.reqExp %></td>
-        <td class="charViewContent">
-        <% if (char.level >= 20 && char.rank > 1) { %>
-          <form action="/doRankup" method="post"><button type="submit">랭크업</button></form>
-        <% } %>
-        </td></tr>
-        <tr><td class="charViewTitle">피로도</td><td class="charViewContent"><%= actionPoint %></td><td class="charViewContent"></td></tr>
-        <tr><td class="charViewTitle">스탯 포인트</td><td class="charViewContent"><%= char.statPoint %></td><td class="charViewContent"></td></tr>
-        <tr><td class="charViewTitle">프리미엄 포인트</td><td class="charViewContent"><%= char.premiumPoint %></td><td class="charViewContent"></td>
+        <tr>
+          <td class="charViewTitle"><%= char.name %></td>
+          <td class="charViewContent"><%= char.title %></td>
+          <td class="charViewContent"></td>
+        </tr>
+        <tr>
+          <td class="charViewTitle"><%= char.rank %>급 <%= char.level %>레벨</td>
+          <td class="charViewContent"><%= char.exp + '/' + char.reqExp %></td>
+          <td class="charViewContent">
+          <% if (char.level >= 20 && char.rank > 1) { %>
+            <form action="/doRankup" method="post">
+              <button type="submit">랭크업</button>
+            </form>
+          <% } %>
+          </td>
+        </tr>
+        <tr>
+          <td class="charViewTitle">피로도</td>
+          <td class="charViewContent"><%= actionPoint %></td>
+          <td class="charViewContent"></td>
+        </tr>
+        <tr>
+          <td class="charViewTitle">스탯 포인트</td>
+          <td class="charViewContent"><%= char.statPoint %></td>
+          <td class="charViewContent"></td>
+        </tr>
+        <tr>
+          <td class="charViewTitle">프리미엄 포인트</td>
+          <td class="charViewContent"><%= char.premiumPoint %></td>
+          <td class="charViewContent"></td>
+        </tr>
       <% for (const [key, val] of Object.entries(char.stat)) {  
            if (key === 'phyAtkMax' || key === 'phyAtkMin' || key === 'magAtkMax' || key === 'magAtkMin') {
              continue;
            } %>
-        <tr><td class="charViewTitle"><%= (printName[key] ? printName[key] : key) %></td>
-        <td class="charViewContent">
-        <% if (key === 'phyAtk' || key === 'magAtk') { %>
-        <%= val + char.stat[key + 'Min'] %>-<%= val + char.stat[key + 'Max'] %>
-        <% } else { %>
-        <%= (val > 0 && val < 1) ? val * 100 : val %>
-        <% } %>
-        </td>
-        <td class="charViewContent">
-        <% if ((key === 'maxHp' || key === 'phyAtk' || key === 'magAtk') && char.statPoint > 0) { %>
-          <form action="/useStatPoint" method="post"><button type="submit">+</button><input type="hidden" name="keyType" value="<%= key %>"></form>
-        <% } %>
-        </td><tr>
+        <tr>
+          <td class="charViewTitle"><%= (printName[key] ? printName[key] : key) %></td>
+          <td class="charViewContent">
+            <% if (key === 'phyAtk' || key === 'magAtk') { %>
+              <%= val + char.stat[key + 'Min'] %>-<%= val + char.stat[key + 'Max'] %>
+            <% } else { %>
+              <%= (val > 0 && val < 1) ? val * 100 : val %>
+            <% } %>
+          </td>
+          <td class="charViewContent">
+            <% if ((key === 'maxHp' || key === 'phyAtk' || key === 'magAtk') && char.statPoint > 0) { %>
+              <form action="/useStatPoint" method="post">
+                <button type="submit">+</button>
+                <input type="hidden" name="keyType" value="<%= key %>">
+              </form>
+            <% } %>
+          </td>
+        </tr>
       <% } %>
     </table>
+    
   <div class="infoViewWrap">
     <table class="itemInfo">
       <% if (char.items.weapon) { %>
-        <tr><td class="charViewTitle">무기</td>
-        <td class="charViewContent"><%= char.items.weapon.rank %></td>
-        <td class="charViewContent"><%- getRarityText(char.items.weapon.rarity) %></td>
-        <td class="charViewContent"><%= char.items.weapon.name %>
-          <div class="itemTooltip">
-          <%= char.items.weapon.stat ? getStatList(char.items.weapon) : '' %>
-          </div>
-        </td>
-        <td class="charViewContent">
-        <form action="/unequipItem" method="post"><button type="submit">해제</button><input type="hidden" name="itemType" value="weapon"></form>
-        </td><tr>
+        <tr>
+          <td class="charViewTitle">무기</td>
+          <td class="charViewContent"><%= char.items.weapon.rank %></td>
+          <td class="charViewContent"><%- getRarityText(char.items.weapon.rarity) %></td>
+          <td class="charViewContent"><%= char.items.weapon.name %>
+            <div class="itemTooltip">
+              <%- makeTooltip(char.items.weapon) %>
+            </div>
+          </td>
+          <td class="charViewContent">
+            <form action="/unequipItem" method="post">
+              <button type="submit">해제</button>
+              <input type="hidden" name="itemType" value="weapon">
+            </form>
+          </td>
+        </tr>
       <% } else { %>
-        <tr><td class="charViewTitle">무기</td><td class="charViewContent"></td><td class="charViewContent"></td><td class="charViewContent"></td><td class="charViewContent"></td><tr>
+        <tr>
+          <td class="charViewTitle">무기</td>
+          <td class="charViewContent"></td>
+          <td class="charViewContent"></td>
+          <td class="charViewContent"></td>
+          <td class="charViewContent"></td>
+        </tr>
       <% } %>
       <% if (char.items.armor) { %>
-        <tr><td class="charViewTitle">갑옷</td>
-        <td class="charViewContent"><%= char.items.armor.rank %></td>
-        <td class="charViewContent"><%- getRarityText(char.items.armor.rarity) %></td>
-        <td class="charViewContent"><%= char.items.armor.name %>
-          <div class="itemTooltip">
-          <%= char.items.armor.stat ? getStatList(char.items.armor) : '' %>
-          </div>
-        </td>
-        <td class="charViewContent">
-        <form action="/unequipItem" method="post"><button type="submit">해제</button><input type="hidden" name="itemType" value="armor"></form>
-        </td><tr>
+        <tr>
+          <td class="charViewTitle">갑옷</td>
+          <td class="charViewContent"><%= char.items.armor.rank %></td>
+          <td class="charViewContent"><%- getRarityText(char.items.armor.rarity) %></td>
+          <td class="charViewContent"><%= char.items.armor.name %>
+            <div class="itemTooltip">
+              <%- makeTooltip(char.items.armor) %>
+            </div>
+          </td>
+          <td class="charViewContent">
+            <form action="/unequipItem" method="post">
+              <button type="submit">해제</button>
+              <input type="hidden" name="itemType" value="armor">
+            </form>
+          </td>
+        </tr>
       <% } else { %>
-        <tr><td class="charViewTitle">갑옷</td><td class="charViewContent"></td><td class="charViewContent"></td><td class="charViewContent"></td><td class="charViewContent"></td><tr>
+        <tr>
+          <td class="charViewTitle">갑옷</td>
+          <td class="charViewContent"></td>
+          <td class="charViewContent"></td>
+          <td class="charViewContent"></td>
+          <td class="charViewContent"></td>
+        </tr>
       <% } %>
       <% if (char.items.subarmor) { %>
-        <tr><td class="charViewTitle">보조방어구</td>
-        <td class="charViewContent"><%= char.items.subarmor.rank %></td>
-        <td class="charViewContent"><%- getRarityText(char.items.subarmor.rarity) %></td>
-        <td class="charViewContent"><%= char.items.subarmor.name %>
-          <div class="itemTooltip">
-          <%= char.items.subarmor.stat ? getStatList(char.items.subarmor) : '' %>
-          </div>
-        </td>
-        <td class="charViewContent">
-        <form action="/unequipItem" method="post"><button type="submit">해제</button><input type="hidden" name="itemType" value="subarmor"></form>
-        </td><tr>
+        <tr>
+          <td class="charViewTitle">보조방어구</td>
+          <td class="charViewContent"><%= char.items.subarmor.rank %></td>
+          <td class="charViewContent"><%- getRarityText(char.items.subarmor.rarity) %></td>
+          <td class="charViewContent"><%= char.items.subarmor.name %>
+            <div class="itemTooltip">
+              <%- makeTooltip(char.items.subarmor) %>
+            </div>
+          </td>
+          <td class="charViewContent">
+            <form action="/unequipItem" method="post">
+              <button type="submit">해제</button>
+              <input type="hidden" name="itemType" value="subarmor">
+            </form>
+          </td>
+        </tr>
       <% } else { %>
-        <tr><td class="charViewTitle">보조방어구</td><td class="charViewContent"></td><td class="charViewContent"></td><td class="charViewContent"></td><td class="charViewContent"></td><tr>
+        <tr>
+          <td class="charViewTitle">보조방어구</td>
+          <td class="charViewContent"></td>
+          <td class="charViewContent"></td>
+          <td class="charViewContent"></td>
+          <td class="charViewContent"></td>
+        </tr>
       <% } %>
       <% if (char.items.trinket) { %>
-        <tr><td class="charViewTitle">장신구</td>
-        <td class="charViewContent"><%= char.items.trinket.rank %></td>
-        <td class="charViewContent"><%- getRarityText(char.items.trinket.rarity) %></td>
-        <td class="charViewContent"><%= char.items.trinket.name %>
-          <div class="itemTooltip">
-          <%= char.items.trinket.stat ? getStatList(char.items.trinket) : '' %>
-          </div>
-        </td>
-        <td class="charViewContent">
-        <form action="/unequipItem" method="post"><button type="submit">해제</button><input type="hidden" name="itemType" value="trinket"></form>
-        </td><tr>
+        <tr>
+          <td class="charViewTitle">장신구</td>
+          <td class="charViewContent"><%= char.items.trinket.rank %></td>
+          <td class="charViewContent"><%- getRarityText(char.items.trinket.rarity) %></td>
+          <td class="charViewContent"><%= char.items.trinket.name %>
+            <div class="itemTooltip">
+              <%- makeTooltip(char.items.trinket) %>
+            </div>
+          </td>
+          <td class="charViewContent">
+            <form action="/unequipItem" method="post">
+              <button type="submit">해제</button>
+              <input type="hidden" name="itemType" value="trinket">
+            </form>
+          </td>
+        </tr>
       <% } else { %>
-        <tr><td class="charViewTitle">장신구</td><td class="charViewContent"></td><td class="charViewContent"></td><td class="charViewContent"></td><td class="charViewContent"></td><tr>
+        <tr>
+          <td class="charViewTitle">장신구</td>
+          <td class="charViewContent"></td>
+          <td class="charViewContent"></td>
+          <td class="charViewContent"></td>
+          <td class="charViewContent"></td>
+        </tr>
       <% } %>
     </table>
     
     <table class="skillInfo">
-      <tr><td class="charViewTitle">가위</td><td class="charViewContent"><%= char.skill.base[0].name %></td><td class="charViewContent"><%= getDamageText(char.skill.base[0]) %></td><td class="charViewContent"></td><tr>
-      <tr><td class="charViewTitle">바위</td><td class="charViewContent"><%= char.skill.base[1].name %></td><td class="charViewContent"><%= getDamageText(char.skill.base[1]) %></td><td class="charViewContent"></td><tr>
-      <tr><td class="charViewTitle">보</td><td class="charViewContent"><%= char.skill.base[2].name %></td><td class="charViewContent"><%= getDamageText(char.skill.base[2]) %></td><td class="charViewContent"></td><tr>
-      <tr><td class="charViewTitle">스페셜</td><td class="charViewContent"><%= char.skill.special.name %></td><td class="charViewContent">SP<%= char.skill.special.cost %></td><td class="charViewContent"></td><tr>
-      <tr><td class="charViewTitle">드라이브</td><td class="charViewContent"><%= char.skill.drive.name %></td><td class="charViewContent">SP<%= char.skill.drive.cost %></td><td class="charViewContent"></td><tr>
+      <tr>
+        <td class="charViewTitle">가위</td>
+        <td class="charViewContent"><%= char.skill.base[0].name %></td>
+        <td class="charViewContent"><%= getDamageText(char.skill.base[0]) %></td>
+        <td class="charViewContent"></td>
+      </tr>
+      <tr>
+        <td class="charViewTitle">바위</td>
+        <td class="charViewContent"><%= char.skill.base[1].name %></td>
+        <td class="charViewContent"><%= getDamageText(char.skill.base[1]) %></td>
+        <td class="charViewContent"></td>
+      </tr>
+      <tr>
+        <td class="charViewTitle">보</td>
+        <td class="charViewContent"><%= char.skill.base[2].name %></td>
+        <td class="charViewContent"><%= getDamageText(char.skill.base[2]) %></td>
+        <td class="charViewContent"></td>
+      </tr>
+      <tr>
+        <td class="charViewTitle">스페셜</td>
+        <td class="charViewContent"><%= char.skill.special.name %></td>
+        <td class="charViewContent">SP<%= char.skill.special.cost %></td>
+        <td class="charViewContent"></td>
+      </tr>
+      <tr>
+        <td class="charViewTitle">드라이브</td>
+        <td class="charViewContent"><%= char.skill.drive.name %></td>
+        <td class="charViewContent">SP<%= char.skill.drive.cost %></td>
+        <td class="charViewContent"></td>
+      </tr>
     </table>
   </div>
     
     <div class="inventoryWrap">
       <% for (const [key, val] of Object.entries(char.inventory)) { %>
-        <div class="inventoryItem"><form action="/useItem" method="post"><button type="submit"><%= val.name %></button><input type="hidden" name="itemNum" value="<%= key %>">
-        <div class="itemTooltip"><%= val.stat ? getStatList(val) : '' %></div></form>
+        <div class="inventoryItem">
+          <form action="/useItem" method="post">
+            <button type="submit"><%= val.name %>
+              <div class="itemTooltip"><%- makeTooltip(val) %></div>
+            </button>
+            <input type="hidden" name="itemNum" value="<%= key %>">
+          </form>
         </div>
       <% } %>
     </div>
@@ -233,10 +345,10 @@
         <a href="/battleLogs">전투 로그 보기</a>
       </div>
     </div>
-     <%  } else { %>
-    <p>캐릭터가 지정되지 않았습니다. 관리자에게 문의하세요.</p>
+    <%  } else { %>
+      <p>캐릭터가 지정되지 않았습니다. 관리자에게 문의하세요.</p>
     <% } %> 
-    <br><a href="/logout">로그아웃</a>
+      <br><a href="/logout">로그아웃</a>
     <% } %> 
 </body>
 </html>
