@@ -467,13 +467,13 @@ function addExp(chara, exp) {
 }
 
 const dayStoneData = [
-                      [[[], [], [], [], []]], 
+                      [[[3, 9], [6, 15], [12, 21], [18, 27], [24, 33]]], 
                       [[[1, 3], [2, 5], [4, 7], [6, 9], [8, 11]]], 
                       [[[3, 9], [6, 15], [12, 21], [18, 27], [24, 33]]], 
                       [[[1, 3], [2, 5], [4, 7], [6, 9], [8, 11]], [[0, 1], [0, 1], [0, 1], [0, 2], [0, 2]]], 
                       [[[1, 3], [2, 5], [4, 7], [6, 9], [8, 11]], [[0, 1], [0, 2], [1, 3], [2, 3], [2, 4]]], 
-                      [[[], [], [], [], []], [[], [], [], [], []]], 
-                      [[[], [], [], [], []]]];
+                      [[[1, 3], [2, 5], [4, 7], [6, 9], [8, 11]]], 
+                      [[[10, 50], [40, 120], [110, 210], [200, 320], [310, 450]]]];
 const dayStonePrefix = ['최하급 ', '하급 ', '중급 ', '상급 ', '최상급 '];
 const dayStoneName = ['일석', '월석', '화석', '수석', '목석', '금석', '토석'];
 function makeDayStone() {
@@ -489,6 +489,8 @@ function makeDayStone() {
   var val = Math.floor(Math.random() * (fval[1] - fval[0]) + fval[0]);
   switch (item.day) {
   case 0:
+    item.stat.critDmg = val * 0.01;
+    break;
   case 1:
     item.stat.crit = val * 0.01;
     break;
@@ -507,6 +509,13 @@ function makeDayStone() {
     fval = dayStoneData[item.day][1][item.level];
     val = Math.floor(Math.random() * (fval[1] - fval[0]) + fval[0]);
     item.stat.spRegen = val;
+    break;
+  case 5:
+    item.stat.phyReduce = val * 0.01;
+    item.stat.magReduce = val * 0.01;
+    break;
+  case 6:
+    item.stat.maxHp = val;
     break;
   }
   return item;
@@ -541,6 +550,9 @@ function calcItemStats(item) {
   }
 
   for (var key in item.socket.stat) {
+    if (!item.stat[key]) {
+      item.stat[key] = 0;
+    }
     item.stat[key] += item.socket.stat[key];
   }
 

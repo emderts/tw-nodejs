@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>ThirdWorld</title>
+    <link href="https://fonts.googleapis.com/css?family=Nanum+Gothic" rel="stylesheet">
     <style>
-      @import url(http://fonts.googleapis.com/earlyaccess/nanumgothic.css);
       body {font-family: "Nanum Gothic", sans-serif; }
       table {border: 1px solid black; text-align: center; }
       table.charInfo {float: left; }
@@ -36,7 +36,6 @@
     </style>
 </head>
 <body>
-  <h1>Home</h1>
 <% 
   var printName = {};
   printName.maxHp = '생명력';
@@ -94,15 +93,18 @@
   }
   
   function getStatList(val) {
-    return Object.entries(val.stat).map(arr => { if (arr[1] > 0 && arr[1] < 1) arr[1] *= 100; 
+    return Object.entries(val.stat).map(arr => { 
       if (arr[0] == 'phyAtkMin') {
-        return  '물리공격력 ' + arr[1] + '-' + val.stat.phyAtkMax;
+        return  '물리공격력 +' + arr[1] + '-' + val.stat.phyAtkMax;
       } else if (arr[0] == 'magAtkMin') {
-        return  '마법공격력 ' + arr[1] + '-' + val.stat.magAtkMax;        
+        return  '마법공격력 +' + arr[1] + '-' + val.stat.magAtkMax;        
       } else if (arr[0] == 'phyAtkMax' || arr[0] == 'magAtkMax') {
         return '';
       } else {
-        return printName[arr[0]] + ' ' + arr[1];
+        if (arr[0] == 'phyReduce' || arr[0] == 'magReduce' || arr[0] == 'crit' || arr[0] == 'critDmg' || arr[0] == 'crit' || arr[0] == 'hit' || arr[0] == 'evasion') {
+          arr[1] = arr[1] * 100 + '%'; 
+        }
+        return printName[arr[0]] + ' +' + arr[1];
       }      
     }).filter(x => x.length > 0).join(', ');
   }

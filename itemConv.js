@@ -11,6 +11,7 @@ fs.readFile('target.txt', 'utf8', function (err,data) {
   }
   names = data.split('\r\n');
   doCommons();
+  doSeat();
 });
 
 const nameConv = {무기: 'WEAPON', 천옷: 'ARMOR', 경갑옷: 'ARMOR', 중갑옷: 'ARMOR', 
@@ -50,15 +51,16 @@ workbook.xlsx.readFile('target.xlsx')
   }); 
 
 var doCommons = function() {
-  var group = [9, 9, 8, 8, 8, 8, 8, 8, 8, 8];
   var rarity = ['', 'UN'];
-  var prates = [1.0, 1.1, 1.0, 1.1, 1.25, 1.375, 1.25, 1.375, 0.75, 0.825];
-  var mrates = [1.0, 1.1, 1.0, 1.1, 0.75, 0.825, 0.75, 0.825, 1.25, 1.375];
+  var group = [9, 9, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8];
+  var prates = [1.0, 1.1, 1.0, 1.1, 1.25, 1.375, 1.25, 1.375, 0.75, 0.825, 0.75, 0.825, 0.75, 0.825];
+  var mrates = [1.0, 1.1, 1.0, 1.1, 0.75, 0.825, 0.75, 0.825, 1.25, 1.375, 1.25, 1.375, 0.75, 0.825];
 
-  var drates = [1.0, 1.0, 2.5, 2.5, 1.0, 1.0, 2.0, 2.0, 1.0, 1.0];
+  var drates = [1.0, 1.0, 2.5, 2.5, 1.0, 1.0, 2.0, 2.0, 1.0, 1.0, 2.0, 2.0, 1.0, 1.0];
   var values = [10, 15, 22, 30, 38, 47, 58, 70, 83];
+  var crates = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2];
   var diffs = [2, 2, 2, 3, 3, 4, 4, 5, 6];
-  var crits = [0.02, 0.02, 0.03, 0.03, 0.04, 0.04, 0.05, 0.06, 0.07]
+  var crits = [0.02, 0.02, 0.03, 0.03, 0.04, 0.04, 0.05, 0.06, 0.07];
   
   for ([key, val] of group.entries()) {
     for (var i = 9 - val; i < 9; i++) {
@@ -68,7 +70,30 @@ var doCommons = function() {
       result += ' phyAtkMax : ' + Math.round(values[i] * prates[key] + diffs[i] * drates[key]) + ',';
       result += ' magAtkMin : ' + Math.round(values[i] * mrates[key] - diffs[i] * drates[key]) + ',';
       result += ' magAtkMax : ' + Math.round(values[i] * mrates[key] + diffs[i] * drates[key]) + ',';
-      result += ' crit : ' + crits[i] + ' }, effect : [] };\r\n';
+      result += ' crit : ' + (crits[i] * crates[key]) + ' }, effect : [] };\r\n';
+      seq++;
+    }
+  }
+  
+  var group = [9, 9, 9, 9, 8, 9];
+  var rates = [0.7, 0.77, 1, 1.1, 1.3, 1.43];
+  var sp = [1, 1, 0, 0, 0, 0];
+  var evas = [0.05, 0.05, 0, 0, -0.05, -0.05];
+  var critDmgs = [0, 0, 0.1, 0.1, 0, 0];
+  var values = [40, 80, 150, 220, 310, 420, 550, 700, 870];
+  var reduces = [0.01, 0.02, 0.03, 0.05, 0.07, 0.09, 0.11, 0.13, 0.16];
+  var rrates = [1.0, 1.1, 1.0, 1.1, 1.0, 1.1];
+  
+  for ([key, val] of group.entries()) {
+    for (var i = 9 - val; i < 9; i++) {
+      result += 'itemList[' + (seq + fseq) + '] = { id : ' + (seq + fseq) + ', name : \'' + names[seq] + '\', type : cons.ITEM_TYPE_ARMOR, ';
+      result += 'rank : ' + (9-i) + ', rarity : cons.ITEM_RARITY_' + rarity[key % 2] + 'COMMON, stat : {';
+      result += ' maxHp : ' + Math.round(values[i] * rates[key]) + ',';
+      result += evas[key] !== 0 ? ' evasion : ' + evas[key] + ',' : '';
+      result += sp[key] !== 0 ? ' spRegen : ' + sp[key] + ',' : '';
+      result += critDmgs[key] !== 0 ? ' critDmg : ' + critDmgs[key] + ',' : '';
+      result += ' phyReduce : ' + Math.round(reduces[i] * rrates[key] * 10000) / 10000 + ',';
+      result += ' magReduce : ' + Math.round(reduces[i] * rrates[key] * 10000) / 10000 + ' }, effect : [] };\r\n';
       seq++;
     }
   }
@@ -76,14 +101,16 @@ var doCommons = function() {
 }
 
 var doSeat = function() {
-  var group = [9, 9, 8, 8, 8, 8, 8, 8, 8, 8];
-  var prates = [1.0, 1.1, 1.0, 1.1, 1.25, 1.375, 1.25, 1.375, 0.75, 0.825];
-  var mrates = [1.0, 1.1, 1.0, 1.1, 0.75, 0.825, 0.75, 0.825, 1.25, 1.375];
+  result = '';
+  var group = [9, 9, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8];
+  var prates = [1.0, 1.1, 1.0, 1.1, 1.25, 1.375, 1.25, 1.375, 0.75, 0.825, 0.75, 0.825, 0.75, 0.825];
+  var mrates = [1.0, 1.1, 1.0, 1.1, 0.75, 0.825, 0.75, 0.825, 1.25, 1.375, 1.25, 1.375, 0.75, 0.825];
 
-  var drates = [1.0, 1.0, 2.5, 2.5, 1.0, 1.0, 2.0, 2.0, 1.0, 1.0];
+  var drates = [1.0, 1.0, 2.5, 2.5, 1.0, 1.0, 2.0, 2.0, 1.0, 1.0, 2.0, 2.0, 1.0, 1.0];
   var values = [10, 15, 22, 30, 38, 47, 58, 70, 83];
+  var crates = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2];
   var diffs = [2, 2, 2, 3, 3, 4, 4, 5, 6];
-  var crits = [2, 2, 3, 3, 4, 4, 5, 6, 7]
+  var crits = [0.02, 0.02, 0.03, 0.03, 0.04, 0.04, 0.05, 0.06, 0.07];
   
   for ([key, val] of group.entries()) {
     for (var i = 9 - val; i < 9; i++) {
@@ -91,9 +118,29 @@ var doSeat = function() {
       result += Math.round(values[i] * prates[key] + diffs[i] * drates[key]) + ',';
       result += ' 마법공격력+' + Math.round(values[i] * mrates[key] - diffs[i] * drates[key]) + '~';
       result += Math.round(values[i] * mrates[key] + diffs[i] * drates[key]) + ',';
-      result += ' 치명+' + crits[i] + '\%\r\n';
+      result += ' 치명+' + Math.round(crits[i] * crates[key] * 100) + '\%\r\n';
       seq++;
     }
+    result += '\r\n\r\n';
   }
-  fs.writeFile('items.txt', result);
+  
+  var group = [9, 9, 9, 9, 8, 9];
+  var rates = [0.7, 0.77, 1, 1.1, 1.3, 1.43];
+  var sp = [1, 1, 0, 0, 0, 0];
+  var evas = [0.05, 0.05, 0, 0, -0.05, -0.05];
+  var critDmgs = [0, 0, 0.1, 0.1, 0, 0];
+  var values = [40, 80, 150, 220, 310, 420, 550, 700, 870];
+  var reduces = [0.01, 0.02, 0.03, 0.05, 0.07, 0.09, 0.11, 0.13, 0.16];
+  var rrates = [1.0, 1.1, 1.0, 1.1, 1.0, 1.1];
+  
+  for ([key, val] of group.entries()) {
+    for (var i = 9 - val; i < 9; i++) {
+      result += '생명력+' + Math.round(values[i] * rates[key]) + ',';
+      result += ' 물리저항+' + Math.round(reduces[i] * rrates[key] * 10000) / 100 + '\%,';
+      result += ' 마법저항+' + Math.round(reduces[i] * rrates[key] * 10000) / 100 + '\%\r\n';
+      seq++;
+    }
+    result += '\r\n\r\n';
+  }
+  fs.writeFile('itemsSeat.txt', result);
 }
