@@ -30,6 +30,11 @@
       .rarityPremium {color: #00b050; }
       .rarityUnique {color: #ff33cc; }
       .rarityEpic {color: #f79646; }
+      .buttonUncommon {background-color: #4bacc6; }
+      .buttonRare {background-color: #8054a2; }
+      .buttonPremium {background-color: #00b050; }
+      .buttonUnique {background-color: #ff33cc; }
+      .buttonEpic {background-color: #f79646; }
       div.menuWrap {float: left; }
       .menuItem {padding: 5px; border: 2px solid black; background-color: gray; color: white; width: 150px; margin: 5px; text-align: center; }
       .menuItem a {text-decoration: none; }
@@ -90,6 +95,31 @@
       break;
     }
     return '<span class="' + cname + '">' + text + '</span>';
+  }
+  
+  function getButtonText(rarity) {
+    var cname = 'button';
+    switch (rarity) {
+    case 0:
+      cname += 'Common';
+      break;
+    case 1:
+      cname += 'Uncommon';
+      break;
+    case 2:
+      cname += 'Rare';
+      break;
+    case 3:
+      cname += 'Premium';
+      break;
+    case 4:
+      cname += 'Unique';
+      break;
+    case 5:
+      cname += 'Epic';
+      break;
+    }
+    return cname;
   }
   
   function getStatList(val) {
@@ -335,7 +365,7 @@
       <% for (const [key, val] of Object.entries(char.inventory)) { %>
         <div class="inventoryItem">
           <form action="/useItem" method="post">
-            <button type="submit"><%= val.name %>
+            <button class="<%= getButtonText(val.rarity) %>" type="submit"><%= val.name %>
               <div class="itemTooltip"><%- makeTooltip(val) %></div>
             </button>
             <input type="hidden" name="itemNum" value="<%= key %>">
