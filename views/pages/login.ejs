@@ -9,10 +9,10 @@
     <style>
       body {font-family: "Nanum Gothic", sans-serif; }
       .loginTitle {font-size: 25px; font-weight: bold; text-shadow: 0 0 2px black; }
-      .loginWrap {margin: 15% auto; width: 245px; }
+      .loginWrap {margin: 15% auto; width: 305px; }
       .loginInput {padding: 5px; }
       .loginSubmit {border-radius: 10px; float: right; margin-top: -55px; height: 55px; width: 55px; background-color: #3bbaea; box-shadow: 0 0 3px black; cursor: pointer; }
-      .loginJoin {margin-right: -60px; }
+      .loginButton {margin-right: 60px; }
     </style>
 </head>
 <body>
@@ -21,8 +21,8 @@
     <form action="/login" method="post">
       <div><input type="text" class="loginInput" name="userId" placeholder="아이디" /></div>
       <div><input type="password" class="loginInput" name="userPwd" placeholder="비밀번호" /></div>
-      <input type="submit" class="loginSubmit" value="로그인" />
-      <input type="button" class="loginSubmit loginJoin" value="가입" onclick="location.href = '/join';" />
+      <input type="submit" class="loginSubmit loginButton" value="로그인" />
+      <input type="button" class="loginSubmit" value="가입" onclick="location.href = '/join';" />
     </form>
   </div>
 </body>
