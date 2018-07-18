@@ -75,11 +75,15 @@ function procFullTest() {
 async function procIndex (req, res) {
   const sess = req.session; 
   const char = await getCharacter(sess.userUid);
-  res.render('pages/index', {
-    user: sess.userUid+1 ? {name: sess.userName} : null,
-    char: char.char_data ? JSON.parse(char.char_data) : {},
-    actionPoint : char.actionPoint
-  }); 
+  if (!sess.userUid) {
+    res.render('pages/login');
+  } else {
+    res.render('pages/index', {
+      user: {name: sess.userName},
+      char: char.char_data ? JSON.parse(char.char_data) : {},
+      actionPoint : char.actionPoint
+    });
+  }
 }
 
 async function procUseStatPoint (req, res) {

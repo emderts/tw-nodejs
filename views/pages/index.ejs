@@ -102,7 +102,7 @@
         return '';
       } else {
         if (arr[0] == 'phyReduce' || arr[0] == 'magReduce' || arr[0] == 'crit' || arr[0] == 'critDmg' || arr[0] == 'crit' || arr[0] == 'hit' || arr[0] == 'evasion') {
-          arr[1] = arr[1] * 100 + '%'; 
+          arr[1] = (arr[1] * 100).toFixed(2) + '%'; 
         }
         return printName[arr[0]] + ' +' + arr[1];
       }      
@@ -170,8 +170,11 @@
           <td class="charViewContent">
             <% if (key === 'phyAtk' || key === 'magAtk') { %>
               <%= val + char.stat[key + 'Min'] %>-<%= val + char.stat[key + 'Max'] %>
-            <% } else { %>
-              <%= (val > 0 && val < 1) ? val * 100 : val %>
+            <% } else { 
+                 if (arr[0] == 'phyReduce' || arr[0] == 'magReduce' || arr[0] == 'crit' || arr[0] == 'critDmg' || arr[0] == 'crit' || arr[0] == 'hit' || arr[0] == 'evasion') {
+                   val = (val * 100).toFixed(2) + '%'; 
+                 } %>
+              <%= val %>
             <% } %>
           </td>
           <td class="charViewContent">
