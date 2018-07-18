@@ -168,7 +168,7 @@ async function procBattleList(req, res) {
 async function procBattleLogList(req, res) {
   try {
     const client = await pool.connect();
-    const result = await client.query('select id, title, date from results');
+    const result = await client.query('select id, title, date from results order by date desc');
     res.render('pages/battleLogList', {list: result.rows});
     client.release();
   } catch (err) {
