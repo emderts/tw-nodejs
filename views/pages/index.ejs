@@ -171,7 +171,7 @@
             <% if (key === 'phyAtk' || key === 'magAtk') { %>
               <%= val + char.stat[key + 'Min'] %>-<%= val + char.stat[key + 'Max'] %>
             <% } else { 
-                 if (arr[0] == 'phyReduce' || arr[0] == 'magReduce' || arr[0] == 'crit' || arr[0] == 'critDmg' || arr[0] == 'crit' || arr[0] == 'hit' || arr[0] == 'evasion') {
+                 if (key == 'phyReduce' || key == 'magReduce' || key == 'crit' || key == 'critDmg' || key == 'crit' || key == 'hit' || key == 'evasion') {
                    val = (val * 100).toFixed(2) + '%'; 
                  } %>
               <%= val %>
