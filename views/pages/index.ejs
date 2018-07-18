@@ -161,7 +161,7 @@
           <td class="charViewContent"><%= char.premiumPoint %></td>
           <td class="charViewContent"></td>
         </tr>
-      <% for (const [key, val] of Object.entries(char.stat)) {  
+      <% for ([key, val] of Object.entries(char.stat)) {  
            if (key === 'phyAtkMax' || key === 'phyAtkMin' || key === 'magAtkMax' || key === 'magAtkMin') {
              continue;
            } %>
