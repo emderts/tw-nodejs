@@ -339,6 +339,7 @@ async function procUseItem (req, res) {
             var tgtList = item.list.filter(x => x.rank === usedRank && x.rarity === cons.ITEM_RARITY_RARE);
             var picked = JSON.parse(JSON.stringify(tgtList[Math.floor(Math.random() * tgtList.length)]));
             chara.inventory.push(picked);
+            await client.query('insert into news(content, date) values ($1, $2)', [chara.name + getIga(chara.nameType) + ' ' + picked.name + getUlrul(picked.nameType) + ' 뽑았습니다!', new Date()]);
             res.render('pages/resultCard', picked);
           } else if (rand < 0.54) {
             var usedRank = tgtObj.rank;
@@ -348,6 +349,7 @@ async function procUseItem (req, res) {
             var tgtList = item.list.filter(x => x.rank === usedRank && x.rarity === cons.ITEM_RARITY_UNIQUE);
             var picked = JSON.parse(JSON.stringify(tgtList[Math.floor(Math.random() * tgtList.length)]));
             chara.inventory.push(picked);
+            await client.query('insert into news(content, date) values ($1, $2)', [chara.name + getIga(chara.nameType) + ' ' + picked.name + getUlrul(picked.nameType) + ' 뽑았습니다!', new Date()]);
             res.render('pages/resultCard', picked);
           } else if (rand < 0.55) {
             var usedRank = tgtObj.rank;
@@ -357,6 +359,7 @@ async function procUseItem (req, res) {
             var tgtList = item.list.filter(x => x.rank === usedRank && x.rarity === cons.ITEM_RARITY_EPIC);
             var picked = JSON.parse(JSON.stringify(tgtList[Math.floor(Math.random() * tgtList.length)]));
             chara.inventory.push(picked);
+            await client.query('insert into news(content, date) values ($1, $2)', [chara.name + getIga(chara.nameType) + ' ' + picked.name + getUlrul(picked.nameType) + ' 뽑았습니다!', new Date()]);
             res.render('pages/resultCard', picked);
           } else if (rand < 0.9) {
             chara.premiumPoint += 1;
@@ -499,20 +502,26 @@ function makeDayStone() {
     item.stat.crit = val * 0.01;
     break;
   case 2:
-    item.stat.phyAtk = val;
-    item.stat.magAtk = val;
+    item.stat.phyAtkMin = val;
+    item.stat.magAtkMin = val;
+    item.stat.phyAtkMax = val;
+    item.stat.magAtkMax = val;
     break;
   case 3:
     item.stat.spCharge = val;
     fval = dayStoneData[item.day][1][item.level];
     val = Math.floor(Math.random() * (fval[1] - fval[0]) + fval[0]);
-    item.stat.spRegen = val;
+    if (val > 0) {
+      item.stat.spRegen = val;
+    }
     break;
   case 4:
     item.stat.hpRegen = val;
     fval = dayStoneData[item.day][1][item.level];
     val = Math.floor(Math.random() * (fval[1] - fval[0]) + fval[0]);
-    item.stat.spRegen = val;
+    if (val > 0) {
+      item.stat.spRegen = val;
+    }
     break;
   case 5:
     item.stat.phyReduce = val * 0.01;
@@ -560,6 +569,22 @@ function calcItemStats(item) {
     item.stat[key] += item.socket.stat[key];
   }
 
+}
+
+function getIga(type) {
+  return (type === cons.NAME_KOR_NO_END_CONS) ? '가' : '이';
+}
+
+function getUro(type) {
+  return (type === cons.NAME_KOR_NO_END_CONS) ? '로' : '으로';
+}
+
+function getUlrul(type) {
+  return (type === cons.NAME_KOR_NO_END_CONS) ? '를' : '을';
+}
+
+function getUnnun(type) {
+  return (type === cons.NAME_KOR_NO_END_CONS) ? '는' : '은';
 }
 
 // }

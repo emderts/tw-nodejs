@@ -64,7 +64,7 @@ var doCommons = function() {
   
   for ([key, val] of group.entries()) {
     for (var i = 9 - val; i < 9; i++) {
-      result += 'itemList[' + (seq + fseq) + '] = { id : ' + (seq + fseq) + ', name : \'' + names[seq] + '\', type : cons.ITEM_TYPE_WEAPON, ';
+      result += 'itemList[' + (seq + fseq) + '] = { id : ' + (seq + fseq) + ', name : \'' + names[seq] + '\', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_WEAPON, ';
       result += 'rank : ' + (9-i) + ', rarity : cons.ITEM_RARITY_' + rarity[key % 2] + 'COMMON, stat : {';
       result += ' phyAtkMin : ' + Math.round(values[i] * prates[key] - diffs[i] * drates[key]) + ',';
       result += ' phyAtkMax : ' + Math.round(values[i] * prates[key] + diffs[i] * drates[key]) + ',';
@@ -86,7 +86,7 @@ var doCommons = function() {
   
   for ([key, val] of group.entries()) {
     for (var i = 9 - val; i < 9; i++) {
-      result += 'itemList[' + (seq + fseq) + '] = { id : ' + (seq + fseq) + ', name : \'' + names[seq] + '\', type : cons.ITEM_TYPE_ARMOR, ';
+      result += 'itemList[' + (seq + fseq) + '] = { id : ' + (seq + fseq) + ', name : \'' + names[seq] + '\', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_ARMOR, ';
       result += 'rank : ' + (9-i) + ', rarity : cons.ITEM_RARITY_' + rarity[key % 2] + 'COMMON, stat : {';
       result += ' maxHp : ' + Math.round(values[i] * rates[key]) + ',';
       result += evas[key] !== 0 ? ' evasion : ' + evas[key] + ',' : '';
@@ -94,6 +94,27 @@ var doCommons = function() {
       result += critDmgs[key] !== 0 ? ' critDmg : ' + critDmgs[key] + ',' : '';
       result += ' phyReduce : ' + Math.round(reduces[i] * rrates[key] * 10000) / 10000 + ',';
       result += ' magReduce : ' + Math.round(reduces[i] * rrates[key] * 10000) / 10000 + ' }, effect : [] };\r\n';
+      seq++;
+    }
+  }
+  
+  var group = [9, 9, 9, 9];
+  var rates = [0.275, 0.275, 0.275, 0.44];
+  var sp = [1, 1.5, 2, 2.5, 3, 3.5, 4, 5, 6];
+  var evas = [0.03, 0.035, 0.04, 0.045, 0.05, 0.055, 0.06, 0.07, 0.08];
+  
+  for ([key, val] of group.entries()) {
+    for (var i = 9 - val; i < 9; i++) {
+      result += 'itemList[' + (seq + fseq) + '] = { id : ' + (seq + fseq) + ', name : \'' + names[seq] + '\', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, ';
+      result += 'rank : ' + (9-i) + ', rarity : cons.ITEM_RARITY_UNCOMMON, stat : {';
+      if (key == 0) {
+        result += ' phyReduce : ' + Math.round(reduces[i] * 0.55 * 10000) / 10000 + ',';
+        result += ' magReduce : ' + Math.round(reduces[i] * 0.55 * 10000) / 10000 + ',';
+      }
+      result += key == 1 ? ' evasion : ' + evas[i] + ',' : '';
+      result += key == 3 ? ' spCharge : ' + sp[i] + ',' : '';
+      result += key == 2 ? ' hit : ' + Math.round((evas[i] + 0.01) * 10000) / 10000 + ',' : '';
+      result += ' maxHp : ' + Math.round(values[i] * rates[key]) + ' }, effect : [] };\r\n';
       seq++;
     }
   }
@@ -138,6 +159,27 @@ var doSeat = function() {
       result += '생명력+' + Math.round(values[i] * rates[key]) + ',';
       result += ' 물리저항+' + Math.round(reduces[i] * rrates[key] * 10000) / 100 + '\%,';
       result += ' 마법저항+' + Math.round(reduces[i] * rrates[key] * 10000) / 100 + '\%\r\n';
+      seq++;
+    }
+    result += '\r\n\r\n';
+  }
+  
+  var group = [9, 9, 9, 9];
+  var rates = [0.275, 0.275, 0.275, 0.44];
+  var sp = [1, 1.5, 2, 2.5, 3, 3.5, 4, 5, 6];
+  var evas = [0.03, 0.035, 0.04, 0.045, 0.05, 0.055, 0.06, 0.07, 0.08];
+  
+  for ([key, val] of group.entries()) {
+    for (var i = 9 - val; i < 9; i++) {
+      result += '생명력+' + Math.round(values[i] * rates[key]) + ',';
+      if (key == 0) {
+        result += ' 물리저항+' + Math.round(reduces[i] * 0.55 * 10000) / 100 + '\%,';
+        result += ' 마법저항+' + Math.round(reduces[i] * 0.55 * 10000) / 100 + '\%';
+      }
+      result += key == 1 ? ' 회피+' + Math.round(evas[i] * 10000) / 100 + '\%' : '';
+      result += key == 3 ? ' SP충전+' + sp[i] : '';
+      result += key == 2 ? ' 명중+' + Math.round((evas[i] + 0.01) * 10000) / 100 + '\%' : '';
+      result += '\r\n';
       seq++;
     }
     result += '\r\n\r\n';
