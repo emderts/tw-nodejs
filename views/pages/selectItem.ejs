@@ -41,6 +41,8 @@
   printName.magReduce = '마법저항';
   printName.hit = '명중';
   printName.evasion = '회피';
+  printName.dmgReduce = '피해감소';
+  printName.pierce = '관통';
   printName[0] = '무기';
   printName[1] = '갑옷';
   printName[2] = '보조방어구';
@@ -112,10 +114,11 @@
       } else if (arr[0] == 'phyAtkMax' || arr[0] == 'magAtkMax') {
         return '';
       } else {
+        var sign = arr[1] > 0 ? '+' : '';
         if (arr[0] == 'phyReduce' || arr[0] == 'magReduce' || arr[0] == 'crit' || arr[0] == 'critDmg' || arr[0] == 'crit' || arr[0] == 'hit' || arr[0] == 'evasion') {
           arr[1] = (arr[1] * 100).toFixed(2) + '%'; 
         }
-        return printName[arr[0]] + ' ' + (arr[1] > 0 ? '+' : '') + arr[1];
+        return printName[arr[0]] + ' ' + sign + arr[1];
       }      
     }).filter(x => x.length > 0).join(', ');
   }

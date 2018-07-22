@@ -19,6 +19,8 @@ printName.phyReduce = '물리저항';
 printName.magReduce = '마법저항';
 printName.hit = '명중';
 printName.evasion = '회피';
+printName.dmgReduce = '피해감소';
+printName.pierce = '관통';
 
 var charLeft = {};
 var charRight = {};
@@ -213,7 +215,11 @@ function _doBattleTurn() {
     
     for (val of findBuffByCode(winner, 7)) {
       addDamage = {};
-      addDamage.value = winner.base[val.key];
+      if (val.additional) {
+        addDamage.value = Math.round(damage.value * val.additional);
+      } else if (val.key) {
+        addDamage.value = winner.base[val.key];
+      }
       addDamage.reduce = 0;
       result += '[ ' + val.buff.name + ' ] 효과로 ' + loser.name + getUnnun(loser.nameType) + ' 추가로 ' + addDamage.value + ' 대미지를 입었습니다!<br>';
       if (val.turnReduce) {
@@ -279,6 +285,9 @@ function calcDamage(winner, loser, skill) {
     if (val.buff.id === 20101 && skill.code === 20101) {
       atkRat += val.value;
       result += '[ ' + val.buff.name + ' ] 효과로 공격력이 ' + val.value + ' 올랐습니다!<br>';
+    } else if (val.buff.id === 201729 && skill.code) {
+      skillRat *= val.value;
+      result += '[ ' + val.buff.name + ' ] 효과로 공격력이 ' + Math.round((val.value - 1) * 100) + '\% 올랐습니다!<br>';      
     }
   }
   for (val of findBuffByCode(loser, 17)) {
@@ -307,6 +316,7 @@ function calcDamage(winner, loser, skill) {
     break;
   }
   retObj.reduce = defReduce;
+  retObj.type = skill.type;
 
   if (skill.type === cons.DAMAGE_TYPE_ABSOLUTE) {
     atkRat = 1;
@@ -314,6 +324,9 @@ function calcDamage(winner, loser, skill) {
     retObj.crit = false;
   }
   
+  if (defReduce > 0) {
+    defReduce = winner.stat.pierce < defReduce ? (defReduce - winner.stat.pierce) : 0;
+  }
   var damage = (skillRat * atkRat) * (1 - defReduce);
   damage *= randDmg;
   if (retObj.crit) {
@@ -325,6 +338,9 @@ function calcDamage(winner, loser, skill) {
         result += '[ ' + val.buff.name + ' ] 효과로 SP를 ' + val.stealSp + ' 흡수합니다!<br>';
       }
     }
+  }
+  if (skill.type !== cons.DAMAGE_TYPE_ABSOLUTE) {
+    damage -= loser.stat.dmgReduce;
   }
   retObj.value = Math.round(damage);
 
@@ -378,6 +394,9 @@ function resolveEffects(winner, loser, effects, damage) {
       continue;
     }
     if (effects[i].chkTurn && turnCount <= effects[i].chkTurn) {
+      continue;
+    }
+    if (effects[i].chkDmgType && effects[i].chkDmgType !== damage.type) {
       continue;
     }
     if (effects[i].code === cons.EFFECT_TYPE_SELF_BUFF || effects[i].code === cons.EFFECT_TYPE_OPP_BUFF) {
@@ -460,9 +479,10 @@ function resolveEffects(winner, loser, effects, damage) {
       result += winner.name + getUnnun(winner.nameType) + ' ' + buffObj.effect[0].value + '만큼 보호막을 얻었습니다!<br>';
       giveBuff(winner, buffObj, false);
     } else if (effects[i].code === cons.EFFECT_TYPE_CANCEL_DAMAGE) {
-      winner.curHp += damage.value;
+      var dmgCancelled = Math.round(damage.value * effects[i].value);
+      winner.curHp += dmgCancelled;
 
-      result += damage.value + '의 대미지를 무효화했다!<br>';
+      result += dmgCancelled + '의 대미지를 무효화했다!<br>';
     } else if (effects[i].code === cons.EFFECT_TYPE_SELF_CONVERT_BUFF || effects[i].code === cons.EFFECT_TYPE_OPP_CONVERT_BUFF) {
       var buffObj = buffMdl.getBuffData(effects[i]);
       buffObj.dur = effects[i].buffDur;
@@ -625,8 +645,13 @@ function resolveTurnEndChar(chara, opp) {
           eff.damage = eff.value * stackMpl;
           if (eff.isPercentMax) {
             eff.damage *= chara.stat.maxHp;
+          } else if (eff.isPercentCur) {
+            eff.damage *= chara.curHp;
           }
           var damage = calcDamage(opp, chara, eff);
+          if (damage.value <= 0) {
+            continue;
+          }
 
           result += '<span class="skillDamage">' + chara.name + getUnnun(chara.nameType) + ' [ ' + buff.name + ' ] 효과로 ' + damage.value + '대미지를 입었습니다!';
           if (damage.crit) {

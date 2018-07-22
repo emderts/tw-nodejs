@@ -37,14 +37,16 @@ express()
 .post('/doBattle', procBattle)
 .get('/battleLogs', procBattleLogList)
 .post('/battleLog', procBattleLog)
+.get('/viewList', procViewList)
+.post('/viewChar', procView)
 .post('/useStatPoint', procUseStatPoint)
 .post('/doRankup', procRankup)
-.get('/test', (req, res) => res.render('pages/battle', {result: battlemodule.doBattle(chara.julius, chara.aeohelm).result}))
+.get('/test', (req, res) => res.render('pages/battle', {result: battlemodule.doBattle(chara.bks, chara.psi).result}))
 .get('/test2', (req, res) => res.send(procFullTest()))
 .get('/test3', (req, res) => res.send(setCharacter('kemderts', 2, chara.kines)))
 .get('/test4', (req, res) => res.send(setCharacter('thelichking', 1, chara.lk)))
 .get('/test5', (req, res) => res.render('pages/resultCard', {name: 'test', rarity: Math.floor(Math.random() * 5)}))
-.get('/test6', (req, res) => res.send(makeDayStone().name))
+.get('/test6', (req, res) => res.render('pages/viewChar', {char: chara.bks}))
 .listen(PORT, () => console.log(`Listening on ${ PORT }`))
 
 function procFullTest() {
@@ -157,7 +159,43 @@ async function procBattleList(req, res) {
       obj.uid = val.uid;
       rval.push(obj);
     } 
-    res.render('pages/battleList', {list: rval});
+    res.render('pages/battleList', {list: rval, title: '전투 신청', formAction: '/doBattle'});
+    client.release();
+  } catch (err) {
+    console.error(err);
+    res.send('내부 오류');
+  }
+}
+
+async function procViewList(req, res) {
+  try {
+    const client = await pool.connect();
+    const resultUser = await client.query('select * from users where id = $1', [req.session.userUid]);
+    const result = await client.query('select * from characters where uid <> $1', [resultUser.rows[0].uid]);
+    var rval = [];
+    for (val of result.rows) {
+      var charData = JSON.parse(val.char_data);
+      var obj = {};
+      obj.name = charData.name + ', ' + charData.title;
+      obj.uid = val.uid;
+      rval.push(obj);
+    } 
+    res.render('pages/battleList', {list: rval, title: '정보 보기', formAction: '/viewChar'});
+    client.release();
+  } catch (err) {
+    console.error(err);
+    res.send('내부 오류');
+  }
+}
+
+async function procView(req, res) {
+  try {
+    const client = await pool.connect();
+    const result = await client.query('select * from characters where uid = $1', [req.body.charUid]);
+    for (val of result.rows) {
+      var charData = JSON.parse(val.char_data);
+    } 
+    res.render('pages/viewChar', {char: charData});
     client.release();
   } catch (err) {
     console.error(err);

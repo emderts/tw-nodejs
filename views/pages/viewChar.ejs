@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>ThirdWorld</title>
+    <title>ThirdWorld - 캐릭터 정보</title>
     <link href="https://fonts.googleapis.com/css?family=Nanum+Gothic" rel="stylesheet">
     <style>
       body {font-family: "Nanum Gothic", sans-serif; }
@@ -18,25 +18,14 @@
       .itemInfo .charViewContent {background-color: #eaffea; }
       .skillInfo .charViewTitle {background-color: #ccccff; }
       .skillInfo .charViewContent {background-color: #eaeaff; }
-      div.inventoryWrap {float: left; width: 750px; max-width: 100%; }
-      .inventoryItem button {width: 150px; float: left; padding: 2px; }
-      .inventoryItem button:hover { }
       .itemTooltip {font-family: "Nanum Gothic", sans-serif; visibility: hidden; width: 250px; background-color: black; color: #fff; text-align: center; font-size: 13.3333px; border-radius: 6px; padding: 5px 0; position: absolute; z-index: 1; }
+      .tooltipFlavor {font-style: italic; }
       .charViewContent:hover .itemTooltip {visibility: visible; }
-      .inventoryItem:hover .itemTooltip {visibility: visible; }
       .rarityUncommon {color: #4bacc6; }
       .rarityRare {color: #8054a2; }
       .rarityPremium {color: #00b050; }
       .rarityUnique {color: #ff33cc; }
       .rarityEpic {color: #f79646; }
-      .buttonUncommon {background-color: #4bacc6; }
-      .buttonRare {background-color: #8054a2; }
-      .buttonPremium {background-color: #00b050; }
-      .buttonUnique {background-color: #ff33cc; }
-      .buttonEpic {background-color: #f79646; }
-      div.menuWrap {float: left; }
-      .menuItem {padding: 5px; border: 2px solid black; background-color: gray; color: white; width: 150px; margin: 5px; text-align: center; }
-      .menuItem a {text-decoration: none; }
     </style>
 </head>
 <body>
@@ -98,31 +87,6 @@
     return '<span class="' + cname + '">' + text + '</span>';
   }
   
-  function getButtonText(rarity) {
-    var cname = 'button';
-    switch (rarity) {
-    case 0:
-      cname += 'Common';
-      break;
-    case 1:
-      cname += 'Uncommon';
-      break;
-    case 2:
-      cname += 'Rare';
-      break;
-    case 3:
-      cname += 'Premium';
-      break;
-    case 4:
-      cname += 'Unique';
-      break;
-    case 5:
-      cname += 'Epic';
-      break;
-    }
-    return cname;
-  }
-  
   function getStatList(val) {
     return Object.entries(val.stat).map(arr => { 
       if (arr[0] == 'phyAtkMin') {
@@ -160,44 +124,15 @@
     return rtext;
   }
   
-  if (!user) { %>
-    <p>로그인을 해주세요.</p>
-    <a href="/login">로그인</a>
-    <a href="/join">회원가입</a>
-  <% } else { %>
-      <p><%= user.name %>으로 접속되었습니다.</p>
-    <% if (char) { %>
+    if (char) { %>
     <table class="charInfo">
         <tr>
           <td class="charViewTitle"><%= char.name %></td>
           <td class="charViewContent"><%= char.title %></td>
-          <td class="charViewContent"></td>
         </tr>
         <tr>
           <td class="charViewTitle"><%= char.rank %>급 <%= char.level %>레벨</td>
           <td class="charViewContent"><%= char.exp + '/' + char.reqExp %></td>
-          <td class="charViewContent">
-          <% if (char.level >= 20 && char.rank > 1) { %>
-            <form action="/doRankup" method="post">
-              <button type="submit">랭크업</button>
-            </form>
-          <% } %>
-          </td>
-        </tr>
-        <tr>
-          <td class="charViewTitle">피로도</td>
-          <td class="charViewContent"><%= actionPoint %></td>
-          <td class="charViewContent"></td>
-        </tr>
-        <tr>
-          <td class="charViewTitle">스탯 포인트</td>
-          <td class="charViewContent"><%= char.statPoint %></td>
-          <td class="charViewContent"></td>
-        </tr>
-        <tr>
-          <td class="charViewTitle">프리미엄 포인트</td>
-          <td class="charViewContent"><%= char.premiumPoint %></td>
-          <td class="charViewContent"></td>
         </tr>
       <% for ([key, val] of Object.entries(char.stat)) {  
            if (key === 'phyAtkMax' || key === 'phyAtkMin' || key === 'magAtkMax' || key === 'magAtkMin') {
@@ -213,14 +148,6 @@
                    val = (val * 100).toFixed(2) + '%'; 
                  } %>
               <%= val %>
-            <% } %>
-          </td>
-          <td class="charViewContent">
-            <% if ((key === 'maxHp' || key === 'phyAtk' || key === 'magAtk') && char.statPoint > 0) { %>
-              <form action="/useStatPoint" method="post">
-                <button type="submit">+</button>
-                <input type="hidden" name="keyType" value="<%= key %>">
-              </form>
             <% } %>
           </td>
         </tr>
@@ -239,17 +166,10 @@
               <%- makeTooltip(char.items.weapon) %>
             </div>
           </td>
-          <td class="charViewContent">
-            <form action="/unequipItem" method="post">
-              <button type="submit">해제</button>
-              <input type="hidden" name="itemType" value="weapon">
-            </form>
-          </td>
         </tr>
       <% } else { %>
         <tr>
           <td class="charViewTitle">무기</td>
-          <td class="charViewContent"></td>
           <td class="charViewContent"></td>
           <td class="charViewContent"></td>
           <td class="charViewContent"></td>
@@ -265,17 +185,10 @@
               <%- makeTooltip(char.items.armor) %>
             </div>
           </td>
-          <td class="charViewContent">
-            <form action="/unequipItem" method="post">
-              <button type="submit">해제</button>
-              <input type="hidden" name="itemType" value="armor">
-            </form>
-          </td>
         </tr>
       <% } else { %>
         <tr>
           <td class="charViewTitle">갑옷</td>
-          <td class="charViewContent"></td>
           <td class="charViewContent"></td>
           <td class="charViewContent"></td>
           <td class="charViewContent"></td>
@@ -291,17 +204,10 @@
               <%- makeTooltip(char.items.subarmor) %>
             </div>
           </td>
-          <td class="charViewContent">
-            <form action="/unequipItem" method="post">
-              <button type="submit">해제</button>
-              <input type="hidden" name="itemType" value="subarmor">
-            </form>
-          </td>
         </tr>
       <% } else { %>
         <tr>
           <td class="charViewTitle">보조방어구</td>
-          <td class="charViewContent"></td>
           <td class="charViewContent"></td>
           <td class="charViewContent"></td>
           <td class="charViewContent"></td>
@@ -317,17 +223,10 @@
               <%- makeTooltip(char.items.trinket) %>
             </div>
           </td>
-          <td class="charViewContent">
-            <form action="/unequipItem" method="post">
-              <button type="submit">해제</button>
-              <input type="hidden" name="itemType" value="trinket">
-            </form>
-          </td>
         </tr>
       <% } else { %>
         <tr>
           <td class="charViewTitle">장신구</td>
-          <td class="charViewContent"></td>
           <td class="charViewContent"></td>
           <td class="charViewContent"></td>
           <td class="charViewContent"></td>
@@ -383,35 +282,8 @@
       </tr>
     </table>
   </div>
-    
-    <div class="inventoryWrap">
-      <% for (const [key, val] of Object.entries(char.inventory)) { %>
-        <div class="inventoryItem">
-          <form action="/useItem" method="post">
-            <button class="<%= getButtonText(val.rarity) %>" type="submit"><%= val.name %>
-              <div class="itemTooltip"><%- makeTooltip(val) %></div>
-            </button>
-            <input type="hidden" name="itemNum" value="<%= key %>">
-          </form>
-        </div>
-      <% } %>
-    </div>
-    
-    <div class="menuWrap">
-      <div class="menuItem">
-        <a href="/battleList">전투 신청</a>
-      </div>
-      <div class="menuItem">
-        <a href="/battleLogs">전투 로그 보기</a>
-      </div>
-      <div class="menuItem">
-        <a href="/viewList">캐릭터 정보 보기</a>
-      </div>
-    </div>
     <%  } else { %>
       <p>캐릭터가 지정되지 않았습니다. 관리자에게 문의하세요.</p>
-    <% } %> 
-      <br><a href="/logout">로그아웃</a>
     <% } %> 
 </body>
 </html>
