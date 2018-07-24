@@ -208,17 +208,24 @@ itemList[202] = { id : 202, name : '고룡의 가죽 망토', nameType : cons.NA
 itemList[203] = { id : 203, name : '스탠다드 나인', type : cons.ITEM_TYPE_WEAPON, flavor : '- 아아, 이것은 표준이라는 것이다. 모든 능력치를 고르게 올려주지.<br>- 정말 대단해!', rank : 9, rarity : cons.ITEM_RARITY_RARE, stat : { phyAtkMin : 10, phyAtkMax : 14, magAtkMin : 10, magAtkMax : 14, phyReduce : 0.01, magReduce : 0.01, maxHp : 20, crit : 0.03, critDmg : 0.1, hit : 0.02, evasion : 0.02 }, 
 effectDesc : '', effect : [] };
 itemList[204] = { id : 204, name : '꿈의 사슬', type : cons.ITEM_TYPE_WEAPON, flavor : '', rank : 9, rarity : cons.ITEM_RARITY_RARE, stat : { phyAtkMin : 8, phyAtkMax : 16, magAtkMin : 8, magAtkMax : 16, crit : 0.02 }, 
-effectDesc : '공격 성공 시 5% 확률로 적에게 [수면] 상태이상 부여, 피격 시 1% 확률로 자신에게 [수면] 상태이상 부여', effect : [] };
+effectDesc : '공격 성공 시 5% 확률로 적에게 [수면] 상태이상 부여, 피격 시 1% 확률로 자신에게 [수면] 상태이상 부여', 
+effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, active : cons.ACTIVE_TYPE_ATTACK, chance : 0.05, buffCode : 5, buffDur : 1}, 
+          {code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_TAKE_HIT, chance : 0.01, buffCode : 5, buffDur : 1}] };
 itemList[205] = { id : 205, name : '호박석 검', type : cons.ITEM_TYPE_WEAPON, flavor : '녹아내린 호박석이 검날을 따라 흘러내리는 의식용으로나 쓸 법한 검.', rank : 9, rarity : cons.ITEM_RARITY_RARE, stat : { phyAtkMin : 4, phyAtkMax : 8, magAtkMin : 16, magAtkMax : 20, crit : 0.02 }, 
-effectDesc : '마법 공격 성공 시 15% 확률로 적에게 2턴간 [화상] 상태이상 부여', effect : [] };
+effectDesc : '마법 공격 성공 시 15% 확률로 적에게 2턴 간 [화상] 상태이상 부여', 
+effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, active : cons.ACTIVE_TYPE_ATTACK, chance : 0.15, buffCode : 1, buffDur : 2}] };
 itemList[206] = { id : 206, name : '심플리스트 #9', type : cons.ITEM_TYPE_WEAPON, flavor : '단순함이 최고라고들 한다.', rank : 9, rarity : cons.ITEM_RARITY_RARE, stat : { phyAtkMin : 13, phyAtkMax : 14, magAtkMin : 13, magAtkMax : 14, crit : 0.03 }, 
 effectDesc : '', effect : [] };
 itemList[207] = { id : 207, name : '갱단의 비밀무기', type : cons.ITEM_TYPE_WEAPON, flavor : '어느 뒷골목 갱단이 중요한 일에 사용하는 검. 손잡이의 버튼을 누르면 검날에 갈라진 틈을 통해 독이 새어나온다. 잘못 휘두르면 자기가 독을 뒤집어 쓸 수 있다고 한다.', rank : 9, rarity : cons.ITEM_RARITY_RARE, stat : { phyAtkMin : 8, phyAtkMax : 10, magAtkMin : 8, magAtkMax : 10, crit : 0.04 }, 
-effectDesc : '공격 성공 시 20% 확률로 1턴간 적에게 [중독] 상태이상 부여, 피격 시 10% 확률로 1턴간 자신에게 [중독] 상태이상 부여', effect : [] };
+effectDesc : '공격 성공 시 20% 확률로 1턴 간 적에게 [중독] 상태이상 부여, 피격 시 10% 확률로 1턴 간 자신에게 [중독] 상태이상 부여', 
+effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, active : cons.ACTIVE_TYPE_ATTACK, chance : 0.2, buffCode : 2, buffDur : 1}, 
+          {code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_TAKE_HIT, chance : 0.1, buffCode : 2, buffDur : 1}] };
 itemList[208] = { id : 208, name : '유리검', type : cons.ITEM_TYPE_WEAPON, flavor : '유리로 만들어진 검. 아주 예리하지만 금방 날이 깨져 버린다.', rank : 9, rarity : cons.ITEM_RARITY_RARE, stat : { phyAtkMin : 15, phyAtkMax : 21, magAtkMin : 15, magAtkMax : 21, crit : 0.02 }, 
-effectDesc : '전투 시작 8턴 후 자신에게 [깨진 유리검] 상태 부여<br><br>[깨진 유리검] : 물리공격력-15, 마법공격력-15', effect : [] };
+effectDesc : '전투 시작 8턴 후 자신에게 [깨진 유리검] 디버프 부여<br><br>[깨진 유리검] : 물리/마법공격력 -15', 
+effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_TURN_START, chance : 1, buffCode : 10001, buffDur : null, chkTurn : 8, chkNot : [10001]}] };
 itemList[209] = { id : 209, name : '수련용 허수아비의 팔', type : cons.ITEM_TYPE_WEAPON, flavor : '수련장에 떨어져 있던 허수아비의 팔이다. 인간에 대한 강한 원념이 느껴진다.', rank : 9, rarity : cons.ITEM_RARITY_RARE, stat : { phyAtkMin : 8, phyAtkMax : 12, magAtkMin : 10, magAtkMax : 18, crit : 0.02 }, 
-effectDesc : '공격 성공 시 적에게 1턴간 [허수아비의 원념] 상태 부여<br><br>[허수아비의 원념] : 물리/마법저항 -2%', effect : [] };
+effectDesc : '공격 성공 시 적에게 1턴 간 [허수아비의 원념] 디버프 부여<br><br>[허수아비의 원념] : 물리/마법저항 -2%', 
+effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, active : cons.ACTIVE_TYPE_ATTACK, chance : 1, buffCode : 10002, buffDur : 1}] };
 itemList[210] = { id : 210, name : '호신용 화승총', type : cons.ITEM_TYPE_WEAPON, flavor : '동쪽 대륙의 우수한 기술력으로 만든 작은 화승총. 귀족들의 호신용 무기로 인기가 높다.', rank : 9, rarity : cons.ITEM_RARITY_RARE, stat : { phyAtkMin : 10, phyAtkMax : 18, magAtkMin : 8, magAtkMax : 12, crit : 0.02, hit : 0.03 }, 
 effectDesc : '', effect : [] };
 itemList[211] = { id : 211, name : '저주받은 검 2', type : cons.ITEM_TYPE_WEAPON, flavor : '전설의 검이 저주받은 모습. 도신에 기괴한 검은 무늬가 새겨져 있다. 이 검의 저주를 풀려면 무수한 작업을 요하지만 안타깝게도 이곳에선 그런 거 없다.', rank : 9, rarity : cons.ITEM_RARITY_UNIQUE, stat : { phyAtkMin : 27, phyAtkMax : 33, magAtkMin : 27, magAtkMax : 33, crit : 0.02 }, 

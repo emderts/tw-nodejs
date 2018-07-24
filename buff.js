@@ -126,6 +126,38 @@ module.exports.getBuffData = function(eff) {
     effectObj.code = 10011;
     retObj.effect.push(effectObj);
     break;
+  case 10001 : 
+    retObj.name = '깨진 유리검';
+    retObj.nameType = cons.NAME_KOR_END_CONS;
+    retObj.durOff = null;
+    retObj.isDebuff = false;
+    retObj.effect = [];
+    effectObj = {};
+    effectObj.code = 3;
+    effectObj.value = -15;
+    effectObj.key = 'phyAtk';
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.code = 3;
+    effectObj.value = -15;
+    effectObj.key = 'magAtk';
+    retObj.effect.push(effectObj);
+    break;
+  case 10002 : 
+    retObj.name = '허수아비의 원념';
+    retObj.nameType = cons.NAME_KOR_END_CONS;
+    retObj.effect = [];
+    effectObj = {};
+    effectObj.code = 3;
+    effectObj.value = -0.02;
+    effectObj.key = 'phyReduce';
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.code = 3;
+    effectObj.value = -0.02;
+    effectObj.key = 'magReduce';
+    retObj.effect.push(effectObj);
+    break;
   case 20101 : 
     retObj.name = '혼돈의 힘';
     retObj.nameType = cons.NAME_KOR_END_CONS;

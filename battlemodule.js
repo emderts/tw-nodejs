@@ -190,7 +190,7 @@ function _doBattleTurn() {
       }
     }
     result += '</span><br>';
-    
+
     if (checkDrive(loser, cons.ACTIVE_TYPE_TAKE_HIT)) {
       loser.curSp -= loser.skill.drive.cost;
       result += '<div class="driveSkill">[ ' + loser.name + ' ] Drive Skill - [ ' + loser.skill.drive.name + ' ] 발동!</div>';
@@ -229,6 +229,8 @@ function _doBattleTurn() {
     }
 
     resolveEffects(winner, loser, skillUsed.effect, damage);
+    resolveEffects(loser, winner, getItemEffects(loser, cons.ACTIVE_TYPE_TAKE_HIT), damage);
+    resolveEffects(winner, loser, getItemEffects(winner, cons.ACTIVE_TYPE_ATTACK), damage);
     if (checkDrive(winner, cons.ACTIVE_TYPE_ATTACK)) {
       winner.curSp -= winner.skill.drive.cost;
       result += '<div class="driveSkill">[ ' + winner.name + ' ] Drive Skill - [ ' + winner.skill.drive.name + ' ] 발동!</div>';
@@ -277,7 +279,7 @@ function calcDamage(winner, loser, skill) {
   var retObj = {};
   var isPhysical = (skill.type === cons.DAMAGE_TYPE_PHYSICAL);
   var atkRat = isPhysical ? winner.stat.phyAtk : winner.stat.magAtk;
-  var defReduce = isPhysical ? loser.stat.phyReduce : loser.stat.magReduce;
+  var defReduce = (skill.type % 2 == 1) ? loser.stat.phyReduce : loser.stat.magReduce;
   var randDmg = Math.random() * 0.2 + 0.9;
   var skillRat = skill.damage;
 
@@ -307,13 +309,15 @@ function calcDamage(winner, loser, skill) {
 
   retObj.hit = getRandom(winner.stat.hit - loser.stat.evasion);
   retObj.crit = getRandom(winner.stat.crit);
-  for (val of findBuffByCode(loser, 10005)) {
-    result += '[ ' + val.buff.name + ' ] 효과로 치명타가 적용됩니다!<br>';
-    val.buff.dur = 0;
-    val.buff.effect = [];
-    val.buff.id = -1;
-    retObj.crit = true;
-    break;
+  if (skill.type !== cons.DAMAGE_TYPE_ABSOLUTE) {
+    for (val of findBuffByCode(loser, 10005)) {
+      result += '[ ' + val.buff.name + ' ] 효과로 치명타가 적용됩니다!<br>';
+      val.buff.dur = 0;
+      val.buff.effect = [];
+      val.buff.id = -1;
+      retObj.crit = true;
+      break;
+    }
   }
   retObj.reduce = defReduce;
   retObj.type = skill.type;
@@ -322,6 +326,9 @@ function calcDamage(winner, loser, skill) {
     atkRat = 1;
     defReduce = 0;
     retObj.crit = false;
+  } else if (skill.type === cons.DAMAGE_TYPE_PHYSICAL_FIXED || skill.type === cons.DAMAGE_TYPE_MAGICAL_FIXED) {
+    atkRat = 1;
+    retObj.type -= 2;
   }
   
   if (defReduce > 0) {
@@ -342,7 +349,7 @@ function calcDamage(winner, loser, skill) {
   if (skill.type !== cons.DAMAGE_TYPE_ABSOLUTE) {
     damage -= loser.stat.dmgReduce;
   }
-  retObj.value = Math.round(damage);
+  retObj.value = damage > 0 ? Math.round(damage) : 0;
 
   return retObj;
 }
@@ -393,7 +400,7 @@ function resolveEffects(winner, loser, effects, damage) {
     if (effects[i].chkHp && winner.curHp > (winner.stat.maxHp * effects[i].chkHp)) {
       continue;
     }
-    if (effects[i].chkTurn && turnCount <= effects[i].chkTurn) {
+    if (effects[i].chkTurn && turnCount < effects[i].chkTurn) {
       continue;
     }
     if (effects[i].chkDmgType && effects[i].chkDmgType !== damage.type) {
@@ -575,6 +582,8 @@ function resolveEffects(winner, loser, effects, damage) {
 }
 
 function resolveTurnBegin(winner, loser) {
+  resolveEffects(winner, loser, getItemEffects(winner, cons.ACTIVE_TYPE_TURN_START), null);
+  resolveEffects(loser, winner, getItemEffects(loser, cons.ACTIVE_TYPE_TURN_START), null);
   if (checkDrive(winner, cons.ACTIVE_TYPE_TURN_START)) {
     winner.curSp -= winner.skill.drive.cost;
     result += '<div class="driveSkill">[ ' + winner.name + ' ] Drive Skill - [ ' + winner.skill.drive.name + ' ] 발동!</div>';
@@ -743,6 +752,14 @@ function checkDrive(chara, active) {
     return false;
   }
   return chara.skill.drive.active === active && getRandom(chara.skill.drive.chance) && chara.curSp >= chara.skill.drive.cost && findBuffByCode(chara, 10010).length == 0;
+}
+
+function getItemEffects(chara, active) {
+  var rval = [];
+  for (val in chara.items) {
+    rval = rval.concat(chara.items[val].effect.filter(x => (x.active == active)));
+  }
+  return rval;
 }
 
 function calcStats(chara) {
