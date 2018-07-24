@@ -285,7 +285,7 @@ function procLogout (req, res) {
 async function procJoin (req, res) {
   try {
     const body = req.body;
-    if (body.userPwd !== body.UserPwdCheck) {
+    if (body.userPwd !== body.userPwdCheck) {
       res.send('비밀번호 확인이 잘못되었습니다.');
       return;      
     }
