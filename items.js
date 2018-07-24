@@ -169,42 +169,115 @@ itemList[163] = { id : 163, name : '실버 플레이트 아머', nameType : cons
 itemList[164] = { id : 164, name : '타이탄 아머', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_ARMOR, rank : 3, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { maxHp : 787, evasion : -0.05, phyReduce : 0.121, magReduce : 0.121 }, effect : [] };
 itemList[165] = { id : 165, name : '고리의 기사의 갑주', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_ARMOR, rank : 2, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { maxHp : 1001, evasion : -0.05, phyReduce : 0.143, magReduce : 0.143 }, effect : [] };
 itemList[166] = { id : 166, name : '하르콘 플레이트 아머', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_ARMOR, rank : 1, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { maxHp : 1244, evasion : -0.05, phyReduce : 0.176, magReduce : 0.176 }, effect : [] };
-itemList[167] = { id : 167, name : '삼각 방패', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, rank : 9, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { phyReduce : 0.0055, magReduce : 0.0055, maxHp : 11 }, effect : [] };
-itemList[168] = { id : 168, name : '버클러', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, rank : 8, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { phyReduce : 0.011, magReduce : 0.011, maxHp : 22 }, effect : [] };
-itemList[169] = { id : 169, name : '견고한 강철 방패', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, rank : 7, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { phyReduce : 0.0165, magReduce : 0.0165, maxHp : 41 }, effect : [] };
-itemList[170] = { id : 170, name : '카이트 실드', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, rank : 6, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { phyReduce : 0.0275, magReduce : 0.0275, maxHp : 61 }, effect : [] };
-itemList[171] = { id : 171, name : '출정 기사의 방패', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, rank : 5, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { phyReduce : 0.0385, magReduce : 0.0385, maxHp : 85 }, effect : [] };
-itemList[172] = { id : 172, name : '드레이크 본 실드', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, rank : 4, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { phyReduce : 0.0495, magReduce : 0.0495, maxHp : 116 }, effect : [] };
-itemList[173] = { id : 173, name : '티타늄 방패', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, rank : 3, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { phyReduce : 0.0605, magReduce : 0.0605, maxHp : 151 }, effect : [] };
-itemList[174] = { id : 174, name : '타워 실드', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, rank : 2, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { phyReduce : 0.0715, magReduce : 0.0715, maxHp : 193 }, effect : [] };
-itemList[175] = { id : 175, name : '하르콘 방패', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, rank : 1, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { phyReduce : 0.088, magReduce : 0.088, maxHp : 239 }, effect : [] };
-itemList[176] = { id : 176, name : '무명 신발', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, rank : 9, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { evasion : 0.03, maxHp : 11 }, effect : [] };
-itemList[177] = { id : 177, name : '가죽 장화', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, rank : 8, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { evasion : 0.035, maxHp : 22 }, effect : [] };
-itemList[178] = { id : 178, name : '신형 전투화', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, rank : 7, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { evasion : 0.04, maxHp : 41 }, effect : [] };
-itemList[179] = { id : 179, name : '고풍스러운 구두', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, rank : 6, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { evasion : 0.045, maxHp : 61 }, effect : [] };
-itemList[180] = { id : 180, name : '출정 기사의 장화', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, rank : 5, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { evasion : 0.05, maxHp : 85 }, effect : [] };
-itemList[181] = { id : 181, name : '장인의 가죽 신발', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, rank : 4, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { evasion : 0.055, maxHp : 116 }, effect : [] };
-itemList[182] = { id : 182, name : '요정의 장화', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, rank : 3, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { evasion : 0.06, maxHp : 151 }, effect : [] };
-itemList[183] = { id : 183, name : '윙 부츠', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, rank : 2, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { evasion : 0.07, maxHp : 193 }, effect : [] };
-itemList[184] = { id : 184, name : '하르콘 부츠', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, rank : 1, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { evasion : 0.08, maxHp : 239 }, effect : [] };
-itemList[185] = { id : 185, name : '무명 장갑', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, rank : 9, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { hit : 0.04, maxHp : 11 }, effect : [] };
-itemList[186] = { id : 186, name : '궁수의 수련 장갑', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, rank : 8, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { hit : 0.045, maxHp : 22 }, effect : [] };
-itemList[187] = { id : 187, name : '3M장갑', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, rank : 7, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { hit : 0.05, maxHp : 41 }, effect : [] };
-itemList[188] = { id : 188, name : '학자의 브레이슬릿', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, rank : 6, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { hit : 0.055, maxHp : 61 }, effect : [] };
-itemList[189] = { id : 189, name : '출정 기사의 건틀릿', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, rank : 5, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { hit : 0.06, maxHp : 85 }, effect : [] };
-itemList[190] = { id : 190, name : '글러브 오브 헤이스트', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, rank : 4, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { hit : 0.065, maxHp : 116 }, effect : [] };
-itemList[191] = { id : 191, name : '수놓은 귀족의 장갑', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, rank : 3, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { hit : 0.07, maxHp : 151 }, effect : [] };
-itemList[192] = { id : 192, name : '마력강화 강철 장갑', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, rank : 2, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { hit : 0.08, maxHp : 193 }, effect : [] };
-itemList[193] = { id : 193, name : '하르콘 건틀릿', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, rank : 1, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { hit : 0.09, maxHp : 239 }, effect : [] };
-itemList[194] = { id : 194, name : '무명 망토', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, rank : 9, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { spCharge : 1, maxHp : 18 }, effect : [] };
-itemList[195] = { id : 195, name : '빨간 망토', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, rank : 8, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { spCharge : 1.5, maxHp : 35 }, effect : [] };
+itemList[167] = { id : 167, name : '삼각 방패', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, rank : 9, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { dmgReduce : 2, maxHp : 18 }, effect : [] };
+itemList[168] = { id : 168, name : '버클러', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, rank : 8, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { dmgReduce : 4, maxHp : 35 }, effect : [] };
+itemList[169] = { id : 169, name : '견고한 강철 방패', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, rank : 7, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { dmgReduce : 7, maxHp : 66 }, effect : [] };
+itemList[170] = { id : 170, name : '카이트 실드', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, rank : 6, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { dmgReduce : 10, maxHp : 97 }, effect : [] };
+itemList[171] = { id : 171, name : '출정 기사의 방패', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, rank : 5, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { dmgReduce : 14, maxHp : 136 }, effect : [] };
+itemList[172] = { id : 172, name : '드레이크 본 실드', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, rank : 4, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { dmgReduce : 18, maxHp : 185 }, effect : [] };
+itemList[173] = { id : 173, name : '티타늄 방패', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, rank : 3, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { dmgReduce : 23, maxHp : 242 }, effect : [] };
+itemList[174] = { id : 174, name : '타워 실드', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, rank : 2, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { dmgReduce : 29, maxHp : 308 }, effect : [] };
+itemList[175] = { id : 175, name : '하르콘 방패', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, rank : 1, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { dmgReduce : 36, maxHp : 383 }, effect : [] };
+itemList[176] = { id : 176, name : '무명 신발', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, rank : 9, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { evasion : 0.05, maxHp : 18 }, effect : [] };
+itemList[177] = { id : 177, name : '가죽 장화', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, rank : 8, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { evasion : 0.05, maxHp : 35 }, effect : [] };
+itemList[178] = { id : 178, name : '신형 전투화', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, rank : 7, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { evasion : 0.05, maxHp : 66 }, effect : [] };
+itemList[179] = { id : 179, name : '고풍스러운 구두', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, rank : 6, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { evasion : 0.05, maxHp : 97 }, effect : [] };
+itemList[180] = { id : 180, name : '출정 기사의 장화', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, rank : 5, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { evasion : 0.05, maxHp : 136 }, effect : [] };
+itemList[181] = { id : 181, name : '장인의 가죽 신발', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, rank : 4, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { evasion : 0.05, maxHp : 185 }, effect : [] };
+itemList[182] = { id : 182, name : '요정의 장화', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, rank : 3, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { evasion : 0.05, maxHp : 242 }, effect : [] };
+itemList[183] = { id : 183, name : '윙 부츠', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, rank : 2, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { evasion : 0.05, maxHp : 308 }, effect : [] };
+itemList[184] = { id : 184, name : '하르콘 부츠', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, rank : 1, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { evasion : 0.05, maxHp : 383 }, effect : [] };
+itemList[185] = { id : 185, name : '무명 장갑', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, rank : 9, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { hit : 0.075, maxHp : 18 }, effect : [] };
+itemList[186] = { id : 186, name : '궁수의 수련 장갑', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, rank : 8, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { hit : 0.075, maxHp : 35 }, effect : [] };
+itemList[187] = { id : 187, name : '3M장갑', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, rank : 7, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { hit : 0.075, maxHp : 66 }, effect : [] };
+itemList[188] = { id : 188, name : '학자의 브레이슬릿', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, rank : 6, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { hit : 0.075, maxHp : 97 }, effect : [] };
+itemList[189] = { id : 189, name : '출정 기사의 건틀릿', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, rank : 5, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { hit : 0.075, maxHp : 136 }, effect : [] };
+itemList[190] = { id : 190, name : '글러브 오브 헤이스트', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, rank : 4, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { hit : 0.075, maxHp : 185 }, effect : [] };
+itemList[191] = { id : 191, name : '수놓은 귀족의 장갑', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, rank : 3, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { hit : 0.075, maxHp : 242 }, effect : [] };
+itemList[192] = { id : 192, name : '마력강화 강철 장갑', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, rank : 2, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { hit : 0.075, maxHp : 308 }, effect : [] };
+itemList[193] = { id : 193, name : '하르콘 건틀릿', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, rank : 1, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { hit : 0.075, maxHp : 383 }, effect : [] };
+itemList[194] = { id : 194, name : '무명 망토', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, rank : 9, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { spCharge : 2, maxHp : 18 }, effect : [] };
+itemList[195] = { id : 195, name : '빨간 망토', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, rank : 8, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { spCharge : 2, maxHp : 35 }, effect : [] };
 itemList[196] = { id : 196, name : '종자의 가죽 망토', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, rank : 7, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { spCharge : 2, maxHp : 66 }, effect : [] };
-itemList[197] = { id : 197, name : '흑곰가죽 망토', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, rank : 6, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { spCharge : 2.5, maxHp : 97 }, effect : [] };
-itemList[198] = { id : 198, name : '사막 전사의 망토', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, rank : 5, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { spCharge : 3, maxHp : 136 }, effect : [] };
-itemList[199] = { id : 199, name : '7색 비단망토', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, rank : 4, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { spCharge : 3.5, maxHp : 185 }, effect : [] };
-itemList[200] = { id : 200, name : '엘프숲 망토', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, rank : 3, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { spCharge : 4, maxHp : 242 }, effect : [] };
-itemList[201] = { id : 201, name : '흑기사의 망토', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, rank : 2, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { spCharge : 5, maxHp : 308 }, effect : [] };
-itemList[202] = { id : 202, name : '고룡의 가죽 망토', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, rank : 1, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { spCharge : 6, maxHp : 383 }, effect : [] };
+itemList[197] = { id : 197, name : '흑곰가죽 망토', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, rank : 6, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { spCharge : 2, maxHp : 97 }, effect : [] };
+itemList[198] = { id : 198, name : '사막 전사의 망토', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, rank : 5, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { spCharge : 2, maxHp : 136 }, effect : [] };
+itemList[199] = { id : 199, name : '7색 비단망토', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, rank : 4, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { spCharge : 2, maxHp : 185 }, effect : [] };
+itemList[200] = { id : 200, name : '엘프숲 망토', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, rank : 3, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { spCharge : 2, maxHp : 242 }, effect : [] };
+itemList[201] = { id : 201, name : '흑기사의 망토', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, rank : 2, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { spCharge : 2, maxHp : 308 }, effect : [] };
+itemList[202] = { id : 202, name : '고룡의 가죽 망토', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, rank : 1, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { spCharge : 2, maxHp : 383 }, effect : [] };
+itemList[203] = { id : 203, name : '스탠다드 나인', type : cons.ITEM_TYPE_WEAPON, flavor : '- 아아, 이것은 표준이라는 것이다. 모든 능력치를 고르게 올려주지.<br>- 정말 대단해!', rank : 9, rarity : cons.ITEM_RARITY_RARE, stat : { phyAtkMin : 10, phyAtkMax : 14, magAtkMin : 10, magAtkMax : 14, phyReduce : 0.01, magReduce : 0.01, maxHp : 20, crit : 0.03, critDmg : 0.1, hit : 0.02, evasion : 0.02 }, 
+effectDesc : '', effect : [] };
+itemList[204] = { id : 204, name : '꿈의 사슬', type : cons.ITEM_TYPE_WEAPON, flavor : '', rank : 9, rarity : cons.ITEM_RARITY_RARE, stat : { phyAtkMin : 8, phyAtkMax : 16, magAtkMin : 8, magAtkMax : 16, crit : 0.02 }, 
+effectDesc : '공격 성공 시 5% 확률로 적에게 [수면] 상태이상 부여, 피격 시 1% 확률로 자신에게 [수면] 상태이상 부여', effect : [] };
+itemList[205] = { id : 205, name : '호박석 검', type : cons.ITEM_TYPE_WEAPON, flavor : '녹아내린 호박석이 검날을 따라 흘러내리는 의식용으로나 쓸 법한 검.', rank : 9, rarity : cons.ITEM_RARITY_RARE, stat : { phyAtkMin : 4, phyAtkMax : 8, magAtkMin : 16, magAtkMax : 20, crit : 0.02 }, 
+effectDesc : '마법 공격 성공 시 15% 확률로 적에게 2턴간 [화상] 상태이상 부여', effect : [] };
+itemList[206] = { id : 206, name : '심플리스트 #9', type : cons.ITEM_TYPE_WEAPON, flavor : '단순함이 최고라고들 한다.', rank : 9, rarity : cons.ITEM_RARITY_RARE, stat : { phyAtkMin : 13, phyAtkMax : 14, magAtkMin : 13, magAtkMax : 14, crit : 0.03 }, 
+effectDesc : '', effect : [] };
+itemList[207] = { id : 207, name : '갱단의 비밀무기', type : cons.ITEM_TYPE_WEAPON, flavor : '어느 뒷골목 갱단이 중요한 일에 사용하는 검. 손잡이의 버튼을 누르면 검날에 갈라진 틈을 통해 독이 새어나온다. 잘못 휘두르면 자기가 독을 뒤집어 쓸 수 있다고 한다.', rank : 9, rarity : cons.ITEM_RARITY_RARE, stat : { phyAtkMin : 8, phyAtkMax : 10, magAtkMin : 8, magAtkMax : 10, crit : 0.04 }, 
+effectDesc : '공격 성공 시 20% 확률로 1턴간 적에게 [중독] 상태이상 부여, 피격 시 10% 확률로 1턴간 자신에게 [중독] 상태이상 부여', effect : [] };
+itemList[208] = { id : 208, name : '유리검', type : cons.ITEM_TYPE_WEAPON, flavor : '유리로 만들어진 검. 아주 예리하지만 금방 날이 깨져 버린다.', rank : 9, rarity : cons.ITEM_RARITY_RARE, stat : { phyAtkMin : 15, phyAtkMax : 21, magAtkMin : 15, magAtkMax : 21, crit : 0.02 }, 
+effectDesc : '전투 시작 8턴 후 자신에게 [깨진 유리검] 상태 부여<br><br>[깨진 유리검] : 물리공격력-15, 마법공격력-15', effect : [] };
+itemList[209] = { id : 209, name : '수련용 허수아비의 팔', type : cons.ITEM_TYPE_WEAPON, flavor : '수련장에 떨어져 있던 허수아비의 팔이다. 인간에 대한 강한 원념이 느껴진다.', rank : 9, rarity : cons.ITEM_RARITY_RARE, stat : { phyAtkMin : 8, phyAtkMax : 12, magAtkMin : 10, magAtkMax : 18, crit : 0.02 }, 
+effectDesc : '공격 성공 시 적에게 1턴간 [허수아비의 원념] 상태 부여<br><br>[허수아비의 원념] : 물리/마법저항 -2%', effect : [] };
+itemList[210] = { id : 210, name : '호신용 화승총', type : cons.ITEM_TYPE_WEAPON, flavor : '동쪽 대륙의 우수한 기술력으로 만든 작은 화승총. 귀족들의 호신용 무기로 인기가 높다.', rank : 9, rarity : cons.ITEM_RARITY_RARE, stat : { phyAtkMin : 10, phyAtkMax : 18, magAtkMin : 8, magAtkMax : 12, crit : 0.02, hit : 0.03 }, 
+effectDesc : '', effect : [] };
+itemList[211] = { id : 211, name : '저주받은 검 2', type : cons.ITEM_TYPE_WEAPON, flavor : '전설의 검이 저주받은 모습. 도신에 기괴한 검은 무늬가 새겨져 있다. 이 검의 저주를 풀려면 무수한 작업을 요하지만 안타깝게도 이곳에선 그런 거 없다.', rank : 9, rarity : cons.ITEM_RARITY_UNIQUE, stat : { phyAtkMin : 27, phyAtkMax : 33, magAtkMin : 27, magAtkMax : 33, crit : 0.02 }, 
+effectDesc : '', effect : [] };
+itemList[212] = { id : 212, name : '고향의 별 - 아이우스타', type : cons.ITEM_TYPE_WEAPON, flavor : '부랑자이자 연금술사였던 니오비움의 검. 손잡이에 새겨진 연금술 시료를 사용하면 니오비움의 불꽃의 힘을 일으킬 수도 있다. 고향을 잃은 그리움을 따서 이름을 지었다.', rank : 9, rarity : cons.ITEM_RARITY_EPIC, stat : { phyAtkMin : 8, phyAtkMax : 12, magAtkMin : 12, magAtkMax : 24, crit : 0.03 }, 
+effectDesc : '턴 시작 시 자신에게 [불길의 아이우스타] 버프가 없을 경우 SP 20을 소모하고 3턴 간 [불길의 아이우스타] 버프 부여<br><br>[불길의 아이우스타] : 공격 성공 시 적에게 16의 추가 마법 피해, 3% 확률로 적 1턴 [화상] ', effect : [] };
+itemList[213] = { id : 213, name : '검은 정원의 가지', type : cons.ITEM_TYPE_WEAPON, flavor : '영계에 존재한다는 신의 정원을 가꾸기 위한 칼. 형태가 없는 것도 베어낼 수 있다. 과거 제3세계에 흘러들어온 영계의 정원사가 두고 간 것으로 추정된다.', rank : 9, rarity : cons.ITEM_RARITY_EPIC, stat : { phyAtkMin : 12, phyAtkMax : 24, magAtkMin : 8, magAtkMax : 12, spRegen : 2, crit : 0.05 }, 
+effectDesc : '', effect : [] };
+itemList[214] = { id : 214, name : '천광곤 - 떡락의 시작', type : cons.ITEM_TYPE_WEAPON, flavor : '존버... 또 존버 하십시오...', rank : 9, rarity : cons.ITEM_RARITY_UNIQUE, stat : { phyAtkMin : 13, phyAtkMax : 19, magAtkMin : 8, magAtkMax : 12, maxHp : 60, crit : 0.04, evasion : 0.02 }, 
+effectDesc : '', effect : [] };
+itemList[215] = { id : 215, name : '킬릭 - 공포의 아귀', type : cons.ITEM_TYPE_WEAPON, flavor : '검은색의 탁한 기운을 내뿜는 도검. 강력한 힘을 내지만 그 사용자는 대가를 감내해야 할 것이다.', rank : 9, rarity : cons.ITEM_RARITY_UNIQUE, stat : { phyAtkMin : 14, phyAtkMax : 18, magAtkMin : 14, magAtkMax : 18, crit : 0.02 }, 
+effectDesc : '<br><br>[샤에 물듦] : 상대에게 피해를 줄 때마다 자신이 준 피해의 10%만큼 절대 피해를 입음 ', effect : [] };
+itemList[216] = { id : 216, name : '바이로훈 - 기사단의 핏빛 장창', type : cons.ITEM_TYPE_WEAPON, flavor : '어딘가의 기사단이 사용했던 듯한 장창. 가벼운 재질로 어느 위치의 적이든 공격할 수 있을 듯하다.', rank : 9, rarity : cons.ITEM_RARITY_UNIQUE, stat : { phyAtkMin : 11, phyAtkMax : 19, magAtkMin : 7, magAtkMax : 15, crit : 0.02 }, 
+effectDesc : '', effect : [] };
+itemList[217] = { id : 217, name : '바람의 두루마기', type : cons.ITEM_TYPE_ARMOR, flavor : '바람의 기운이 느껴지는 가벼운 복장. 물리 공격에 효과가 있을지는 의문이 든다..', rank : 9, rarity : cons.ITEM_RARITY_RARE, stat : { magReduce : 0.025, maxHp : 34, spRegen : 1, evasion : 0.05 }, 
+effectDesc : '', effect : [] };
+itemList[218] = { id : 218, name : '광신도의 예복', type : cons.ITEM_TYPE_ARMOR, flavor : '그분의 말씀이 들리나?', rank : 9, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 28, spRegen : 1, evasion : 0.05 }, 
+effectDesc : '<br><br>[광신] : 치명+5, 이 상태이상은 상성 패배시 사라진다. ', effect : [] };
+itemList[219] = { id : 219, name : '디 클래식 #9', type : cons.ITEM_TYPE_ARMOR, flavor : '기본형의 고급 갑옷.', rank : 9, rarity : cons.ITEM_RARITY_RARE, stat : { phyReduce : 0.012, magReduce : 0.012, maxHp : 48, critDmg : 0.1 }, 
+effectDesc : '', effect : [] };
+itemList[220] = { id : 220, name : '누호에스 - 기사단의 경갑', type : cons.ITEM_TYPE_ARMOR, flavor : '어딘가의 기사단이 사용했던 듯한 갑옷. 가벼운 재질로 날렵하게 움직일 수 있다.', rank : 9, rarity : cons.ITEM_RARITY_RARE, stat : { phyReduce : 0.01, magReduce : 0.01, maxHp : 48, critDmg : 0.1, hit : 0.02, evasion : 0.02 }, 
+effectDesc : '', effect : [] };
+itemList[221] = { id : 221, name : '호박석 갑옷', type : cons.ITEM_TYPE_ARMOR, flavor : '마력으로 굳힌 호박석을 덧댄 갑옷. 마법에는 취약하다는 모양이다.', rank : 9, rarity : cons.ITEM_RARITY_RARE, stat : { phyReduce : 0.025, maxHp : 62, evasion : -0.05 }, 
+effectDesc : '', effect : [] };
+itemList[222] = { id : 222, name : '기암괴석', type : cons.ITEM_TYPE_ARMOR, flavor : '마치 갑옷처럼 생긴 오래된 암석. 이 무거운 것을 입을 생각을 하다니 제정신일까?', rank : 9, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 73, evasion : -0.05 }, 
+effectDesc : '', effect : [] };
+itemList[223] = { id : 223, name : '키릴 - 야수의 격노', type : cons.ITEM_TYPE_ARMOR, flavor : '다양한 야수의 가죽을 모아 만든 갑옷. 착용하면 점점 강렬한 힘이 느껴진다고 한다.', rank : 9, rarity : cons.ITEM_RARITY_UNIQUE, stat : { phyReduce : 0.013000000000000001, magReduce : 0.013000000000000001, maxHp : 37, spRegen : 1, evasion : 0.05 }, 
+effectDesc : '<br><br>[야수의 격노] : 물리 최대 공격력 +1 (스택당) ', effect : [] };
+itemList[224] = { id : 224, name : '평온의 의복', type : cons.ITEM_TYPE_ARMOR, flavor : '착용자를 평온하게 만드는 기이한 옷.', rank : 9, rarity : cons.ITEM_RARITY_UNIQUE, stat : { phyAtkMin : -5, phyAtkMax : -5, magAtkMin : -5, magAtkMax : -5, phyReduce : 0.02, magReduce : 0.02, spRegen : 1, critDmg : -0.15, evasion : 0.09, dmgReduce : 4 }, 
+effectDesc : '', effect : [] };
+itemList[225] = { id : 225, name : '독뱀의 시선', type : cons.ITEM_TYPE_ARMOR, flavor : '남부 밀림에 서식하는 독뱀의 가죽을 겹대어 만든 갑옷.', rank : 9, rarity : cons.ITEM_RARITY_UNIQUE, stat : { phyReduce : 0.013000000000000001, magReduce : 0.013000000000000001, maxHp : 52, critDmg : 0.1 }, 
+effectDesc : '<br><br>[마비] - 회피절반감소. 공용 상태이상 ', effect : [] };
+itemList[226] = { id : 226, name : '백은갑옷', type : cons.ITEM_TYPE_ARMOR, flavor : '백은으로 장식된 갑옷. 백은에는 그 자체로 마력을 막아 주는 힘이 있다.', rank : 9, rarity : cons.ITEM_RARITY_UNIQUE, stat : { phyReduce : 0.01, magReduce : 0.016, maxHp : 67, evasion : -0.05 }, 
+effectDesc : '<br><br>[백은 수호] : 마법저항+5% ', effect : [] };
+itemList[227] = { id : 227, name : '죽음인도자의 결의', type : cons.ITEM_TYPE_ARMOR, flavor : '강력한 죽음의 기사의 결의가 담긴 갑옷. 룬이 갑옷 곳곳에 새겨져 있고 강력한 한기가 느껴진다.', rank : 9, rarity : cons.ITEM_RARITY_EPIC, stat : { phyReduce : 0.015, magReduce : 0.015, maxHp : 73, spCharge : 2, evasion : -0.05 }, 
+effectDesc : '<br><br>[춤추는 룬 무기] : 공격 시 효과 발동 처리를 한 번 더 한다. ', effect : [] };
+itemList[228] = { id : 228, name : '세라이브 - 기사단의 방패', type : cons.ITEM_TYPE_SUBARMOR, flavor : '어딘가의 기사단이 사용했던 듯한 방패. 가벼운 재질로 공격을 흘려보내는 데 유용하다.', rank : 9, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 19, evasion : 0.03, dmgReduce : 2 }, 
+effectDesc : '', effect : [] };
+itemList[229] = { id : 229, name : '냄비 뚜껑', type : cons.ITEM_TYPE_SUBARMOR, flavor : '스테인리스로 만들어진 튼튼한 냄비 뚜껑. 상대의 전의를 상실시키기에도 좋다.', rank : 9, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 19, dmgReduce : 2 }, 
+effectDesc : '', effect : [] };
+itemList[230] = { id : 230, name : '호박석 방패', type : cons.ITEM_TYPE_SUBARMOR, flavor : '마력으로 굳힌 호박석을 덧댄 방패. 마법에는 취약하다는 모양이다.', rank : 9, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 19, dmgReduce : 3 }, 
+effectDesc : '<br><br>[부서지는 호박석] : 마법저항-0.2% ', effect : [] };
+itemList[231] = { id : 231, name : '스피드 부츠 #9', type : cons.ITEM_TYPE_SUBARMOR, flavor : 'undefined', rank : 9, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 19, evasion : 0.05 }, 
+effectDesc : '<br><br>[스피드 업!] : 회피 +1% ', effect : [] };
+itemList[232] = { id : 232, name : '공사용 장갑', type : cons.ITEM_TYPE_SUBARMOR, flavor : '공사 작업에 유용한 장갑. 부수는 일에 쓰기 좋다.', rank : 9, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 19, hit : 0.075, pierce : 0.03 }, 
+effectDesc : '', effect : [] };
+itemList[233] = { id : 233, name : '칼날 망토', type : cons.ITEM_TYPE_SUBARMOR, flavor : '칼날이 달린 망토.', rank : 9, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 19, spCharge : 2 }, 
+effectDesc : '', effect : [] };
+itemList[234] = { id : 234, name : '피크닉용 돗자리', type : cons.ITEM_TYPE_SUBARMOR, flavor : '튼튼한 재질로 만든 돗자리. 망토처럼 두를 수 있지만 모양세는 좋지 않다.', rank : 9, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 15, hpRegen : 3, spRegen : -1, spCharge : 2 }, 
+effectDesc : '', effect : [] };
+itemList[235] = { id : 235, name : '드렁큰 스텝', type : cons.ITEM_TYPE_SUBARMOR, flavor : '동양의 한 괴짜 권법가가 신었다는 부츠. 적의 공격을 흘리고 더욱 강력한 공격으로 받아칠 수 있도록 도와준다.', rank : 9, rarity : cons.ITEM_RARITY_UNIQUE, stat : { maxHp : 14, evasion : 0.07 }, 
+effectDesc : '', effect : [] };
+itemList[236] = { id : 236, name : '녹아내리는 손', type : cons.ITEM_TYPE_SUBARMOR, flavor : '엄청난 열로 둘러싸인 장갑. 잘못 사용했다가는..', rank : 9, rarity : cons.ITEM_RARITY_UNIQUE, stat : { maxHp : 21, crit : 0.05, hit : 0.075 }, 
+effectDesc : '', effect : [] };
+itemList[237] = { id : 237, name : '백호의 은혜', type : cons.ITEM_TYPE_SUBARMOR, flavor : '백호의 기운이 담긴 망토. 치유의 기운이 감돈다.', rank : 9, rarity : cons.ITEM_RARITY_UNIQUE, stat : { maxHp : 21, spCharge : 2 }, 
+effectDesc : '', effect : [] };
+itemList[238] = { id : 238, name : '이글거리는 망토', type : cons.ITEM_TYPE_SUBARMOR, flavor : '화염의 흑마술사 바이레스의 망토. 꺼지지 않는 검붉은 불꽃으로 타오르고 있다.', rank : 9, rarity : cons.ITEM_RARITY_EPIC, stat : { maxHp : 25, spCharge : 3 }, 
+effectDesc : '<br><br>[이글거리는 망토-지옥화염] : 매턴마다 15의 마법데미지를 입는다. ', effect : [] };
+
 
 itemList[82] = { id : 0, name : '﻿레어 무기 9', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_WEAPON, rank : 9, rarity : cons.ITEM_RARITY_RARE, stat : { phyAtkMin : 10, phyAtkMax : 14, magAtkMin : 10, magAtkMax : 14, crit : 0.02 }, effect : [] }
 itemList[83] = { id : 1, name : '레어 무기 8', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_WEAPON, rank : 8, rarity : cons.ITEM_RARITY_RARE, stat : { phyAtkMin : 16, phyAtkMax : 20, magAtkMin : 16, magAtkMax : 20, crit : 0.02 }, effect : [] }

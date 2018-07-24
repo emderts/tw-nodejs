@@ -1,7 +1,7 @@
 const excel = require('exceljs');
 const fs = require('fs');
 
-const fseq = 0;
+const fseq = 203;
 var seq = 0;
 var names, result = '';
 
@@ -10,13 +10,14 @@ fs.readFile('target.txt', 'utf8', function (err,data) {
     return console.log(err);
   }
   names = data.split('\r\n');
-  doCommons();
-  doSeat();
+  //doCommons();
+  //doSeat();
 });
 
 const nameConv = {무기: 'WEAPON', 천옷: 'ARMOR', 경갑옷: 'ARMOR', 중갑옷: 'ARMOR', 
-    장갑: 'SUBARMOR', 신발: 'SUBARMOR', 방패: 'SUBARMOR', 망토: 'SUBARMOR', 장신구: 'TRINKET', 언커먼: 'UNCOMMON'};
+    장갑: 'SUBARMOR', 신발: 'SUBARMOR', 방패: 'SUBARMOR', 망토: 'SUBARMOR', 장신구: 'TRINKET', 언커먼: 'UNCOMMON', 레어: 'RARE', 유니크: 'UNIQUE', 에픽: 'EPIC'};
 var workbook = new excel.Workbook();
+var rds = [2, 4, 7, 10, 14, 18, 23, 29, 36];
 workbook.xlsx.readFile('target.xlsx')
   .then(function() {
     var worksheet = workbook.getWorksheet(1);
@@ -25,8 +26,24 @@ workbook.xlsx.readFile('target.xlsx')
       if (!rowVal[1]) {
         return;
       }
+      if (rowVal[2] == '천옷') {
+        rowVal[31] = rowVal[31] ? rowVal[31] + 5 : 5;
+        rowVal[26] = rowVal[26] ? rowVal[26] + 1 : 1;
+      } else if (rowVal[2] == '경갑옷') {
+        rowVal[29] = rowVal[29] ? rowVal[29] + 10 : 10;
+      } else if (rowVal[2] == '중갑옷') {
+        rowVal[31] = rowVal[31] ? rowVal[31] - 5 : -5;
+      } else if (rowVal[2] == '방패') {
+        //rowVal[32] = rowVal[32] ? rowVal[32] + rds[rowVal[3]] : rds[rowVal[3]];
+      } else if (rowVal[2] == '신발') {
+        rowVal[31] = rowVal[31] ? rowVal[31] + 5 : 5;
+      } else if (rowVal[2] == '장갑') {
+        rowVal[30] = rowVal[30] ? rowVal[30] + 7.5 : 7.5;
+      } else if (rowVal[2] == '망토') {
+        rowVal[27] = rowVal[27] ? rowVal[27] + 2 : 2;
+      }
       result += 'itemList[' + (seq + fseq) + '] = { id : ' + (seq + fseq) + ', name : \'' + rowVal[1] + '\', type : cons.ITEM_TYPE_';
-      result += nameConv[rowVal[2]] + ', ';
+      result += nameConv[rowVal[2]] + ', flavor : \'' + rowVal[8] + '\', ';
       result += 'rank : ' + rowVal[3] + ', rarity : cons.ITEM_RARITY_' + nameConv[rowVal[4]] + ', stat : { ';
       var statStrs = [];
       statStrs.push(rowVal[14] ? 'phyAtkMin : ' + rowVal[14] : '');
@@ -43,8 +60,10 @@ workbook.xlsx.readFile('target.xlsx')
       statStrs.push(rowVal[29] ? 'critDmg : ' + (rowVal[29] * 0.01) : '');
       statStrs.push(rowVal[30] ? 'hit : ' + (rowVal[30] * 0.01) : '');
       statStrs.push(rowVal[31] ? 'evasion : ' + (rowVal[31] * 0.01) : '');
+      statStrs.push(rowVal[32] ? 'dmgReduce : ' + rowVal[32] : '');
+      statStrs.push(rowVal[33] ? 'pierce : ' + (rowVal[33] * 0.01) : '');
       result += statStrs.filter(x => x.length > 0).join(', ');
-      result += ' }, effect : [] };\r\n';
+      result += ' }, \r\neffectDesc : \'' + (rowVal[10] ? '<br><br>' + rowVal[10] : '') + '\', effect : [] };\r\n';
       seq++;
     });
     fs.writeFile('itemsEx.txt', result);
@@ -99,22 +118,18 @@ var doCommons = function() {
   }
   
   var group = [9, 9, 9, 9];
-  var rates = [0.275, 0.275, 0.275, 0.44];
+  var rates = [0.44, 0.275, 0.275, 0.44];
   var sp = [1, 1.5, 2, 2.5, 3, 3.5, 4, 5, 6];
-  var evas = [0.03, 0.035, 0.04, 0.045, 0.05, 0.055, 0.06, 0.07, 0.08];
   
   for ([key, val] of group.entries()) {
     for (var i = 9 - val; i < 9; i++) {
       result += 'itemList[' + (seq + fseq) + '] = { id : ' + (seq + fseq) + ', name : \'' + names[seq] + '\', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, ';
       result += 'rank : ' + (9-i) + ', rarity : cons.ITEM_RARITY_UNCOMMON, stat : {';
-      if (key == 0) {
-        result += ' phyReduce : ' + Math.round(reduces[i] * 0.55 * 10000) / 10000 + ',';
-        result += ' magReduce : ' + Math.round(reduces[i] * 0.55 * 10000) / 10000 + ',';
-      }
-      result += key == 1 ? ' evasion : ' + evas[i] + ',' : '';
-      result += key == 3 ? ' spCharge : ' + sp[i] + ',' : '';
-      result += key == 2 ? ' hit : ' + Math.round((evas[i] + 0.01) * 10000) / 10000 + ',' : '';
-      result += ' maxHp : ' + Math.round(values[i] * rates[key]) + ' }, effect : [] };\r\n';
+      result += key == 0 ? ' dmgReduce : ' + rds[i] + ',' : '';
+      result += key == 1 ? ' evasion : ' + 0.05 + ',' : '';
+      result += key == 3 ? ' spCharge : ' + 2 + ',' : '';
+      result += key == 2 ? ' hit : ' + 0.075 + ',' : '';
+      result += ' maxHp : ' + Math.round(values[i] * 0.44) + ' }, effect : [] };\r\n';
       seq++;
     }
   }

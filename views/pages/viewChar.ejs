@@ -97,7 +97,7 @@
         return '';
       } else {
         var sign = arr[1] > 0 ? '+' : '';
-        if (arr[0] == 'phyReduce' || arr[0] == 'magReduce' || arr[0] == 'crit' || arr[0] == 'critDmg' || arr[0] == 'crit' || arr[0] == 'hit' || arr[0] == 'evasion') {
+        if (arr[0] == 'phyReduce' || arr[0] == 'magReduce' || arr[0] == 'crit' || arr[0] == 'critDmg' || arr[0] == 'crit' || arr[0] == 'hit' || arr[0] == 'evasion' || arr[0] == 'pierce') {
           arr[1] = (arr[1] * 100).toFixed(2) + '%'; 
         }
         return printName[arr[0]] + ' ' + sign + arr[1];
@@ -111,8 +111,14 @@
     if (item.type < 10) {
       rtext += '<br>' + item.rank + '급 ' + getRarityText(item.rarity) + ' ' + printName[item.type];
       rtext += '<br>' + getStatList(item);
+      if (item.effectDesc && item.effectDesc.length > 0) {
+        rtext += ', ' + item.effectDesc;
+      }
       if (item.socket) {
         rtext += '<br><br>[' + item.socket.name + '] ' + getStatList(item.socket);
+      }
+      if (item.flavor && item.flavor.length > 0) {
+        rtext += '<br><br><span class="tooltipFlavor">' + item.flavor + '</span>';
       }
     }
     return rtext;
@@ -144,7 +150,7 @@
             <% if (key === 'phyAtk' || key === 'magAtk') { %>
               <%= val + char.stat[key + 'Min'] %>-<%= val + char.stat[key + 'Max'] %>
             <% } else { 
-                 if (key == 'phyReduce' || key == 'magReduce' || key == 'crit' || key == 'critDmg' || key == 'crit' || key == 'hit' || key == 'evasion') {
+                 if (key == 'phyReduce' || key == 'magReduce' || key == 'crit' || key == 'critDmg' || key == 'crit' || key == 'hit' || key == 'evasion' || key == 'pierce') {
                    val = (val * 100).toFixed(2) + '%'; 
                  } %>
               <%= val %>

@@ -606,7 +606,7 @@ const item = require('./items');
   charJulius.skill = {};
   charJulius.skill.base = [];
   charJulius.items = {};
-  charJulius.items.weapon = item.list[55];
+  charJulius.items.weapon = item.list[212];
 
   var skillObj = {};
   skillObj.code = 201711;
@@ -943,7 +943,7 @@ const item = require('./items');
   charAeohelm.skill = {};
   charAeohelm.skill.base = [];
   charAeohelm.items = {}
-  charAeohelm.items.weapon = item.list[47];
+  charAeohelm.items.weapon = item.list[203];
 
   var skillObj = {};
   skillObj.code = 201721;
