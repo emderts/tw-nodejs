@@ -158,6 +158,88 @@ module.exports.getBuffData = function(eff) {
     effectObj.key = 'magReduce';
     retObj.effect.push(effectObj);
     break;
+  case 10003 : 
+    retObj.name = '가치 하락';
+    retObj.nameType = cons.NAME_KOR_END_CONS;
+    retObj.stackType = 2;
+    retObj.stack = 1;
+    retObj.durOff = null;
+    retObj.maxStack = 50;
+    retObj.effect = [];
+    effectObj = {};
+    effectObj.code = 19;
+    effectObj.value = 0.01;
+    effectObj.key = 'phyAtk';
+    effectObj.buff = retObj;
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.code = 19;
+    effectObj.value = 0.01;
+    effectObj.key = 'magAtk';
+    effectObj.buff = retObj;
+    retObj.effect.push(effectObj);
+    break;
+  case 10004 : 
+    retObj.name = '샤에 물듦';
+    retObj.nameType = cons.NAME_KOR_END_CONS;
+    retObj.durOff = null;
+    retObj.effect = [];
+    effectObj = {};
+    effectObj.code = 18;
+    effectObj.isPercent = true;
+    effectObj.value = 0.1;
+    effectObj.type = cons.DAMAGE_TYPE_ABSOLUTE;
+    effectObj.buff = retObj;
+    retObj.effect.push(effectObj);
+    break;
+  case 10005 : 
+    retObj.name = '핏빛 관통';
+    retObj.nameType = cons.NAME_KOR_END_CONS;
+    retObj.durOff = cons.DURATION_TYPE_TURN_END;
+    retObj.isDebuff = false;
+    retObj.effect = [];
+    effectObj = {};
+    effectObj.code = 3;
+    effectObj.value = 1;
+    effectObj.key = 'pierce';
+    retObj.effect.push(effectObj);
+    break;
+  case 10006 : 
+    retObj.name = '불길의 아이우스타';
+    retObj.nameType = cons.NAME_KOR_NO_END_CONS;
+    retObj.durOff = cons.DURATION_TYPE_TURN_END;
+    retObj.isDebuff = false;
+    retObj.effect = [];
+    effectObj = {};
+    effectObj.code = 7;
+    effectObj.type = cons.DAMAGE_TYPE_MAGICAL_FIXED;
+    effectObj.damage = 16;
+    effectObj.calc = true;
+    effectObj.buff = retObj;
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.code = 20;
+    effectObj.buffCode = 1;
+    effectObj.dur = 1;
+    effectObj.chance = 1.03;
+    effectObj.active = cons.ACTIVE_TYPE_ATTACK;
+    retObj.effect.push(effectObj);
+    break;
+  case 10007 : 
+    retObj.name = '검은 정원의 가지';
+    retObj.nameType = cons.NAME_KOR_NO_END_CONS;
+    retObj.effect = [];
+    effectObj = {};
+    effectObj.code = 10;
+    effectObj.value = 0;
+    effectObj.key = 'phyReduce';
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.code = 10;
+    effectObj.value = 0;
+    effectObj.key = 'magReduce';
+    retObj.effect.push(effectObj);
+    break;
   case 20101 : 
     retObj.name = '혼돈의 힘';
     retObj.nameType = cons.NAME_KOR_END_CONS;
@@ -498,6 +580,7 @@ module.exports.getBuffData = function(eff) {
     effectObj.value = 0.1;
     effectObj.isPercent = true;
     effectObj.key = 'maxHp';
+    effectObj.active = cons.ACTIVE_TYPE_TURN_END;
     retObj.effect.push(effectObj);
     break;
   case 201719 : 

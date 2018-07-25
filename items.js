@@ -217,7 +217,7 @@ effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, active : cons.ACTIVE_TYPE_ATTACK, c
 itemList[206] = { id : 206, name : '심플리스트 #9', type : cons.ITEM_TYPE_WEAPON, flavor : '단순함이 최고라고들 한다.', rank : 9, rarity : cons.ITEM_RARITY_RARE, stat : { phyAtkMin : 13, phyAtkMax : 14, magAtkMin : 13, magAtkMax : 14, crit : 0.03 }, 
 effectDesc : '', effect : [] };
 itemList[207] = { id : 207, name : '갱단의 비밀무기', type : cons.ITEM_TYPE_WEAPON, flavor : '어느 뒷골목 갱단이 중요한 일에 사용하는 검. 손잡이의 버튼을 누르면 검날에 갈라진 틈을 통해 독이 새어나온다. 잘못 휘두르면 자기가 독을 뒤집어 쓸 수 있다고 한다.', rank : 9, rarity : cons.ITEM_RARITY_RARE, stat : { phyAtkMin : 8, phyAtkMax : 10, magAtkMin : 8, magAtkMax : 10, crit : 0.04 }, 
-effectDesc : '공격 성공 시 20% 확률로 1턴 간 적에게 [중독] 상태이상 부여, 피격 시 10% 확률로 1턴 간 자신에게 [중독] 상태이상 부여', 
+effectDesc : '공격 성공 시 20% 확률로 적에게 1턴 간 [중독] 상태이상 부여, 피격 시 10% 확률로 자신에게 1턴 간 [중독] 상태이상 부여', 
 effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, active : cons.ACTIVE_TYPE_ATTACK, chance : 0.2, buffCode : 2, buffDur : 1}, 
           {code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_TAKE_HIT, chance : 0.1, buffCode : 2, buffDur : 1}] };
 itemList[208] = { id : 208, name : '유리검', type : cons.ITEM_TYPE_WEAPON, flavor : '유리로 만들어진 검. 아주 예리하지만 금방 날이 깨져 버린다.', rank : 9, rarity : cons.ITEM_RARITY_RARE, stat : { phyAtkMin : 15, phyAtkMax : 21, magAtkMin : 15, magAtkMax : 21, crit : 0.02 }, 
@@ -229,17 +229,24 @@ effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, active : cons.ACTIVE_TYPE_ATTACK, c
 itemList[210] = { id : 210, name : '호신용 화승총', type : cons.ITEM_TYPE_WEAPON, flavor : '동쪽 대륙의 우수한 기술력으로 만든 작은 화승총. 귀족들의 호신용 무기로 인기가 높다.', rank : 9, rarity : cons.ITEM_RARITY_RARE, stat : { phyAtkMin : 10, phyAtkMax : 18, magAtkMin : 8, magAtkMax : 12, crit : 0.02, hit : 0.03 }, 
 effectDesc : '', effect : [] };
 itemList[211] = { id : 211, name : '저주받은 검 2', type : cons.ITEM_TYPE_WEAPON, flavor : '전설의 검이 저주받은 모습. 도신에 기괴한 검은 무늬가 새겨져 있다. 이 검의 저주를 풀려면 무수한 작업을 요하지만 안타깝게도 이곳에선 그런 거 없다.', rank : 9, rarity : cons.ITEM_RARITY_UNIQUE, stat : { phyAtkMin : 27, phyAtkMax : 33, magAtkMin : 27, magAtkMax : 33, crit : 0.02 }, 
-effectDesc : '', effect : [] };
+effectDesc : '공격 성공 시 12% 확률로 자신에게 1턴 간 [기절] 상태이상을 부여하고 15의 고정 마법 피해를 입힘', 
+effect : [{code : cons.EFFECT_TYPE_MULTIPLE, active : cons.ACTIVE_TYPE_ATTACK, chance : 0.12, target : [{code : cons.EFFECT_TYPE_SELF_BUFF, chance : 1, buffCode : 4, buffDur : 1}, {code : cons.EFFECT_TYPE_SELF_HIT, chance : 1, type : cons.DAMAGE_TYPE_MAGICAL_FIXED, value : 15}]}] };
 itemList[212] = { id : 212, name : '고향의 별 - 아이우스타', type : cons.ITEM_TYPE_WEAPON, flavor : '부랑자이자 연금술사였던 니오비움의 검. 손잡이에 새겨진 연금술 시료를 사용하면 니오비움의 불꽃의 힘을 일으킬 수도 있다. 고향을 잃은 그리움을 따서 이름을 지었다.', rank : 9, rarity : cons.ITEM_RARITY_EPIC, stat : { phyAtkMin : 8, phyAtkMax : 12, magAtkMin : 12, magAtkMax : 24, crit : 0.03 }, 
-effectDesc : '턴 시작 시 자신에게 [불길의 아이우스타] 버프가 없을 경우 SP 20을 소모하고 3턴 간 [불길의 아이우스타] 버프 부여<br><br>[불길의 아이우스타] : 공격 성공 시 적에게 16의 추가 마법 피해, 3% 확률로 적 1턴 [화상] ', effect : [] };
+effectDesc : '턴 시작 시 자신에게 [불길의 아이우스타] 버프가 없을 경우 SP 20을 소모하고 3턴 간 [불길의 아이우스타] 버프 부여<br><br>[불길의 아이우스타] : 공격 성공 시 적에게 16의 추가 마법 피해, 3% 확률로 적에게 1턴 간 [화상] 상태이상 부여 ', 
+effect : [{code : cons.EFFECT_TYPE_MULTIPLE, active : cons.ACTIVE_TYPE_TURN_START, chance : 1, chkSp : 20, target : [{code : cons.EFFECT_TYPE_SELF_BUFF, chance : 1, buffCode : 10006, buffDur : 3}, {code : cons.EFFECT_TYPE_SELF_SP, chance : 1, value : -20}], chkNot : [10006]}] };
 itemList[213] = { id : 213, name : '검은 정원의 가지', type : cons.ITEM_TYPE_WEAPON, flavor : '영계에 존재한다는 신의 정원을 가꾸기 위한 칼. 형태가 없는 것도 베어낼 수 있다. 과거 제3세계에 흘러들어온 영계의 정원사가 두고 간 것으로 추정된다.', rank : 9, rarity : cons.ITEM_RARITY_EPIC, stat : { phyAtkMin : 12, phyAtkMax : 24, magAtkMin : 8, magAtkMax : 12, spRegen : 2, crit : 0.05 }, 
-effectDesc : '', effect : [] };
+effectDesc : '공격 성공 시 3% 확률로 적에게 3턴 간 [검은 정원의 가지] 디버프 부여<br><br>[검은 정원의 가지] : 물리/마법저항 0%로 고정', 
+effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, active : cons.ACTIVE_TYPE_ATTACK, chance : 1.03, buffCode : 10007, buffDur : 3}] };
 itemList[214] = { id : 214, name : '천광곤 - 떡락의 시작', type : cons.ITEM_TYPE_WEAPON, flavor : '존버... 또 존버 하십시오...', rank : 9, rarity : cons.ITEM_RARITY_UNIQUE, stat : { phyAtkMin : 13, phyAtkMax : 19, magAtkMin : 8, magAtkMax : 12, maxHp : 60, crit : 0.04, evasion : 0.02 }, 
-effectDesc : '', effect : [] };
+effectDesc : '공격 시 5 고정 마법 피해, 2턴마다 턴 시작 시 자신에게 [가치 하락] 디버프 부여<br><br>[가치 하락] : 물리/마법공격력 -1%p', 
+effect : [{code : cons.EFFECT_TYPE_ADD_HIT, active : cons.ACTIVE_TYPE_ATTACK, chance : 1, type : cons.DAMAGE_TYPE_MAGICAL_FIXED, value : 5},
+          {code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_TURN_START, chance : 1, buffCode : 10003, buffDur : null, setCooldown : 1}] };
 itemList[215] = { id : 215, name : '킬릭 - 공포의 아귀', type : cons.ITEM_TYPE_WEAPON, flavor : '검은색의 탁한 기운을 내뿜는 도검. 강력한 힘을 내지만 그 사용자는 대가를 감내해야 할 것이다.', rank : 9, rarity : cons.ITEM_RARITY_UNIQUE, stat : { phyAtkMin : 14, phyAtkMax : 18, magAtkMin : 14, magAtkMax : 18, crit : 0.02 }, 
-effectDesc : '<br><br>[샤에 물듦] : 상대에게 피해를 줄 때마다 자신이 준 피해의 10%만큼 절대 피해를 입음 ', effect : [] };
+effectDesc : '전투 시작 시 자신에게 [샤에 물듦] 디버프 부여<br><br>[샤에 물듦] : 상대에게 피해를 줄 때마다 자신이 준 피해의 10%만큼 절대 피해를 입음 ', 
+effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_BATTLE_START, chance : 1, buffCode : 10004, buffDur : null}] };
 itemList[216] = { id : 216, name : '바이로훈 - 기사단의 핏빛 장창', type : cons.ITEM_TYPE_WEAPON, flavor : '어딘가의 기사단이 사용했던 듯한 장창. 가벼운 재질로 어느 위치의 적이든 공격할 수 있을 듯하다.', rank : 9, rarity : cons.ITEM_RARITY_UNIQUE, stat : { phyAtkMin : 11, phyAtkMax : 19, magAtkMin : 7, magAtkMax : 15, crit : 0.02 }, 
-effectDesc : '', effect : [] };
+effectDesc : '물리 공격 성공 시 20% 확률로 저항 0으로 계산', 
+effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_SKILL_WIN, chance : 0.2, buffCode : 10005, buffDur : 1, chkDmgType : cons.DAMAGE_TYPE_PHYSICAL}] };
 itemList[217] = { id : 217, name : '바람의 두루마기', type : cons.ITEM_TYPE_ARMOR, flavor : '바람의 기운이 느껴지는 가벼운 복장. 물리 공격에 효과가 있을지는 의문이 든다..', rank : 9, rarity : cons.ITEM_RARITY_RARE, stat : { magReduce : 0.025, maxHp : 34, spRegen : 1, evasion : 0.05 }, 
 effectDesc : '', effect : [] };
 itemList[218] = { id : 218, name : '광신도의 예복', type : cons.ITEM_TYPE_ARMOR, flavor : '그분의 말씀이 들리나?', rank : 9, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 28, spRegen : 1, evasion : 0.05 }, 

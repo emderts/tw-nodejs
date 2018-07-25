@@ -606,7 +606,6 @@ const item = require('./items');
   charJulius.skill = {};
   charJulius.skill.base = [];
   charJulius.items = {};
-  charJulius.items.weapon = item.list[208];
 
   var skillObj = {};
   skillObj.code = 201711;
@@ -943,7 +942,6 @@ const item = require('./items');
   charAeohelm.skill = {};
   charAeohelm.skill.base = [];
   charAeohelm.items = {}
-  charAeohelm.items.weapon = item.list[209];
 
   var skillObj = {};
   skillObj.code = 201721;
@@ -1232,7 +1230,7 @@ const item = require('./items');
   
   function _initChar(char) {
     char.stat = {};
-    char.stat.maxHp = 200;
+    char.stat.maxHp = 500;
     char.stat.spCharge = 5;
     char.stat.hpRegen = 0;
     char.stat.spRegen = 5;
@@ -1260,6 +1258,8 @@ const item = require('./items');
     char.statPoint = 0;
     char.premiumPoint = 0;
   }
+  charJulius.items.weapon = item.list[212];
+  charAeohelm.items.weapon = item.list[213];
   
   module.exports.kines = charLeft;
   module.exports.lk = charRight;
