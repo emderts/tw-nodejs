@@ -63,9 +63,9 @@ module.exports.getBuffData = function(eff) {
     effectObj.percentKey = 'maxHp';
     retObj.effect.push(effectObj);
     effectObj = {};
-    effectObj.code = 17;
+    effectObj.active = cons.ACTIVE_TYPE_CALC_DAMAGE_RECEIVE;
+    effectObj.code = cons.EFFECT_TYPE_ADD_DAMAGE;
     effectObj.value = 0.15;
-    effectObj.buff = retObj;
     effectObj.buffTarget = [201726];
     retObj.effect.push(effectObj);
     break;
@@ -180,16 +180,16 @@ module.exports.getBuffData = function(eff) {
     retObj.maxStack = 50;
     retObj.effect = [];
     effectObj = {};
-    effectObj.code = 19;
-    effectObj.value = 0.01;
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_STAT_PERCENTAGE;
     effectObj.key = 'phyAtk';
-    effectObj.buff = retObj;
+    effectObj.value = -0.01;
     retObj.effect.push(effectObj);
     effectObj = {};
-    effectObj.code = 19;
-    effectObj.value = 0.01;
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_STAT_PERCENTAGE;
     effectObj.key = 'magAtk';
-    effectObj.buff = retObj;
+    effectObj.value = -0.01;
     retObj.effect.push(effectObj);
     break;
   case 10004 : 
@@ -260,9 +260,10 @@ module.exports.getBuffData = function(eff) {
     retObj.nameType = cons.NAME_KOR_END_CONS;
     retObj.isDebuff = false;
     effectObj = {};
-    effectObj.code = 2;
+    effectObj.active = cons.ACTIVE_TYPE_CALC_DAMAGE;
+    effectObj.code = cons.EFFECT_TYPE_ADD_DAMAGE;
+    effectObj.skillCode = 20091;
     effectObj.value = eff.value;
-    effectObj.buff = retObj;
     retObj.effect.push(effectObj);
     break;
   case 20102 : 
@@ -322,7 +323,9 @@ module.exports.getBuffData = function(eff) {
     effectObj.value = eff.value;
     retObj.effect.push(effectObj);
     effectObj = {};
-    effectObj.code = 5;
+    effectObj.active = cons.ACTIVE_TYPE_TURN_START;
+    effectObj.code = cons.EFFECT_TYPE_SELF_HP;
+    effectObj.isPercentMax = true;
     effectObj.value = eff.value;
     retObj.effect.push(effectObj);
     break;
@@ -382,9 +385,9 @@ module.exports.getBuffData = function(eff) {
     retObj.isDebuff = false;
     retObj.durOff = null;
     effectObj = {};
-    effectObj.code = 6;
+    effectObj.active = cons.ACTIVE_TYPE_DEAL_DAMAGE;
+    effectObj.code = cons.EFFECT_TYPE_SHIELD;
     effectObj.value = eff.value;
-    effectObj.buff = retObj;
     retObj.effect.push(effectObj);
     break;
   case 20174 : 
@@ -413,7 +416,8 @@ module.exports.getBuffData = function(eff) {
     retObj.isDebuff = false;
     retObj.durOff = cons.DURATION_TYPE_TURN_END;
     effectObj = {};
-    effectObj.code = 9;
+    effectObj.active = cons.ACTIVE_TYPE_RECEIVE_BUFF;
+    effectObj.code = cons.EFFECT_TYPE_PREVENT_DEBUFF;
     retObj.effect.push(effectObj);
     break;
   case 20176 : 
@@ -455,7 +459,8 @@ module.exports.getBuffData = function(eff) {
     effectObj.key = 'magReduce';
     retObj.effect.push(effectObj);
     effectObj = {};
-    effectObj.code = 11;
+    effectObj.active = cons.ACTIVE_TYPE_DURATION_END;
+    effectObj.code = cons.EFFECT_TYPE_SELF_BUFF;
     effectObj.buffCode = 201706;
     effectObj.dur = 2;
     retObj.effect.push(effectObj);
