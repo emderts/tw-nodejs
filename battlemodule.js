@@ -437,6 +437,7 @@ function resolveEffects(winner, loser, effects, damage) {
     if (effects[i].chkDmgType && effects[i].chkDmgType !== damage.type) {
       continue;
     }
+    var stackMpl = effects[i].buff ? (effects[i].buff.stack ? effects[i].buff.stack : 1) : 1;
     if (effects[i].code === cons.EFFECT_TYPE_SELF_BUFF || effects[i].code === cons.EFFECT_TYPE_OPP_BUFF) {
       var buffObj = buffMdl.getBuffData(effects[i]);
       buffObj.dur = effects[i].buffDur;
@@ -474,11 +475,12 @@ function resolveEffects(winner, loser, effects, damage) {
       }
       var act = (valueUsed > 0) ? '회복했다' : '잃었다';
       result += winner.name + getUnnun(winner.nameType) + ' ' + target + '를 ' + Math.abs(valueUsed) + ' ' + act + '!<br>';
-    } else if (effects[i].code === cons.EFFECT_TYPE_ADD_HIT || effects[i].code === cons.EFFECT_TYPE_SELF_HIT) {
+    } else if (effects[i].code === cons.EFFECT_TYPE_ADD_HIT || effects[i].code === cons.EFFECT_TYPE_SELF_HIT || effects[i].code === cons.EFFECT_TYPE_OPP_HIT) {
       var tempObj = {};
-      tempObj.damage = effects[i].value;
+      tempObj.damage = effects[i].value * stackMpl;
       tempObj.type = effects[i].type;
-      var target = effects[i].code === cons.EFFECT_TYPE_SELF_HIT ? winner : loser;
+      var source = effects[i].code === cons.EFFECT_TYPE_OPP_HIT ? loser : winner;
+      var target = effects[i].code === cons.EFFECT_TYPE_ADD_HIT ? loser : winner;
       
       if (effects[i].buffTarget) {
         if (effects[i].separate) {
@@ -640,18 +642,10 @@ function resolveTurnBegin(winner, loser) {
 
 function resolveTurnBeginChar(chara) {
 
+  resolveEffects(chara, opp, getBuffEffects(chara, cons.ACTIVE_TYPE_TURN_START), null);
   for (buff of chara.buffs) {
     if (buff.durOff === cons.DURATION_TYPE_TURN_START) {
       buff.dur--;
-    }
-    if (buff.dur >= 0) {
-      for (eff of buff.effect) {
-      if (eff.code === 11 && buff.dur === 0) {
-        var buffObj = buffMdl.getBuffData(eff);
-        buffObj.dur = eff.dur;
-        giveBuff(chara, buffObj, true);
-      }
-      }
     }
   }
   chara.buffs = chara.buffs.filter(x => (x.dur > 0) || (x.dur === null));
@@ -681,52 +675,10 @@ function resolveTurnEndChar(chara, opp) {
     chara.curHp = chara.stat.maxHp;
   }
 
+  resolveEffects(chara, opp, getBuffEffects(chara, cons.ACTIVE_TYPE_TURN_END), null);
   for (buff of chara.buffs) {
     if (buff.durOff === cons.DURATION_TYPE_TURN_END) {
       buff.dur--;
-    }
-    if (buff.dur >= 0) {
-      for (eff of buff.effect) {
-        if (eff.code === 1) {
-          var stackMpl = buff.stack ? buff.stack : 1;
-          eff.damage = eff.value * stackMpl;
-          if (eff.isPercentMax) {
-            eff.damage *= chara.stat.maxHp;
-          } else if (eff.isPercentCur) {
-            eff.damage *= chara.curHp;
-          }
-          var damage = calcDamage(opp, chara, eff);
-          if (damage.value <= 0) {
-            continue;
-          }
-
-          result += '<span class="skillDamage">' + chara.name + getUnnun(chara.nameType) + ' [ ' + buff.name + ' ] 효과로 ' + damage.value + '대미지를 입었습니다!';
-          if (damage.crit) {
-            result += ' (치명타)';
-          }
-          result += '</span><br>';
-          dealDamage(opp, chara, damage);
-        } else if (eff.code === 4) {
-          var stackMpl = buff.stack ? buff.stack : 1;
-          eff.damage = eff.value * stackMpl;
-          var damage = calcDamage(chara, opp, eff);
-
-          result += '<span class="skillDamage">' + opp.name + getUnnun(opp.nameType) + ' [ ' + buff.name + ' ] 효과로 ' + damage.value + '대미지를 입었습니다!';
-          if (damage.crit) {
-            result += ' (치명타)';
-          }
-          result += '</span><br>';
-          dealDamage(chara, opp, damage);
-        } else if (eff.code === 14 && eff.active === cons.ACTIVE_TYPE_TURN_END) {
-          if (eff.isPercent) {
-            var rval = eff.value * chara.stat[eff.key];
-          }
-          var buffObj = buffMdl.getBuffData(eff);
-          buffObj.dur = eff.dur;
-          buffObj.effect[0].value = Math.round(rval);
-          giveBuff(chara, buffObj, true);
-        }
-      }
     }
   }
   chara.buffs = chara.buffs.filter(x => (x.dur > 0) || (x.dur === null));
@@ -800,6 +752,13 @@ function getItemEffects(chara, active) {
   return rval;
 }
 
+function getBuffEffects(chara, active) {
+  if (!chara.buffs || chara.buffs.length === 0) {
+    return [];
+  }
+  return chara.buffs.map(x => {x.effect.buff = x; return x.effect;}).reduce((acc, val) => acc.concat(val)).filter(x => (x.active === active));
+}
+
 function calcStats(chara) {
   for (var key in chara.base) {
     chara.stat[key] = chara.base[key];
@@ -813,19 +772,21 @@ function calcStats(chara) {
     }
   }
 
-  for (val of findBuffByCode(chara, 3)) {
+  for (val of getBuffEffects(chara, cons.ACTIVE_TYPE_CALC_STATS)) {
     var stackMpl = val.buff ? (val.buff.stack ? val.buff.stack : 1) : 1;
-    chara.stat[val.key] += val.value * stackMpl;
+    if (val.code === cons.EFFECT_TYPE_STAT_ADD) {
+      chara.stat[val.key] += val.value * stackMpl;
+    }
   }
-
-  for (val of findBuffByCode(chara, 10)) {
+  
+  // multiplication must be last (x0 case)
+  for (val of getBuffEffects(chara, cons.ACTIVE_TYPE_CALC_STATS)) {
     var stackMpl = val.buff ? (val.buff.stack ? val.buff.stack : 1) : 1;
-    chara.stat[val.key] *= Math.pow(val.value, stackMpl);
-  }
-
-  for (val of findBuffByCode(chara, 19)) {
-    var stackMpl = val.buff ? (val.buff.stack ? val.buff.stack : 1) : 1;
-    chara.stat[val.key] *= (1 - val.value * stackMpl);
+    if (val.code === cons.EFFECT_TYPE_STAT_MULTIPLY) {
+      chara.stat[val.key] *= Math.pow(val.value, stackMpl);
+    } else if (val.code === cons.EFFECT_TYPE_STAT_PERCENTAGE) {
+      chara.stat[val.key] *= (1 + val.value * stackMpl);
+    }
   }
 }
 
