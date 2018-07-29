@@ -61,9 +61,9 @@ const item = require('./items');
   effectObj.chance = 1;
   effectObj.buffCode = 20101;
   effectObj.buffDur = 2;
-  effectObj.value = 15;
+  effectObj.value = 0.6;
   skillObj.effect.push(effectObj);
-  skillObj.tooltip = '100\% 확률로 자신에게 2턴간 [혼돈의 힘] 버프 부여<br><br>[혼돈의 힘] : 혼돈의 화살 공격력 +15';
+  skillObj.tooltip = '100\% 확률로 자신에게 2턴간 [혼돈의 힘] 버프 부여<br><br>[혼돈의 힘] : 혼돈의 화살 공격력 +0.6';
   charLeft.skill.base.push(skillObj);
 
   skillObj = {};
@@ -137,7 +137,7 @@ const item = require('./items');
   effectObj = {};
   effectObj.code = cons.EFFECT_TYPE_OPP_BUFF;
   effectObj.chance = 1;
-  effectObj.buffCode = 20103;
+  effectObj.buffCode = 20104;
   effectObj.buffDur = 5;
   effectObj.value = 0.4;
   skillObj.effect.push(effectObj);
@@ -166,8 +166,9 @@ const item = require('./items');
   itemObj.rank = 9;
   itemObj.rarity = cons.ITEM_RARITY_RARE;
   itemObj.stat = {};
-  itemObj.stat.phyAtk = 12;
-  itemObj.stat.spRegen = 4;
+  itemObj.stat.phyAtk = 14;
+  itemObj.stat.magAtk = 14;
+  itemObj.stat.spRegen = 3;
   itemObj.effect = [];
   charRight.items.weapon = itemObj;
   itemObj = {};
@@ -177,7 +178,8 @@ const item = require('./items');
   itemObj.rank = 8;
   itemObj.rarity = cons.ITEM_RARITY_COMMON;
   itemObj.stat = {};
-  itemObj.stat.maxHp = 120;
+  itemObj.stat.maxHp = 65;
+  itemObj.stat.phyReduce = 0.1;
   itemObj.stat.magReduce = 0.1;
   itemObj.effect = [];
   charRight.items.armor = itemObj;
@@ -188,7 +190,7 @@ const item = require('./items');
   itemObj.rank = 9;
   itemObj.rarity = cons.ITEM_RARITY_EPIC;
   itemObj.stat = {};
-  itemObj.stat.crit = 0.25;
+  itemObj.stat.crit = 0.2;
   itemObj.effect = [];
   charRight.items.subarmor = itemObj;
 
@@ -296,22 +298,6 @@ const item = require('./items');
   
   charSeriers.skill = {};
   charSeriers.skill.base = [];
-  charSeriers.items = {};
-  itemObj = {};
-  itemObj.name = '테스터의 검 9';
-  itemObj.nameType = cons.NAME_KOR_END_CONS;
-  itemObj.type = cons.ITEM_TYPE_WEAPON;
-  itemObj.stat = {};
-  itemObj.stat.phyAtk = 11;
-  itemObj.stat.magAtk = 11;
-  itemObj.stat.maxHp = 64;
-  itemObj.stat.phyReduce = 0.01;
-  itemObj.stat.magReduce = 0.01;
-  itemObj.stat.spRegen = 1;
-  itemObj.stat.hpRegen = 1;
-  itemObj.stat.crit = 0.01;
-  itemObj.effect = [];
-  charSeriers.items.weapon = itemObj;
 
   var skillObj = {};
   skillObj.code = 20171;
@@ -447,10 +433,6 @@ const item = require('./items');
   
   charPsi.skill = {};
   charPsi.skill.base = [];
-  charPsi.items = {};
-  itemObj = {name : '테스터의 검 9', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_WEAPON, stat : {phyAtk : 11, magAtk : 11, maxHp : 62, phyReduce : 0.01, magReduce : 0.01, spRegen : 2, hpRegen : 1, crit : 0.02}};
-  itemObj.effect = [];
-  charPsi.items.weapon = itemObj;
 
   var skillObj = {};
   skillObj.code = 20176;
@@ -605,7 +587,6 @@ const item = require('./items');
   
   charJulius.skill = {};
   charJulius.skill.base = [];
-  charJulius.items = {};
 
   var skillObj = {};
   skillObj.code = 201711;
@@ -719,22 +700,6 @@ const item = require('./items');
   
   charAeika.skill = {};
   charAeika.skill.base = [];
-  charAeika.items = {};
-  itemObj = {};
-  itemObj.name = '테스터의 검 9';
-  itemObj.nameType = cons.NAME_KOR_END_CONS;
-  itemObj.type = cons.ITEM_TYPE_WEAPON;
-  itemObj.stat = {};
-  itemObj.stat.phyAtk = 11;
-  itemObj.stat.magAtk = 11;
-  itemObj.stat.maxHp = 64;
-  itemObj.stat.phyReduce = 0.01;
-  itemObj.stat.magReduce = 0.01;
-  itemObj.stat.spRegen = 1;
-  itemObj.stat.hpRegen = 1;
-  itemObj.stat.crit = 0.01;
-  itemObj.effect = [];
-  charAeika.items.weapon = itemObj;
 
   var skillObj = {};
   skillObj.code = 201716;
@@ -941,7 +906,6 @@ const item = require('./items');
   
   charAeohelm.skill = {};
   charAeohelm.skill.base = [];
-  charAeohelm.items = {}
 
   var skillObj = {};
   skillObj.code = 201721;
@@ -1082,10 +1046,6 @@ const item = require('./items');
   
   charBks.skill = {};
   charBks.skill.base = [];
-  charBks.items = {}
-  itemObj = {name : '테스터의 검 9', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_WEAPON, stat : {phyAtk : 11, magAtk : 11, maxHp : 62, phyReduce : 0.01, magReduce : 0.01, spRegen : 2, hpRegen : 1, crit : 0.02}};
-  itemObj.effect = [];
-  charBks.items.weapon = itemObj;
 
   var skillObj = {};
   skillObj.code = 201726;
@@ -1230,12 +1190,12 @@ const item = require('./items');
   
   function _initChar(char) {
     char.stat = {};
-    char.stat.maxHp = 500;
+    char.stat.maxHp = 250;
     char.stat.spCharge = 5;
     char.stat.hpRegen = 0;
     char.stat.spRegen = 5;
-    char.stat.phyAtk = 20;
-    char.stat.magAtk = 20;
+    char.stat.phyAtk = 25;
+    char.stat.magAtk = 25;
     char.stat.crit = 0.05;
     char.stat.critDmg = 1.5;
     char.stat.phyReduce = 0;
@@ -1251,16 +1211,21 @@ const item = require('./items');
     char.base = JSON.parse(JSON.stringify(char.stat));
     char.inventory = [];
     char.items = {};
+    char.items.weapon = item.list[9];
+    char.items.armor = item.list[141];
+    char.items.subarmor = item.list[167];
+    char.items.trinket = item.list[242];
     char.rank = 9;
     char.level = 1;
     char.exp = 0;
     char.reqExp = 100;
     char.statPoint = 0;
     char.premiumPoint = 0;
+    char.battleCnt = 0;
+    char.winCnt = 0;
   }
-  charJulius.items.weapon = item.list[212];
-  charAeohelm.items.weapon = item.list[213];
   
+  charJulius.items.weapon = item.list[211];
   module.exports.kines = charLeft;
   module.exports.lk = charRight;
   module.exports.seriers = charSeriers;

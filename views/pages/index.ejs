@@ -194,7 +194,7 @@
         <tr>
           <td class="charViewTitle">피로도</td>
           <td class="charViewContent"><%= actionPoint %></td>
-          <td class="charViewContent"></td>
+          <td class="charViewContent"><%= char.expBoost ? 'Boost ' + char.expBoost : '' %></td>
         </tr>
         <tr>
           <td class="charViewTitle">스탯 포인트</td>
@@ -204,6 +204,11 @@
         <tr>
           <td class="charViewTitle">프리미엄 포인트</td>
           <td class="charViewContent"><%= char.premiumPoint %></td>
+          <td class="charViewContent"></td>
+        </tr>
+        <tr>
+          <td class="charViewTitle">전적</td>
+          <td class="charViewContent"><%= char.battleCnt %>전 <%= char.winCnt %>승</td>
           <td class="charViewContent"></td>
         </tr>
       <% for ([key, val] of Object.entries(char.stat)) {  
@@ -413,6 +418,9 @@
       </div>
       <div class="menuItem">
         <a href="/viewList">캐릭터 정보 보기</a>
+      </div>
+      <div class="menuItem">
+        <a href="/premiumShop">프리미엄 샵</a>
       </div>
     </div>
     <%  } else { %>

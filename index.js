@@ -39,10 +39,11 @@ express()
 .post('/battleLog', procBattleLog)
 .get('/viewList', procViewList)
 .post('/viewChar', procView)
+.get('/premiumShop', procPremiumShop)
+.post('/useShop', procUseShop)
 .post('/useStatPoint', procUseStatPoint)
 .post('/doRankup', procRankup)
 .get('/test', (req, res) => res.render('pages/battle', {result: battlemodule.doBattle(chara.julius, chara.aeohelm).result}))
-.get('/test2', (req, res) => res.send(procFullTest()))
 .get('/test3', (req, res) => res.send(setCharacter('kemderts', 2, chara.kines)))
 .get('/test4', (req, res) => res.send(setCharacter('thelichking', 1, chara.lk)))
 .get('/test5', (req, res) => res.render('pages/resultCard', {name: 'test', rarity: Math.floor(Math.random() * 5)}))
@@ -188,6 +189,10 @@ async function procViewList(req, res) {
   }
 }
 
+async function procPremiumShop(req, res) {
+  res.render('pages/premiumShop', {});
+}
+
 async function procView(req, res) {
   try {
     const client = await pool.connect();
@@ -243,11 +248,15 @@ async function procBattle(req, res) {
       addExp(right, re.expRight);
       addResultCard(left);
       addResultCard(right);
+      left.battleCnt++;
+      right.battleCnt++;
       if (re.winnerLeft) {
         addResultCard(left);
+        left.winCnt++;
       }
       if (re.winnerRight) {
         addResultCard(right);
+        right.winCnt++;
       }
       await client.query('update characters set char_data = $1, actionPoint = $2 where uid = $3', [JSON.stringify(left), cap-1,  cuid]);
       await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(right), body.charUid]);
@@ -325,6 +334,42 @@ async function procUnequip (req, res) {
     }
     client.release();
     res.redirect('/');
+  } catch (err) {
+    console.error(err);
+    res.send('내부 오류');
+  }
+}
+
+async function procUseShop (req, res) {
+  try {
+    var chara;
+    const body = req.body;
+    const client = await pool.connect();
+    const charRow = await getCharacter(sess.userUid);
+    const char = JSON.parse(charRow.char_data);
+    if (body.option === 1) {
+      if (char.premiumPoint < 5) {
+        res.send('프리미엄 포인트가 부족합니다.');
+      } else {
+        char.premiumPoint -= 5;
+        var picked = makeDayStone();
+        char.inventory.push(picked);
+      }
+    } else if (body.option === 2) {
+      if (char.premiumPoint < 10) {
+        res.send('프리미엄 포인트가 부족합니다.');
+      } else if (char.expBoost > 0) {
+        res.send('이미 부스트를 구매했습니다.');
+      } else {
+        char.premiumPoint -= 10;
+        char.expBoost = 3;
+      }
+    }
+    await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
+    client.release();
+    if (!res.headersSent) {
+      res.redirect('/');
+    }
   } catch (err) {
     console.error(err);
     res.send('내부 오류');
