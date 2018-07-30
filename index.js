@@ -342,9 +342,9 @@ async function procUnequip (req, res) {
 
 async function procUseShop (req, res) {
   try {
-    var chara;
     const body = req.body;
     const client = await pool.connect();
+    const sess = req.session; 
     const charRow = await getCharacter(sess.userUid);
     const char = JSON.parse(charRow.char_data);
     if (body.option === 1) {

@@ -1190,7 +1190,7 @@ const item = require('./items');
   
   function _initChar(char) {
     char.stat = {};
-    char.stat.maxHp = 250;
+    char.stat.maxHp = 1250;
     char.stat.spCharge = 5;
     char.stat.hpRegen = 0;
     char.stat.spRegen = 5;
@@ -1213,7 +1213,7 @@ const item = require('./items');
     char.items = {};
     char.items.weapon = item.list[9];
     char.items.armor = item.list[141];
-    char.items.subarmor = item.list[167];
+    char.items.subarmor = item.list[235];//167];
     char.items.trinket = item.list[242];
     char.rank = 9;
     char.level = 1;
@@ -1224,8 +1224,9 @@ const item = require('./items');
     char.battleCnt = 0;
     char.winCnt = 0;
   }
-  
-  charJulius.items.weapon = item.list[211];
+
+  charJulius.items.weapon = item.list[280];
+  charAeohelm.items.weapon = item.list[279];
   module.exports.kines = charLeft;
   module.exports.lk = charRight;
   module.exports.seriers = charSeriers;

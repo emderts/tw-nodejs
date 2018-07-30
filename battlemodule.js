@@ -203,9 +203,7 @@ function _doBattleTurn() {
     result += '</span><br>';
 
     if (checkDrive(loser, cons.ACTIVE_TYPE_TAKE_HIT)) {
-      loser.curSp -= loser.skill.drive.cost;
-      result += '<div class="driveSkill">[ ' + loser.name + ' ] Drive Skill - [ ' + loser.skill.drive.name + ' ] 발동!</div>';
-      resolveEffects(loser, winner, loser.skill.drive.effect, damage);
+      resolveDrive(loser, winner, damage);
     }
 
     resolveEffects(winner, loser, getBuffEffects(winner, cons.ACTIVE_TYPE_ATTACK), damage, skillUsed);
@@ -214,9 +212,7 @@ function _doBattleTurn() {
     resolveEffects(loser, winner, getItemEffects(loser, cons.ACTIVE_TYPE_TAKE_HIT), damage);
     resolveEffects(winner, loser, skillUsed.effect, damage);
     if (checkDrive(winner, cons.ACTIVE_TYPE_ATTACK)) {
-      winner.curSp -= winner.skill.drive.cost;
-      result += '<div class="driveSkill">[ ' + winner.name + ' ] Drive Skill - [ ' + winner.skill.drive.name + ' ] 발동!</div>';
-      resolveEffects(winner, loser, winner.skill.drive.effect, damage);
+      resolveDrive(winner, loser, damage);
     }
     
     dealDamage(winner, loser, damage);
@@ -238,6 +234,8 @@ function _doBattleTurn() {
     resolveEffects(winner, loser, winner.skill.special.effect);
     resolveEffects(winner, loser, getBuffEffects(winner, cons.ACTIVE_TYPE_USE_SPECIAL), damage);
     resolveEffects(winner, loser, getItemEffects(winner, cons.ACTIVE_TYPE_USE_SPECIAL), damage);
+    resolveEffects(loser, winner, getBuffEffects(loser, cons.ACTIVE_TYPE_OPP_USE_SPECIAL), damage);
+    resolveEffects(loser, winner, getItemEffects(loser, cons.ACTIVE_TYPE_OPP_USE_SPECIAL), damage);
   }
   if (loser.skill.special.cost <= loser.curSp) {
     result += '<div class="specialSkill">[ ' + loser.name + ' ] Special Skill - [ ' + loser.skill.special.name + ' ] 발동!</div>';
@@ -245,6 +243,8 @@ function _doBattleTurn() {
     resolveEffects(loser, winner, loser.skill.special.effect);
     resolveEffects(loser, winner, getBuffEffects(loser, cons.ACTIVE_TYPE_USE_SPECIAL), damage);
     resolveEffects(loser, winner, getItemEffects(loser, cons.ACTIVE_TYPE_USE_SPECIAL), damage);
+    resolveEffects(winner, loser, getBuffEffects(winner, cons.ACTIVE_TYPE_OPP_USE_SPECIAL), damage);
+    resolveEffects(winner, loser, getItemEffects(winner, cons.ACTIVE_TYPE_OPP_USE_SPECIAL), damage);
   }
 
   resolveTurnEnd(winner, loser);
@@ -257,71 +257,52 @@ function _doBattleTurn() {
 function calcDamage(winner, loser, skill) {
   var retObj = {};
   var isPhysical = (skill.type === cons.DAMAGE_TYPE_PHYSICAL);
-  var atkRat = isPhysical ? winner.stat.phyAtk : winner.stat.magAtk;
-  var defReduce = (skill.type % 2 == 1) ? loser.stat.phyReduce : loser.stat.magReduce;
-  var randDmg = Math.random() * 0.2 + 0.9;
-  var skillRat = skill.damage;
-
-  for (val of getBuffEffects(winner, cons.ACTIVE_TYPE_CALC_DAMAGE)) {
-    if (val.code === cons.EFFECT_TYPE_ADD_DAMAGE && val.skillCode === skill.code) {
-      var namt = val.buffTarget ? val.value * findBuffByIds(winner, val.buffTarget).length : val.value;
-      skillRat += namt;
-      result += '[ ' + val.buff.name + ' ] 효과로 공격 계수가 ' + namt + ' 올랐습니다!<br>';
-    } else if (val.code === cons.EFFECT_TYPE_ADD_DAMAGE && val.anySkill && skill.code) {
-      skillRat *= val.value;
-      result += '[ ' + val.buff.name + ' ] 효과로 공격력이 ' + Math.round((val.value - 1) * 100) + '\% 올랐습니다!<br>';      
-    } 
-  }
-
-  for (val of getItemEffects(winner, cons.ACTIVE_TYPE_CALC_DAMAGE)) {
-    if (val.code === cons.EFFECT_TYPE_MULTIPLY_DAMAGE && val.buffCode && findBuffByIds(loser, [val.buffCode]).length > 0) {
-      skillRat *= val.value;
-      result += '공격력이 ' + Math.round((val.value - 1) * 100) + '\% 올랐습니다!<br>';         
-    }
-  }
-  if (isPhysical) {
-    var diff = winner.stat.phyAtkMax - winner.stat.phyAtkMin;
-    atkRat += Math.floor(Math.random() * diff) + winner.stat.phyAtkMin;
-  } else {
-    var diff = winner.stat.magAtkMax - winner.stat.magAtkMin;
-    atkRat += Math.floor(Math.random() * diff) + winner.stat.magAtkMin;    
-  }
-
+  retObj.atkRat = isPhysical ? winner.stat.phyAtk : winner.stat.magAtk;
+  retObj.reduce = (skill.type % 2 == 1) ? loser.stat.phyReduce : loser.stat.magReduce;
+  retObj.randDmg = Math.random() * 0.2 + 0.9;
+  retObj.skillRat = skill.damage;
+  retObj.atkMin = isPhysical ? winner.stat.phyAtkMin : winner.stat.magAtkMin;
+  retObj.atkMax = isPhysical ? winner.stat.phyAtkMax : winner.stat.magAtkMax;
+  
+  var diff = retObj.atkMax - retObj.atkMin;
+  retObj.diffDmg = Math.floor(Math.random() * diff) + retObj.atkMin;
   retObj.hit = getRandom(winner.stat.hit - loser.stat.evasion);
   retObj.crit = getRandom(winner.stat.crit);
+  retObj.type = skill.type;
+  
+  resolveEffects(winner, loser, getBuffEffects(winner, cons.ACTIVE_TYPE_CALC_DAMAGE), retObj, skill);
+  resolveEffects(winner, loser, getItemEffects(winner, cons.ACTIVE_TYPE_CALC_DAMAGE), retObj, skill);
+
   if (skill.type !== cons.DAMAGE_TYPE_ABSOLUTE) {
     for (val of findBuffByCode(loser, 10005)) {
       result += '[ ' + val.buff.name + ' ] 효과로 치명타가 적용됩니다!<br>';
-      val.buff.dur = 0;
-      val.buff.effect = [];
-      val.buff.id = -1;
+      removeBuff(val.buff);
       retObj.crit = true;
       break;
     }
   }
-  retObj.reduce = defReduce;
-  retObj.type = skill.type;
 
-  if (skill.type === cons.DAMAGE_TYPE_ABSOLUTE) {
-    atkRat = 1;
-    defReduce = 0;
+  retObj.atkRat += retObj.diffDmg;
+  if (retObj.type === cons.DAMAGE_TYPE_ABSOLUTE) {
+    retObj.atkRat = 1;
+    retObj.reduce = 0;
     retObj.crit = false;
-  } else if (skill.type === cons.DAMAGE_TYPE_PHYSICAL_FIXED || skill.type === cons.DAMAGE_TYPE_MAGICAL_FIXED) {
-    atkRat = 1;
+  } else if (retObj.type === cons.DAMAGE_TYPE_PHYSICAL_FIXED || retObj.type === cons.DAMAGE_TYPE_MAGICAL_FIXED) {
+    retObj.atkRat = 1;
     retObj.type -= 2;
   }
   
-  if (defReduce > 0) {
-    defReduce = winner.stat.pierce < defReduce ? (defReduce - winner.stat.pierce) : 0;
+  if (retObj.reduce > 0) {
+    retObj.reduce = winner.stat.pierce < retObj.reduce ? (retObj.reduce - winner.stat.pierce) : 0;
   }
-  var damage = (skillRat * atkRat) * (1 - defReduce);
+  var damage = (retObj.skillRat * retObj.atkRat) * (1 - retObj.reduce);
   if (retObj.crit) {
     damage *= winner.stat.critDmg;
     resolveEffects(winner, loser, getBuffEffects(winner, cons.ACTIVE_TYPE_DEAL_DAMAGE_CRIT));
   }
   if (skill.type !== cons.DAMAGE_TYPE_ABSOLUTE) {
     damage -= loser.stat.dmgReduce;
-    damage *= randDmg;
+    damage *= retObj.randDmg;
   }
   retObj.value = damage > 0 ? Math.round(damage) : 0;
 
@@ -339,8 +320,7 @@ function dealDamage(src, dst, damage) {
       } else {
         damageShield -= val.value;
         val.value = 0;
-        val.buff.dur = 0;
-        val.buff.id = -1;
+        removeBuff(val.buff);
         shielded = true;
       } 
     }
@@ -383,6 +363,9 @@ function resolveEffects(winner, loser, effects, damage, skill) {
     if (eff.chkHp && winner.curHp > (winner.stat.maxHp * eff.chkHp)) {
       continue;
     }
+    if (eff.chkOppHp && loser.curHp > (loser.stat.maxHp * eff.chkOppHp)) {
+      continue;
+    }
     if (eff.chkSp && winner.curSp < eff.chkSp) {
       continue;
     }
@@ -419,13 +402,22 @@ function resolveEffects(winner, loser, effects, damage, skill) {
       } 
 
       var recv = (eff.code === cons.EFFECT_TYPE_SELF_BUFF) ? winner : loser;
-      giveBuff(recv, buffObj, true);
+      giveBuff(winner, recv, buffObj, true);
 
     } else if (eff.code === cons.EFFECT_TYPE_SELF_SP || eff.code === cons.EFFECT_TYPE_SELF_HP || eff.code === cons.EFFECT_TYPE_OPP_SP) {
       var valueUsed = eff.isPercentMax ? eff.value * winner.stat.maxHp : eff.value;
       var dst = eff.code === cons.EFFECT_TYPE_OPP_SP ? loser : winner;
       if (eff.buffTarget) {
         valueUsed *= findBuffByIds(winner, eff.buffTarget).length;
+      }
+      if (eff.isPercentChar) {
+        valueUsed *= source[eff.percentKey];
+      } else if (eff.isPercentStat) {
+        valueUsed *= source.stat[eff.percentKey];
+      } else if (eff.isPercentBase) {
+        valueUsed *= source.base[eff.percentKey];
+      } else if (eff.isPercentDamage) {
+        valueUsed *= damage.value;
       }
       valueUsed = Math.round(valueUsed * stackMpl);
       var target = 'SP';
@@ -494,7 +486,7 @@ function resolveEffects(winner, loser, effects, damage, skill) {
       buffObj.effect[0].value = Math.round(buffObj.effect[0].value * damage.value);
 
       result += winner.name + getUnnun(winner.nameType) + ' ' + buffObj.effect[0].value + '만큼 보호막을 얻었습니다!<br>';
-      giveBuff(winner, buffObj, false);
+      giveBuff(winner, winner, buffObj, false);
     } else if (eff.code === cons.EFFECT_TYPE_CANCEL_DAMAGE) {
       var dmgCancelled = Math.round(damage.value * eff.value);
       winner.curHp += dmgCancelled;
@@ -507,10 +499,8 @@ function resolveEffects(winner, loser, effects, damage, skill) {
       var recv = (eff.code === cons.EFFECT_TYPE_SELF_CONVERT_BUFF) ? winner : loser;
       var tgt = findBuffByIds(recv, eff.buffTarget);
       if (tgt.length > 0) {
-        tgt[0].effect = [];
-        tgt[0].dur = 0;
-        tgt[0].id = -1;
-        giveBuff(recv, buffObj, true);
+        removeBuff(tgt[0]);
+        giveBuff(winner, recv, buffObj, true);
       } 
 
     } else if (eff.code === cons.EFFECT_TYPE_SELF_BUFF_REFRESH || eff.code === cons.EFFECT_TYPE_OPP_BUFF_REFRESH) {
@@ -524,9 +514,7 @@ function resolveEffects(winner, loser, effects, damage, skill) {
           if (eff.stack) {
             val.stack += eff.stack;
             if (val.stack == 0) {
-              val.dur = 0;
-              val.effect = [];
-              val.id  = -1;
+              removeBuff(val);
             }
           }
         }
@@ -539,9 +527,7 @@ function resolveEffects(winner, loser, effects, damage, skill) {
           if (eff.stack) {
             val.buff.stack += eff.stack;
             if (val.buff.stack == 0) {
-              val.dur = 0;
-              val.effect = [];
-              val.id  = -1;
+              removeBuff(val);
             }
           }
         }
@@ -600,6 +586,43 @@ function resolveEffects(winner, loser, effects, damage, skill) {
       }
       result += '[ ' + winner.items[eff.key].name + ' ] 아이템이 [ ' + picked.name + ' ] 아이템으로 바뀌었다!<br>';
       winner.items[eff.key] = picked;
+    } else if (eff.code === cons.EFFECT_TYPE_ADD_DAMAGE) {
+      if (eff.skillCode && eff.skillCode === skill.code) {
+        var namt = eff.buffTarget ? eff.value * findBuffByIds(winner, eff.buffTarget).length : eff.value;
+        damage.skillRat += namt;
+        result += '[ ' + eff.buff.name + ' ] 효과로 공격 계수가 ' + namt + ' 올랐습니다!<br>';
+      } else {
+        continue;
+      }
+    } else if (eff.code === cons.EFFECT_TYPE_MULTIPLY_DAMAGE) {
+      if (eff.buffCode && findBuffByIds(loser, [eff.buffCode]).length > 0) {
+        damage.skillRat *= eff.value;
+        result += '공격력이 ' + Math.round((eff.value - 1) * 100) + '\% 올랐습니다!<br>';
+      } else if (eff.anySkill && skill.code) {
+        damage.skillRat *= eff.value;
+        result += '[ ' + eff.buff.name + ' ] 효과로 공격력이 ' + Math.round((eff.value - 1) * 100) + '\% 올랐습니다!<br>';      
+      } else {
+        continue;
+      }
+    } else if (eff.code === cons.EFFECT_TYPE_RESOLVE_MAX_DAMAGE) {
+      if (damage.type !== cons.DAMAGE_TYPE_PHYSICAL && damage.type !== cons.DAMAGE_TYPE_MAGICAL) {
+        continue;
+      }
+      damage.diffDmg = damage.atkMax;
+      result += '최대 공격력이 발휘됩니다!<br>';
+    } else if (eff.code === cons.EFFECT_TYPE_CHANGE_ATTACK_TYPE) {
+      if (eff.anySkill && !skill.code) {
+        continue;
+      }
+      result += 'n 공격력이 적용됩니다!<br>';
+      damage.type = eff.type;
+      damage.atkRat = eff.type === cons.DAMAGE_TYPE_PHYSICAL ? winner.stat.phyAtk : winner.stat.magAtk;
+    } else if (eff.code === cons.EFFECT_TYPE_REDUCE_BUFF_DURATION) {
+      if (eff.buffCode !== damage.id) {
+        continue;
+      }
+      result += '[ ' + damage.name + ' ] 효과의 지속시간이' + eff.value + ' 감소합니다!<br>';
+      damage.dur -= eff.value;
     }
     
     if (eff.setCooldown) {
@@ -611,15 +634,11 @@ function resolveEffects(winner, loser, effects, damage, skill) {
     if (eff.stackReduce) {
       eff.buff.stack -= eff.stackReduce;
       if (eff.buff.stack <= 0) {
-        eff.buff.dur = 0;
-        eff.buff.id = -1;
-        eff.buff.effect = [];
+        removeBuff(eff.buff);
       }
     }
     if (eff.removeBuff) {
-      eff.buff.dur = 0;
-      eff.buff.id = -1;
-      eff.buff.effect = [];
+      removeBuff(eff.buff);
     }
     if (eff.removeEffect) {
       eff.code = -1;
@@ -634,14 +653,10 @@ function resolveTurnBegin(winner, loser) {
   resolveEffects(winner, loser, getItemEffects(winner, cons.ACTIVE_TYPE_TURN_START), null);
   resolveEffects(loser, winner, getItemEffects(loser, cons.ACTIVE_TYPE_TURN_START), null);
   if (checkDrive(winner, cons.ACTIVE_TYPE_TURN_START)) {
-    winner.curSp -= winner.skill.drive.cost;
-    result += '<div class="driveSkill">[ ' + winner.name + ' ] Drive Skill - [ ' + winner.skill.drive.name + ' ] 발동!</div>';
-    resolveEffects(winner, loser, winner.skill.drive.effect);
+    resolveDrive(winner, loser);
   }
   if (checkDrive(loser, cons.ACTIVE_TYPE_TURN_START)) {
-    loser.curSp -= loser.skill.drive.cost;
-    result += '<div class="driveSkill">[ ' + loser.name + ' ] Drive Skill - [ ' + loser.skill.drive.name + ' ] 발동!</div>';
-    resolveEffects(loser, winner, loser.skill.drive.effect);
+    resolveDrive(loser, winner);
   }
   calcStats(winner);
   calcStats(loser);
@@ -665,14 +680,10 @@ function resolveTurnBeginChar(chara, opp) {
 
 function resolveTurnEnd(winner, loser) {
   if (checkDrive(winner, cons.ACTIVE_TYPE_TURN_END)) {
-    winner.curSp -= winner.skill.drive.cost;
-    result += '<div class="driveSkill">[ ' + winner.name + ' ] Drive Skill - [ ' + winner.skill.drive.name + ' ] 발동!</div>';
-    resolveEffects(winner, loser, winner.skill.drive.effect);
+    resolveDrive(winner, loser);
   }
   if (checkDrive(loser, cons.ACTIVE_TYPE_TURN_END)) {
-    loser.curSp -= loser.skill.drive.cost;
-    result += '<div class="driveSkill">[ ' + loser.name + ' ] Drive Skill - [ ' + loser.skill.drive.name + ' ] 발동!</div>';
-    resolveEffects(loser, winner, loser.skill.drive.effect);
+    resolveDrive(loser, winner);
   }
   calcStats(winner);
   calcStats(loser);
@@ -714,11 +725,13 @@ function findBuffByIds(chara, ids) {
   return chara.buffs.filter(x => ids.includes(x.id));
 }
 
-function giveBuff(recv, buffObj, printFlag) {
+function giveBuff(src, recv, buffObj, printFlag) {
   if (findBuffByCode(recv, cons.EFFECT_TYPE_PREVENT_DEBUFF).length > 0 && buffObj.isDebuff && buffObj.dispellable) {
     result += ' [ ' + buffObj.name + ' ] 효과가 무효화되었다!<br>';
     return;
   }
+  resolveEffects(recv, src, getBuffEffects(recv, cons.ACTIVE_TYPE_RECEIVE_BUFF), buffObj);
+  resolveEffects(recv, src, getItemEffects(recv, cons.ACTIVE_TYPE_RECEIVE_BUFF), buffObj);
   
   if (printFlag) {
     result += recv.name + getUnnun(recv.nameType) + ' [ ' + buffObj.name + ' ] 효과를 받았습니다!<br>';
@@ -757,11 +770,23 @@ function giveBuff(recv, buffObj, printFlag) {
   }       
 }
 
+function removeBuff(buff) {
+  buff.id = -1;
+  buff.dur = 0;
+  buff.effect = [];
+}
+
 function checkDrive(chara, active) {
   if (chara.skill.drive.chkNot && findBuffByIds(chara, chara.skill.drive.chkNot).length > 0) {
     return false;
   }
   return chara.skill.drive.active === active && getRandom(chara.skill.drive.chance) && chara.curSp >= chara.skill.drive.cost && findBuffByCode(chara, 10010).length == 0;
+}
+
+function resolveDrive(chara, opp, damage) {
+  chara.curSp -= chara.skill.drive.cost;
+  result += '<div class="driveSkill">[ ' + chara.name + ' ] Drive Skill - [ ' + chara.skill.drive.name + ' ] 발동!</div>';
+  resolveEffects(chara, opp, chara.skill.drive.effect, damage);
 }
 
 function getItemEffects(chara, active) {
@@ -770,7 +795,7 @@ function getItemEffects(chara, active) {
   }
   var rval = [];
   for (val in chara.items) {
-    rval = rval.concat(chara.items[val].effect.filter(x => (x.active == active)));
+    rval = rval.concat(chara.items[val].effect.filter(x => (x.active === active)));
   }
   return rval;
 }
