@@ -1225,8 +1225,8 @@ const item = require('./items');
     char.winCnt = 0;
   }
 
-  charJulius.items.weapon = item.list[280];
-  charAeohelm.items.weapon = item.list[279];
+  charJulius.items.armor = item.list[296];
+  charAeohelm.items.armor = item.list[296];
   module.exports.kines = charLeft;
   module.exports.lk = charRight;
   module.exports.seriers = charSeriers;
