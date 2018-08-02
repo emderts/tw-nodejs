@@ -476,7 +476,7 @@ itemList[297] = { id : 297, name : '크리티컬 어드바이저', type : cons.I
     effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_TURN_START, buffCode : 10027, buffDur : null}] };
 itemList[298] = { id : 298, name : '앨런의 매콤 주먹', type : cons.ITEM_TYPE_SUBARMOR, flavor : 'California에 가면 맛볼 수 있다는 Spicy Fist.', rank : 8, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 38, hit : 0.075 }, 
     effectDesc : '공격 시 3% 확률로 적에게 2턴 간 [화상] 또는 [기절] 상태이상 부여', 
-    effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, active : cons.ACTIVE_TYPE_ATTACK, chance : 0.03, buffCode : [1, 4], buffDur : 2}] };
+    effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, active : cons.ACTIVE_TYPE_ATTACK, chance : 0.03, buffCode : [1, 4], buffDur : 2, multiple : true}] };
 itemList[299] = { id : 299, name : '염동 가시방패', type : cons.ITEM_TYPE_SUBARMOR, flavor : '평범하지 않은 나무 방패. 초능력에 의해 둥둥 떠다니는 가시가 달렸다.', rank : 8, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 38, dmgReduce : 5 }, 
     effectDesc : '피격 시 피해량의 2.5%를 절대 피해로 되돌려 줌', 
     effect : [{code : cons.EFFECT_TYPE_ADD_HIT, active : cons.ACTIVE_TYPE_TAKE_HIT, type : cons.DAMAGE_TYPE_ABSOLUTE, isPercentDamage : true, value : 0.025}] };
@@ -509,7 +509,7 @@ itemList[309] = { id : 309, name : '뱀피릭 맨틀', type : cons.ITEM_TYPE_SUB
     effect : [{code : cons.EFFECT_TYPE_SELF_HP, active : cons.ACTIVE_TYPE_ATTACK, isPercentDamage : true, value : 0.05}] };
 itemList[310] = { id : 310, name : '삼중결계 장갑', type : cons.ITEM_TYPE_SUBARMOR, flavor : '전설적인 결계사 에이카의 마력이 깃든 장갑. 결계사가 아닌 사람이라도 이 장갑을 이용하면 미숙하게나마 마력의 결정체인 \'영석\'을 만들 수 있다.', rank : 8, rarity : cons.ITEM_RARITY_EPIC, stat : { maxHp : 40, hit : 0.075 }, 
     effectDesc : '턴 시작 시 10% 확률로 자신에게 4턴 간 [미완성 영석-악], [미완성 영석-봉인], [미완성 영석-수호] 버프 중 하나 부여<br><br>[미완성 영석-악] : 8 절대 피해<br><br>[미완성 영석-봉인] : 적의 HP/SP재생 -2<br><br>[미완성 영석-수호] : 피해감소 +7', 
-    effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_TURN_START, chance : 0.1, buffCode : [10033, 10034, 10035], buffDur : 4}] };
+    effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_TURN_START, chance : 0.1, buffCode : [10033, 10034, 10035], buffDur : 4, multiple : true}] };
 itemList[311] = { id : 311, name : '시공간 여행자의 장화', type : cons.ITEM_TYPE_SUBARMOR, flavor : '시공간 여행자로 알려진 아르넨 크리우스의 장화. 시간을 기묘하게 뒤트는 힘이 있는 모양이다.', rank : 8, rarity : cons.ITEM_RARITY_EPIC, stat : { maxHp : 45, spRegen : 1, evasion : 0.05 }, 
     effectDesc : '드라이브 스킬 사용 시 20% 확률로 효과를 한 번 추가로 발동', 
     effect : [{code : cons.EFFECT_TYPE_ADD_RESOLUTION, active : cons.ACTIVE_TYPE_USE_DRIVE, chance : 0.2}] };
@@ -571,8 +571,7 @@ itemList[331] = { id : 331, name : '무형의 파편', type : cons.ITEM_TYPE_TRI
     effect : [{code : cons.EFFECT_TYPE_CONVERT_ITEM, active : cons.ACTIVE_TYPE_BATTLE_START, key : 'trinket', randomItem : 8}] };
 itemList[332] = { id : 332, name : '피를 마시는 조각새', type : cons.ITEM_TYPE_TRINKET, flavor : '기괴하게 움직이는 나무로 만든 조각새. 피냄새를 쫓아 먹잇감의 상처를 파먹는다.', rank : 8, rarity : cons.ITEM_RARITY_UNIQUE, stat : {  }, 
     effectDesc : '공격 시 7% 확률로 적에게 3턴 간 [출혈] 상태이상 부여. 해당 [출혈] 상태이상이 사라질 때 자신의 생명력 20 회복', 
-    effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, active : cons.ACTIVE_TYPE_ATTACK, chance : 0.07, buffCode : 3, buffDur : 3, addEffect :
-      [{code : cons.EFFECT_TYPE_OPP_HP, active : cons.ACTIVE_TYPE_DURATION_END, value : 20}]}] };
+    effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, active : cons.ACTIVE_TYPE_ATTACK, chance : 0.07, buffCode : 3, buffDur : 3, addEffect : [{code : cons.EFFECT_TYPE_OPP_HP, active : cons.ACTIVE_TYPE_DURATION_END, value : 20}]}] };
 itemList[333] = { id : 333, name : '고킬렌도스 로메스', type : cons.ITEM_TYPE_TRINKET, flavor : '정체를 도통 알 수 없는 기묘한 물건. 어디에 쓰는 것일까?', rank : 8, rarity : cons.ITEM_RARITY_EPIC, stat : { maxHp : 30, spCharge : 2 }, 
     effectDesc : '턴 시작 시 25% 확률로 자신의 생명력 10과 SP 4 회복, 10% 확률로 적에게 2턴 간 [고파이악시드 로메스] 디버프 부여<br><br>[고파이악시드 로메스] : SP충전/SP재생 0으로 고정', 
     effect : [{code : cons.EFFECT_TYPE_MULTIPLE, active : cons.ACTIVE_TYPE_TURN_START, chance : 0.25, 
@@ -594,13 +593,18 @@ itemList[336] = { id : 336, name : '공간절단기', type : cons.ITEM_TYPE_WEAP
     effectDesc : '공격 성공 시 25% 확률로 저항 0으로 계산', 
     effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_SKILL_WIN, chance : 0.25, buffCode : 10005, buffDur : 1}] };
 itemList[337] = { id : 337, name : '홀리 리로더', type : cons.ITEM_TYPE_WEAPON, flavor : '에레보스의 성십자단이 사용하는 무기. 집단전에 특화된 무기로 공방일체가 가능하다.', rank : 8, rarity : cons.ITEM_RARITY_undefined, stat : { phyAtkMin : 18, phyAtkMax : 18, magAtkMin : 18, magAtkMax : 18, crit : 0.03, critDmg : 0.1 }, 
-    effectDesc : '', effect : [] };
+    effectDesc : '공격 성공 시 1턴 간 자신에게 [홀리 리로더] 버프 부여', 
+    effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_ATTACK, buffCode : 10042, buffDur : 1}] };
 itemList[338] = { id : 338, name : '광신의 셉터', type : cons.ITEM_TYPE_WEAPON, flavor : '광신에 감염된 신관의 셉터. 불길한 기운이 넘처흐른다.', rank : 8, rarity : cons.ITEM_RARITY_EPIC, stat : { phyAtkMin : 14, phyAtkMax : 20, magAtkMin : 22, magAtkMax : 28, hpRegen : -2, crit : 0.04 }, 
-    effectDesc : '', effect : [] };
-itemList[339] = { id : 339, name : '결사의 리액터 슈트', type : cons.ITEM_TYPE_ARMOR, flavor : '에레보스 저항군 중 특별한 임무를 수행하던 결사의 강화 전투복. 뛰어난 기동성은 기본, 상황에 따라 장비 모드를 변환할 수도 있다.', rank : 8, rarity : cons.ITEM_RARITY_EPIC, stat : { phyAtkMin : 6, phyAtkMax : 6, magAtkMin : 6, magAtkMax : 6, phyReduce : 0.027999999999999997, magReduce : 0.027999999999999997, maxHp : 78, hpRegen : 1, spRegen : 1, evasion : 0.13 }, 
-    effectDesc : '<br><br>[리액트 모드] : 회피+15%, [임팩트 모드] : 치명+15%', effect : [] };
-itemList[340] = { id : 340, name : '말없는 한의 동행자', type : cons.ITEM_TYPE_ARMOR, flavor : '에레보스 대륙에 혁명의 도화선을 지핀 사이드제로 혁명군의 무장. 그들의 기억이 담겨있어 막강한 힘을 제공하지만 그들의 결말처럼 허무의 기운이 몸을 잠식한다.', rank : 8, rarity : cons.ITEM_RARITY_EPIC, stat : { phyReduce : 0.027999999999999997, magReduce : 0.027999999999999997, maxHp : 112, critDmg : 0.1 }, 
-    effectDesc : '', effect : [] };
+    effectDesc : '자신의 치명*4만큼 치명피해 증가', 
+    effect : [{code : cons.EFFECT_TYPE_STAT_ADD, active : cons.ACTIVE_TYPE_CALC_STATS, key : 'critDmg', value : 4, isPercentStat : true, percentKey : 'crit'}] };
+itemList[339] = { id : 339, name : '결사의 리액터 슈트', type : cons.ITEM_TYPE_ARMOR, flavor : '에레보스 저항군 중 특별한 임무를 수행하던 결사의 강화 전투복. 뛰어난 기동성은 기본, 상황에 따라 장비 모드를 변환할 수도 있다.', rank : 8, rarity : cons.ITEM_RARITY_EPIC, stat : { phyAtkMin : 6, phyAtkMax : 6, magAtkMin : 6, magAtkMax : 6, phyReduce : 0.028, magReduce : 0.028, maxHp : 78, hpRegen : 1, spRegen : 1, evasion : 0.05 }, 
+    effectDesc : '전투 시작 시 자신에게 [리액트 모드] 버프 부여, 스페셜 스킬 사용 시 [임팩트 모드]와 토글<br><br>[리액트 모드] : 회피 +15%, [임팩트 모드] : 치명 +15%', 
+    effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_BATTLE_START, buffCode : 10043, buffDur : null}] };
+itemList[340] = { id : 340, name : '말없는 한의 동행자', type : cons.ITEM_TYPE_ARMOR, flavor : '에레보스 대륙에 혁명의 도화선을 지핀 사이드제로 혁명군의 무장. 그들의 기억이 담겨있어 막강한 힘을 제공하지만 그들의 결말처럼 허무의 기운이 몸을 잠식한다.', rank : 8, rarity : cons.ITEM_RARITY_EPIC, stat : { phyReduce : 0.028, magReduce : 0.028, maxHp : 112, critDmg : 0.1 }, 
+    effectDesc : '', 
+    effect : [{code : cons.EFFECT_TYPE_ADD_DAMAGE, active : cons.ACTIVE_TYPE_CALC_DAMAGE, value : 0.2, anySkill : true},
+              {code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_TURN_END, buffCode : 10045, buffDur : null}] };
 
 itemList.forEach(function(tgt) {
   tgt.base = JSON.parse(JSON.stringify(tgt.stat));
