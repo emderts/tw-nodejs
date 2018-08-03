@@ -218,7 +218,7 @@ itemList[206] = { id : 206, name : '심플리스트 #9', type : cons.ITEM_TYPE_W
     effectDesc : '', effect : [] };
 itemList[207] = { id : 207, name : '갱단의 비밀무기', type : cons.ITEM_TYPE_WEAPON, flavor : '어느 뒷골목 갱단이 중요한 일에 사용하는 검. 손잡이의 버튼을 누르면 검날에 갈라진 틈을 통해 독이 새어나온다. 잘못 휘두르면 자기가 독을 뒤집어 쓸 수 있다고 한다.', rank : 9, rarity : cons.ITEM_RARITY_RARE, stat : { phyAtkMin : 8, phyAtkMax : 12, magAtkMin : 8, magAtkMax : 12, crit : 0.04 }, 
     effectDesc : '공격 성공 시 20% 확률로 적에게 1턴 간 [중독] 상태이상 부여, 피격 시 10% 확률로 자신에게 1턴 간 [중독] 상태이상 부여', 
-    effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, active : cons.ACTIVE_TYPE_ATTACK, chance : 0.2, buffCode : 2, buffDur : 1}, 
+    effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, active : cons.ACTIVE_TYPE_ATTACK, chance : 0.2, buffCode : 2, buffDur : 2}, 
               {code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_TAKE_HIT, chance : 0.05, buffCode : 2, buffDur : 1}] };
 itemList[208] = { id : 208, name : '유리검', type : cons.ITEM_TYPE_WEAPON, flavor : '유리로 만들어진 검. 아주 예리하지만 금방 날이 깨져 버린다.', rank : 9, rarity : cons.ITEM_RARITY_RARE, stat : { phyAtkMin : 15, phyAtkMax : 21, magAtkMin : 15, magAtkMax : 21, crit : 0.02, critDmg : 0.12 }, 
     effectDesc : '전투 시작 11턴 후 자신에게 [깨진 유리검] 디버프 부여<br><br>[깨진 유리검] : 물리/마법공격력 -15', 
@@ -229,8 +229,8 @@ itemList[209] = { id : 209, name : '수련용 허수아비의 팔', type : cons.
 itemList[210] = { id : 210, name : '호신용 화승총', type : cons.ITEM_TYPE_WEAPON, flavor : '동쪽 대륙의 우수한 기술력으로 만든 작은 화승총. 귀족들의 호신용 무기로 인기가 높다.', rank : 9, rarity : cons.ITEM_RARITY_RARE, stat : { phyAtkMin : 10, phyAtkMax : 18, magAtkMin : 8, magAtkMax : 12, crit : 0.02, hit : 0.03 }, 
     effectDesc : '', effect : [] };
 itemList[211] = { id : 211, name : '저주받은 검 2', type : cons.ITEM_TYPE_WEAPON, flavor : '전설의 검이 저주받은 모습. 도신에 기괴한 검은 무늬가 새겨져 있다. 이 검의 저주를 풀려면 무수한 작업을 요하지만 안타깝게도 이곳에선 그런 거 없다.', rank : 9, rarity : cons.ITEM_RARITY_UNIQUE, stat : { phyAtkMin : 27, phyAtkMax : 33, magAtkMin : 27, magAtkMax : 33, crit : 0.02 }, 
-    effectDesc : '공격 성공 시 18% 확률로 자신에게 1턴 간 [기절] 상태이상을 부여하고 20의 고정 마법 피해를 입힘', 
-    effect : [{code : cons.EFFECT_TYPE_MULTIPLE, active : cons.ACTIVE_TYPE_ATTACK, chance : 0.18, 
+    effectDesc : '공격 성공 시 25% 확률로 자신에게 1턴 간 [기절] 상태이상을 부여하고 20의 고정 마법 피해를 입음', 
+    effect : [{code : cons.EFFECT_TYPE_MULTIPLE, active : cons.ACTIVE_TYPE_ATTACK, chance : 0.25, 
       target : [{code : cons.EFFECT_TYPE_SELF_BUFF, chance : 1, buffCode : 4, buffDur : 1}, 
                 {code : cons.EFFECT_TYPE_SELF_HIT, chance : 1, type : cons.DAMAGE_TYPE_MAGICAL_FIXED, value : 20}]}] };
 itemList[215] = { id : 215, name : '고향의 별 - 아이우스타', type : cons.ITEM_TYPE_WEAPON, flavor : '부랑자이자 연금술사였던 니오비움의 검. 손잡이에 새겨진 연금술 시료를 사용하면 니오비움의 불꽃의 힘을 일으킬 수도 있다. 고향을 잃은 그리움을 따서 이름을 지었다.', rank : 9, rarity : cons.ITEM_RARITY_EPIC, stat : { phyAtkMin : 8, phyAtkMax : 12, magAtkMin : 12, magAtkMax : 24, crit : 0.03 }, 
@@ -241,16 +241,16 @@ itemList[215] = { id : 215, name : '고향의 별 - 아이우스타', type : con
 itemList[216] = { id : 216, name : '검은 정원의 가지', type : cons.ITEM_TYPE_WEAPON, flavor : '영계에 존재한다는 신의 정원을 가꾸기 위한 칼. 형태가 없는 것도 베어낼 수 있다. 과거 제3세계에 흘러들어온 영계의 정원사가 두고 간 것으로 추정된다.', rank : 9, rarity : cons.ITEM_RARITY_EPIC, stat : { phyAtkMin : 12, phyAtkMax : 24, magAtkMin : 8, magAtkMax : 12, spRegen : 2, crit : 0.05, critDmg : 0.12 }, 
     effectDesc : '공격 성공 시 5% 확률로 적에게 3턴 간 [검은 정원의 가지] 디버프 부여<br><br>[검은 정원의 가지] : 물리/마법저항 0%로 고정', 
     effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, active : cons.ACTIVE_TYPE_ATTACK, chance : 0.05, buffCode : 10007, buffDur : 3}] };
-itemList[212] = { id : 212, name : '천광곤 - 떡락의 시작', type : cons.ITEM_TYPE_WEAPON, flavor : '존버... 또 존버 하십시오...', rank : 9, rarity : cons.ITEM_RARITY_UNIQUE, stat : { phyAtkMin : 13, phyAtkMax : 19, magAtkMin : 8, magAtkMax : 12, maxHp : 40, crit : 0.04, evasion : 0.02 }, 
-    effectDesc : '공격 시 5 고정 마법 피해, 턴 시작 시 자신에게 [가치 하락] 디버프 부여<br><br>[가치 하락] : 물리/마법공격력 -1%p', 
-    effect : [{code : cons.EFFECT_TYPE_ADD_HIT, active : cons.ACTIVE_TYPE_ATTACK, chance : 1, type : cons.DAMAGE_TYPE_MAGICAL_FIXED, value : 5},
+itemList[212] = { id : 212, name : '천광곤 - 떡락의 시작', type : cons.ITEM_TYPE_WEAPON, flavor : '존버... 또 존버 하십시오...', rank : 9, rarity : cons.ITEM_RARITY_UNIQUE, stat : { phyAtkMin : 13, phyAtkMax : 19, magAtkMin : 8, magAtkMax : 12, maxHp : 30, crit : 0.04, evasion : 0.02 }, 
+    effectDesc : '공격 시 3 고정 마법 피해, 턴 시작 시 자신에게 [가치 하락] 디버프 부여<br><br>[가치 하락] : 물리/마법공격력 -1%p', 
+    effect : [{code : cons.EFFECT_TYPE_ADD_HIT, active : cons.ACTIVE_TYPE_ATTACK, chance : 1, type : cons.DAMAGE_TYPE_MAGICAL_FIXED, value : 3},
               {code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_TURN_START, chance : 1, buffCode : 10003, buffDur : null}] };
-itemList[213] = { id : 213, name : '킬릭 - 공포의 아귀', type : cons.ITEM_TYPE_WEAPON, flavor : '검은색의 탁한 기운을 내뿜는 도검. 강력한 힘을 내지만 그 사용자는 대가를 감내해야 할 것이다.', rank : 9, rarity : cons.ITEM_RARITY_UNIQUE, stat : { phyAtkMin : 14, phyAtkMax : 18, magAtkMin : 14, magAtkMax : 18, crit : 0.04 }, 
+itemList[213] = { id : 213, name : '킬릭 - 공포의 아귀', type : cons.ITEM_TYPE_WEAPON, flavor : '검은색의 탁한 기운을 내뿜는 도검. 강력한 힘을 내지만 그 사용자는 대가를 감내해야 할 것이다.', rank : 9, rarity : cons.ITEM_RARITY_UNIQUE, stat : { phyAtkMin : 16, phyAtkMax : 20, magAtkMin : 16, magAtkMax : 20, crit : 0.04 }, 
     effectDesc : '전투 시작 시 자신에게 [샤에 물듦] 디버프 부여<br><br>[샤에 물듦] : 상대에게 피해를 줄 때마다 자신이 준 피해의 10%만큼 절대 피해를 입음 ', 
     effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_BATTLE_START, chance : 1, buffCode : 10004, buffDur : null}] };
-itemList[214] = { id : 214, name : '바이로훈 - 기사단의 핏빛 장창', type : cons.ITEM_TYPE_WEAPON, flavor : '어딘가의 기사단이 사용했던 듯한 장창. 가벼운 재질로 어느 위치의 적이든 공격할 수 있을 듯하다.', rank : 9, rarity : cons.ITEM_RARITY_UNIQUE, stat : { phyAtkMin : 11, phyAtkMax : 19, magAtkMin : 7, magAtkMax : 15, crit : 0.04 }, 
-    effectDesc : '물리 공격 성공 시 20% 확률로 저항 0으로 계산', 
-    effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_SKILL_WIN, chance : 0.2, buffCode : 10005, buffDur : 1, chkDmgType : cons.DAMAGE_TYPE_PHYSICAL}] };
+itemList[214] = { id : 214, name : '바이로훈 - 기사단의 핏빛 장창', type : cons.ITEM_TYPE_WEAPON, flavor : '어딘가의 기사단이 사용했던 듯한 장창. 가벼운 재질로 어느 위치의 적이든 공격할 수 있을 듯하다.', rank : 9, rarity : cons.ITEM_RARITY_UNIQUE, stat : { phyAtkMin : 11, phyAtkMax : 19, magAtkMin : 7, magAtkMax : 15, crit : 0.04, critDmg : 0.15 }, 
+    effectDesc : '물리 공격 성공 시 30% 확률로 저항 0으로 계산', 
+    effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_SKILL_WIN, chance : 0.3, buffCode : 10005, buffDur : 1, chkDmgType : cons.DAMAGE_TYPE_PHYSICAL}] };
 itemList[217] = { id : 217, name : '바람의 두루마기', type : cons.ITEM_TYPE_ARMOR, flavor : '바람의 기운이 느껴지는 가벼운 복장. 물리 공격에 효과가 있을지는 의문이 든다..', rank : 9, rarity : cons.ITEM_RARITY_RARE, stat : { magReduce : 0.025, maxHp : 34, spRegen : 1, evasion : 0.05 }, 
     effectDesc : '', effect : [] };
 itemList[218] = { id : 218, name : '광신도의 예복', type : cons.ITEM_TYPE_ARMOR, flavor : '그분의 말씀이 들리나?', rank : 9, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 28, spRegen : 1, evasion : 0.05 }, 
@@ -275,10 +275,10 @@ itemList[225] = { id : 225, name : '독뱀의 시선', type : cons.ITEM_TYPE_ARM
     effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, active : cons.ACTIVE_TYPE_TAKE_HIT, chance : 0.1, buffCode : 9, buffDur : 3},
               {code : cons.EFFECT_TYPE_MULTIPLY_DAMAGE, active : cons.ACTIVE_TYPE_CALC_DAMAGE, buffCode : 9, value : 1.25}] };
 itemList[226] = { id : 226, name : '백은갑옷', type : cons.ITEM_TYPE_ARMOR, flavor : '백은으로 장식된 갑옷. 백은에는 그 자체로 마력을 막아 주는 힘이 있다.', rank : 9, rarity : cons.ITEM_RARITY_UNIQUE, stat : { phyReduce : 0.01, magReduce : 0.016, maxHp : 67, evasion : -0.05 }, 
-    effectDesc : '마법 공격 피격 시 25% 확률로 자신에게 3턴간 [백은 수호] 버프 부여<br><br>[백은 수호] : 마법저항 +5% ', 
+    effectDesc : '마법 공격 피격 시 25% 확률로 자신에게 3턴간 [백은 수호] 버프 부여<br><br>[백은 수호] : 마법저항 +10% ', 
     effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_TAKE_HIT, buffCode : 10010, buffDur : 3, chkDmgType : cons.DAMAGE_TYPE_MAGICAL}] };
 itemList[227] = { id : 227, name : '죽음인도자의 결의', type : cons.ITEM_TYPE_ARMOR, flavor : '강력한 죽음의 기사의 결의가 담긴 갑옷. 룬이 갑옷 곳곳에 새겨져 있고 강력한 한기가 느껴진다.', rank : 9, rarity : cons.ITEM_RARITY_EPIC, stat : { phyReduce : 0.015, magReduce : 0.015, maxHp : 73, spCharge : 2, evasion : -0.05 }, 
-    effectDesc : '스페셜 스킬 시전 시 자신에게 3턴 간 [춤추는 룬 무기] 버프 부여<br><br>[춤추는 룬 무기] : 공격 시 효과 발동 처리를 한 번 더 한다.', 
+    effectDesc : '스페셜 스킬 시전 시 자신에게 3턴 간 [춤추는 룬 무기] 버프 부여<br><br>[춤추는 룬 무기] : 공격 시 효과 발동 처리를 한 번 더 한다, 물리/마법공격력 +8', 
     effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_USE_SPECIAL, buffCode : 10011, buffDur : 4}] };
 itemList[228] = { id : 228, name : '세라이브 - 기사단의 방패', type : cons.ITEM_TYPE_SUBARMOR, flavor : '어딘가의 기사단이 사용했던 듯한 방패. 가벼운 재질로 공격을 흘려보내는 데 유용하다.', rank : 9, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 19, evasion : 0.03, dmgReduce : 2 }, 
     effectDesc : '', effect : [] };
@@ -317,13 +317,13 @@ itemList[239] = { id : 239, name : '녹아내리는 손', type : cons.ITEM_TYPE_
 itemList[240] = { id : 240, name : '백호의 은혜', type : cons.ITEM_TYPE_SUBARMOR, flavor : '백호의 기운이 담긴 망토. 치유의 기운이 감돈다.', rank : 9, rarity : cons.ITEM_RARITY_UNIQUE, stat : { maxHp : 21, spCharge : 2 }, 
     effectDesc : '피격 시 10% 확률로 생명력 30 회복', 
     effect : [{code : cons.EFFECT_TYPE_SELF_HP, active : cons.ACTIVE_TYPE_TAKE_HIT, chance : 0.1, value : 30}] };
-itemList[241] = { id : 241, name : '이글거리는 망토', type : cons.ITEM_TYPE_SUBARMOR, flavor : '화염의 흑마술사 바이레스의 망토. 꺼지지 않는 검붉은 불꽃으로 타오르고 있다.', rank : 9, rarity : cons.ITEM_RARITY_EPIC, stat : { maxHp : 25, spCharge : 3 }, 
+itemList[241] = { id : 241, name : '이글거리는 망토', type : cons.ITEM_TYPE_SUBARMOR, flavor : '화염의 흑마술사 바이레스의 망토. 꺼지지 않는 검붉은 불꽃으로 타오르고 있다.', rank : 9, rarity : cons.ITEM_RARITY_EPIC, stat : { maxHp : 25, spCharge : 4 }, 
     effectDesc : '피격 시 20% 확률로 SP 15를 소모하여 생명력을 15 회복하고 자신과 적에게 2턴 간 [지옥화염] 디버프 부여<br><br>[지옥화염] : 15 고정 마법 피해', 
     effect : [{code : cons.EFFECT_TYPE_MULTIPLE, active : cons.ACTIVE_TYPE_TAKE_HIT, chance : 0.2, chkSp : 5, 
       target : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 10016, buffDur : 2},
                 {code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 10016, buffDur : 2},
                 {code : cons.EFFECT_TYPE_SELF_SP, value : -5},
-                {code : cons.EFFECT_TYPE_SELF_HP, value : 20}]}] };
+                {code : cons.EFFECT_TYPE_SELF_HP, value : 30}]}] };
 itemList[242] = { id : 242, name : '생명의 반지 No.9', type : cons.ITEM_TYPE_TRINKET, flavor : '', rank : 9, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { maxHp : 20, hpRegen : 1.5 }, 
     effectDesc : '', effect : [] };
 itemList[243] = { id : 243, name : '생명의 반지 No.8', type : cons.ITEM_TYPE_TRINKET, flavor : '', rank : 8, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { maxHp : 30, hpRegen : 2 }, 
@@ -365,7 +365,7 @@ itemList[260] = { id : 260, name : '리리아의 사과', type : cons.ITEM_TYPE_
     effect : [{code : cons.EFFECT_TYPE_SELF_HP, active : cons.ACTIVE_TYPE_TURN_END, chkHp : 0.5, value : 0.06, isPercentMax : true, removeEffect : true}] };
 itemList[261] = { id : 261, name : '마법 입문서', type : cons.ITEM_TYPE_TRINKET, flavor : '', rank : 9, rarity : cons.ITEM_RARITY_RARE, stat : { magAtkMin : 4, magAtkMax : 6, crit : 0.02 }, 
     effectDesc : '', effect : [] };
-itemList[262] = { id : 262, name : '작은 악마의 꼬리', type : cons.ITEM_TYPE_TRINKET, flavor : '', rank : 9, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : -40, phyAtkMin : 10, phyAtkMax : 10, magAtkMin : 10, magAtkMax : 10, crit : 0.01 }, 
+itemList[262] = { id : 262, name : '작은 악마의 꼬리', type : cons.ITEM_TYPE_TRINKET, flavor : '', rank : 9, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : -40, phyAtkMin : 8, phyAtkMax : 8, magAtkMin : 8, magAtkMax : 8, crit : 0.01 }, 
     effectDesc : '', effect : [] };
 itemList[263] = { id : 263, name : '마약김밥', type : cons.ITEM_TYPE_TRINKET, flavor : '', rank : 9, rarity : cons.ITEM_RARITY_RARE, stat : {  }, 
     effectDesc : '매 4턴마다 턴 시작 시 자신의 생명력을 20 회복하고 해당 턴의 종료까지 [마비] 상태이상 부여', 
@@ -374,7 +374,7 @@ itemList[263] = { id : 263, name : '마약김밥', type : cons.ITEM_TYPE_TRINKET
                 {code : cons.EFFECT_TYPE_SELF_HP, value : 20}]}] };
 itemList[264] = { id : 264, name : '황금깃털', type : cons.ITEM_TYPE_TRINKET, flavor : '', rank : 9, rarity : cons.ITEM_RARITY_RARE, stat : { evasion : 0.035 }, 
     effectDesc : '', effect : [] };
-itemList[265] = { id : 265, name : '실버 애뮬릿', type : cons.ITEM_TYPE_TRINKET, flavor : '', rank : 9, rarity : cons.ITEM_RARITY_RARE, stat : { phyReduce : 0.015, magReduce : 0.015 }, 
+itemList[265] = { id : 265, name : '실버 애뮬릿', type : cons.ITEM_TYPE_TRINKET, flavor : '', rank : 9, rarity : cons.ITEM_RARITY_RARE, stat : { phyReduce : 0.015, magReduce : 0.015, dmgReduce : 1 }, 
     effectDesc : '', effect : [] };
 itemList[266] = { id : 266, name : '무형의 조각', type : cons.ITEM_TYPE_TRINKET, flavor : '그 어떤 형태로도 확정할 수 없는 작은 조각. 계속 변이하는 듯하다..', rank : 9, rarity : cons.ITEM_RARITY_UNIQUE, stat : {  }, 
     effectDesc : '전투 시작 시 무작위 9급 아이템 하나가 선택된다. 그 전투 동안 이 아이템은 그 아이템의 능력을 발휘한다.', 
@@ -385,9 +385,9 @@ itemList[267] = { id : 267, name : '5000원짜리 지폐', type : cons.ITEM_TYPE
       target : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 4, buffDur : 3},
                 {code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 4, buffDur : 3}]}] };
 itemList[268] = { id : 268, name : '엠더타이드 - 공화국의 인장', type : cons.ITEM_TYPE_TRINKET, flavor : '화려한 상징이 새겨진 인장. 어딘가에서는 이 인장의 소유 자체로 한 나라를 부릴 수 있을 정도로 중요한 물건이라고 한다.', rank : 9, rarity : cons.ITEM_RARITY_EPIC, stat : {  }, 
-    effectDesc : '공격 시 50% 확률로 상대에게 [지뢰] 디버프 부여 (지속시간 없음, 중첩 가능), 피격 시 25% 확률로 자신에게 3턴간 [경호] 버프 부여<br><br>[지뢰] : 공격 시 20% 확률로 소거되며 20의 고정 물리 피해<br>[경호] : 방어막 40, 방어막 지속 동안 물리/마법공격력 +8~12', 
+    effectDesc : '공격 시 40% 확률로 상대에게 [지뢰] 디버프 부여 (지속시간 없음, 중첩 가능), 피격 시 20% 확률로 자신에게 3턴간 [경호] 버프 부여<br><br>[지뢰] : 공격 시 20% 확률로 소거되며 15의 고정 물리 피해<br>[경호] : 방어막 40, 방어막 지속 동안 물리/마법공격력 +8~12', 
     effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_TAKE_HIT, chance : 0.2, buffCode : 10018, buffDur : 3},
-              {code : cons.EFFECT_TYPE_OPP_BUFF, active : cons.ACTIVE_TYPE_ATTACK, chance : 0.35, buffCode : 10017, buffDur : null}] };
+              {code : cons.EFFECT_TYPE_OPP_BUFF, active : cons.ACTIVE_TYPE_ATTACK, chance : 0.4, buffCode : 10017, buffDur : null}] };
 itemList[269] = { id : 269, name : '밴시의 절규', type : cons.ITEM_TYPE_WEAPON, flavor : '공포스러운 절규로 몸서리치는 마법봉.', rank : 8, rarity : cons.ITEM_RARITY_RARE, stat : { phyAtkMin : 8, phyAtkMax : 16, magAtkMin : 19, magAtkMax : 29, crit : 0.02 }, 
     effectDesc : '마법 공격 성공 시 18% 확률로 적에게 2턴 간 [침묵] 상태이상 부여', 
     effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, active : cons.ACTIVE_TYPE_ATTACK, chance : 0.18, buffCode : 7, buffDur : 2, chkDmgType : cons.DAMAGE_TYPE_MAGICAL}] };
@@ -608,4 +608,7 @@ itemList[340] = { id : 340, name : '말없는 한의 동행자', type : cons.ITE
 
 itemList.forEach(function(tgt) {
   tgt.base = JSON.parse(JSON.stringify(tgt.stat));
+  tgt.effect.forEach(function(eff) {
+    eff.name = tgt.name;
+  })
 })

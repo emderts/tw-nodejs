@@ -184,8 +184,8 @@ function _doBattleTurn() {
   } 
   resolveEffects(winner, loser, getBuffEffects(winner, cons.ACTIVE_TYPE_SKILL_WIN), skillUsed);
   resolveEffects(winner, loser, getItemEffects(winner, cons.ACTIVE_TYPE_SKILL_WIN), skillUsed);
-  resolveEffects(winner, loser, getBuffEffects(loser, cons.ACTIVE_TYPE_SKILL_LOSE), skillUsed);
-  resolveEffects(winner, loser, getItemEffects(loser, cons.ACTIVE_TYPE_SKILL_LOSE), skillUsed);
+  resolveEffects(loser, winner, getBuffEffects(loser, cons.ACTIVE_TYPE_SKILL_LOSE), skillUsed);
+  resolveEffects(loser, winner, getItemEffects(loser, cons.ACTIVE_TYPE_SKILL_LOSE), skillUsed);
 
   // calc damage
   var damage = calcDamage(winner, loser, skillUsed);
@@ -234,7 +234,7 @@ function _doBattleTurn() {
     loser = confused;
   }
 
-  if (winner.skill.special.cost <= winner.curSp) {
+  if (winner.skill.special.cost <= winner.curSp && findBuffByCode(winner, 10004).length == 0 && findBuffByCode(winner, 10005).length == 0) {
     result += '<div class="specialSkill">[ ' + winner.name + ' ] Special Skill - [ ' + winner.skill.special.name + ' ] 발동!</div>';
     winner.curSp = 0;
     resolveEffects(winner, loser, winner.skill.special.effect);
@@ -243,7 +243,7 @@ function _doBattleTurn() {
     resolveEffects(loser, winner, getBuffEffects(loser, cons.ACTIVE_TYPE_OPP_USE_SPECIAL), damage);
     resolveEffects(loser, winner, getItemEffects(loser, cons.ACTIVE_TYPE_OPP_USE_SPECIAL), damage);
   }
-  if (loser.skill.special.cost <= loser.curSp) {
+  if (loser.skill.special.cost <= loser.curSp && findBuffByCode(loser, 10004).length == 0 && findBuffByCode(loser, 10005).length == 0) {
     result += '<div class="specialSkill">[ ' + loser.name + ' ] Special Skill - [ ' + loser.skill.special.name + ' ] 발동!</div>';
     loser.curSp = 0;
     resolveEffects(loser, winner, loser.skill.special.effect);
@@ -827,7 +827,7 @@ function getItemEffects(chara, active) {
   }
   var rval = [];
   for (val in chara.items) {
-    rval = rval.concat(chara.items[val].effect.filter(x => (x.active === active)).map(x => Object.assign({}, x, { name : chara.items[val].name })));
+    rval = rval.concat(chara.items[val].effect.filter(x => (x.active === active)));
   }
   return rval;
 }

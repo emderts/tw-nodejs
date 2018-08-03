@@ -5,13 +5,14 @@ const item = require('./items');
 const excel = require('exceljs');
 const fs = require('fs');
 
-procFullTest();
-function procFullTest() {
+procFullTest(9, 'testResult.xlsx');
+//procFullTest(8, 'testResult2.xlsx');
+function procFullTest(testRank, resFile) {
   var testCount = 1000;
   var workbook = new excel.Workbook();
   var workSheet = workbook.addWorksheet('Test');
 
-  var testChars = [chara.julius, chara.seriers, chara.aeika, chara.psi, chara.aeohelm, chara.bks, chara.lk];
+  var testChars = [chara.julius, chara.seriers, chara.aeika, chara.psi, chara.aeohelm, chara.bks, chara.nux];
   var rval = [];
   rval[1] = '아이템명';
   var resultStr = '';
@@ -24,7 +25,7 @@ function procFullTest() {
     }
   }
   workSheet.addRow(rval);
-  for (itm of item.list.filter(x => x.rank === 9 && x.type === cons.ITEM_TYPE_WEAPON)) {
+  for (itm of item.list.filter(x => x.rank === testRank && x.type === cons.ITEM_TYPE_WEAPON)) {
     console.log(itm.name);
     var testResults = [];
     var testTurns = [];
@@ -52,7 +53,7 @@ function procFullTest() {
     rval[51] = Math.round(rval[51] / 42) / 10;
     workSheet.addRow(rval);
   }
-  for (itm of item.list.filter(x => x.rank === 9 && x.type === cons.ITEM_TYPE_ARMOR)) {
+  for (itm of item.list.filter(x => x.rank === testRank && x.type === cons.ITEM_TYPE_ARMOR)) {
     console.log(itm.name);
     var testResults = [];
     var testTurns = [];
@@ -80,7 +81,7 @@ function procFullTest() {
     rval[51] = Math.round(rval[51] / 42) / 10;
     workSheet.addRow(rval);
   }
-  for (itm of item.list.filter(x => x.rank === 9 && x.type === cons.ITEM_TYPE_SUBARMOR)) {
+  for (itm of item.list.filter(x => x.rank === testRank && x.type === cons.ITEM_TYPE_SUBARMOR)) {
     console.log(itm.name);
     var testResults = [];
     var testTurns = [];
@@ -108,7 +109,7 @@ function procFullTest() {
     rval[51] = Math.round(rval[51] / 42) / 10;
     workSheet.addRow(rval);
   }
-  for (itm of item.list.filter(x => x.rank === 9 && x.type === cons.ITEM_TYPE_TRINKET)) {
+  for (itm of item.list.filter(x => x.rank === testRank && x.type === cons.ITEM_TYPE_TRINKET)) {
     console.log(itm.name);
     var testResults = [];
     var testTurns = [];
@@ -137,7 +138,7 @@ function procFullTest() {
     workSheet.addRow(rval);
   }
 
-  workbook.xlsx.writeFile('testResult.xlsx').then(function() {
+  workbook.xlsx.writeFile(resFile).then(function() {
     console.log("xls file is written.");
   });
 }

@@ -45,7 +45,7 @@ express()
 .post('/dismantleItem', procDismantleItem)
 .post('/useStatPoint', procUseStatPoint)
 .post('/doRankup', procRankup)
-.get('/test', (req, res) => res.render('pages/battle', {result: battlemodule.doBattle(chara.julius, chara.aeohelm).result}))
+.get('/test', (req, res) => res.render('pages/battle', {result: battlemodule.doBattle(chara.nux, chara.aeohelm).result}))
 .get('/test3', (req, res) => res.send(setCharacter('kemderts', 2, chara.kines)))
 .get('/test4', (req, res) => res.send(setCharacter('thelichking', 1, chara.lk)))
 .get('/test5', (req, res) => res.render('pages/resultCard', {name: 'test', rarity: Math.floor(Math.random() * 5)}))
@@ -408,10 +408,10 @@ async function procDismantleItem (req, res) {
     const sess = req.session; 
     const charRow = await getCharacter(sess.userUid);
     const char = JSON.parse(charRow.char_data);
-    var tgt = char.inventory[body.itemNum];]
+    var tgt = char.inventory[body.itemNum];
     if (tgt.type <= 3) {
       char.inventory.splice(body.itemNum, 1);
-      var dustVal += Math.round(dustInfo[tgt.rarity] * Math.pow(2, 9 - tgt.rank));
+      var dustVal = Math.round(dustInfo[tgt.rarity] * Math.pow(2, 9 - tgt.rank));
       char.dust += dustVal;
     }
     await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
