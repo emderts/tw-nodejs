@@ -347,7 +347,7 @@ async function procUseShop (req, res) {
     const sess = req.session; 
     const charRow = await getCharacter(sess.userUid);
     const char = JSON.parse(charRow.char_data);
-    if (body.option === 1) {
+    if (body.option == 1) {
       if (char.premiumPoint < 5) {
         res.send('프리미엄 포인트가 부족합니다.');
       } else {
@@ -355,7 +355,7 @@ async function procUseShop (req, res) {
         var picked = makeDayStone();
         char.inventory.push(picked);
       }
-    } else if (body.option === 2) {
+    } else if (body.option == 2) {
       if (char.premiumPoint < 10) {
         res.send('프리미엄 포인트가 부족합니다.');
       } else if (char.expBoost > 0) {
@@ -422,7 +422,7 @@ async function procUseItem (req, res) {
             var tgtList = item.list.filter(x => x.rank === usedRank && x.rarity === cons.ITEM_RARITY_RARE);
             var picked = JSON.parse(JSON.stringify(tgtList[Math.floor(Math.random() * tgtList.length)]));
             chara.inventory.push(picked);
-            await client.query('insert into news(content, date) values ($1, $2)', [chara.name + getIga(chara.nameType) + ' ' + picked.name + getUlrul(picked.nameType) + ' 뽑았습니다!', new Date()]);
+            await client.query('insert into news(content, date) values ($1, $2)', [chara.name + getIga(chara.nameType) + ' ' + tgtObj.name + '에서 ' + picked.name + getUlrul(picked.nameType) + ' 뽑았습니다!', new Date()]);
             res.render('pages/resultCard', picked);
           } else if (rand < 0.54) {
             var usedRank = tgtObj.rank;
@@ -432,7 +432,7 @@ async function procUseItem (req, res) {
             var tgtList = item.list.filter(x => x.rank === usedRank && x.rarity === cons.ITEM_RARITY_UNIQUE);
             var picked = JSON.parse(JSON.stringify(tgtList[Math.floor(Math.random() * tgtList.length)]));
             chara.inventory.push(picked);
-            await client.query('insert into news(content, date) values ($1, $2)', [chara.name + getIga(chara.nameType) + ' ' + picked.name + getUlrul(picked.nameType) + ' 뽑았습니다!', new Date()]);
+            await client.query('insert into news(content, date) values ($1, $2)', [chara.name + getIga(chara.nameType) + ' ' + tgtObj.name + '에서 ' + picked.name + getUlrul(picked.nameType) + ' 뽑았습니다!', new Date()]);
             res.render('pages/resultCard', picked);
           } else if (rand < 0.55) {
             var usedRank = tgtObj.rank;
@@ -442,7 +442,7 @@ async function procUseItem (req, res) {
             var tgtList = item.list.filter(x => x.rank === usedRank && x.rarity === cons.ITEM_RARITY_EPIC);
             var picked = JSON.parse(JSON.stringify(tgtList[Math.floor(Math.random() * tgtList.length)]));
             chara.inventory.push(picked);
-            await client.query('insert into news(content, date) values ($1, $2)', [chara.name + getIga(chara.nameType) + ' ' + picked.name + getUlrul(picked.nameType) + ' 뽑았습니다!', new Date()]);
+            await client.query('insert into news(content, date) values ($1, $2)', [chara.name + getIga(chara.nameType) + ' ' + tgtObj.name + '에서 ' + picked.name + getUlrul(picked.nameType) + ' 뽑았습니다!', new Date()]);
             res.render('pages/resultCard', picked);
           } else if (rand < 0.9) {
             chara.premiumPoint += 1;
@@ -559,11 +559,11 @@ function addExp(chara, exp) {
 const dayStoneData = [
                       [[[3, 9], [6, 15], [12, 21], [18, 27], [24, 33]]], 
                       [[[1, 3], [2, 5], [4, 7], [6, 9], [8, 11]]], 
-                      [[[3, 9], [6, 15], [12, 21], [18, 27], [24, 33]]], 
-                      [[[1, 3], [2, 5], [4, 7], [6, 9], [8, 11]], [[0, 1], [0, 1], [0, 1], [0, 2], [0, 2]]], 
+                      [[[2, 6], [4, 10], [8, 14], [12, 18], [16, 22]]], 
+                      [[[2, 6], [4, 10], [8, 14], [12, 18], [16, 22]]], 
                       [[[1, 3], [2, 5], [4, 7], [6, 9], [8, 11]], [[0, 1], [0, 2], [1, 3], [2, 3], [2, 4]]], 
                       [[[1, 3], [2, 5], [4, 7], [6, 9], [8, 11]]], 
-                      [[[10, 50], [40, 120], [110, 210], [200, 320], [310, 450]]]];
+                      [[[7, 35], [25, 80], [70, 145], [135, 225], [210, 315]]]];
 const dayStonePrefix = ['최하급 ', '하급 ', '중급 ', '상급 ', '최상급 '];
 const dayStoneName = ['일석', '월석', '화석', '수석', '목석', '금석', '토석'];
 function makeDayStone() {
@@ -586,17 +586,11 @@ function makeDayStone() {
     break;
   case 2:
     item.stat.phyAtkMin = val;
-    item.stat.magAtkMin = val;
     item.stat.phyAtkMax = val;
-    item.stat.magAtkMax = val;
     break;
   case 3:
-    item.stat.spCharge = val;
-    fval = dayStoneData[item.day][1][item.level];
-    val = Math.floor(Math.random() * (fval[1] - fval[0]) + fval[0]);
-    if (val > 0) {
-      item.stat.spRegen = val;
-    }
+    item.stat.magAtkMin = val;
+    item.stat.magAtkMax = val;
     break;
   case 4:
     item.stat.hpRegen = val;
