@@ -39,7 +39,7 @@ express()
 .post('/battleLog', procBattleLog)
 .get('/viewList', procViewList)
 .post('/viewChar', procView)
-.get('/premiumShop', procPremiumShop)
+.get('/shop', procShop)
 .post('/useShop', procUseShop)
 .get('/dismantlingYard', procDismantlingYard)
 .post('/dismantleItem', procDismantleItem)
@@ -80,13 +80,15 @@ function procFullTest() {
 async function procIndex (req, res) {
   const sess = req.session; 
   const char = await getCharacter(sess.userUid);
+  const news = await getNews(5);
   if (!sess.userUid) {
     res.render('pages/login');
   } else {
     res.render('pages/index', {
       user: {name: sess.userName},
       char: char.char_data ? JSON.parse(char.char_data) : {},
-      actionPoint : char.actionPoint
+      actionPoint : char.actionPoint,
+      news : news
     });
   }
 }
@@ -191,18 +193,24 @@ async function procViewList(req, res) {
   }
 }
 
-async function procPremiumShop(req, res) {
-  res.render('pages/premiumShop', {});
+async function procShop(req, res) {
+  try {
+    const sess = req.session; 
+    const charRow = await getCharacter(sess.userUid);
+    const char = JSON.parse(charRow.char_data);
+    res.render('pages/shop', {premiumPoint : char.premiumPoint, dust : char.dust});
+  } catch (err) {
+    console.error(err);
+    res.send('내부 오류');
+  }
 }
 
 async function procDismantlingYard(req, res) {
   try {
-    const client = await pool.connect();
     const sess = req.session; 
     const charRow = await getCharacter(sess.userUid);
     const char = JSON.parse(charRow.char_data);
     res.render('pages/selectItem', {title : '아이템 해체', inv : char.inventory, mode : 2, dust : char.dust, usedItem : 0});
-    client.release();
   } catch (err) {
     console.error(err);
     res.send('내부 오류');
@@ -368,7 +376,7 @@ async function procUseShop (req, res) {
         res.send('프리미엄 포인트가 부족합니다.');
       } else {
         char.premiumPoint -= 5;
-        var picked = makeDayStone();
+        var picked = makeDayStone(Math.floor(Math.random() * 7));
         char.inventory.push(picked);
       }
     } else if (body.option == 2) {
@@ -572,6 +580,23 @@ async function getCharacter (id) {
   }   
 }
 
+async function getNews (cnt) {
+  try {
+    var rval = [];
+    const client = await pool.connect();
+    const result = await client.query('select * from news order by date desc fetch first $1 rows only', [cnt]);
+    for (const val of result.rows) {
+      rval.push(val.content);
+    }
+
+    client.release();
+    return rval;
+  } catch (err) {
+    console.error(err);
+    return {};
+  }   
+}
+
 async function setCharacter (id, uid, data) {
   try {
     const client = await pool.connect();
@@ -607,12 +632,12 @@ const dayStoneData = [
                       [[[7, 35], [25, 80], [70, 145], [135, 225], [210, 315]]]];
 const dayStonePrefix = ['최하급 ', '하급 ', '중급 ', '상급 ', '최상급 '];
 const dayStoneName = ['일석', '월석', '화석', '수석', '목석', '금석', '토석'];
-function makeDayStone() {
+function makeDayStone(dayIn) {
   var rand = Math.random();
   var item = {};
   item.type = cons.ITEM_TYPE_DAYSTONE;
   item.rarity = cons.ITEM_RARITY_RARE;
-  item.day = new Date().getDay();
+  item.day = dayIn ? dayIn : new Date().getDay();
   item.level = (rand < 0.39) ? 0 : ((rand < 0.68) ? 1 : ((rand < 0.88) ? 2 : ((rand < 0.98) ? 3 : 4)));
   item.name = dayStonePrefix[item.level] + dayStoneName[item.day];
   item.stat = {};
