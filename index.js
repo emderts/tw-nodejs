@@ -41,6 +41,8 @@ express()
 .post('/viewChar', procView)
 .get('/premiumShop', procPremiumShop)
 .post('/useShop', procUseShop)
+.get('/dismantlingYard', procDismantlingYard)
+.post('/dismantleItem', procDismantleItem)
 .post('/useStatPoint', procUseStatPoint)
 .post('/doRankup', procRankup)
 .get('/test', (req, res) => res.render('pages/battle', {result: battlemodule.doBattle(chara.julius, chara.aeohelm).result}))
@@ -191,6 +193,20 @@ async function procViewList(req, res) {
 
 async function procPremiumShop(req, res) {
   res.render('pages/premiumShop', {});
+}
+
+async function procDismantlingYard(req, res) {
+  try {
+    const client = await pool.connect();
+    const sess = req.session; 
+    const charRow = await getCharacter(sess.userUid);
+    const char = JSON.parse(charRow.char_data);
+    res.render('pages/selectItem', {title : '아이템 해체', inv : char.inventory, mode : 2, dust : char.dust, usedItem : 0});
+    client.release();
+  } catch (err) {
+    console.error(err);
+    res.send('내부 오류');
+  }
 }
 
 async function procView(req, res) {
@@ -376,6 +392,31 @@ async function procUseShop (req, res) {
   }
 }
 
+const dustInfo = [10, 14, 26, 26, 62, 170];
+async function procDismantleItem (req, res) {
+  try {
+    const body = req.body;
+    const client = await pool.connect();
+    const sess = req.session; 
+    const charRow = await getCharacter(sess.userUid);
+    const char = JSON.parse(charRow.char_data);
+    var tgt = char.inventory[body.itemNum];]
+    if (tgt.type <= 3) {
+      char.inventory.splice(body.itemNum, 1);
+      var dustVal += Math.round(dustInfo[tgt.rarity] * Math.pow(2, 9 - tgt.rank));
+      char.dust += dustVal;
+    }
+    await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
+    client.release();
+    if (!res.headersSent) {
+      res.render('pages/selectItem', {title : '아이템 해체', inv : char.inventory, mode : 2, dustVal : dustVal, dust : char.dust, usedItem : 0});;
+    }
+  } catch (err) {
+    console.error(err);
+    res.send('내부 오류');
+  }
+}
+
 async function procUseItem (req, res) {
   try {
     var chara;
@@ -453,7 +494,7 @@ async function procUseItem (req, res) {
             res.render('pages/resultCard', picked);              
           }
         } else if (tgtObj.type === cons.ITEM_TYPE_DAYSTONE) {
-          res.render('pages/selectItem', {inv : chara.inventory, mode : 1, usedItem : body.itemNum});
+          res.render('pages/selectItem', {title : '요일석 사용', inv : chara.inventory, mode : 1, usedItem : body.itemNum});
         }
         await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(chara), result.rows[0].uid]);
       }
