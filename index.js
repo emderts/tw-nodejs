@@ -384,7 +384,7 @@ async function procUseShop (req, res) {
     const sess = req.session; 
     const charRow = await getCharacter(sess.userUid);
     const char = JSON.parse(charRow.char_data);
-    var action = charRow.actionpoint;
+    var action = charRow.actionPoint;
     if (body.option == 1) {
       var cost = char.dayStoneBought ? 10 : 5;
       if (char.premiumPoint < cost) {
