@@ -1319,12 +1319,12 @@ const item = require('./items');
   
   function _initChar(char) {
     char.stat = {};
-    char.stat.maxHp = 250;
+    char.stat.maxHp = 530;
     char.stat.spCharge = 5;
     char.stat.hpRegen = 0;
     char.stat.spRegen = 5;
-    char.stat.phyAtk = 25;
-    char.stat.magAtk = 25;
+    char.stat.phyAtk = 48;
+    char.stat.magAtk = 48;
     char.stat.crit = 0.05;
     char.stat.critDmg = 1.5;
     char.stat.phyReduce = 0;

@@ -584,7 +584,7 @@ async function getNews (cnt) {
   try {
     var rval = [];
     const client = await pool.connect();
-    const result = await client.query('select * from news order by date desc fetch first $1 rows only', [cnt]);
+    const result = await client.query('select * from news order by date desc fetch first 5 rows only', []);
     for (const val of result.rows) {
       rval.push(val.content);
     }
@@ -593,7 +593,7 @@ async function getNews (cnt) {
     return rval;
   } catch (err) {
     console.error(err);
-    return {};
+    return [];
   }   
 }
 
