@@ -47,7 +47,7 @@ express()
 .post('/doRankup', procRankup)
 .get('/test', (req, res) => res.render('pages/battle', {result: battlemodule.doBattle(chara.nux, chara.aeohelm).result}))
 //.get('/test2', (req, res) => res.send(procFullTest()))
-.get('/test3', (req, res) => res.send(procInit()))
+//.get('/test3', (req, res) => res.send(procInit()))
 .get('/test5', (req, res) => res.render('pages/resultCard', {name: 'test', rarity: Math.floor(Math.random() * 5)}))
 .get('/test6', (req, res) => res.render('pages/viewChar', {char: chara.julius}))
 .listen(PORT, () => console.log(`Listening on ${ PORT }`))
@@ -384,6 +384,7 @@ async function procUseShop (req, res) {
     const sess = req.session; 
     const charRow = await getCharacter(sess.userUid);
     const char = JSON.parse(charRow.char_data);
+    var action = charRow.actionpoint;
     if (body.option == 1) {
       var cost = char.dayStoneBought ? 10 : 5;
       if (char.premiumPoint < cost) {
@@ -409,7 +410,7 @@ async function procUseShop (req, res) {
         res.send('프리미엄 포인트가 부족합니다.');
       } else {
         char.premiumPoint -= cost;
-        char.actionPoint += 2;
+        action += 2;
         char.actionBought = true;
       }
     } else if (body.option <= 7) {
@@ -429,7 +430,7 @@ async function procUseShop (req, res) {
         addSpecialResultCard(char, body.option - 102);
       }
     }
-    await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
+    await client.query('update characters set char_data = $1, actionpoint = $3 where uid = $2', [JSON.stringify(char), charRow.uid, action]);
     client.release();
     if (!res.headersSent) {
       res.redirect('/');
