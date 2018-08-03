@@ -402,6 +402,22 @@ async function procUseShop (req, res) {
         char.actionPoint += 2;
         char.actionBought = true;
       }
+    } else if (body.option <= 7) {
+      if (char.premiumPoint < 10) {
+        res.send('프리미엄 포인트가 부족합니다.');
+      } else {
+        char.premiumPoint -= 10;
+        addSpecialResultCard(char, body.option - 4);
+      }
+    } else if (body.option >= 102) {
+      var cost = body.option >= 106 ? 100 : 140;
+      cost *= Math.pow(2, 9 - char.rank);
+      if (char.dust < cost) {
+        res.send('가루가 부족합니다.');
+      } else {
+        char.dust -= cost;
+        addSpecialResultCard(char, body.option - 102);
+      }
     }
     await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
     client.release();
