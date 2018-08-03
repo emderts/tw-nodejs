@@ -46,14 +46,14 @@ express()
 .post('/useStatPoint', procUseStatPoint)
 .post('/doRankup', procRankup)
 .get('/test', (req, res) => res.render('pages/battle', {result: battlemodule.doBattle(chara.nux, chara.aeohelm).result}))
-.get('/test3', (req, res) => res.send(setCharacter('kemderts', 2, chara.kines)))
-.get('/test4', (req, res) => res.send(setCharacter('thelichking', 1, chara.lk)))
+//.get('/test2', (req, res) => res.send(procFullTest()))
+.get('/test3', (req, res) => res.send(procInit()))
 .get('/test5', (req, res) => res.render('pages/resultCard', {name: 'test', rarity: Math.floor(Math.random() * 5)}))
 .get('/test6', (req, res) => res.render('pages/viewChar', {char: chara.julius}))
 .listen(PORT, () => console.log(`Listening on ${ PORT }`))
 
 function procFullTest() {
-  var testChars = [chara.julius, chara.seriers, chara.aeika, chara.psi, chara.aeohelm, chara.lk];
+  var testChars = [chara.julius, chara.seriers, chara.aeika, chara.psi, chara.aeohelm, chara.nux];
   var testResults = [];
   var testTurns = [];
   var resultStr = '';
@@ -75,6 +75,16 @@ function procFullTest() {
   }
 
   return resultStr;
+}
+
+async function procInit () {
+  await setCharacter('thelichking', 1, chara.lk);
+  await setCharacter('kemderts', 2, chara.kines);
+  await setCharacter('bemderts', 3, chara.julius);
+  await setCharacter('renia1369', 4, chara.psi);
+  await setCharacter('bear1704', 5, chara.aeika);
+  await setCharacter('megaxzero', 6, chara.seriers);
+  await setCharacter('kyrus1300', 7, chara.aeohelm);
 }
 
 async function procIndex (req, res) {
@@ -270,7 +280,7 @@ async function procBattle(req, res) {
       var re = battlemodule.doBattle(JSON.parse(JSON.stringify(left)), JSON.parse(JSON.stringify(right)));
       addExp(left, re.expLeft);
       addExp(right, re.expRight);
-      if (left.expBoost && left.ezpBoost > 0) {
+      if (left.expBoost && left.expBoost > 0) {
         left.expBoost--;
       }
       addResultCard(left);
