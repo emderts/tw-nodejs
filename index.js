@@ -39,8 +39,10 @@ express()
 .post('/battleLog', procBattleLog)
 .get('/viewList', procViewList)
 .post('/viewChar', procView)
-.get('/premiumShop', procPremiumShop)
+.get('/shop', procShop)
 .post('/useShop', procUseShop)
+.get('/dismantlingYard', procDismantlingYard)
+.post('/dismantleItem', procDismantleItem)
 .post('/useStatPoint', procUseStatPoint)
 .post('/doRankup', procRankup)
 .get('/test', (req, res) => res.render('pages/battle', {result: battlemodule.doBattle(chara.julius, chara.aeohelm).result}))
@@ -78,13 +80,15 @@ function procFullTest() {
 async function procIndex (req, res) {
   const sess = req.session; 
   const char = await getCharacter(sess.userUid);
+  const news = await getNews(5);
   if (!sess.userUid) {
     res.render('pages/login');
   } else {
     res.render('pages/index', {
       user: {name: sess.userName},
       char: char.char_data ? JSON.parse(char.char_data) : {},
-      actionPoint : char.actionPoint
+      actionPoint : char.actionPoint,
+      news : news
     });
   }
 }
@@ -189,8 +193,28 @@ async function procViewList(req, res) {
   }
 }
 
-async function procPremiumShop(req, res) {
-  res.render('pages/premiumShop', {});
+async function procShop(req, res) {
+  try {
+    const sess = req.session; 
+    const charRow = await getCharacter(sess.userUid);
+    const char = JSON.parse(charRow.char_data);
+    res.render('pages/shop', {premiumPoint : char.premiumPoint, dust : char.dust});
+  } catch (err) {
+    console.error(err);
+    res.send('내부 오류');
+  }
+}
+
+async function procDismantlingYard(req, res) {
+  try {
+    const sess = req.session; 
+    const charRow = await getCharacter(sess.userUid);
+    const char = JSON.parse(charRow.char_data);
+    res.render('pages/selectItem', {title : '아이템 해체', inv : char.inventory, mode : 2, dust : char.dust, usedItem : 0});
+  } catch (err) {
+    console.error(err);
+    res.send('내부 오류');
+  }
 }
 
 async function procView(req, res) {
@@ -347,15 +371,15 @@ async function procUseShop (req, res) {
     const sess = req.session; 
     const charRow = await getCharacter(sess.userUid);
     const char = JSON.parse(charRow.char_data);
-    if (body.option === 1) {
+    if (body.option == 1) {
       if (char.premiumPoint < 5) {
         res.send('프리미엄 포인트가 부족합니다.');
       } else {
         char.premiumPoint -= 5;
-        var picked = makeDayStone();
+        var picked = makeDayStone(Math.floor(Math.random() * 7));
         char.inventory.push(picked);
       }
-    } else if (body.option === 2) {
+    } else if (body.option == 2) {
       if (char.premiumPoint < 10) {
         res.send('프리미엄 포인트가 부족합니다.');
       } else if (char.expBoost > 0) {
@@ -369,6 +393,31 @@ async function procUseShop (req, res) {
     client.release();
     if (!res.headersSent) {
       res.redirect('/');
+    }
+  } catch (err) {
+    console.error(err);
+    res.send('내부 오류');
+  }
+}
+
+const dustInfo = [10, 14, 26, 26, 62, 170];
+async function procDismantleItem (req, res) {
+  try {
+    const body = req.body;
+    const client = await pool.connect();
+    const sess = req.session; 
+    const charRow = await getCharacter(sess.userUid);
+    const char = JSON.parse(charRow.char_data);
+    var tgt = char.inventory[body.itemNum];]
+    if (tgt.type <= 3) {
+      char.inventory.splice(body.itemNum, 1);
+      var dustVal += Math.round(dustInfo[tgt.rarity] * Math.pow(2, 9 - tgt.rank));
+      char.dust += dustVal;
+    }
+    await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
+    client.release();
+    if (!res.headersSent) {
+      res.render('pages/selectItem', {title : '아이템 해체', inv : char.inventory, mode : 2, dustVal : dustVal, dust : char.dust, usedItem : 0});;
     }
   } catch (err) {
     console.error(err);
@@ -422,7 +471,7 @@ async function procUseItem (req, res) {
             var tgtList = item.list.filter(x => x.rank === usedRank && x.rarity === cons.ITEM_RARITY_RARE);
             var picked = JSON.parse(JSON.stringify(tgtList[Math.floor(Math.random() * tgtList.length)]));
             chara.inventory.push(picked);
-            await client.query('insert into news(content, date) values ($1, $2)', [chara.name + getIga(chara.nameType) + ' ' + picked.name + getUlrul(picked.nameType) + ' 뽑았습니다!', new Date()]);
+            await client.query('insert into news(content, date) values ($1, $2)', [chara.name + getIga(chara.nameType) + ' ' + tgtObj.name + '에서 ' + picked.name + getUlrul(picked.nameType) + ' 뽑았습니다!', new Date()]);
             res.render('pages/resultCard', picked);
           } else if (rand < 0.54) {
             var usedRank = tgtObj.rank;
@@ -432,7 +481,7 @@ async function procUseItem (req, res) {
             var tgtList = item.list.filter(x => x.rank === usedRank && x.rarity === cons.ITEM_RARITY_UNIQUE);
             var picked = JSON.parse(JSON.stringify(tgtList[Math.floor(Math.random() * tgtList.length)]));
             chara.inventory.push(picked);
-            await client.query('insert into news(content, date) values ($1, $2)', [chara.name + getIga(chara.nameType) + ' ' + picked.name + getUlrul(picked.nameType) + ' 뽑았습니다!', new Date()]);
+            await client.query('insert into news(content, date) values ($1, $2)', [chara.name + getIga(chara.nameType) + ' ' + tgtObj.name + '에서 ' + picked.name + getUlrul(picked.nameType) + ' 뽑았습니다!', new Date()]);
             res.render('pages/resultCard', picked);
           } else if (rand < 0.55) {
             var usedRank = tgtObj.rank;
@@ -442,7 +491,7 @@ async function procUseItem (req, res) {
             var tgtList = item.list.filter(x => x.rank === usedRank && x.rarity === cons.ITEM_RARITY_EPIC);
             var picked = JSON.parse(JSON.stringify(tgtList[Math.floor(Math.random() * tgtList.length)]));
             chara.inventory.push(picked);
-            await client.query('insert into news(content, date) values ($1, $2)', [chara.name + getIga(chara.nameType) + ' ' + picked.name + getUlrul(picked.nameType) + ' 뽑았습니다!', new Date()]);
+            await client.query('insert into news(content, date) values ($1, $2)', [chara.name + getIga(chara.nameType) + ' ' + tgtObj.name + '에서 ' + picked.name + getUlrul(picked.nameType) + ' 뽑았습니다!', new Date()]);
             res.render('pages/resultCard', picked);
           } else if (rand < 0.9) {
             chara.premiumPoint += 1;
@@ -453,7 +502,7 @@ async function procUseItem (req, res) {
             res.render('pages/resultCard', picked);              
           }
         } else if (tgtObj.type === cons.ITEM_TYPE_DAYSTONE) {
-          res.render('pages/selectItem', {inv : chara.inventory, mode : 1, usedItem : body.itemNum});
+          res.render('pages/selectItem', {title : '요일석 사용', inv : chara.inventory, mode : 1, usedItem : body.itemNum});
         }
         await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(chara), result.rows[0].uid]);
       }
@@ -531,6 +580,23 @@ async function getCharacter (id) {
   }   
 }
 
+async function getNews (cnt) {
+  try {
+    var rval = [];
+    const client = await pool.connect();
+    const result = await client.query('select * from news order by date desc fetch first $1 rows only', [cnt]);
+    for (const val of result.rows) {
+      rval.push(val.content);
+    }
+
+    client.release();
+    return rval;
+  } catch (err) {
+    console.error(err);
+    return {};
+  }   
+}
+
 async function setCharacter (id, uid, data) {
   try {
     const client = await pool.connect();
@@ -559,19 +625,19 @@ function addExp(chara, exp) {
 const dayStoneData = [
                       [[[3, 9], [6, 15], [12, 21], [18, 27], [24, 33]]], 
                       [[[1, 3], [2, 5], [4, 7], [6, 9], [8, 11]]], 
-                      [[[3, 9], [6, 15], [12, 21], [18, 27], [24, 33]]], 
-                      [[[1, 3], [2, 5], [4, 7], [6, 9], [8, 11]], [[0, 1], [0, 1], [0, 1], [0, 2], [0, 2]]], 
+                      [[[2, 6], [4, 10], [8, 14], [12, 18], [16, 22]]], 
+                      [[[2, 6], [4, 10], [8, 14], [12, 18], [16, 22]]], 
                       [[[1, 3], [2, 5], [4, 7], [6, 9], [8, 11]], [[0, 1], [0, 2], [1, 3], [2, 3], [2, 4]]], 
                       [[[1, 3], [2, 5], [4, 7], [6, 9], [8, 11]]], 
-                      [[[10, 50], [40, 120], [110, 210], [200, 320], [310, 450]]]];
+                      [[[7, 35], [25, 80], [70, 145], [135, 225], [210, 315]]]];
 const dayStonePrefix = ['최하급 ', '하급 ', '중급 ', '상급 ', '최상급 '];
 const dayStoneName = ['일석', '월석', '화석', '수석', '목석', '금석', '토석'];
-function makeDayStone() {
+function makeDayStone(dayIn) {
   var rand = Math.random();
   var item = {};
   item.type = cons.ITEM_TYPE_DAYSTONE;
   item.rarity = cons.ITEM_RARITY_RARE;
-  item.day = new Date().getDay();
+  item.day = dayIn ? dayIn : new Date().getDay();
   item.level = (rand < 0.39) ? 0 : ((rand < 0.68) ? 1 : ((rand < 0.88) ? 2 : ((rand < 0.98) ? 3 : 4)));
   item.name = dayStonePrefix[item.level] + dayStoneName[item.day];
   item.stat = {};
@@ -586,17 +652,11 @@ function makeDayStone() {
     break;
   case 2:
     item.stat.phyAtkMin = val;
-    item.stat.magAtkMin = val;
     item.stat.phyAtkMax = val;
-    item.stat.magAtkMax = val;
     break;
   case 3:
-    item.stat.spCharge = val;
-    fval = dayStoneData[item.day][1][item.level];
-    val = Math.floor(Math.random() * (fval[1] - fval[0]) + fval[0]);
-    if (val > 0) {
-      item.stat.spRegen = val;
-    }
+    item.stat.magAtkMin = val;
+    item.stat.magAtkMax = val;
     break;
   case 4:
     item.stat.hpRegen = val;

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>ThirdWorld - 프리미엄 샵</title>
+    <title>ThirdWorld -  상점</title>
     <link href="https://fonts.googleapis.com/css?family=Nanum+Gothic" rel="stylesheet">
     <style>
       body {font-family: "Nanum Gothic", sans-serif; }
@@ -15,6 +15,9 @@
     </style>
 </head>
 <body>
+  <div class="backLink">
+    프리미엄 샵 (현재 프리미엄 포인트 : <%= premiumPoint %>)
+  </div>
   <div class="charItem">
     <form action="/useShop" method="post">
       <button type="submit">요일석 구매 [5pt]</button>
@@ -26,6 +29,9 @@
       <button type="submit">경험치 부스트 (3회) [10pt]</button>
       <input type="hidden" name="option" value="2">
     </form>
+  </div>
+  <div class="backLink">
+    리설트 카드 샵 (현재 가루 : <%= dust %>)
   </div>
   <div class="backLink">
     <a href="/">돌아가기</a>

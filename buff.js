@@ -84,6 +84,10 @@ module.exports.getBuffData = function(eff) {
     effectObj.code = 10005;
     effectObj.buff = retObj;
     retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_SLEEP;
+    effectObj.turnReduce = 1;
+    retObj.effect.push(effectObj);
     break;
   case 6 : 
     retObj.name = '탈진';
@@ -116,9 +120,9 @@ module.exports.getBuffData = function(eff) {
     retObj.nameType = cons.NAME_KOR_NO_END_CONS;
     effectObj = {};
     effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
-    effectObj.code = cons.EFFECT_TYPE_STAT_MULTIPLY;
+    effectObj.code = cons.EFFECT_TYPE_STAT_ADD;
     effectObj.key = 'evasion';
-    effectObj.value = 0.5;
+    effectObj.value = -0.5;
     retObj.effect.push(effectObj);
     break;
   case 10 : 
@@ -134,6 +138,17 @@ module.exports.getBuffData = function(eff) {
     retObj.nameType = cons.NAME_KOR_END_CONS;
     effectObj = {};
     effectObj.code = 10011;
+    retObj.effect.push(effectObj);
+    break;
+  case 12 : 
+    retObj.name = '빙결';
+    retObj.nameType = cons.NAME_KOR_END_CONS;
+    effectObj = {};
+    effectObj.code = 10006;
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CANNOT_ATTACK;
+    effectObj.turnReduce = 1;
     retObj.effect.push(effectObj);
     break;
   case 10001 : 

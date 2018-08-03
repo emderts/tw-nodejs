@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>ThirdWorld - 아이템 선택</title>
+    <title>ThirdWorld - <%= title %></title>
     <link href="https://fonts.googleapis.com/css?family=Nanum+Gothic" rel="stylesheet">
     <style>
       body {font-family: "Nanum Gothic", sans-serif; }
@@ -145,6 +145,8 @@
   
   if (mode === 1 && inv && usedItem) { 
     var used = inv[usedItem]; 
+    var description = used.name + '을 사용합니다.';
+    var formAction = '/enchantItem';
     var minRank = used.level >= 3 ? 7 : (used.level === 2 ? 8 : 9); 
     var tgtInv = inv.map(x => (x.rank <= minRank && x.type <= 3) ? x : {}); 
     if (used.day === 1) {
@@ -152,27 +154,34 @@
     } else if (used.day === 5) {
       tgtInv = tgtInv.map(x => (x.type >= 1) ? x : {});
     }
+  } else if (mode === 2 && inv) { 
+    var description = '아이템을 해체합니다. (현재 가루 보유량 : ' + ;
+    var formAction = '/dismantleItem';
+    var tgtInv = inv.map(x => (x.type <= 3) ? x : {}); 
+  }
   %>
-    <div>
-      <%= used.name %>을 사용합니다.
-    </div>
-    <div class="inventoryWrap">
-      <% for (const [key, val] of Object.entries(tgtInv)) { 
-           if (!val.name) {
-             continue;
-           } %>
-        <div class="inventoryItem">
-          <form action="/enchantItem" method="post">
-            <button class="<%= getButtonText(val.rarity) %>" type="submit"><%= val.name %>
-              <div class="itemTooltip"><%- makeTooltip(val) %></div>
-            </button>
-            <input type="hidden" name="itemNum" value="<%= key %>">
-            <input type="hidden" name="itemUsed" value="<%= usedItem %>">
-          </form>
-        </div>
-      <% } %>
-    </div>
-  <% } %>
+  <div>
+    <%= description %>
+    <% if (dustVal) { %>
+      <br><%= dustVal %> 가루를 획득했습니다.
+    <% } %>
+  </div>
+  <div class="inventoryWrap">
+    <% for (const [key, val] of Object.entries(tgtInv)) { 
+         if (!val.name) {
+           continue;
+         } %>
+      <div class="inventoryItem">
+        <form action="<%= formAction %>" method="post">
+          <button class="<%= getButtonText(val.rarity) %>" type="submit"><%= val.name %>
+            <div class="itemTooltip"><%- makeTooltip(val) %></div>
+          </button>
+          <input type="hidden" name="itemNum" value="<%= key %>">
+          <input type="hidden" name="itemUsed" value="<%= usedItem %>">
+        </form>
+      </div>
+    <% } %>
+  </div>
   <div class="backLink">
     <a href="/">돌아가기</a>
   </div>

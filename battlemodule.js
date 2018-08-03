@@ -171,7 +171,9 @@ function _doBattleTurn() {
     }
   }
   for (val of findBuffByCode(winner, 10006)) {
-    if (val.type === skillUsed.type) {
+    if (!val.type || val.type === skillUsed.type) {
+      resolveEffects(winner, loser, getBuffEffects(winner, cons.ACTIVE_TYPE_CANNOT_ATTACK), skillUsed);
+      resolveEffects(winner, loser, getItemEffects(winner, cons.ACTIVE_TYPE_CANNOT_ATTACK), skillUsed);
       resolveTurnBegin(winner, loser);
       result += '공격할 수 없다!</span><br>';
       resolveTurnEnd(winner, loser);
@@ -271,7 +273,8 @@ function calcDamage(winner, loser, skill) {
   var diff = retObj.atkMax - retObj.atkMin;
   retObj.diffDmg = Math.floor(Math.random() * diff) + retObj.atkMin;
   retObj.hit = getRandom(winner.stat.hit - loser.stat.evasion);
-  retObj.crit = getRandom(winner.stat.crit);
+  var critMod = loser.stat.evasion < 0 ? -loser.stat.evasion : 0;
+  retObj.crit = getRandom(winner.stat.crit + critMod);
   retObj.type = skill.type;
   
   resolveEffects(winner, loser, getBuffEffects(winner, cons.ACTIVE_TYPE_CALC_DAMAGE), retObj, skill);
@@ -282,7 +285,8 @@ function calcDamage(winner, loser, skill) {
   if (skill.type !== cons.DAMAGE_TYPE_ABSOLUTE) {
     for (val of findBuffByCode(loser, 10005)) {
       result += '[ ' + val.buff.name + ' ] 효과로 치명타가 적용됩니다!<br>';
-      removeBuff(val.buff);
+      resolveEffects(winner, loser, getBuffEffects(winner, cons.ACTIVE_TYPE_SLEEP), retObj, skill);
+      resolveEffects(winner, loser, getItemEffects(winner, cons.ACTIVE_TYPE_SLEEP), retObj, skill);
       retObj.crit = true;
       break;
     }
