@@ -155,13 +155,16 @@
       tgtInv = tgtInv.map(x => (x.type >= 1) ? x : {});
     }
   } else if (mode === 2 && inv) { 
-    var description = '아이템을 해체합니다.';
+    var description = '아이템을 해체합니다. (현재 가루 보유량 : ' + ;
     var formAction = '/dismantleItem';
     var tgtInv = inv.map(x => (x.type <= 3) ? x : {}); 
   }
   %>
   <div>
     <%= description %>
+    <% if (dustVal) { %>
+      <br><%= dustVal %> 가루를 획득했습니다.
+    <% } %>
   </div>
   <div class="inventoryWrap">
     <% for (const [key, val] of Object.entries(tgtInv)) { 
