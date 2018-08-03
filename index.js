@@ -198,7 +198,7 @@ async function procShop(req, res) {
     const sess = req.session; 
     const charRow = await getCharacter(sess.userUid);
     const char = JSON.parse(charRow.char_data);
-    res.render('pages/shop', {premiumPoint : char.premiumPoint, dust : char.dust});
+    res.render('pages/shop', {premiumPoint : char.premiumPoint, dust : char.dust, dayStoneBought : char.dayStoneBought, actionBought : char.actionBought, rankFactor : Math.pow(2, 9 - char.rank)});
   } catch (err) {
     console.error(err);
     res.send('내부 오류');
@@ -270,6 +270,9 @@ async function procBattle(req, res) {
       var re = battlemodule.doBattle(JSON.parse(JSON.stringify(left)), JSON.parse(JSON.stringify(right)));
       addExp(left, re.expLeft);
       addExp(right, re.expRight);
+      if (left.expBoost && left.ezpBoost > 0) {
+        left.expBoost--;
+      }
       addResultCard(left);
       addResultCard(right);
       left.battleCnt++;
@@ -372,12 +375,14 @@ async function procUseShop (req, res) {
     const charRow = await getCharacter(sess.userUid);
     const char = JSON.parse(charRow.char_data);
     if (body.option == 1) {
-      if (char.premiumPoint < 5) {
+      var cost = char.dayStoneBought ? 10 : 5;
+      if (char.premiumPoint < cost) {
         res.send('프리미엄 포인트가 부족합니다.');
       } else {
-        char.premiumPoint -= 5;
+        char.premiumPoint -= cost;
         var picked = makeDayStone(Math.floor(Math.random() * 7));
         char.inventory.push(picked);
+        char.dayStoneBought = true;
       }
     } else if (body.option == 2) {
       if (char.premiumPoint < 10) {
@@ -386,7 +391,16 @@ async function procUseShop (req, res) {
         res.send('이미 부스트를 구매했습니다.');
       } else {
         char.premiumPoint -= 10;
-        char.expBoost = 3;
+        char.expBoost = 5;
+      }
+    } else if (body.option == 3) {
+      var cost = char.actionBought ? 15 : 10;
+      if (char.premiumPoint < cost) {
+        res.send('프리미엄 포인트가 부족합니다.');
+      } else {
+        char.premiumPoint -= cost;
+        char.actionPoint += 2;
+        char.actionBought = true;
       }
     }
     await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
@@ -425,6 +439,22 @@ async function procDismantleItem (req, res) {
   }
 }
 
+function _getItem(rank, rarity, type) {
+  var usedRank = rank;
+  if (usedRank > 1 && Math.random() > 0.9) {
+    usedRank--;
+  }
+  if (rarity == cons.ITEM_RARITY_UNCOMMON) {
+    var tgtList = item.list.filter(x => x.rank === usedRank && (x.rarity === cons.ITEM_RARITY_COMMON || x.rarity === rarity));
+  } else {
+    var tgtList = item.list.filter(x => x.rank === usedRank && x.rarity === rarity);    
+  }
+  if (type <= 3) {
+    tgtList = tgtList.filter(x => x.type === type)
+  }
+  return JSON.parse(JSON.stringify(tgtList[Math.floor(Math.random() * tgtList.length)]));  
+}
+
 async function procUseItem (req, res) {
   try {
     var chara;
@@ -453,53 +483,57 @@ async function procUseItem (req, res) {
           calcStats(chara);
         } else if (tgtObj.type === cons.ITEM_TYPE_RESULT_CARD) {
           chara.inventory.splice(body.itemNum, 1);
-          var rand = Math.random();
-          if (rand < 0.4) {
-            var usedRank = tgtObj.rank;
-            if (usedRank > 1 && rand > 0.36) {
-              usedRank--;
+          if (!tgtObj.resultType) {
+            var rand = Math.random();
+            if (rand < 0.4) {
+              var picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_UNCOMMON);
+              chara.inventory.push(picked);
+              res.render('pages/resultCard', picked);
+            } else if (rand < 0.5) {
+              var picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_RARE);
+              chara.inventory.push(picked);
+              await client.query('insert into news(content, date) values ($1, $2)', [chara.name + getIga(chara.nameType) + ' ' + tgtObj.name + '에서 ' + picked.name + getUlrul(picked.nameType) + ' 뽑았습니다!', new Date()]);
+              res.render('pages/resultCard', picked);
+            } else if (rand < 0.54) {
+              var picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_UNIQUE);
+              chara.inventory.push(picked);
+              await client.query('insert into news(content, date) values ($1, $2)', [chara.name + getIga(chara.nameType) + ' ' + tgtObj.name + '에서 ' + picked.name + getUlrul(picked.nameType) + ' 뽑았습니다!', new Date()]);
+              res.render('pages/resultCard', picked);
+            } else if (rand < 0.55) {
+              var picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_EPIC);
+              chara.inventory.push(picked);
+              await client.query('insert into news(content, date) values ($1, $2)', [chara.name + getIga(chara.nameType) + ' ' + tgtObj.name + '에서 ' + picked.name + getUlrul(picked.nameType) + ' 뽑았습니다!', new Date()]);
+              res.render('pages/resultCard', picked);
+            } else if (rand < 0.9) {
+              chara.premiumPoint += 1;
+              res.render('pages/resultCard', {name : '프리미엄 포인트 1점' , rarity : cons.ITEM_RARITY_COMMON});
+            } else {
+              var picked = makeDayStone();
+              chara.inventory.push(picked);
+              res.render('pages/resultCard', picked);              
             }
-            var tgtList = item.list.filter(x => x.rank === usedRank && (x.rarity === cons.ITEM_RARITY_COMMON || x.rarity === cons.ITEM_RARITY_UNCOMMON));
-            var picked = JSON.parse(JSON.stringify(tgtList[Math.floor(Math.random() * tgtList.length)]));
-            chara.inventory.push(picked);
-            res.render('pages/resultCard', picked);
-          } else if (rand < 0.5) {
-            var usedRank = tgtObj.rank;
-            if (usedRank > 1 && rand > 0.49) {
-              usedRank--;
-            }
-            var tgtList = item.list.filter(x => x.rank === usedRank && x.rarity === cons.ITEM_RARITY_RARE);
-            var picked = JSON.parse(JSON.stringify(tgtList[Math.floor(Math.random() * tgtList.length)]));
-            chara.inventory.push(picked);
-            await client.query('insert into news(content, date) values ($1, $2)', [chara.name + getIga(chara.nameType) + ' ' + tgtObj.name + '에서 ' + picked.name + getUlrul(picked.nameType) + ' 뽑았습니다!', new Date()]);
-            res.render('pages/resultCard', picked);
-          } else if (rand < 0.54) {
-            var usedRank = tgtObj.rank;
-            if (usedRank > 1 && rand > 0.536) {
-              usedRank--;
-            }
-            var tgtList = item.list.filter(x => x.rank === usedRank && x.rarity === cons.ITEM_RARITY_UNIQUE);
-            var picked = JSON.parse(JSON.stringify(tgtList[Math.floor(Math.random() * tgtList.length)]));
-            chara.inventory.push(picked);
-            await client.query('insert into news(content, date) values ($1, $2)', [chara.name + getIga(chara.nameType) + ' ' + tgtObj.name + '에서 ' + picked.name + getUlrul(picked.nameType) + ' 뽑았습니다!', new Date()]);
-            res.render('pages/resultCard', picked);
-          } else if (rand < 0.55) {
-            var usedRank = tgtObj.rank;
-            if (usedRank > 1 && rand > 0.549) {
-              usedRank--;
-            }
-            var tgtList = item.list.filter(x => x.rank === usedRank && x.rarity === cons.ITEM_RARITY_EPIC);
-            var picked = JSON.parse(JSON.stringify(tgtList[Math.floor(Math.random() * tgtList.length)]));
-            chara.inventory.push(picked);
-            await client.query('insert into news(content, date) values ($1, $2)', [chara.name + getIga(chara.nameType) + ' ' + tgtObj.name + '에서 ' + picked.name + getUlrul(picked.nameType) + ' 뽑았습니다!', new Date()]);
-            res.render('pages/resultCard', picked);
-          } else if (rand < 0.9) {
-            chara.premiumPoint += 1;
-            res.render('pages/resultCard', {name : '프리미엄 포인트 1점' , rarity : cons.ITEM_RARITY_COMMON});
-          } else {
-            var picked = makeDayStone();
-            chara.inventory.push(picked);
-            res.render('pages/resultCard', picked);              
+          } else if (tgtObj.resultType) {
+            var rand = Math.random();
+            if (rand < 0.7) {
+              var picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_UNCOMMON, tgtObj.resultType);
+              chara.inventory.push(picked);
+              res.render('pages/resultCard', picked);
+            } else if (rand < 0.9) {
+              var picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_RARE, tgtObj.resultType);
+              chara.inventory.push(picked);
+              await client.query('insert into news(content, date) values ($1, $2)', [chara.name + getIga(chara.nameType) + ' ' + tgtObj.name + '에서 ' + picked.name + getUlrul(picked.nameType) + ' 뽑았습니다!', new Date()]);
+              res.render('pages/resultCard', picked);
+            } else if (rand < 0.98) {
+              var picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_UNIQUE, tgtObj.resultType);
+              chara.inventory.push(picked);
+              await client.query('insert into news(content, date) values ($1, $2)', [chara.name + getIga(chara.nameType) + ' ' + tgtObj.name + '에서 ' + picked.name + getUlrul(picked.nameType) + ' 뽑았습니다!', new Date()]);
+              res.render('pages/resultCard', picked);
+            } else {
+              var picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_EPIC, tgtObj.resultType);
+              chara.inventory.push(picked);
+              await client.query('insert into news(content, date) values ($1, $2)', [chara.name + getIga(chara.nameType) + ' ' + tgtObj.name + '에서 ' + picked.name + getUlrul(picked.nameType) + ' 뽑았습니다!', new Date()]);
+              res.render('pages/resultCard', picked);
+            } 
           }
         } else if (tgtObj.type === cons.ITEM_TYPE_DAYSTONE) {
           res.render('pages/selectItem', {title : '요일석 사용', inv : chara.inventory, mode : 1, usedItem : body.itemNum});
@@ -682,7 +716,16 @@ function addResultCard(chara) {
   item.type = cons.ITEM_TYPE_RESULT_CARD;
   item.name = chara.rank + '급 리설트 카드';
   item.rank = chara.rank;
-  item.day = new Date().getDay();
+  chara.inventory.push(item);
+}
+
+const typePrefix = ['무기', '방어구', '보조방어구', '장신구', '장비'];
+function addSpecialResultCard(chara, type) {
+  var item = {};
+  item.type = cons.ITEM_TYPE_RESULT_CARD;
+  item.name = chara.rank + '급 ' + typePrefix[type] + ' 리설트 카드';
+  item.rank = chara.rank;
+  item.resultType = type;
   chara.inventory.push(item);
 }
 

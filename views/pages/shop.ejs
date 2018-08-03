@@ -20,18 +20,78 @@
   </div>
   <div class="charItem">
     <form action="/useShop" method="post">
-      <button type="submit">요일석 구매 [5pt]</button>
+      <button type="submit">요일석 구매 [<%= dayStoneBought ? 10 : 5 %>pt]</button>
       <input type="hidden" name="option" value="1">
     </form>
   </div>
   <div class="charItem">
     <form action="/useShop" method="post">
-      <button type="submit">경험치 부스트 (3회) [10pt]</button>
+      <button type="submit">경험치 부스트 (5회) [10pt]</button>
       <input type="hidden" name="option" value="2">
+    </form>
+  </div>
+  <div class="charItem">
+    <form action="/useShop" method="post">
+      <button type="submit">추가 피로도 +2 [<%= actionBought ? 15 : 10 %>pt]</button>
+      <input type="hidden" name="option" value="3">
+    </form>
+  </div>
+  <div class="charItem">
+    <form action="/useShop" method="post">
+      <button type="submit">무기 리설트 카드 [10pt]</button>
+      <input type="hidden" name="option" value="4">
+    </form>
+  </div>
+  <div class="charItem">
+    <form action="/useShop" method="post">
+      <button type="submit">방어구 리설트 카드 [10pt]</button>
+      <input type="hidden" name="option" value="5">
+    </form>
+  </div>
+  <div class="charItem">
+    <form action="/useShop" method="post">
+      <button type="submit">보조방어구 리설트 카드 [10pt]</button>
+      <input type="hidden" name="option" value="6">
+    </form>
+  </div>
+  <div class="charItem">
+    <form action="/useShop" method="post">
+      <button type="submit">장신구 리설트 카드 [10pt]</button>
+      <input type="hidden" name="option" value="7">
     </form>
   </div>
   <div class="backLink">
     리설트 카드 샵 (현재 가루 : <%= dust %>)
+  </div>
+  <div class="charItem">
+    <form action="/useShop" method="post">
+      <button type="submit">장비 리설트 카드 [<%= 100 * rankFactor %> 가루]</button>
+      <input type="hidden" name="option" value="101">
+    </form>
+  </div>
+  <div class="charItem">
+    <form action="/useShop" method="post">
+      <button type="submit">무기 리설트 카드 [<%= 140 * rankFactor %> 가루]</button>
+      <input type="hidden" name="option" value="102">
+    </form>
+  </div>
+  <div class="charItem">
+    <form action="/useShop" method="post">
+      <button type="submit">방어구 리설트 카드 [<%= 140 * rankFactor %> 가루]</button>
+      <input type="hidden" name="option" value="103">
+    </form>
+  </div>
+  <div class="charItem">
+    <form action="/useShop" method="post">
+      <button type="submit">보조방어구 리설트 카드 [<%= 140 * rankFactor %> 가루]</button>
+      <input type="hidden" name="option" value="104">
+    </form>
+  </div>
+  <div class="charItem">
+    <form action="/useShop" method="post">
+      <button type="submit">장신구 리설트 카드 [<%= 140 * rankFactor %> 가루]</button>
+      <input type="hidden" name="option" value="105">
+    </form>
   </div>
   <div class="backLink">
     <a href="/">돌아가기</a>

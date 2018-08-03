@@ -77,7 +77,6 @@ function _doBattleEnd() {
   var expRate = charLeft.rank > charRight.rank ? 0.9 : (charLeft.rank < charRight.rank ? 1.1 : 1.0);
   if (charLeft.expBoost && charLeft.ezpBoost > 0) {
     expRate += 0.2;
-    charLeft.expBoost -= 1;
   }
   if (retObj.winnerLeft) {    
     retObj.expLeft = Math.round(30 + 0.35 * expTurn * expRate);
