@@ -793,6 +793,26 @@ function calcItemStats(item) {
 
 }
 
+var printName = {};
+printName.maxHp = '생명력';
+printName.hpRegen = 'HP재생';
+printName.spRegen = 'SP재생';
+printName.spCharge = 'SP충전';
+printName.phyAtk = '물리공격력';
+printName.magAtk = '마법공격력';
+printName.crit = '치명';
+printName.critDmg = '치명피해';
+printName.phyReduce = '물리저항';
+printName.magReduce = '마법저항';
+printName.hit = '명중';
+printName.evasion = '회피';
+printName.dmgReduce = '피해감소';
+printName.pierce = '관통';
+printName[0] = '무기';
+printName[1] = '갑옷';
+printName[2] = '보조방어구';
+printName[3] = '장신구';
+
 function getRarityText(rarity) {
   var text = '';
   var cname = 'rarity';
