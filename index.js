@@ -773,6 +773,7 @@ function calcStats(chara) {
 }
 
 function calcItemStats(item) {
+  item.stat = {};
   for (var key in item.base) {
     item.stat[key] = item.base[key];
   }
