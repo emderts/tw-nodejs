@@ -1220,7 +1220,7 @@ module.exports.getBuffData = function(eff) {
     break;
   case 201712 : 
     retObj.name = '프사이-의식붕괴';
-    retObj.nameType = cons.NAME_KOR_NO_aEND_CONS;
+    retObj.nameType = cons.NAME_KOR_NO_END_CONS;
     retObj.stackType = 1;
     effectObj = {};
     effectObj.active = cons.ACTIVE_TYPE_TURN_END;
@@ -1234,6 +1234,7 @@ module.exports.getBuffData = function(eff) {
     retObj.nameType = cons.NAME_KOR_END_CONS;
     retObj.stackType = 1;
     retObj.isDebuff = false;
+    retObj.durOff = cons.DURATION_TYPE_TURN_END;
     retObj.effect = [];
     effectObj = {};
     effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
@@ -1353,13 +1354,13 @@ module.exports.getBuffData = function(eff) {
     effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
     effectObj.code = cons.EFFECT_TYPE_STAT_ADD;
     effectObj.key = 'phyReduce';
-    effectObj.value = -0.5;
+    effectObj.value = -0.3;
     retObj.effect.push(effectObj);
     effectObj = {};
     effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
     effectObj.code = cons.EFFECT_TYPE_STAT_ADD;
     effectObj.key = 'magReduce';
-    effectObj.value = -0.5;
+    effectObj.value = -0.3;
     retObj.effect.push(effectObj);
     effectObj = {};
     effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
@@ -1374,7 +1375,7 @@ module.exports.getBuffData = function(eff) {
     retObj.stackType = 1;
     break;
   case 201723 : 
-    retObj.name = '방출 감전';
+    retObj.name = '전류 방출';
     retObj.nameType = cons.NAME_KOR_END_CONS;
     retObj.stackType = 1;
     effectObj = {};
@@ -1382,6 +1383,12 @@ module.exports.getBuffData = function(eff) {
     effectObj.code = cons.EFFECT_TYPE_STAT_ADD;
     effectObj.key = 'phyReduce';
     effectObj.value = -0.25;
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_STAT_ADD;
+    effectObj.key = 'evasion';
+    effectObj.value = -0.15;
     retObj.effect.push(effectObj);
     break;
   case 201724 : 
@@ -1394,28 +1401,21 @@ module.exports.getBuffData = function(eff) {
     effectObj.active = cons.ACTIVE_TYPE_DURATION_END;
     effectObj.code = cons.EFFECT_TYPE_SELF_BUFF;
     effectObj.buffCode = 201725;
-    effectObj.buffDur = null;
+    effectObj.buffDur = 5;
     retObj.effect.push(effectObj);
     break;
   case 201725 : 
-    retObj.name = '전하 충전';
+    retObj.name = '재구축';
     retObj.nameType = cons.NAME_KOR_END_CONS;
-    retObj.stackType = 2;
-    retObj.stack = 1;
-    retObj.maxStack = 5;
+    retObj.stackType = 1;
+    retObj.durOff = cons.DURATION_TYPE_TURN_END;
     retObj.isDebuff = false;
-    retObj.durOff = null;
     effectObj = {};
-    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
-    effectObj.code = cons.EFFECT_TYPE_STAT_ADD;
-    effectObj.key = 'phyReduce';
-    effectObj.value = 0.02;
-    retObj.effect.push(effectObj);
-    effectObj = {};
-    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
-    effectObj.code = cons.EFFECT_TYPE_STAT_ADD;
-    effectObj.key = 'magReduce';
-    effectObj.value = 0.02;
+    effectObj.active = cons.ACTIVE_TYPE_TURN_END;
+    effectObj.code = cons.EFFECT_TYPE_SELF_HP;
+    effectObj.isPercentStat = true;
+    effectObj.percentKey = 'maxHp';
+    effectObj.value = 0.01;
     retObj.effect.push(effectObj);
     break;
   case 201726 : 

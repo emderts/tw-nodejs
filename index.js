@@ -45,7 +45,7 @@ express()
 .post('/dismantleItem', procDismantleItem)
 .post('/useStatPoint', procUseStatPoint)
 .post('/doRankup', procRankup)
-.get('/test', (req, res) => res.render('pages/battle', {result: battlemodule.doBattle(chara.nux, chara.aeohelm).result}))
+.get('/test', (req, res) => res.render('pages/battle', {result: battlemodule.doBattle(chara.aeika, chara.aeohelm).result}))
 //.get('/test2', (req, res) => res.send(procFullTest()))
 //.get('/test3', (req, res) => res.send(procInit()))
 .get('/test5', (req, res) => res.render('pages/resultCard', {name: 'test', rarity: Math.floor(Math.random() * 5)}))
@@ -673,9 +673,6 @@ async function setCharacter (id, uid, data) {
 
 function addExp(chara, exp) {
   chara.exp += exp;
-  if (chara.statPoint) {
-    chara.statPoint = 0;
-  }
   while (chara.level < 50 && chara.exp >= chara.reqExp) {
     chara.exp -= chara.reqExp;
     chara.level++;
