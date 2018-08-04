@@ -10,6 +10,8 @@
       body {font-family: "Nanum Gothic", sans-serif; }
       div {text-align: center; vertical-align: middle; width: 160px; height: 242px; margin: 0 45%; position: absolute; }
       .backLink {text-align: center; width: 40%; margin: 270px 30%; overflow: hidden;  }
+      .itemTooltip {font-family: "Nanum Gothic", sans-serif; visibility: hidden; width: 250px; background-color: black; color: #fff; text-align: center; font-size: 13.3333px; border-radius: 6px; padding: 5px 0; position: absolute; z-index: 1; }
+      .actualContent:hover .itemTooltip {visibility: visible; }
       .rarityUncommon {color: #4bacc6; }
       .rarityRare {color: #8054a2; }
       .rarityPremium {color: #00b050; }
@@ -20,7 +22,7 @@
       .glowEpic {box-shadow: 0 10px 100px #f79646; }
       .cardBack {transition: transform 2s; z-index: 2; }
       .cardFront {padding-top: 100px; height: 142px; transition: box-shadow 2s; z-index: 1; }
-      .shake {animation: shake 0.5s; animation-iteration-count: <%= rarity + 2 %>; } 
+      .shake {animation: shake 0.5s; animation-iteration-count: <%= item.rarity + 2 %>; } 
       @keyframes shake {
         0% { transform: translate(1px, 1px) rotate(0deg); }
         10% { transform: translate(-1px, -2px) rotate(-1deg); }
@@ -37,7 +39,28 @@
     </style>
 </head>
 <body>
-<%  function getRarityText(rarity) {
+<%  
+  var printName = {};
+  printName.maxHp = '생명력';
+  printName.hpRegen = 'HP재생';
+  printName.spRegen = 'SP재생';
+  printName.spCharge = 'SP충전';
+  printName.phyAtk = '물리공격력';
+  printName.magAtk = '마법공격력';
+  printName.crit = '치명';
+  printName.critDmg = '치명피해';
+  printName.phyReduce = '물리저항';
+  printName.magReduce = '마법저항';
+  printName.hit = '명중';
+  printName.evasion = '회피';
+  printName.dmgReduce = '피해감소';
+  printName.pierce = '관통';
+  printName[0] = '무기';
+  printName[1] = '갑옷';
+  printName[2] = '보조방어구';
+  printName[3] = '장신구';
+  
+  function getRarityText(rarity) {
     var text = '';
     var cname = 'rarity';
     switch (rarity) {
@@ -68,6 +91,44 @@
     }
     return '<span class="' + cname + '">' + text + '</span>';
   }
+  
+  function getStatList(val) {
+    return Object.entries(val.stat).map(arr => { 
+      if (arr[0] == 'phyAtkMin') {
+        return  '물리공격력 +' + arr[1] + '~' + val.stat.phyAtkMax;
+      } else if (arr[0] == 'magAtkMin') {
+        return  '마법공격력 +' + arr[1] + '~' + val.stat.magAtkMax;        
+      } else if (arr[0] == 'phyAtkMax' || arr[0] == 'magAtkMax') {
+        return '';
+      } else {
+        var sign = arr[1] > 0 ? '+' : '';
+        if (arr[0] == 'phyReduce' || arr[0] == 'magReduce' || arr[0] == 'crit' || arr[0] == 'critDmg' || arr[0] == 'crit' || arr[0] == 'hit' || arr[0] == 'evasion' || arr[0] == 'pierce') {
+          arr[1] = (arr[1] * 100).toFixed(2) + '%'; 
+        }
+        return printName[arr[0]] + ' ' + sign + arr[1];
+      }      
+    }).filter(x => x.length > 0).join(', ');
+  }
+  
+  function makeTooltip(item) {
+    var rtext = '';
+    rtext += item.name;
+    if (item.type < 10) {
+      rtext += '<br>' + item.rank + '급 ' + getRarityText(item.rarity) + ' ' + printName[item.type];
+      rtext += '<br>' + getStatList(item);
+      if (item.effectDesc && item.effectDesc.length > 0) {
+        rtext += ', ' + item.effectDesc;
+      }
+      if (item.socket) {
+        rtext += '<br><br>[' + item.socket.name + '] ' + getStatList(item.socket);
+      }
+      if (item.flavor && item.flavor.length > 0) {
+        rtext += '<br><br><span class="tooltipFlavor">' + item.flavor + '</span>';
+      }
+    }
+    return rtext;
+  }
+  
   function getGlowText(rarity) {
     var cname = 'glow';
     switch (rarity) {
@@ -97,20 +158,30 @@
     function reveal() {
       document.getElementById('cardBack').setAttribute('style', 'transform: rotateY(180deg)');
       document.getElementById('cardBack').setAttribute('class', 'cardBack');
-      document.getElementById('cardFront').setAttribute('class', 'cardFront <%= getGlowText(rarity) %> <%= rarity >= 2 ? 'shake' : '' %>');
+      document.getElementById('cardFront').setAttribute('class', 'cardFront <%= getGlowText(item.rarity) %> <%= item.rarity >= 2 ? 'shake' : '' %>');
       window.navigator.vibrate(1000);
       setTimeout(function() {
         document.getElementById('cardBack').setAttribute('style', 'display: none');        
       }, 620);
+      setTimeout(function() {
+        document.getElementById('actualContent').setAttribute('style', 'visibility: visible; opacity : 1; transition: visibility 0s, opacity 0.5s linear;');        
+      }, 420 + 200 * <%= item.rarity * item.rarity %>);
+      document.getElementById('audio').play();
     }
   </script>
   
+  <% if (item.rarity >= 4) { %>
+    <audio id="audio" src="https://player.bgmstore.net/GpxUO/mp4" ></audio>
+  <% } %>
   <div class="cardBack" id="cardBack" onclick="reveal();">
     <img src="https://i.imgur.com/lFRuWeX.png">
   </div>
   <div class="cardFront" id="cardFront">
-    <%- getRarityText(rarity) %><br>
-    <%= name %>
+    <span id="actualContent" class="actualContent" style="visibility: hidden; opacity : 0; transition: visibility 0s, opacity 0.5s linear;">
+      <%- getRarityText(item.rarity) %><br>
+      <%= item.name %>
+      <div class="itemTooltip"><%- makeTooltip(item) %></div>
+    </span>
   </div>
   <div class="backLink">
     <a href="/">돌아가기</a>

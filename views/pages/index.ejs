@@ -39,14 +39,27 @@
       .menuItem {padding: 5px; border: 2px solid black; background-color: gray; color: white; width: 150px; margin: 5px; text-align: center; }
       .menuItem a {text-decoration: none; }
     </style>
+    <script>
+    
+  
+  function invClick(thisNode, event) {
+    if (thisNode.type !== 'submit') {
+      event.preventDefault();
+      for (item of document.getElementsByClassName('inventoryButton')) {
+        item.type = 'button';
+      }
+      thisNode.setAttribute('type', 'submit');
+    }
+  }
+      </script>
 </head>
 <body>
 <% 
   var printName = {};
   printName.maxHp = '생명력';
-  printName.hpRegen = '생명력 재생';
-  printName.spRegen = 'SP 재생';
-  printName.spCharge = 'SP 충전';
+  printName.hpRegen = 'HP재생';
+  printName.spRegen = 'SP재생';
+  printName.spCharge = 'SP충전';
   printName.phyAtk = '물리공격력';
   printName.magAtk = '마법공격력';
   printName.crit = '치명';
@@ -401,11 +414,11 @@
     </table>
   </div>
     
-    <div class="inventoryWrap">
+    <div class="inventoryWrap" id="inventory">
       <% for (const [key, val] of Object.entries(char.inventory)) { %>
         <div class="inventoryItem">
           <form action="/useItem" method="post">
-            <button class="<%= getButtonText(val.rarity) %>" type="submit"><%= val.name %>
+            <button class="<%= getButtonText(val.rarity) %> inventoryButton" onclick="invClick(this, event)" type="button"><%= val.name %>
               <div class="itemTooltip"><%- makeTooltip(val) %></div>
             </button>
             <input type="hidden" name="itemNum" value="<%= key %>">

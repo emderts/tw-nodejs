@@ -1322,6 +1322,8 @@ const item = require('./items');
     char.winCnt = 0;
     char.dust = 0;
   }
+  charJulius.inventory.push(item.list[0]);
+  charJulius.inventory.push(item.list[8]);
 
   module.exports.kines = charLeft;
   module.exports.lk = charRight;

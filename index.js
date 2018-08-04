@@ -48,8 +48,13 @@ express()
 .get('/test', (req, res) => res.render('pages/battle', {result: battlemodule.doBattle(chara.aeika, chara.aeohelm).result}))
 //.get('/test2', (req, res) => res.send(procFullTest()))
 //.get('/test3', (req, res) => res.send(procInit()))
-.get('/test5', (req, res) => res.render('pages/resultCard', {name: 'test', rarity: Math.floor(Math.random() * 5)}))
-.get('/test6', (req, res) => res.render('pages/viewChar', {char: chara.julius}))
+.get('/test5', (req, res) => res.render('pages/resultCard', {item : {name: 'test', rarity: Math.floor(Math.random() * 6)}}))
+.get('/test6', (req, res) => res.render('pages/index', {
+  user: {name: 'kk'},
+  char: chara.julius,
+  actionPoint : 0,
+  news : []
+}))
 .listen(PORT, () => console.log(`Listening on ${ PORT }`))
 
 function procFullTest() {
@@ -278,8 +283,8 @@ async function procBattle(req, res) {
     } 
     if (left && right) {
       var re = battlemodule.doBattle(JSON.parse(JSON.stringify(left)), JSON.parse(JSON.stringify(right)));
-      addExp(left, re.expLeft);
-      addExp(right, re.expRight);
+      addExp(left, Math.round(re.expLeft * 0.75));
+      addExp(right, Math.round(re.expRight * 0.25));
       if (left.expBoost && left.expBoost > 0) {
         left.expBoost--;
       }
@@ -510,56 +515,56 @@ async function procUseItem (req, res) {
           calcStats(chara);
         } else if (tgtObj.type === cons.ITEM_TYPE_RESULT_CARD) {
           chara.inventory.splice(body.itemNum, 1);
-          if (!tgtObj.resultType) {
+          if (tgtObj.resultType === undefined) {
             var rand = Math.random();
             if (rand < 0.4) {
               var picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_UNCOMMON);
               chara.inventory.push(picked);
-              res.render('pages/resultCard', picked);
+              res.render('pages/resultCard', {item : picked});
             } else if (rand < 0.5) {
               var picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_RARE);
               chara.inventory.push(picked);
               await client.query('insert into news(content, date) values ($1, $2)', [chara.name + getIga(chara.nameType) + ' ' + tgtObj.name + '에서 ' + picked.name + getUlrul(picked.nameType) + ' 뽑았습니다!', new Date()]);
-              res.render('pages/resultCard', picked);
+              res.render('pages/resultCard', {item : picked});
             } else if (rand < 0.54) {
               var picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_UNIQUE);
               chara.inventory.push(picked);
               await client.query('insert into news(content, date) values ($1, $2)', [chara.name + getIga(chara.nameType) + ' ' + tgtObj.name + '에서 ' + picked.name + getUlrul(picked.nameType) + ' 뽑았습니다!', new Date()]);
-              res.render('pages/resultCard', picked);
+              res.render('pages/resultCard', {item : picked});
             } else if (rand < 0.55) {
               var picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_EPIC);
               chara.inventory.push(picked);
               await client.query('insert into news(content, date) values ($1, $2)', [chara.name + getIga(chara.nameType) + ' ' + tgtObj.name + '에서 ' + picked.name + getUlrul(picked.nameType) + ' 뽑았습니다!', new Date()]);
-              res.render('pages/resultCard', picked);
+              res.render('pages/resultCard', {item : picked});
             } else if (rand < 0.9) {
               chara.premiumPoint += 1;
-              res.render('pages/resultCard', {name : '프리미엄 포인트 1점' , rarity : cons.ITEM_RARITY_COMMON});
+              res.render('pages/resultCard', {item : {name : '프리미엄 포인트 1점' , rarity : cons.ITEM_RARITY_COMMON}});
             } else {
               var picked = makeDayStone();
               chara.inventory.push(picked);
-              res.render('pages/resultCard', picked);              
+              res.render('pages/resultCard', {item : picked});              
             }
-          } else if (tgtObj.resultType) {
+          } else if (tgtObj.resultType !== undefined) {
             var rand = Math.random();
             if (rand < 0.7) {
               var picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_UNCOMMON, tgtObj.resultType);
               chara.inventory.push(picked);
-              res.render('pages/resultCard', picked);
+              res.render('pages/resultCard', {item : picked});
             } else if (rand < 0.9) {
               var picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_RARE, tgtObj.resultType);
               chara.inventory.push(picked);
               await client.query('insert into news(content, date) values ($1, $2)', [chara.name + getIga(chara.nameType) + ' ' + tgtObj.name + '에서 ' + picked.name + getUlrul(picked.nameType) + ' 뽑았습니다!', new Date()]);
-              res.render('pages/resultCard', picked);
+              res.render('pages/resultCard', {item : picked});
             } else if (rand < 0.98) {
               var picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_UNIQUE, tgtObj.resultType);
               chara.inventory.push(picked);
               await client.query('insert into news(content, date) values ($1, $2)', [chara.name + getIga(chara.nameType) + ' ' + tgtObj.name + '에서 ' + picked.name + getUlrul(picked.nameType) + ' 뽑았습니다!', new Date()]);
-              res.render('pages/resultCard', picked);
+              res.render('pages/resultCard', {item : picked});
             } else {
               var picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_EPIC, tgtObj.resultType);
               chara.inventory.push(picked);
               await client.query('insert into news(content, date) values ($1, $2)', [chara.name + getIga(chara.nameType) + ' ' + tgtObj.name + '에서 ' + picked.name + getUlrul(picked.nameType) + ' 뽑았습니다!', new Date()]);
-              res.render('pages/resultCard', picked);
+              res.render('pages/resultCard', {item : picked});
             } 
           }
         } else if (tgtObj.type === cons.ITEM_TYPE_DAYSTONE) {

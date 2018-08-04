@@ -951,21 +951,17 @@ function printChar(chara, name, flag) {
 
   if (flag === 0) {
     resultStr += '<div class="charInfoItems">';
-    for (const [key, val] of Object.entries(chara.items)) {
-      resultStr += printName[key] + ' : ' + val.name + '<br>(';
-      resultStr += Object.entries(val.stat).map(arr => { if (arr[1] > 0 && arr[1] < 1) arr[1] *= 100; 
-      if (arr[0] == 'phyAtkMin') {
-        return  '물리공격력 ' + arr[1] + '-' + val.stat.phyAtkMax;
-      } else if (arr[0] == 'magAtkMin') {
-        return  '마법공격력 ' + arr[1] + '-' + val.stat.magAtkMax;        
-      } else if (arr[0] == 'phyAtkMax' || arr[0] == 'magAtkMax') {
-        return '';
-      } else {
-        return printName[arr[0]] + ' ' + arr[1];
-      }
-      
-      }).filter(x => x.length > 0).join(', ') + ')<br>';
-      
+    if (chara.items.weapon) {
+      resultStr += getItemText('weapon', chara.items.weapon);
+    }
+    if (chara.items.armor) {
+      resultStr += getItemText('armor', chara.items.armor);
+    }
+    if (chara.items.subarmor) {
+      resultStr += getItemText('subarmor', chara.items.subarmor);
+    }
+    if (chara.items.trinket) {
+      resultStr += getItemText('trinket', chara.items.trinket);
     }
     resultStr += '</div>';
   }
@@ -985,5 +981,30 @@ function printChar(chara, name, flag) {
   }
 
   resultStr += '</div>';
+  return resultStr;
+}
+
+function getItemText(key, val) {
+  var resultStr = '';
+  resultStr += printName[key] + ' : ' + val.name + '<br>(';
+  resultStr += Object.entries(val.stat).map(arr => { 
+    if (arr[0] == 'phyAtkMin') {
+      return  '물리공격력 +' + arr[1] + '~' + val.stat.phyAtkMax;
+    } else if (arr[0] == 'magAtkMin') {
+      return  '마법공격력 +' + arr[1] + '~' + val.stat.magAtkMax;        
+    } else if (arr[0] == 'phyAtkMax' || arr[0] == 'magAtkMax') {
+      return '';
+    } else {
+      var sign = arr[1] > 0 ? '+' : '';
+      if (arr[0] == 'phyReduce' || arr[0] == 'magReduce' || arr[0] == 'crit' || arr[0] == 'critDmg' || arr[0] == 'crit' || arr[0] == 'hit' || arr[0] == 'evasion' || arr[0] == 'pierce') {
+        arr[1] = (arr[1] * 100).toFixed(2) + '%'; 
+      }
+      return printName[arr[0]] + ' ' + sign + arr[1];
+    }      
+  }).filter(x => x.length > 0).join(', ');
+  if (val.effectDesc && val.effectDesc.length > 0) {
+    resultStr += ', ' + val.effectDesc;
+  }
+  resultStr += ')<br>'
   return resultStr;
 }
