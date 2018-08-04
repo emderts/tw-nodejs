@@ -80,6 +80,31 @@
     return res + ' ' + skill.damage;
   }
   
+  function getButtonText(rarity) {
+    var cname = 'button';
+    switch (rarity) {
+    case 0:
+      cname += 'Common';
+      break;
+    case 1:
+      cname += 'Uncommon';
+      break;
+    case 2:
+      cname += 'Rare';
+      break;
+    case 3:
+      cname += 'Premium';
+      break;
+    case 4:
+      cname += 'Unique';
+      break;
+    case 5:
+      cname += 'Epic';
+      break;
+    }
+    return cname;
+  }
+  
   function getRarityText(rarity) {
     var text = '';
     var cname = 'rarity';
@@ -110,31 +135,6 @@
       break;
     }
     return '<span class="' + cname + '">' + text + '</span>';
-  }
-  
-  function getButtonText(rarity) {
-    var cname = 'button';
-    switch (rarity) {
-    case 0:
-      cname += 'Common';
-      break;
-    case 1:
-      cname += 'Uncommon';
-      break;
-    case 2:
-      cname += 'Rare';
-      break;
-    case 3:
-      cname += 'Premium';
-      break;
-    case 4:
-      cname += 'Unique';
-      break;
-    case 5:
-      cname += 'Epic';
-      break;
-    }
-    return cname;
   }
   
   function getStatList(val) {
@@ -432,7 +432,7 @@
       <% for (const val of news) { %>
         <tr>
           <td class="charViewContent">
-            <%= val %>
+            <%- val %>
           </td>
         </tr>
       <% } %>

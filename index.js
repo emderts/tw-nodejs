@@ -524,17 +524,17 @@ async function procUseItem (req, res) {
             } else if (rand < 0.5) {
               var picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_RARE);
               chara.inventory.push(picked);
-              await client.query('insert into news(content, date) values ($1, $2)', [chara.name + getIga(chara.nameType) + ' ' + tgtObj.name + '에서 ' + picked.name + getUlrul(picked.nameType) + ' 뽑았습니다!', new Date()]);
+              await addItemNews(client, chara, tgtObj, picked);
               res.render('pages/resultCard', {item : picked});
             } else if (rand < 0.54) {
               var picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_UNIQUE);
               chara.inventory.push(picked);
-              await client.query('insert into news(content, date) values ($1, $2)', [chara.name + getIga(chara.nameType) + ' ' + tgtObj.name + '에서 ' + picked.name + getUlrul(picked.nameType) + ' 뽑았습니다!', new Date()]);
+              await addItemNews(client, chara, tgtObj, picked);
               res.render('pages/resultCard', {item : picked});
             } else if (rand < 0.55) {
               var picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_EPIC);
               chara.inventory.push(picked);
-              await client.query('insert into news(content, date) values ($1, $2)', [chara.name + getIga(chara.nameType) + ' ' + tgtObj.name + '에서 ' + picked.name + getUlrul(picked.nameType) + ' 뽑았습니다!', new Date()]);
+              await addItemNews(client, chara, tgtObj, picked);
               res.render('pages/resultCard', {item : picked});
             } else if (rand < 0.9) {
               chara.premiumPoint += 1;
@@ -553,17 +553,17 @@ async function procUseItem (req, res) {
             } else if (rand < 0.9) {
               var picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_RARE, tgtObj.resultType);
               chara.inventory.push(picked);
-              await client.query('insert into news(content, date) values ($1, $2)', [chara.name + getIga(chara.nameType) + ' ' + tgtObj.name + '에서 ' + picked.name + getUlrul(picked.nameType) + ' 뽑았습니다!', new Date()]);
+              await addItemNews(client, chara, tgtObj, picked);
               res.render('pages/resultCard', {item : picked});
             } else if (rand < 0.98) {
               var picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_UNIQUE, tgtObj.resultType);
               chara.inventory.push(picked);
-              await client.query('insert into news(content, date) values ($1, $2)', [chara.name + getIga(chara.nameType) + ' ' + tgtObj.name + '에서 ' + picked.name + getUlrul(picked.nameType) + ' 뽑았습니다!', new Date()]);
+              await addItemNews(client, chara, tgtObj, picked);
               res.render('pages/resultCard', {item : picked});
             } else {
               var picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_EPIC, tgtObj.resultType);
               chara.inventory.push(picked);
-              await client.query('insert into news(content, date) values ($1, $2)', [chara.name + getIga(chara.nameType) + ' ' + tgtObj.name + '에서 ' + picked.name + getUlrul(picked.nameType) + ' 뽑았습니다!', new Date()]);
+              await addItemNews(client, chara, tgtObj, picked);
               res.render('pages/resultCard', {item : picked});
             } 
           }
@@ -581,6 +581,12 @@ async function procUseItem (req, res) {
     console.error(err);
     res.send('내부 오류');
   }
+}
+
+async function addItemNews (client, chara, tgtObj, picked) {
+  const rarity = picked.rarity == ITEM_RARITY_RARE ? 'Rare' : (picked.rarity == cons.ITEM_RARITY_UNIQUE ? 'Unique' : 'Epic');
+  await client.query('insert into news(content, date) values ($1, $2)', 
+      [chara.name + getIga(chara.nameType) + ' ' + tgtObj.name + '에서 <span class=\"rarity' + rarity + '\">' + picked.name + '<div class="itemTooltip">' + makeTooltip(picked) + '</div></span>' + getUlrul(picked.nameType) + ' 뽑았습니다!', new Date()]);
 }
 
 async function procEnchantItem (req, res) {
@@ -785,6 +791,75 @@ function calcItemStats(item) {
     item.stat[key] += item.socket.stat[key];
   }
 
+}
+
+function getRarityText(rarity) {
+  var text = '';
+  var cname = 'rarity';
+  switch (rarity) {
+  case 0:
+    text = '커먼';
+    cname += 'Common';
+    break;
+  case 1:
+    text = '언커먼';
+    cname += 'Uncommon';
+    break;
+  case 2:
+    text = '레어';
+    cname += 'Rare';
+    break;
+  case 3:
+    text = '프리미엄';
+    cname += 'Premium';
+    break;
+  case 4:
+    text = '유니크';
+    cname += 'Unique';
+    break;
+  case 5:
+    text = '에픽';
+    cname += 'Epic';
+    break;
+  }
+  return '<span class="' + cname + '">' + text + '</span>';
+}
+
+function getStatList(val) {
+  return Object.entries(val.stat).map(arr => { 
+    if (arr[0] == 'phyAtkMin') {
+      return  '물리공격력 +' + arr[1] + '~' + val.stat.phyAtkMax;
+    } else if (arr[0] == 'magAtkMin') {
+      return  '마법공격력 +' + arr[1] + '~' + val.stat.magAtkMax;        
+    } else if (arr[0] == 'phyAtkMax' || arr[0] == 'magAtkMax') {
+      return '';
+    } else {
+      var sign = arr[1] > 0 ? '+' : '';
+      if (arr[0] == 'phyReduce' || arr[0] == 'magReduce' || arr[0] == 'crit' || arr[0] == 'critDmg' || arr[0] == 'crit' || arr[0] == 'hit' || arr[0] == 'evasion' || arr[0] == 'pierce') {
+        arr[1] = (arr[1] * 100).toFixed(2) + '%'; 
+      }
+      return printName[arr[0]] + ' ' + sign + arr[1];
+    }      
+  }).filter(x => x.length > 0).join(', ');
+}
+
+function makeTooltip(item) {
+  var rtext = '';
+  rtext += item.name;
+  if (item.type < 10) {
+    rtext += '<br>' + item.rank + '급 ' + getRarityText(item.rarity) + ' ' + printName[item.type];
+    rtext += '<br>' + getStatList(item);
+    if (item.effectDesc && item.effectDesc.length > 0) {
+      rtext += ', ' + item.effectDesc;
+    }
+    if (item.socket) {
+      rtext += '<br><br>[' + item.socket.name + '] ' + getStatList(item.socket);
+    }
+    if (item.flavor && item.flavor.length > 0) {
+      rtext += '<br><br><span class="tooltipFlavor">' + item.flavor + '</span>';
+    }
+  }
+  return rtext;
 }
 
 function getIga(type) {
