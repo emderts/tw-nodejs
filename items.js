@@ -485,7 +485,7 @@ itemList[300] = { id : 300, name : '거대한 보루', nameType : cons.NAME_KOR_
 itemList[301] = { id : 301, name : '나이키 에어맥스', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '다른 세계에서 온 착화감이 편안한 신발. 심플한 로고가 인상적이다.', rank : 8, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 38, hpRegen : 1, crit : 0.01, hit : 0.01, evasion : 0.06 }, 
     effectDesc : '', effect : [] };
 itemList[302] = { id : 302, name : '고양이 장화', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '무한한 고양감을 전해주는 마법의 고양이 장화. 뜻하지 않은 지혜를 선물한다.', rank : 8, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 38, evasion : 0.05 }, 
-    effectDesc : '자신의 드라이브 스킬 발동 시 자신에게 5턴 간 [귀여운 고양이] 버프 부여', 
+    effectDesc : '자신의 드라이브 스킬 발동 시 자신에게 5턴 간 [귀여운 고양이] 버프 부여<br><br>', 
     effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_USE_DRIVE, buffCode : 10028, buffDur : 5}] };
 itemList[303] = { id : 303, name : '알프스 소녀의 망토', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '어느 산골 소녀가 두른 작은 망토. 포근한 느낌이 감돌지만 성인에게는 잘 맞지 않는다.', rank : 8, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 18, hpRegen : 3, spCharge : 1 }, 
     effectDesc : '', effect : [] };
@@ -495,13 +495,13 @@ itemList[304] = { id : 304, name : '유령의 보자기', nameType : cons.NAME_K
 itemList[305] = { id : 305, name : '너클 오브 바이올런스', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '새까만 장갑. 군데군데 검붉은 자국이 남아 있다. 착용자에게 잔혹한 살의를 전달한다.', rank : 8, rarity : cons.ITEM_RARITY_UNIQUE, stat : { phyAtkMin : 9, phyAtkMax : 14, phyReduce : -0.03, magReduce : -0.03, maxHp : 28, hit : 0.075 }, 
     effectDesc : '', effect : [] };
 itemList[306] = { id : 306, name : '반드시 잡는다!', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '노란색으로 은은하게 빛나는 장갑. 무명의 유술가가 사용했던 신비한 기술이 담겨 있다. 반드시 잡는다!', rank : 8, rarity : cons.ITEM_RARITY_UNIQUE, stat : { maxHp : 22, hit : 0.195 }, 
-    effectDesc : '적이 공격을 회피했을 시 자신에게 2턴 간 [반드시 잡는다!] 버프 부여', 
+    effectDesc : '적이 공격을 회피했을 시 자신에게 2턴 간 [반드시 잡는다!] 버프 부여<br><br>[반드시 잡는다!] : 명중 +30%', 
     effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_MISS, buffCode : 10030, buffDur : 2}] };
 itemList[307] = { id : 307, name : '서리달빛 방패', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '검푸른 빛의 초승달 각인이 새겨진 원형 방패. 신비한 달의 힘이 감돈다.', rank : 8, rarity : cons.ITEM_RARITY_UNIQUE, stat : { phyReduce : 0.02, magReduce : 0.02, maxHp : 42, evasion : 0.02, dmgReduce : 5 }, 
-    effectDesc : '피격 시 자신에게 3턴 간 [서리달빛 각인] 버프 부여', 
+    effectDesc : '피격 시 자신에게 3턴 간 [서리달빛 각인] 버프 부여<br><br>[서리달빛 각인] : HP재생 +2', 
     effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_TAKE_HIT, buffCode : 10031, buffDur : 3}] };
 itemList[308] = { id : 308, name : '레비테이션 부츠', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '하늘을 걷게 해 주는 신비한 장화. 양쪽에 달린 날개 세공이 아름답다.', rank : 8, rarity : cons.ITEM_RARITY_UNIQUE, stat : { maxHp : 42, evasion : 0.05 }, 
-    effectDesc : '<br><br>[완전 체공] : 공격 1회를 무효화하고, 공격 실패로 간주', 
+    effectDesc : '전투 시작 시, 이후 20턴마다 턴 종료 시 자신에게 [완전 체공] 버프 부여<br><br>[완전 체공] : 공격 1회를 무효화하고, 공격 실패로 간주', 
     effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_BATTLE_START, buffCode : 10032, buffDur : null},
               {code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_TURN_END, buffCode : 10032, buffDur : null, cooldown : 19, setCooldown : 19}] };
 itemList[309] = { id : 309, name : '뱀피릭 맨틀', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '멋드러지게 길게 늘어진 흡혈귀 망토. 흡혈귀의 신체와도 같다는 이 망토를 어떻게 구했는 지는 모른다.', rank : 8, rarity : cons.ITEM_RARITY_UNIQUE, stat : { maxHp : 30, spCharge : 2 }, 
@@ -514,7 +514,7 @@ itemList[311] = { id : 311, name : '시공간 여행자의 장화', nameType : c
     effectDesc : '드라이브 스킬 사용 시 20% 확률로 효과를 한 번 추가로 발동', 
     effect : [{code : cons.EFFECT_TYPE_ADD_RESOLUTION, active : cons.ACTIVE_TYPE_USE_DRIVE, chance : 0.2}] };
 itemList[312] = { id : 312, name : '회피왕의 망토', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '회피왕이라고 자칭했던 로직이 사용했다는 망토. 망토의 위치가 계속 바뀌는 것처럼 보인다.', rank : 8, rarity : cons.ITEM_RARITY_EPIC, stat : { maxHp : 45, spCharge : 2 }, 
-    effectDesc : '<br><br>[회피 카운터] : 회피 +1%, 회피 시 1중첩 소거', 
+    effectDesc : '공격 성공 시 자신에게 [회피 카운터] 버프 부여, 스페셜 스킬 사용 시 [회피 카운터] 중첩 수 * 0.05 물리 피해<br><br>[회피 카운터] : 회피 +1%, 회피 시 1중첩 소거', 
     effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_ATTACK, buffCode : 10036, buffDur : null}] };
 itemList[313] = { id : 313, name : '천둥새의 머리뼈', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '과거 동부 대륙의 험난한 산악지대를 호령했던 천둥새의 머리뼈. 천둥새는 이 머리뼈 내부에 있는 특별한 공간을 이용해 천둥처럼 큰 울음소리를 냈다고 전해진다.', rank : 8, rarity : cons.ITEM_RARITY_EPIC, stat : { maxHp : 45, dmgReduce : 4 }, 
     effectDesc : '피격 시 50% 확률로 적에게 [천둥새의 울음소리] 디버프 부여<br><br>[천둥새의 울음소리] : 치명 -1%, 치명피해 -4%', 
@@ -602,7 +602,7 @@ itemList[339] = { id : 339, name : '결사의 리액터 슈트', nameType : cons
     effectDesc : '전투 시작 시 자신에게 [리액트 모드] 버프 부여, 스페셜 스킬 사용 시 [임팩트 모드]와 토글<br><br>[리액트 모드] : 회피 +15%, [임팩트 모드] : 치명 +15%', 
     effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_BATTLE_START, buffCode : 10043, buffDur : null}] };
 itemList[340] = { id : 340, name : '말없는 한의 동행자', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_ARMOR, flavor : '에레보스 대륙에 혁명의 도화선을 지핀 사이드제로 혁명군의 무장. 그들의 기억이 담겨있어 막강한 힘을 제공하지만 그들의 결말처럼 허무의 기운이 몸을 잠식한다.', rank : 8, rarity : cons.ITEM_RARITY_EPIC, stat : { phyReduce : 0.028, magReduce : 0.028, maxHp : 112, critDmg : 0.1 }, 
-    effectDesc : '', 
+    effectDesc : '자신의 모든 일반 스킬의 공격 계수+0.2, 턴 종료 시 자신에게 [허무] 디버프 부여 (최대 40중첩)<br><br>[허무] : 현재 및 최대 생명력 1.5% 감소', 
     effect : [{code : cons.EFFECT_TYPE_ADD_DAMAGE, active : cons.ACTIVE_TYPE_CALC_DAMAGE, value : 0.2, anySkill : true},
               {code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_TURN_END, buffCode : 10045, buffDur : null}] };
 
