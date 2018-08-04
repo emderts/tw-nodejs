@@ -283,8 +283,8 @@ async function procBattle(req, res) {
     } 
     if (left && right) {
       var re = battlemodule.doBattle(JSON.parse(JSON.stringify(left)), JSON.parse(JSON.stringify(right)));
-      addExp(left, Math.round(re.expLeft * 0.75));
-      addExp(right, Math.round(re.expRight * 0.25));
+      addExp(left, re.expLeft);
+      addExp(right, re.expRight);
       if (left.expBoost && left.expBoost > 0) {
         left.expBoost--;
       }
