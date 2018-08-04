@@ -74,24 +74,24 @@ function _doBattleEnd() {
   
   result += '<div class="resultWrap"><div class="resultCharInfo">';
   var expTurn = turnCount < 200 ? turnCount : 200;
-  var expRate = charLeft.rank > charRight.rank ? 0.675 : (charLeft.rank < charRight.rank ? 0.825 : 0.75);
+  var expRate = charLeft.rank > charRight.rank ? 0.9 : (charLeft.rank < charRight.rank ? 1.1 : 1);
   if (charLeft.expBoost && charLeft.ezpBoost > 0) {
     expRate += 0.15;
   }
   if (retObj.winnerLeft) {    
-    retObj.expLeft = Math.round(30 + 0.35 * expTurn * expRate);
+    retObj.expLeft = Math.round((30 + 0.35 * expTurn * expRate) * 0.75);
     result += '<span class="colorLeft">Victory!</span><br>' + charLeft.name + '의 승리입니다!<br>경험치를 ' + retObj.expLeft + ' 획득했습니다.<br>리설트 카드 2장을 획득했습니다.';
   } else {
-    retObj.expLeft = Math.round(0.7 * (30 + 0.35 * expTurn * expRate));
+    retObj.expLeft = Math.round((0.7 * (30 + 0.35 * expTurn * expRate)) * 0.75);
     result += '<span class="colorRight">Defeat...</span><br>' + charLeft.name + '의 패배입니다..<br>경험치를 ' + retObj.expLeft + ' 획득했습니다.<br>리설트 카드 1장을 획득했습니다.';    
   }
   result += '</div><div class="resultCharInfo">';
-  var expRate = charRight.rank > charLeft.rank ? 0.225 : (charRight.rank < charLeft.rank ? 0.275 : 0.25);
+  var expRate = charRight.rank > charLeft.rank ? 0.9 : (charRight.rank < charLeft.rank ? 1 : 1.1);
   if (retObj.winnerRight) {
-    retObj.expRight = Math.round(30 + 0.35 * expTurn * expRate);
+    retObj.expRight = Math.round((30 + 0.35 * expTurn * expRate) * 0.25);
     result += '<span class="colorLeft">Victory!</span><br>' + charRight.name + '의 승리입니다!<br>경험치를 ' + retObj.expRight + ' 획득했습니다.<br>리설트 카드 2장을 획득했습니다.';
   } else {
-    retObj.expRight = Math.round(0.7 * (30 + 0.35 * expTurn * expRate));
+    retObj.expRight = Math.round((0.7 * (30 + 0.35 * expTurn * expRate)) * 0.25);
     result += '<span class="colorRight">Defeat...</span><br>' + charRight.name + '의 패배입니다..<br>경험치를 ' + retObj.expRight + ' 획득했습니다.<br>리설트 카드 1장을 획득했습니다.';    
   }
   result += '</div></div>';
