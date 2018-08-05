@@ -181,8 +181,6 @@ async function procBattleList(req, res) {
       obj.battleCnt = charData.battleCnt;
       obj.winCnt = charData.winCnt;
       // temp code
-      charData.battleRecord = charData.battleRecord ? charData.battleRecord : {};
-      charData.winRecord = charData.winRecord ? charData.winRecord : {};
       obj.vsBattleCnt = charData.battleRecord[cuid] ? charData.battleRecord[cuid] : 0;
       obj.vsWinCnt = charData.winRecord[cuid] ? charData.winRecord[cuid] : 0;
       rval.push(obj);
@@ -298,6 +296,10 @@ async function procBattle(req, res) {
       }
       addResultCard(left);
       addResultCard(right);
+      left.battleRecord = left.battleRecord ? left.battleRecord : {};
+      left.winRecord = left.winRecord ? left.winRecord : {};
+      right.battleRecord = right.battleRecord ? right.battleRecord : {};
+      right.winRecord = right.winRecord ? right.winRecord : {};
       left.battleCnt++;
       left.battleRecord[body.charUid] = left.battleRecord[body.charUid] ? left.battleRecord[body.charUid] + 1 : 1;
       right.battleCnt++;
