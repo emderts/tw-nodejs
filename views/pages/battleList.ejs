@@ -9,7 +9,8 @@
     <style>
       body {font-family: "Nanum Gothic", sans-serif; }
       div {width: 450px; max-width: 100%; margin: 0 auto; }
-      .charItem button {width: 450px; max-width: 100%; background-color: #ffffea; }
+      .logDate {font-size: 12px; }
+      .charItem button {width: 450px; max-width: 100%; background-color: #ffffea; margin-top: 5px; }
       .charItem button:hover {background-color: #ffffcc; }
       .backLink {text-align: center; width: 40%; margin: 10px auto; overflow: hidden; }
     </style>
@@ -21,6 +22,7 @@
         <button type="submit"><%= val.name %></button>
         <input type="hidden" name="charUid" value="<%= val.uid %>">
       </form>
+      <div class="logDate">전체 <%= val.battleCnt %>전 <%= val.winCnt %>승, 당신과 <%= val.vsBattleCnt %>전 <%= val.vsWinCnt %>전</div>
     </div>
   <% } %>
   <div class="backLink">

@@ -46,7 +46,7 @@ express()
 .post('/useStatPoint', procUseStatPoint)
 .post('/doRankup', procRankup)
 .get('/test', (req, res) => res.render('pages/battle', {result: battlemodule.doBattle(chara.psi, chara.aeohelm).result}))
-.get('/test2', (req, res) => res.send(setCharacter('thelichking', 1, chara.lk)))
+//.get('/test2', (req, res) => res.send(setCharacter('thelichking', 1, chara.lk)))
 //.get('/test3', (req, res) => res.send(procInit()))
 .get('/test5', (req, res) => res.render('pages/resultCard', {item : {name: 'test', rarity: Math.floor(Math.random() * 6)}}))
 .get('/test6', (req, res) => res.render('pages/index', {
@@ -170,13 +170,21 @@ async function procBattleList(req, res) {
   try {
     const client = await pool.connect();
     const resultUser = await client.query('select * from users where id = $1', [req.session.userUid]);
-    const result = await client.query('select * from characters where uid <> $1', [resultUser.rows[0].uid]);
+    const cuid = resultUser.rows[0].uid;
+    const result = await client.query('select * from characters where uid <> $1', [cuid]);
     var rval = [];
     for (val of result.rows) {
       var charData = JSON.parse(val.char_data);
       var obj = {};
       obj.name = charData.name + ', ' + charData.title;
       obj.uid = val.uid;
+      obj.battleCnt = charData.battleCnt;
+      obj.winCnt = charData.winCnt;
+      // temp code
+      charData.battleRecord = charData.battleRecord ? charData.battleRecord : {};
+      charData.winRecord = charData.winRecord ? charData.winRecord : {};
+      obj.vsBattleCnt = charData.battleRecord[cuid] ? charData.battleRecord[cuid] : 0;
+      obj.vsWinCnt = charData.winRecord[cuid] ? charData.winRecord[cuid] : 0;
       rval.push(obj);
     } 
     res.render('pages/battleList', {list: rval, title: '전투 신청', formAction: '/doBattle'});
@@ -291,14 +299,18 @@ async function procBattle(req, res) {
       addResultCard(left);
       addResultCard(right);
       left.battleCnt++;
+      left.battleRecord[body.charUid] = left.battleRecord[body.charUid] ? left.battleRecord[body.charUid] + 1 : 1;
       right.battleCnt++;
+      right.battleRecord[cuid] = right.battleRecord[cuid] ? right.battleRecord[cuid] + 1 : 1;
       if (re.winnerLeft) {
         addResultCard(left);
         left.winCnt++;
+        left.winRecord[body.charUid] = left.winRecord[body.charUid] ? left.winRecord[body.charUid] + 1 : 1;
       }
       if (re.winnerRight) {
         addResultCard(right);
         right.winCnt++;
+        right.winRecord[cuid] = right.winRecord[cuid] ? right.winRecord[cuid] + 1 : 1;
       }
       await client.query('update characters set char_data = $1, actionPoint = $2 where uid = $3', [JSON.stringify(left), cap-1,  cuid]);
       await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(right), body.charUid]);

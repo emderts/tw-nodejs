@@ -1307,6 +1307,8 @@ const item = require('./items');
     char.premiumPoint = 10;
     char.battleCnt = 0;
     char.winCnt = 0;
+    char.battleRecord = {};
+    char.winRecord = {};
     char.dust = 0;
   }
   charRight.items.armor = item.list[339];
