@@ -1289,7 +1289,7 @@ const item = require('./items');
   
   function _initChar(char) {
     char.stat = {};
-    char.stat.maxHp = 200;
+    char.stat.maxHp = 400;
     char.stat.spCharge = 5;
     char.stat.hpRegen = 0;
     char.stat.spRegen = 5;

@@ -607,7 +607,7 @@ function resolveEffects(winner, loser, effects, damage, skill) {
       winner.items[eff.key] = picked;
     } else if (eff.code === cons.EFFECT_TYPE_ADD_DAMAGE) {
       if (eff.skillCode && eff.skillCode === skill.code) {
-        var namt = eff.buffTarget ? eff.value * findBuffByIds(winner, eff.buffTarget).length : eff.value;
+        var namt = eff.buffTarget ? eff.value * findBuffByIds(loser, eff.buffTarget).length : eff.value;
         damage.skillRat += namt;
         result += '[ ' + eff.name + ' ] 효과로 공격 계수가 ' + namt + ' 올랐습니다!<br>';
       } else if (eff.anySkill && skill.code) {
@@ -713,10 +713,10 @@ function resolveTurnEnd(winner, loser) {
   if (checkDrive(loser, cons.ACTIVE_TYPE_TURN_END)) {
     resolveDrive(loser, winner);
   }
-  resolveTurnEndChar(winner, loser);
-  resolveTurnEndChar(loser, winner);
   calcStats(winner, loser);
   calcStats(loser, winner);
+  resolveTurnEndChar(winner, loser);
+  resolveTurnEndChar(loser, winner);
 }
 
 function resolveTurnEndChar(chara, opp) {
