@@ -14,11 +14,21 @@ async function doWork() {
 try {
   const client = await pool.connect();
   if ((day >= 1 && day <= 5) || hour % 6 !== 0) {
-    await client.query('update characters set actionPoint = actionPoint + 1 where actionPoint < 10');
+    await client.query('update characters set actionPoint = actionPoint + 1 where actionPoint < 20');
   } else {
     await client.query('update characters set actionPoint = actionPoint + 3');
-    await client.query('update characters set actionPoint = 10 where actionPoint > 10');
+    await client.query('update characters set actionPoint = 20 where actionPoint > 20');
   }  
+  if (day == 1 && hour == 0) {
+  
+    const result = await client.query('select * from characters where uid <> $1', [cuid]);
+    for (val of result.rows) {
+      var charData = JSON.parse(val.char_data);
+      delete charData.dayStoneBought;
+      delete charData.actionBought;
+      await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(charData), val.uid]);
+    } 
+  }
   client.release();  
   } catch (err) {
   }
