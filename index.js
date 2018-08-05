@@ -181,6 +181,8 @@ async function procBattleList(req, res) {
       obj.battleCnt = charData.battleCnt;
       obj.winCnt = charData.winCnt;
       // temp code
+      charData.battleRecord = charData.battleRecord ? charData.battleRecord : {};
+      charData.winRecord = charData.winRecord ? charData.winRecord : {};
       obj.vsBattleCnt = charData.battleRecord[cuid] ? charData.battleRecord[cuid] : 0;
       obj.vsWinCnt = charData.winRecord[cuid] ? charData.winRecord[cuid] : 0;
       rval.push(obj);
