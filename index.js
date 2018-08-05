@@ -609,7 +609,7 @@ async function procEnchantItem (req, res) {
               res.send('');
               return;
             }
-            if (used.day === 5 && tgt.type >= 1) {
+            if (used.day === 5 && (tgt.type === 0 || tgt.type === 3)) {
               client.release();
               res.send('');
               return;

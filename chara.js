@@ -132,23 +132,10 @@ const item = require('./items');
   itemObj.rank = 9;
   itemObj.rarity = cons.ITEM_RARITY_RARE;
   itemObj.stat = {};
-  itemObj.stat.phyAtk = 14;
-  itemObj.stat.magAtk = 14;
-  itemObj.stat.spRegen = 3;
+  itemObj.stat.phyAtk = 24;
+  itemObj.stat.magAtk = 30;
+  itemObj.stat.spRegen = 10;
   itemObj.effect = [];
-  charRight.items.weapon = itemObj;
-  itemObj = {};
-  itemObj.name = '리치 왕의 세공 갑옷';
-  itemObj.nameType = cons.NAME_KOR_NO_END_CONS;
-  itemObj.type = cons.ITEM_TYPE_ARMOR;
-  itemObj.rank = 8;
-  itemObj.rarity = cons.ITEM_RARITY_COMMON;
-  itemObj.stat = {};
-  itemObj.stat.maxHp = 65;
-  itemObj.stat.phyReduce = 0.1;
-  itemObj.stat.magReduce = 0.1;
-  itemObj.effect = [];
-  charRight.items.armor = itemObj;
   itemObj = {};
   itemObj.name = '서리 끼인 영혼의 망토';
   itemObj.nameType = cons.NAME_KOR_NO_END_CONS;
@@ -156,7 +143,7 @@ const item = require('./items');
   itemObj.rank = 9;
   itemObj.rarity = cons.ITEM_RARITY_EPIC;
   itemObj.stat = {};
-  itemObj.stat.crit = 0.2;
+  itemObj.stat.crit = 0.5;
   itemObj.effect = [];
   charRight.items.subarmor = itemObj;
 
@@ -1289,7 +1276,7 @@ const item = require('./items');
   
   function _initChar(char) {
     char.stat = {};
-    char.stat.maxHp = 400;
+    char.stat.maxHp = 1000;
     char.stat.spCharge = 5;
     char.stat.hpRegen = 0;
     char.stat.spRegen = 5;
@@ -1322,8 +1309,8 @@ const item = require('./items');
     char.winCnt = 0;
     char.dust = 0;
   }
-  charJulius.inventory.push(item.list[0]);
-  charJulius.inventory.push(item.list[8]);
+  charRight.items.armor = item.list[339];
+  charRight.items.trinket = item.list[333];
 
   module.exports.kines = charLeft;
   module.exports.lk = charRight;
