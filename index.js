@@ -46,7 +46,7 @@ express()
 .post('/useStatPoint', procUseStatPoint)
 .post('/doRankup', procRankup)
 .get('/test', (req, res) => res.render('pages/battle', {result: battlemodule.doBattle(chara.psi, chara.aeohelm).result}))
-//.get('/test2', (req, res) => res.send(procFullTest()))
+.get('/test2', (req, res) => res.send(setCharacter('thelichking', 1, chara.lk)))
 //.get('/test3', (req, res) => res.send(procInit()))
 .get('/test5', (req, res) => res.render('pages/resultCard', {item : {name: 'test', rarity: Math.floor(Math.random() * 6)}}))
 .get('/test6', (req, res) => res.render('pages/index', {
