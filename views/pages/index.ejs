@@ -38,10 +38,11 @@
       div.menuWrap {float: left; }
       .menuItem {padding: 5px; border: 2px solid black; background-color: gray; color: white; width: 150px; margin: 5px; text-align: center; }
       .menuItem a {text-decoration: none; }
+      #messages { list-style-type: none; margin: 0; padding: 0; }
+      #messages li { padding: 5px 10px; }
+      #messages li:nth-child(odd) { background: #eee; }
     </style>
     <script>
-    
-  
   function invClick(thisNode, event) {
     if (thisNode.type !== 'submit') {
       event.preventDefault();
@@ -50,6 +51,32 @@
       }
       thisNode.setAttribute('type', 'submit');
     }
+  }
+  
+  var socket = io();
+  socket.emit('login', <%= user.name %>, <%= user.uid %>);
+  
+  document.chatForm.submit = function() {
+    socket.emit('chat message', document.getElementById('msg').value);
+    document.getElementById('msg').value = '';
+    return false;
+  };
+  
+  socket.on('logged in', function(chatRecord) {
+    for (const val of chatRecord) {
+      addMessage(val);
+    }
+  };
+  
+  socket.on('chat message', function(msg) {
+    addMessage(msg);
+  };
+  
+  function addMessage(msg) {
+    var ul = document.getElementById('messages');
+    var li = document.createElement('li');
+    li.appendChild(document.createTextNode(msg));
+    ul.appendChild(li);
   }
       </script>
 </head>
@@ -437,6 +464,14 @@
         </tr>
       <% } %>
     </table>
+  </div>
+  
+  <div class="chatWrap">
+    <ul id="messages"></ul>
+    <form action="" name="chatForm">
+      <input type="text" id="msg" placeholder="메시지 입력" />
+      <button>보내기</button>
+    </form>
   </div>
     
     <div class="menuWrap">

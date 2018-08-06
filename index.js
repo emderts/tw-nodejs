@@ -1,8 +1,9 @@
-const express = require('express')
-const path = require('path')
-const PORT = process.env.PORT || 5000
+const express = require('express');
+const path = require('path');
+const PORT = process.env.PORT || 5000;
 const bodyParser = require('body-parser');
 const session = require('express-session');
+const sharedSession = require("express-socket.io-session");
 const bcrypt = require('bcrypt-nodejs');
 const { Pool } = require('pg');
 const pool = new Pool({
@@ -14,7 +15,7 @@ const chara = require('./chara');
 const cons = require('./constant');
 const item = require('./items');
 
-express()
+const server = express()
 .use(express.static(path.join(__dirname, 'public')))
 .use(session({
   secret: 'ewqwwolpe!d.ldx42EsCCXD#!$()_*#@',
@@ -56,6 +57,37 @@ express()
   news : []
 }))
 .listen(PORT, () => console.log(`Listening on ${ PORT }`))
+
+const io = socketIO(server);
+io.use(sharedsession(session, {
+  autoSave : true
+})); 
+
+var ring = [];
+io.on('connection', (socket) => {
+  socket.on('login', function(userName, uid) {
+    socket.handshake.session.userName = userName;
+    socket.handshake.session.charData = await getCharacter(uid);
+    socket.emit('logged in', { chatRecord : ring });
+  });
+  
+  socket.on('chat message', function(msg) {
+    ring.push(msg);
+    if (ring.length > 30) {
+      ring.shift();
+    }
+    io.emit('chat message', { userName : socket.handshake.session.userName, message : msg });
+  });
+  
+  socket.on('logout', function() {
+    if (socket.handshake.session.userName) {
+      delete socket.handshake.session.userName;
+    }
+    if (socket.handshake.session.charData) {
+      delete socket.handshake.session.charData;
+    }
+  });  
+});
 
 function procFullTest() {
   var testChars = [chara.julius, chara.seriers, chara.aeika, chara.psi, chara.aeohelm, chara.nux];
