@@ -65,10 +65,9 @@ io.use(sharedsession(session, {
 
 var ring = [];
 io.on('connection', (socket) => {
-  socket.on('login', function(userName, charData) {
+  socket.on('login', function(userName, uid) {
     socket.handshake.session.userName = userName;
-    socket.handshake.session.charData = charData;
-    console.log(ring.peekN(30));
+    socket.handshake.session.charData = await getCharacter(uid);
     socket.emit('logged in', { chatRecord : ring });
   });
   
@@ -77,7 +76,7 @@ io.on('connection', (socket) => {
     if (ring.length > 30) {
       ring.shift();
     }
-    socket.broadcast.emit('chat message', { userName : socket.handshake.session.userName, message : msg });
+    io.emit('chat message', { userName : socket.handshake.session.userName, message : msg });
   });
   
   socket.on('logout', function() {
