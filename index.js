@@ -101,7 +101,7 @@ async function procIndex (req, res) {
   } else {
     res.render('pages/index', {
       user: {name: sess.userName},
-      char: char.char_data ? JSON.parse(char.char_data) : {},
+      char: char.char_data ? JSON.parse(char.char_data) : undefined,
       actionPoint : char.actionPoint,
       news : news
     });
