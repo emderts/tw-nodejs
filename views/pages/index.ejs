@@ -11,7 +11,7 @@
       table {border: 1px solid black; text-align: center; }
       table.charInfo {float: left; }
       td {padding: 3px 10px; }
-      div.infoViewWrap {float: left; }
+      div {float: left; }
       .charInfo .charViewTitle {background-color: #ffffcc; }
       .charInfo .charViewContent {background-color: #ffffea; }
       .itemInfo .charViewTitle {background-color: #ccffcc; }
@@ -35,13 +35,15 @@
       .buttonPremium {background-color: #00b050; }
       .buttonUnique {background-color: #ff33cc; }
       .buttonEpic {background-color: #f79646; }
+      .chatWrap ul {height: 200px; overflow: scroll; list-style-type: none; margin: 0; padding: 0; }
+      .chatWrap ul.peopleList {width: 100px; float: left; border-left: 1px solid black; }
+      .chatWrap ul li { padding: 5px 10px; }
+      .chatWrap ul li:nth-child(odd) { background: #eee; }
       div.menuWrap {float: left; }
       .menuItem {padding: 5px; border: 2px solid black; background-color: gray; color: white; width: 150px; margin: 5px; text-align: center; }
       .menuItem a {text-decoration: none; }
-      #messages { list-style-type: none; margin: 0; padding: 0; }
-      #messages li { padding: 5px 10px; }
-      #messages li:nth-child(odd) { background: #eee; }
     </style>
+    <script src="/socket.io/socket.io.js"></script>
     <script>
   function invClick(thisNode, event) {
     if (thisNode.type !== 'submit') {
@@ -54,28 +56,45 @@
   }
   
   var socket = io();
-  socket.emit('login', <%= user.name %>, <%= user.uid %>);
+  socket.emit('login', '<%= user.name %>', '<%= user.uid %>');
   
-  document.chatForm.submit = function() {
+  function sendMessage() {
     socket.emit('chat message', document.getElementById('msg').value);
     document.getElementById('msg').value = '';
     return false;
   };
   
-  socket.on('logged in', function(chatRecord) {
+  socket.on('logged in', function(chatRecord, peopleList) {
     for (const val of chatRecord) {
-      addMessage(val);
+      addMessage(val.userName, val.message);
     }
-  };
+    for (const val of peopleList) {
+      addPerson(val);
+    }
+  });
   
-  socket.on('chat message', function(msg) {
-    addMessage(msg);
-  };
+  socket.on('chat message', function(userName, msg) {
+    addMessage(userName, msg);
+  });
   
-  function addMessage(msg) {
+  socket.on('person left', function(peopleList) {
+    for (const val of peopleList) {
+      addPerson(val);
+    }
+  });
+  
+  function addMessage(userName, msg) {
     var ul = document.getElementById('messages');
     var li = document.createElement('li');
-    li.appendChild(document.createTextNode(msg));
+    li.appendChild(document.createTextNode(userName + ' : ' + msg));
+    ul.appendChild(li);
+    ul.scrollTop = ul.scrollHeight;
+  }
+  
+  function addPerson(userName) {
+    var ul = document.getElementById('people');
+    var li = document.createElement('li');
+    li.appendChild(document.createTextNode(userName));
     ul.appendChild(li);
   }
       </script>
@@ -468,11 +487,14 @@
   
   <div class="chatWrap">
     <ul id="messages"></ul>
-    <form action="" name="chatForm">
+    <form action="" name="chatForm" onsubmit="return sendMessage();">
       <input type="text" id="msg" placeholder="메시지 입력" />
-      <button>보내기</button>
+      <button type="submit"">보내기</button>
     </form>
   </div>
+    <div class="chatWrap">
+      <ul id="people" class="peopleList"></ul>
+    </div>
     
     <div class="menuWrap">
       <div class="menuItem">

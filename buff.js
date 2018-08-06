@@ -474,7 +474,7 @@ module.exports.getBuffData = function(eff) {
     effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
     effectObj.code = cons.EFFECT_TYPE_STAT_ADD;
     effectObj.key = 'magAtk';
-    effectObj.value = 2;
+    effectObj.value = 4;
     retObj.effect.push(effectObj);
     break;
   case 10020 : 
@@ -492,7 +492,7 @@ module.exports.getBuffData = function(eff) {
     effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
     effectObj.code = cons.EFFECT_TYPE_STAT_ADD;
     effectObj.key = 'critDmg';
-    effectObj.value = 0.05;
+    effectObj.value = 0.04;
     retObj.effect.push(effectObj);
     break;
   case 10021 : 
@@ -504,6 +504,12 @@ module.exports.getBuffData = function(eff) {
     effectObj.code = cons.EFFECT_TYPE_STAT_ADD;
     effectObj.key = 'phyReduce';
     effectObj.value = 0.1;
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_STAT_ADD;
+    effectObj.key = 'hpRegen';
+    effectObj.value = 1;
     retObj.effect.push(effectObj);
     break;
   case 10022 : 
@@ -607,6 +613,12 @@ module.exports.getBuffData = function(eff) {
     effectObj.code = cons.EFFECT_TYPE_STAT_ADD;
     effectObj.key = 'spRegen';
     effectObj.value = 1;
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_STAT_ADD;
+    effectObj.key = 'spCharge';
+    effectObj.value = 2;
     retObj.effect.push(effectObj);
     break;
   case 10029 : 
@@ -877,7 +889,7 @@ module.exports.getBuffData = function(eff) {
     effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
     effectObj.code = cons.EFFECT_TYPE_STAT_ADD;
     effectObj.key = 'evasion';
-    effectObj.value = 0.15;
+    effectObj.value = 0.11;
     retObj.effect.push(effectObj);
     effectObj = {};
     effectObj.active = cons.ACTIVE_TYPE_USE_SPECIAL;
@@ -897,7 +909,7 @@ module.exports.getBuffData = function(eff) {
     effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
     effectObj.code = cons.EFFECT_TYPE_STAT_ADD;
     effectObj.key = 'crit';
-    effectObj.value = 0.15;
+    effectObj.value = 0.11;
     retObj.effect.push(effectObj);
     effectObj = {};
     effectObj.active = cons.ACTIVE_TYPE_USE_SPECIAL;
@@ -928,6 +940,53 @@ module.exports.getBuffData = function(eff) {
     effectObj.isPercentChar = true;
     effectObj.percentKey = 'curHp';
     effectObj.value = -0.015;
+    effectObj.chkStackUnder = 40;
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_TURN_END;
+    effectObj.code = cons.EFFECT_TYPE_SELF_BUFF;
+    effectObj.buffCode = 10046;
+    effectObj.buffDur = null;
+    effectObj.chkStack = 40;
+    effectObj.chkNot = [10046];
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_TURN_END;
+    effectObj.code = cons.EFFECT_TYPE_OPP_BUFF;
+    effectObj.buffCode = 10046;
+    effectObj.buffDur = null;
+    effectObj.chkStack = 40;
+    effectObj.chkOppNot = [10046];
+    retObj.effect.push(effectObj);
+    break;
+  case 10046 : 
+    retObj.name = '허무의 끝';
+    retObj.nameType = cons.NAME_KOR_END_CONS;
+    retObj.dispellable = false;
+    retObj.stackType = 1;
+    retObj.durOff = null;
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_STAT_MULTIPLY;
+    effectObj.key = 'hpRegen';
+    effectObj.value = 0;
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_STAT_MULTIPLY;
+    effectObj.key = 'spRegen';
+    effectObj.value = 0;
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_STAT_MULTIPLY;
+    effectObj.key = 'spCharge';
+    effectObj.value = 0;
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_DO_HEAL;
+    effectObj.code = cons.EFFECT_TYPE_MULTIPLY_HEAL;
+    effectObj.value = 0;
     retObj.effect.push(effectObj);
     break;
   case 20101 : 

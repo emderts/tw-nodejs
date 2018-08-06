@@ -1,9 +1,9 @@
 const express = require('express');
+const socketIO = require('socket.io');
 const path = require('path');
 const PORT = process.env.PORT || 5000;
 const bodyParser = require('body-parser');
 const session = require('express-session');
-const sharedSession = require("express-socket.io-session");
 const bcrypt = require('bcrypt-nodejs');
 const { Pool } = require('pg');
 const pool = new Pool({
@@ -14,14 +14,15 @@ const battlemodule = require('./battlemodule');
 const chara = require('./chara');
 const cons = require('./constant');
 const item = require('./items');
-
-const server = express()
-.use(express.static(path.join(__dirname, 'public')))
-.use(session({
+const sessionMiddleware = session({
   secret: 'ewqwwolpe!d.ldx42EsCCXD#!$()_*#@',
-  resave: false,
+  resave: true,
   saveUninitialized: true
-}))
+});;
+
+const app = express()
+.use(express.static(path.join(__dirname, 'public')))
+.use(sessionMiddleware)
 .use(bodyParser.urlencoded({extended: false}))
 .set('views', path.join(__dirname, 'views'))
 .set('view engine', 'ejs')
@@ -31,8 +32,8 @@ const server = express()
 .get('/join', (req, res) => res.render('pages/join'))
 .post('/join', procJoin)
 .get('/logout', procLogout)
-.post('/unequipItem', procUnequip)
 .post('/useItem', procUseItem)
+.post('/unequipItem', procUnequip)
 .post('/enchantItem', procEnchantItem)
 .get('/battleList', procBattleList)
 .post('/doBattle', procBattle)
@@ -46,7 +47,7 @@ const server = express()
 .post('/dismantleItem', procDismantleItem)
 .post('/useStatPoint', procUseStatPoint)
 .post('/doRankup', procRankup)
-.get('/test', (req, res) => res.render('pages/battle', {result: battlemodule.doBattle(chara.psi, chara.aeohelm).result}))
+.get('/test', (req, res) => res.render('pages/battle', {result: battlemodule.doBattle(chara.julius, chara.aeohelm).result}))
 //.get('/test2', (req, res) => res.send(setCharacter('thelichking', 1, chara.lk)))
 //.get('/test3', (req, res) => res.send(procInit()))
 .get('/test5', (req, res) => res.render('pages/resultCard', {item : {name: 'test', rarity: Math.floor(Math.random() * 6)}}))
@@ -56,27 +57,39 @@ const server = express()
   actionPoint : 0,
   news : []
 }))
-.listen(PORT, () => console.log(`Listening on ${ PORT }`))
+.listen(PORT, () => console.log(`Listening on ${ PORT }`));
 
-const io = socketIO(server);
-io.use(sharedsession(session, {
-  autoSave : true
-})); 
+const io = socketIO(app);
+io.use(function(socket, next) {
+  sessionMiddleware(socket.request, socket.request.res, next);
+});
+app
 
 var ring = [];
+var people = [];
 io.on('connection', (socket) => {
+  console.log('connect');
   socket.on('login', function(userName, uid) {
-    socket.handshake.session.userName = userName;
-    socket.handshake.session.charData = await getCharacter(uid);
-    socket.emit('logged in', { chatRecord : ring });
+    console.log('login');
+    socket.request.session.userName = userName;
+    socket.request.session.charData = chara.julius;//await getCharacter(uid);
+    people.push(userName);
+    socket.emit('logged in', ring, people);
   });
   
   socket.on('chat message', function(msg) {
-    ring.push(msg);
+    console.log('chat');
+    ring.push({userName : socket.request.session.userName, message : msg });
     if (ring.length > 30) {
       ring.shift();
     }
-    io.emit('chat message', { userName : socket.handshake.session.userName, message : msg });
+    io.emit('chat message', socket.request.session.userName, msg);
+  });
+  
+  socket.on('disconnect', function() {
+    console.log('dc');
+    people = people.filter(x => x != socket.request.session.userName);
+    io.emit('person left', people);
   });
   
   socket.on('logout', function() {
@@ -132,47 +145,12 @@ async function procIndex (req, res) {
     res.render('pages/login');
   } else {
     res.render('pages/index', {
-      user: {name: sess.userName},
+      user: {name: sess.userName, uid : sess.userUid},
       char: char.char_data ? JSON.parse(char.char_data) : undefined,
       actionPoint : char.actionPoint,
       news : news
     });
   }
-}
-
-async function procUseStatPoint (req, res) {
-  const client = await pool.connect();
-  const sess = req.session; 
-  const charRow = await getCharacter(sess.userUid);
-  const char = JSON.parse(charRow.char_data);
-  if (char.statPoint > 0) {
-    char.statPoint -= 1;
-    var value = (req.body.keyType ==='maxHp') ? 10 : 1;
-    char.base[req.body.keyType] += value;
-    calcStats(char);
-  } 
-  await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
-  client.release();
-  res.redirect('/');
-}
-
-async function procRankup (req, res) {
-  const client = await pool.connect();
-  const sess = req.session; 
-  const charRow = await getCharacter(sess.userUid);
-  const char = JSON.parse(charRow.char_data);
-  if (char.level >= 20 && char.rank > 1) {
-    char.level = 1;
-    char.rank--;
-    char.reqExp += 20;
-    char.base.maxHp += 150;
-    char.base.phyAtk += 10;
-    char.base.magAtk += 10;
-    calcStats(char);
-  } 
-  await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
-  client.release();
-  res.redirect('/');
 }
 
 async function procLogin (req, res) {
@@ -198,189 +176,6 @@ async function procLogin (req, res) {
   }
 }
 
-async function procBattleList(req, res) {
-  try {
-    const client = await pool.connect();
-    const resultUser = await client.query('select * from users where id = $1', [req.session.userUid]);
-    const cuid = resultUser.rows[0].uid;
-    const result = await client.query('select * from characters where uid <> $1', [cuid]);
-    var rval = [];
-    for (val of result.rows) {
-      var charData = JSON.parse(val.char_data);
-      var obj = {};
-      obj.name = charData.name + ', ' + charData.title;
-      obj.uid = val.uid;
-      obj.battleCnt = charData.battleCnt;
-      obj.winCnt = charData.winCnt;
-      // temp code
-      charData.battleRecord = charData.battleRecord ? charData.battleRecord : {};
-      charData.winRecord = charData.winRecord ? charData.winRecord : {};
-      obj.vsBattleCnt = charData.battleRecord[cuid] ? charData.battleRecord[cuid] : 0;
-      obj.vsWinCnt = charData.winRecord[cuid] ? charData.winRecord[cuid] : 0;
-      rval.push(obj);
-    } 
-    res.render('pages/battleList', {list: rval, title: '전투 신청', formAction: '/doBattle'});
-    client.release();
-  } catch (err) {
-    console.error(err);
-    res.send('내부 오류');
-  }
-}
-
-async function procViewList(req, res) {
-  try {
-    const client = await pool.connect();
-    const resultUser = await client.query('select * from users where id = $1', [req.session.userUid]);
-    const result = await client.query('select * from characters where uid <> $1', [resultUser.rows[0].uid]);
-    var rval = [];
-    for (val of result.rows) {
-      var charData = JSON.parse(val.char_data);
-      var obj = {};
-      obj.name = charData.name + ', ' + charData.title;
-      obj.uid = val.uid;
-      rval.push(obj);
-    } 
-    res.render('pages/battleList', {list: rval, title: '정보 보기', formAction: '/viewChar'});
-    client.release();
-  } catch (err) {
-    console.error(err);
-    res.send('내부 오류');
-  }
-}
-
-async function procShop(req, res) {
-  try {
-    const sess = req.session; 
-    const charRow = await getCharacter(sess.userUid);
-    const char = JSON.parse(charRow.char_data);
-    res.render('pages/shop', {premiumPoint : char.premiumPoint, dust : char.dust, dayStoneBought : char.dayStoneBought, actionBought : char.actionBought, rankFactor : Math.pow(2, 9 - char.rank)});
-  } catch (err) {
-    console.error(err);
-    res.send('내부 오류');
-  }
-}
-
-async function procDismantlingYard(req, res) {
-  try {
-    const sess = req.session; 
-    const charRow = await getCharacter(sess.userUid);
-    const char = JSON.parse(charRow.char_data);
-    res.render('pages/selectItem', {title : '아이템 해체', inv : char.inventory, mode : 2, dust : char.dust, dustVal : null, usedItem : 0});
-  } catch (err) {
-    console.error(err);
-    res.send('내부 오류');
-  }
-}
-
-async function procView(req, res) {
-  try {
-    const client = await pool.connect();
-    const result = await client.query('select * from characters where uid = $1', [req.body.charUid]);
-    for (val of result.rows) {
-      var charData = JSON.parse(val.char_data);
-    } 
-    res.render('pages/viewChar', {char: charData});
-    client.release();
-  } catch (err) {
-    console.error(err);
-    res.send('내부 오류');
-  }
-}
-
-async function procBattleLogList(req, res) {
-  try {
-    const client = await pool.connect();
-    const result = await client.query('select id, title, date from results order by date desc');
-    res.render('pages/battleLogList', {list: result.rows});
-    client.release();
-  } catch (err) {
-    console.error(err);
-    res.send('내부 오류');
-  }
-}
-
-async function procBattle(req, res) {
-  try {
-    const body = req.body;
-    const client = await pool.connect();
-    const resultUser = await client.query('select * from users where id = $1', [req.session.userUid]);
-    const result = await client.query('select * from characters');
-    var left, right;
-    var cuid, cap;
-    for (val of result.rows) {
-      if (val.uid === resultUser.rows[0].uid) {
-        left = JSON.parse(val.char_data);
-        cuid = val.uid;
-        cap = val.actionpoint;
-        if (cap <= 0) {
-          client.release();
-          res.redirect('/');
-          return;
-        }
-      } else if (val.uid === body.charUid) {
-        right = JSON.parse(val.char_data);
-      }
-    } 
-    if (left && right) {
-      var re = battlemodule.doBattle(JSON.parse(JSON.stringify(left)), JSON.parse(JSON.stringify(right)));
-      addExp(left, re.expLeft);
-      addExp(right, re.expRight);
-      if (left.expBoost && left.expBoost > 0) {
-        left.expBoost--;
-      }
-      addResultCard(left);
-      addResultCard(right);
-      left.battleRecord = left.battleRecord ? left.battleRecord : {};
-      left.winRecord = left.winRecord ? left.winRecord : {};
-      right.battleRecord = right.battleRecord ? right.battleRecord : {};
-      right.winRecord = right.winRecord ? right.winRecord : {};
-      left.battleCnt++;
-      left.battleRecord[body.charUid] = left.battleRecord[body.charUid] ? left.battleRecord[body.charUid] + 1 : 1;
-      right.battleCnt++;
-      right.battleRecord[cuid] = right.battleRecord[cuid] ? right.battleRecord[cuid] + 1 : 1;
-      if (re.winnerLeft) {
-        addResultCard(left);
-        left.winCnt++;
-        left.winRecord[body.charUid] = left.winRecord[body.charUid] ? left.winRecord[body.charUid] + 1 : 1;
-      }
-      if (re.winnerRight) {
-        addResultCard(right);
-        right.winCnt++;
-        right.winRecord[cuid] = right.winRecord[cuid] ? right.winRecord[cuid] + 1 : 1;
-      }
-      await client.query('update characters set char_data = $1, actionPoint = $2 where uid = $3', [JSON.stringify(left), cap-1,  cuid]);
-      await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(right), body.charUid]);
-      var winner = re.winnerLeft ? left.name + ' 승리!' : (re.winnerRight ? right.name + ' 승리!' : '');
-      var battleTitle = '[ ' + left.name + ' ] vs [ ' + right.name + ' ] - ' + winner;
-      await client.query('insert into results(title, result, date) values ($1, $2, $3)', [battleTitle, re.result, new Date()]);
-      res.render('pages/battle', {result: re.result});
-    } else {
-      res.redirect('/');
-    }
-    client.release();
-  } catch (err) {
-    console.error(err);
-    res.send('내부 오류');
-  }
-}
-
-async function procBattleLog(req, res) {
-  try {
-    const client = await pool.connect();
-    const result = await client.query('select * from results where id = $1', [req.body.logId]);
-    res.render('pages/battle', {result: result.rows[0].result});
-    client.release();
-  } catch (err) {
-    console.error(err);
-    res.send('내부 오류');
-  }
-}
-
-function procLogout (req, res) {
-  delete req.session.userUid;
-  res.redirect('/');	  
-}  
-
 async function procJoin (req, res) {
   try {
     const body = req.body;
@@ -405,119 +200,10 @@ async function procJoin (req, res) {
   }
 }
 
-async function procUnequip (req, res) {
-  try {
-    var chara;
-    const body = req.body;
-    const client = await pool.connect();
-    const result = await client.query('select * from users where id = $1', [req.session.userUid]);
-    if (result.rows.length > 0) {
-      const resultChar = await client.query('select char_data from characters where uid = $1', [result.rows[0].uid]);
-      if (resultChar.rows.length > 0) {
-        chara = JSON.parse(resultChar.rows[0].char_data);
-        var tgtObj = chara.items[body.itemType];
-        chara.items[body.itemType] = undefined;
-        calcStats(chara);
-        chara.inventory.push(tgtObj);
-        await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(chara), result.rows[0].uid]);
-      }
-    }
-    client.release();
-    res.redirect('/');
-  } catch (err) {
-    console.error(err);
-    res.send('내부 오류');
-  }
-}
-
-async function procUseShop (req, res) {
-  try {
-    const body = req.body;
-    const client = await pool.connect();
-    const sess = req.session; 
-    const charRow = await getCharacter(sess.userUid);
-    const char = JSON.parse(charRow.char_data);
-    var action = charRow.actionPoint;
-    if (body.option == 1) {
-      var cost = char.dayStoneBought ? 10 : 5;
-      if (char.premiumPoint < cost) {
-        res.send('프리미엄 포인트가 부족합니다.');
-      } else {
-        char.premiumPoint -= cost;
-        var picked = makeDayStone(Math.floor(Math.random() * 7));
-        char.inventory.push(picked);
-        char.dayStoneBought = true;
-      }
-    } else if (body.option == 2) {
-      if (char.premiumPoint < 10) {
-        res.send('프리미엄 포인트가 부족합니다.');
-      } else if (char.expBoost > 0) {
-        res.send('이미 부스트를 구매했습니다.');
-      } else {
-        char.premiumPoint -= 10;
-        char.expBoost = 5;
-      }
-    } else if (body.option == 3) {
-      var cost = char.actionBought ? 15 : 10;
-      if (char.premiumPoint < cost) {
-        res.send('프리미엄 포인트가 부족합니다.');
-      } else {
-        char.premiumPoint -= cost;
-        action += 2;
-        char.actionBought = true;
-      }
-    } else if (body.option <= 7) {
-      if (char.premiumPoint < 10) {
-        res.send('프리미엄 포인트가 부족합니다.');
-      } else {
-        char.premiumPoint -= 10;
-        addSpecialResultCard(char, body.option - 4);
-      }
-    } else if (body.option >= 102) {
-      var cost = body.option >= 106 ? 100 : 140;
-      cost *= Math.pow(2, 9 - char.rank);
-      if (char.dust < cost) {
-        res.send('가루가 부족합니다.');
-      } else {
-        char.dust -= cost;
-        addSpecialResultCard(char, body.option - 102);
-      }
-    }
-    await client.query('update characters set char_data = $1, actionpoint = $3 where uid = $2', [JSON.stringify(char), charRow.uid, action]);
-    client.release();
-    if (!res.headersSent) {
-      res.redirect('/');
-    }
-  } catch (err) {
-    console.error(err);
-    res.send('내부 오류');
-  }
-}
-
-const dustInfo = [10, 14, 26, 26, 62, 170];
-async function procDismantleItem (req, res) {
-  try {
-    const body = req.body;
-    const client = await pool.connect();
-    const sess = req.session; 
-    const charRow = await getCharacter(sess.userUid);
-    const char = JSON.parse(charRow.char_data);
-    var tgt = char.inventory[body.itemNum];
-    if (tgt.type <= 3) {
-      char.inventory.splice(body.itemNum, 1);
-      var dustVal = Math.round(dustInfo[tgt.rarity] * Math.pow(2, 9 - tgt.rank));
-      char.dust += dustVal;
-    }
-    await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
-    client.release();
-    if (!res.headersSent) {
-      res.render('pages/selectItem', {title : '아이템 해체', inv : char.inventory, mode : 2, dustVal : dustVal, dust : char.dust, usedItem : 0});;
-    }
-  } catch (err) {
-    console.error(err);
-    res.send('내부 오류');
-  }
-}
+function procLogout (req, res) {
+  delete req.session.userUid;
+  res.redirect('/');      
+}  
 
 function _getItem(rank, rarity, type) {
   var usedRank = rank;
@@ -557,7 +243,7 @@ async function procUseItem (req, res) {
           var curItem = chara.items[itemType];
           if (curItem) {
             chara.items[itemType] = undefined;
-            chara.inventory.push(curItem);				
+            chara.inventory.push(curItem);              
           }
           chara.items[itemType] = tgtObj;
           calcStats(chara);
@@ -631,10 +317,29 @@ async function procUseItem (req, res) {
   }
 }
 
-async function addItemNews (client, chara, tgtObj, picked) {
-  const rarity = picked.rarity == cons.ITEM_RARITY_RARE ? 'Rare' : (picked.rarity == cons.ITEM_RARITY_UNIQUE ? 'Unique' : 'Epic');
-  await client.query('insert into news(content, date) values ($1, $2)', 
-      [chara.name + getIga(chara.nameType) + ' ' + tgtObj.name + '에서 <span class=\"rarity' + rarity + '\">' + picked.name + '<div class="itemTooltip">' + makeTooltip(picked) + '</div></span>' + getUlrul(picked.nameType) + ' 뽑았습니다!', new Date()]);
+async function procUnequip (req, res) {
+  try {
+    var chara;
+    const body = req.body;
+    const client = await pool.connect();
+    const result = await client.query('select * from users where id = $1', [req.session.userUid]);
+    if (result.rows.length > 0) {
+      const resultChar = await client.query('select char_data from characters where uid = $1', [result.rows[0].uid]);
+      if (resultChar.rows.length > 0) {
+        chara = JSON.parse(resultChar.rows[0].char_data);
+        var tgtObj = chara.items[body.itemType];
+        chara.items[body.itemType] = undefined;
+        calcStats(chara);
+        chara.inventory.push(tgtObj);
+        await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(chara), result.rows[0].uid]);
+      }
+    }
+    client.release();
+    res.redirect('/');
+  } catch (err) {
+    console.error(err);
+    res.send('내부 오류');
+  }
 }
 
 async function procEnchantItem (req, res) {
@@ -678,6 +383,367 @@ async function procEnchantItem (req, res) {
   }
 }
 
+async function procBattleList(req, res) {
+  try {
+    const client = await pool.connect();
+    const resultUser = await client.query('select * from users where id = $1', [req.session.userUid]);
+    const cuid = resultUser.rows[0].uid;
+    const result = await client.query('select * from characters where uid <> $1', [cuid]);
+    var rval = [];
+    for (val of result.rows) {
+      var charData = JSON.parse(val.char_data);
+      var obj = {};
+      obj.name = charData.name + ', ' + charData.title;
+      obj.uid = val.uid;
+      obj.battleCnt = charData.battleCnt;
+      obj.winCnt = charData.winCnt;
+      // temp code
+      charData.battleRecord = charData.battleRecord ? charData.battleRecord : {};
+      charData.winRecord = charData.winRecord ? charData.winRecord : {};
+      obj.vsBattleCnt = charData.battleRecord[cuid] ? charData.battleRecord[cuid] : 0;
+      obj.vsWinCnt = charData.winRecord[cuid] ? charData.winRecord[cuid] : 0;
+      rval.push(obj);
+    } 
+    res.render('pages/battleList', {list: rval, title: '전투 신청', formAction: '/doBattle'});
+    client.release();
+  } catch (err) {
+    console.error(err);
+    res.send('내부 오류');
+  }
+}
+
+async function procBattle(req, res) {
+  try {
+    const body = req.body;
+    const client = await pool.connect();
+    const resultUser = await client.query('select * from users where id = $1', [req.session.userUid]);
+    const result = await client.query('select * from characters');
+    var left, right;
+    var cuid, cap;
+    for (val of result.rows) {
+      if (val.uid === resultUser.rows[0].uid) {
+        left = JSON.parse(val.char_data);
+        cuid = val.uid;
+        cap = val.actionpoint;
+        if (cap <= 0) {
+          client.release();
+          res.redirect('/');
+          return;
+        }
+      } else if (val.uid === body.charUid) {
+        right = JSON.parse(val.char_data);
+      }
+    } 
+    if (left && right) {
+      var re = battlemodule.doBattle(JSON.parse(JSON.stringify(left)), JSON.parse(JSON.stringify(right)));
+      addExp(left, re.expLeft);
+      addExp(right, re.expRight);
+      if (left.expBoost && left.expBoost > 0) {
+        left.expBoost--;
+      }
+      addResultCard(left);
+      addResultCard(right);
+      left.battleRecord = left.battleRecord ? left.battleRecord : {};
+      left.winRecord = left.winRecord ? left.winRecord : {};
+      right.battleRecord = right.battleRecord ? right.battleRecord : {};
+      right.winRecord = right.winRecord ? right.winRecord : {};
+      left.battleCnt++;
+      left.battleRecord[body.charUid] = left.battleRecord[body.charUid] ? left.battleRecord[body.charUid] + 1 : 1;
+      right.battleCnt++;
+      right.battleRecord[cuid] = right.battleRecord[cuid] ? right.battleRecord[cuid] + 1 : 1;
+      if (re.winnerLeft) {
+        addResultCard(left);
+        left.winCnt++;
+        left.winRecord[body.charUid] = left.winRecord[body.charUid] ? left.winRecord[body.charUid] + 1 : 1;
+      }
+      if (re.winnerRight) {
+        addResultCard(right);
+        right.winCnt++;
+        right.winRecord[cuid] = right.winRecord[cuid] ? right.winRecord[cuid] + 1 : 1;
+      }
+      await client.query('update characters set char_data = $1, actionPoint = $2 where uid = $3', [JSON.stringify(left), cap-1,  cuid]);
+      await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(right), body.charUid]);
+      var winner = re.winnerLeft ? left.name + ' 승리!' : (re.winnerRight ? right.name + ' 승리!' : '');
+      var battleTitle = '[ ' + left.name + ' ] vs [ ' + right.name + ' ] - ' + winner;
+      await client.query('insert into results(title, result, date) values ($1, $2, $3)', [battleTitle, re.result, new Date()]);
+      res.render('pages/battle', {result: re.result});
+    } else {
+      res.redirect('/');
+    }
+    client.release();
+  } catch (err) {
+    console.error(err);
+    res.send('내부 오류');
+  }
+}
+
+async function procBattleLogList(req, res) {
+  try {
+    const client = await pool.connect();
+    const result = await client.query('select id, title, date from results order by date desc');
+    res.render('pages/battleLogList', {list: result.rows});
+    client.release();
+  } catch (err) {
+    console.error(err);
+    res.send('내부 오류');
+  }
+}
+
+async function procBattleLog(req, res) {
+  try {
+    const client = await pool.connect();
+    const result = await client.query('select * from results where id = $1', [req.body.logId]);
+    res.render('pages/battle', {result: result.rows[0].result});
+    client.release();
+  } catch (err) {
+    console.error(err);
+    res.send('내부 오류');
+  }
+}
+
+async function procViewList(req, res) {
+  try {
+    const client = await pool.connect();
+    const resultUser = await client.query('select * from users where id = $1', [req.session.userUid]);
+    const result = await client.query('select * from characters where uid <> $1', [resultUser.rows[0].uid]);
+    var rval = [];
+    for (val of result.rows) {
+      var charData = JSON.parse(val.char_data);
+      var obj = {};
+      obj.name = charData.name + ', ' + charData.title;
+      obj.uid = val.uid;
+      rval.push(obj);
+    } 
+    res.render('pages/battleList', {list: rval, title: '정보 보기', formAction: '/viewChar'});
+    client.release();
+  } catch (err) {
+    console.error(err);
+    res.send('내부 오류');
+  }
+}
+
+async function procView(req, res) {
+  try {
+    const client = await pool.connect();
+    const result = await client.query('select * from characters where uid = $1', [req.body.charUid]);
+    for (val of result.rows) {
+      var charData = JSON.parse(val.char_data);
+    } 
+    res.render('pages/viewChar', {char: charData});
+    client.release();
+  } catch (err) {
+    console.error(err);
+    res.send('내부 오류');
+  }
+}
+
+async function procTradeList(req, res) {
+  try {
+    const client = await pool.connect();
+    const resultUser = await client.query('select * from users where id = $1', [req.session.userUid]);
+    const result = await client.query('select * from characters where uid <> $1', [resultUser.rows[0].uid]);
+    var rval = [];
+    for (val of result.rows) {
+      var charData = JSON.parse(val.char_data);
+      var obj = {};
+      obj.name = charData.name + ', ' + charData.title;
+      obj.uid = val.uid;
+      rval.push(obj);
+    } 
+    res.render('pages/battleList', {list: rval, title: '거래 요청', formAction: '/doTrade'});
+    client.release();
+  } catch (err) {
+    console.error(err);
+    res.send('내부 오류');
+  }
+}
+
+async function procTrade(req, res) {
+  try {
+    const client = await pool.connect();
+    const result = await client.query('select * from characters where uid = $1', [req.body.charUid]);
+    for (val of result.rows) {
+      var charData = JSON.parse(val.char_data);
+    } 
+    res.render('pages/trade', {char: charData});
+    client.release();
+  } catch (err) {
+    console.error(err);
+    res.send('내부 오류');
+  }
+}
+
+async function procShop(req, res) {
+  try {
+    const sess = req.session; 
+    const charRow = await getCharacter(sess.userUid);
+    const char = JSON.parse(charRow.char_data);
+    res.render('pages/shop', {premiumPoint : char.premiumPoint, dust : char.dust, dayStoneBought : char.dayStoneBought, actionBought : char.actionBought, rankFactor : Math.pow(2, 9 - char.rank)});
+  } catch (err) {
+    console.error(err);
+    res.send('내부 오류');
+  }
+}
+
+async function procUseShop (req, res) {
+  try {
+    const body = req.body;
+    const client = await pool.connect();
+    const sess = req.session; 
+    const charRow = await getCharacter(sess.userUid);
+    const char = JSON.parse(charRow.char_data);
+    var action = charRow.actionPoint;
+    if (body.option == 1) {
+      var cost = char.dayStoneBought ? 10 : 5;
+      if (char.premiumPoint < cost) {
+        res.send('프리미엄 포인트가 부족합니다.');
+      } else {
+        char.premiumPoint -= cost;
+        var picked = makeDayStone(Math.floor(Math.random() * 7));
+        char.inventory.push(picked);
+        char.dayStoneBought = true;
+      }
+    } else if (body.option == 2) {
+      if (char.premiumPoint < 10) {
+        res.send('프리미엄 포인트가 부족합니다.');
+      } else if (char.expBoost > 0) {
+        res.send('이미 부스트를 구매했습니다.');
+      } else {
+        char.premiumPoint -= 10;
+        char.expBoost = 5;
+      }
+    } else if (body.option == 3) {
+      var cost = char.actionBought ? 15 : 10;
+      if (char.premiumPoint < cost) {
+        res.send('프리미엄 포인트가 부족합니다.');
+      } else {
+        char.premiumPoint -= cost;
+        action += 2;
+        char.actionBought = true;
+      }
+    } else if (body.option <= 7) {
+      if (char.premiumPoint < 10) {
+        res.send('프리미엄 포인트가 부족합니다.');
+      } else {
+        char.premiumPoint -= 10;
+        addSpecialResultCard(char, body.option - 4);
+      }
+    } else if (body.option >= 102) {
+      var cost = body.option >= 106 ? 100 : 140;
+      cost *= Math.pow(2, 9 - char.rank);
+      if (char.dust < cost) {
+        res.send('가루가 부족합니다.');
+      } else {
+        char.dust -= cost;
+        addSpecialResultCard(char, body.option - 102);
+      }
+    }
+    await client.query('update characters set char_data = $1, actionpoint = $3 where uid = $2', [JSON.stringify(char), charRow.uid, action]);
+    client.release();
+    if (!res.headersSent) {
+      res.redirect('/');
+    }
+  } catch (err) {
+    console.error(err);
+    res.send('내부 오류');
+  }
+}
+
+async function procDismantlingYard(req, res) {
+  try {
+    const sess = req.session; 
+    const charRow = await getCharacter(sess.userUid);
+    const char = JSON.parse(charRow.char_data);
+    res.render('pages/selectItem', {title : '아이템 해체', inv : char.inventory, mode : 2, dust : char.dust, dustVal : null, usedItem : 0});
+  } catch (err) {
+    console.error(err);
+    res.send('내부 오류');
+  }
+}
+
+const dustInfo = [10, 14, 26, 26, 62, 170];
+async function procDismantleItem (req, res) {
+  try {
+    const body = req.body;
+    const client = await pool.connect();
+    const sess = req.session; 
+    const charRow = await getCharacter(sess.userUid);
+    const char = JSON.parse(charRow.char_data);
+    var tgt = char.inventory[body.itemNum];
+    if (tgt.type <= 3) {
+      char.inventory.splice(body.itemNum, 1);
+      var dustVal = Math.round(dustInfo[tgt.rarity] * Math.pow(2, 9 - tgt.rank));
+      char.dust += dustVal;
+    }
+    await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
+    client.release();
+    if (!res.headersSent) {
+      res.render('pages/selectItem', {title : '아이템 해체', inv : char.inventory, mode : 2, dustVal : dustVal, dust : char.dust, usedItem : 0});;
+    }
+  } catch (err) {
+    console.error(err);
+    res.send('내부 오류');
+  }
+}
+
+async function procUseStatPoint (req, res) {
+  const client = await pool.connect();
+  const sess = req.session; 
+  const charRow = await getCharacter(sess.userUid);
+  const char = JSON.parse(charRow.char_data);
+  if (char.statPoint > 0) {
+    char.statPoint -= 1;
+    var value = (req.body.keyType ==='maxHp') ? 10 : 1;
+    char.base[req.body.keyType] += value;
+    calcStats(char);
+  } 
+  await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
+  client.release();
+  res.redirect('/');
+}
+
+async function procRankup (req, res) {
+  const client = await pool.connect();
+  const sess = req.session; 
+  const charRow = await getCharacter(sess.userUid);
+  const char = JSON.parse(charRow.char_data);
+  if (char.level >= 20 && char.rank > 1) {
+    char.level = 1;
+    char.rank--;
+    char.reqExp += 20;
+    char.base.maxHp += 150;
+    char.base.phyAtk += 10;
+    char.base.magAtk += 10;
+    calcStats(char);
+  } 
+  await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
+  client.release();
+  res.redirect('/');
+}
+
+async function addItemNews (client, chara, tgtObj, picked) {
+  const rarity = picked.rarity == cons.ITEM_RARITY_RARE ? 'Rare' : (picked.rarity == cons.ITEM_RARITY_UNIQUE ? 'Unique' : 'Epic');
+  await client.query('insert into news(content, date) values ($1, $2)', 
+      [chara.name + getIga(chara.nameType) + ' ' + tgtObj.name + '에서 <span class=\"rarity' + rarity + '\">' + picked.name + '<div class="itemTooltip">' + makeTooltip(picked) + '</div></span>' + getUlrul(picked.nameType) + ' 뽑았습니다!', new Date()]);
+}
+
+async function getNews (cnt) {
+  try {
+    var rval = [];
+    const client = await pool.connect();
+    const result = await client.query('select * from news order by date desc fetch first 5 rows only', []);
+    for (const val of result.rows) {
+      rval.push(val.content);
+    }
+
+    client.release();
+    return rval;
+  } catch (err) {
+    console.error(err);
+    return [];
+  }   
+}
+
 async function getCharacter (id) {
   try {
     var rval = {};
@@ -700,23 +766,6 @@ async function getCharacter (id) {
   }   
 }
 
-async function getNews (cnt) {
-  try {
-    var rval = [];
-    const client = await pool.connect();
-    const result = await client.query('select * from news order by date desc fetch first 5 rows only', []);
-    for (const val of result.rows) {
-      rval.push(val.content);
-    }
-
-    client.release();
-    return rval;
-  } catch (err) {
-    console.error(err);
-    return [];
-  }   
-}
-
 async function setCharacter (id, uid, data) {
   try {
     const client = await pool.connect();
@@ -726,8 +775,7 @@ async function setCharacter (id, uid, data) {
     client.release();
   } catch (err) {
     console.error(err);
-  }   
-
+  }
 }
 
 function addExp(chara, exp) {

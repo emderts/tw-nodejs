@@ -260,6 +260,21 @@ function _doBattleTurn() {
   printCharInfo(1);
 }
 
+function doHeal(winner, loser, amount) {
+  var retObj = {};
+  retObj.amount = amount;
+  
+  resolveEffects(winner, loser, getBuffEffects(winner, cons.ACTIVE_TYPE_DO_HEAL), retObj);
+  resolveEffects(winner, loser, getItemEffects(winner, cons.ACTIVE_TYPE_DO_HEAL), retObj);
+  resolveEffects(loser, winner, getBuffEffects(loser, cons.ACTIVE_TYPE_DO_HEAL_RECEIVE), retObj);
+  resolveEffects(loser, winner, getItemEffects(loser, cons.ACTIVE_TYPE_DO_HEAL_RECEIVE), retObj);
+
+  retObj.amount = Math.round(retObj.amount);
+  winner.curHp += retObj.amount;
+
+  return retObj;
+}
+
 function calcDamage(winner, loser, skill) {
   var retObj = {};
   var isPhysical = (skill.type === cons.DAMAGE_TYPE_PHYSICAL);
@@ -367,6 +382,9 @@ function resolveEffects(winner, loser, effects, damage, skill) {
     if (eff.chk && findBuffByIds(winner, eff.chk).length === 0) {
       continue;
     }
+    if (eff.chkOppNot && findBuffByIds(loser, eff.chkOppNot).length > 0) {
+      continue;
+    }
     if (eff.chkOpp && findBuffByIds(loser, eff.chkOpp).length === 0) {
       continue;
     }
@@ -389,6 +407,9 @@ function resolveEffects(winner, loser, effects, damage, skill) {
       continue;
     }
     if (eff.chkStack && eff.chkStack > eff.buff.stack) {
+      continue;
+    }
+    if (eff.chkStackUnder && eff.chkStackUnder <= eff.buff.stack) {
       continue;
     }
     var stackMpl = eff.noStack ? 1 : (eff.buff ? (eff.buff.stack ? eff.buff.stack : 1) : 1);
@@ -444,10 +465,12 @@ function resolveEffects(winner, loser, effects, damage, skill) {
       } else if (eff.code === cons.EFFECT_TYPE_OPP_SP) {
         loser.curSp += valueUsed;
       } else if (eff.code === cons.EFFECT_TYPE_OPP_HP) {
-        loser.curHp += valueUsed;
+        var ret = doHeal(loser, winner, valueUsed);
+        valueUsed = ret.amount;
         target = 'HP';      
       } else {
-        winner.curHp += valueUsed;
+        var ret = doHeal(winner, loser, valueUsed);
+        valueUsed = ret.amount;
         target = 'HP';      
       }
       var source = eff.name ? ' [ ' + eff.name + ' ] 효과로 ' : ' ';
@@ -642,6 +665,10 @@ function resolveEffects(winner, loser, effects, damage, skill) {
       result += 'n 공격력이 적용됩니다!<br>';
       damage.type = eff.type;
       damage.atkRat = eff.type === cons.DAMAGE_TYPE_PHYSICAL ? winner.stat.phyAtk : winner.stat.magAtk;
+    } else if (eff.code === cons.EFFECT_TYPE_MULTIPLY_HEAL) {
+      if (damage.amount > 0) {
+        damage.amount *= eff.value;
+      }
     } else if (eff.code === cons.EFFECT_TYPE_REDUCE_BUFF_DURATION) {
       if (eff.buffCode && eff.buffCode !== damage.id) {
         continue;
@@ -717,14 +744,17 @@ function resolveTurnEnd(winner, loser) {
   calcStats(loser, winner);
   resolveTurnEndChar(winner, loser);
   resolveTurnEndChar(loser, winner);
+  if (winner.curHp > winner.stat.maxHp) {
+    winner.curHp = winner.stat.maxHp;
+  }
+  if (loser.curHp > loser.stat.maxHp) {
+    loser.curHp = loser.stat.maxHp;
+  }
 }
 
 function resolveTurnEndChar(chara, opp) {
   chara.curHp += chara.stat.hpRegen;
   chara.curSp += chara.stat.spRegen;
-  if (chara.curHp > chara.stat.maxHp) {
-    chara.curHp = chara.stat.maxHp;
-  }
 
   resolveEffects(chara, opp, getBuffEffects(chara, cons.ACTIVE_TYPE_TURN_END));
   resolveEffects(chara, opp, getItemEffects(chara, cons.ACTIVE_TYPE_TURN_END));
