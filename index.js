@@ -68,9 +68,7 @@ app
 var ring = [];
 var people = [];
 io.on('connection', (socket) => {
-  console.log('connect');
   socket.on('login', function(userName, uid) {
-    console.log('login');
     socket.request.session.userName = userName;
     socket.request.session.charData = chara.julius;//await getCharacter(uid);
     people.push(userName);
@@ -78,12 +76,22 @@ io.on('connection', (socket) => {
   });
   
   socket.on('chat message', function(msg) {
-    console.log('chat');
     ring.push({userName : socket.request.session.userName, message : msg });
     if (ring.length > 30) {
       ring.shift();
     }
     io.emit('chat message', socket.request.session.userName, msg);
+  });
+  
+  socket.on('tradeInit', function(mode, uid) {
+    console.log('tradeInit');
+    if (mode == 1) {
+      socket.broadcast.emit('tradeReq', uid, socket.request.session.charUid);
+    }
+    socket.request.session.userName = userName;
+    socket.request.session.charData = chara.julius;//await getCharacter(uid);
+    people.push(userName);
+    socket.emit('logged in', ring, people);
   });
   
   socket.on('disconnect', function() {
@@ -564,8 +572,9 @@ async function procTrade(req, res) {
     const result = await client.query('select * from characters where uid = $1', [req.body.charUid]);
     for (val of result.rows) {
       var charData = JSON.parse(val.char_data);
-    } 
-    res.render('pages/trade', {char: charData});
+    }
+    var mode = req.body.mode || 1;
+    res.render('pages/trade', {mode: mode, char: charData, uid: req.body.charUid});
     client.release();
   } catch (err) {
     console.error(err);

@@ -42,6 +42,7 @@
       div.menuWrap {float: left; }
       .menuItem {padding: 5px; border: 2px solid black; background-color: gray; color: white; width: 150px; margin: 5px; text-align: center; }
       .menuItem a {text-decoration: none; }
+      .alertBack {width: 100%; height: 100%; background-color: gray; opacity: 0.5; z-index: 2; position: absolute; }
     </style>
     <script src="/socket.io/socket.io.js"></script>
     <script>
@@ -83,6 +84,12 @@
     }
   });
   
+  socket.on('tradeReq', function(suid, ouid) {
+    if (suid == '<%= user.uid %>') {
+      addPerson(val);
+    }
+  });
+  
   function addMessage(userName, msg) {
     var ul = document.getElementById('messages');
     var li = document.createElement('li');
@@ -93,6 +100,9 @@
   
   function addPerson(userName) {
     var ul = document.getElementById('people');
+    while (ul.lastChild) {
+      ul.removeChild(ul.lastChild);
+    }
     var li = document.createElement('li');
     li.appendChild(document.createTextNode(userName));
     ul.appendChild(li);
@@ -232,6 +242,15 @@
     <a href="/join">회원가입</a>
   <% } else { %>
       <p><%= user.name %>으로 접속되었습니다.</p>
+      <div class="alertBack" id="alertBack">
+        <div class="alertWindow" id="alertWindow">
+          <div></div>
+          <div><form id="tradeReqConfirm" action="/doTrade" method="post">
+            <input type="submit">수락</input>
+            <input type="button" onclick="removeAlert();">거절</input>
+          </form></div>
+        </div>
+      </div>
     <% if (char) { %>
     <table class="charInfo">
         <tr>
