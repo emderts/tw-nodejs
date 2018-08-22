@@ -42,7 +42,8 @@
       div.menuWrap {float: left; }
       .menuItem {padding: 5px; border: 2px solid black; background-color: gray; color: white; width: 150px; margin: 5px; text-align: center; }
       .menuItem a {text-decoration: none; }
-      .alertBack {width: 100%; height: 100%; background-color: gray; opacity: 0.5; z-index: 2; position: absolute; }
+      .alertBack {width: 100%; height: 100%; background-color: gray; opacity: 0.9; z-index: 2; position: absolute; display: none; }
+      div#alertWindow {margin: 40% auto; width: 300px; height: 50px; background-color: beige; float: none; text-align: center; }
     </style>
     <script src="/socket.io/socket.io.js"></script>
     <script>
@@ -84,9 +85,9 @@
     }
   });
   
-  socket.on('tradeReq', function(suid, ouid) {
+  socket.on('tradeReq', function(suid, ouid, oname) {
     if (suid == '<%= user.uid %>') {
-      addPerson(val);
+      showAlert(ouid, oname);
     }
   });
   
@@ -106,6 +107,20 @@
     var li = document.createElement('li');
     li.appendChild(document.createTextNode(userName));
     ul.appendChild(li);
+  }
+  
+  function showAlert(ouid, oname) {
+    var alert = document.getElementById('alertBack');
+    alert.style.display = 'block';
+    var alertWin = document.getElementById('alertWindow');
+    alertWin.children[0].innerText = oname + '님이 거래를 요청했습니다.';
+    var alertForm = document.getElementById('tradeReqConfirm');
+    alertForm.children[2].value = ouid;
+  }
+  
+  function hideAlert() {
+    var alert = document.getElementById('alertBack');
+    alert.style.display = 'none';
   }
       </script>
 </head>
@@ -241,16 +256,20 @@
     <a href="/login">로그인</a>
     <a href="/join">회원가입</a>
   <% } else { %>
-      <p><%= user.name %>으로 접속되었습니다.</p>
       <div class="alertBack" id="alertBack">
         <div class="alertWindow" id="alertWindow">
           <div></div>
-          <div><form id="tradeReqConfirm" action="/doTrade" method="post">
-            <input type="submit">수락</input>
-            <input type="button" onclick="removeAlert();">거절</input>
-          </form></div>
+          <div>
+            <form id="tradeReqConfirm" action="/doTrade" method="post">
+              <button type="submit">수락</button>
+              <button type="button" onclick="hideAlert();">거절</button>
+              <input type="hidden" name="charUid" value="" />
+              <input type="hidden" name="mode" value="2" />
+            </form>
+          </div>
         </div>
       </div>
+      <p><%= user.name %>으로 접속되었습니다.</p>
     <% if (char) { %>
     <table class="charInfo">
         <tr>
