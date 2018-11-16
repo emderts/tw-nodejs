@@ -134,9 +134,11 @@
       if (item.effectDesc && item.effectDesc.length > 0) {
         rtext += ', ' + item.effectDesc;
       }
-      if (item.socket) {
-        rtext += '<br><br>[' + item.socket.name + '] ' + getStatList(item.socket);
+    if (item.socket) {
+      for (sock of item.socket) {
+        rtext += '<br><br>[' + sock.name + '] ' + sock.effectDesc;
       }
+    }
       if (item.flavor && item.flavor.length > 0) {
         rtext += '<br><br><span class="tooltipFlavor">' + item.flavor + '</span>';
       }

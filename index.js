@@ -287,15 +287,15 @@ async function procUseItem (req, res) {
               chara.premiumPoint += 2;
               res.render('pages/resultCard', {item : {name : '프리미엄 포인트 2점' , rarity : cons.ITEM_RARITY_RARE}});
             } else if (rand < 0.8) {
-              const dustValue = 7 * Math.pow(2, 9 - tgt.rank);
+              const dustValue = 7 * Math.pow(2, 9 - tgtObj.rank);
               chara.dust += dustValue;
               res.render('pages/resultCard', {item : {name : dustValue + ' 가루' , rarity : cons.ITEM_RARITY_COMMON}});
             } else if (rand < 0.89) {
-              const dustValue = 13 * Math.pow(2, 9 - tgt.rank);
+              const dustValue = 13 * Math.pow(2, 9 - tgtObj.rank);
               chara.dust += dustValue;
               res.render('pages/resultCard', {item : {name : dustValue + ' 가루' , rarity : cons.ITEM_RARITY_UNCOMMON}});
             } else if (rand < 0.9) {
-              const dustValue = 50 * Math.pow(2, 9 - tgt.rank);
+              const dustValue = 50 * Math.pow(2, 9 - tgtObj.rank);
               chara.dust += dustValue;
               res.render('pages/resultCard', {item : {name : dustValue + ' 가루' , rarity : cons.ITEM_RARITY_RARE}});
             } else {
