@@ -31,32 +31,28 @@
   var socket = io();
   socket.emit('tradeInit', '<%= mode %>', '<%= uid %>');
   
-  function sendMessage() {
-    socket.emit('chat message', document.getElementById('msg').value);
-    document.getElementById('msg').value = '';
-    return false;
-  };
-  
-  socket.on('logged in', function(chatRecord, peopleList) {
-    for (const val of chatRecord) {
-      addMessage(val.userName, val.message);
-    }
-    for (const val of peopleList) {
-      addPerson(val);
+  socket.on('tradeAck', function(inventoryData) {
+    var inv = document.getElementById('inventoryElem');
+    for (const [key, val] of Object.entries(inventoryData)) {
+      var itemWrap = document.createElement('div');
+      itemWrap.innerHTML = '<div class="inventoryItem"><button class="' + getButtonText(val.rarity) + 
+                           '" type="submit" onclick="addItem(' + key + ')"> + val.name + '<div class="itemTooltip">' + makeTooltip(val) +
+                           '</div></button></div>';
+      inv.appendChild(itemWrap.firstChild);
     }
   });
+      
   
-  socket.on('chat message', function(userName, msg) {
-    addMessage(userName, msg);
+  
+  socket.emit('tradeRemoveItem', index);
+  socket.emit('tradeConfirm');
+  
+  socket.on('tradeDone', function() {
+    top.location.href = '/';
   });
   
-  socket.on('person left', function(peopleList) {
-    for (const val of peopleList) {
-      addPerson(val);
-    }
-  });
-  
-  function addMessage(userName, msg) {
+  function addItem(key) {
+  socket.emit('tradeAddItem', index);
     var ul = document.getElementById('messages');
     var li = document.createElement('li');
     li.appendChild(document.createTextNode(userName + ' : ' + msg));
@@ -96,6 +92,7 @@
   printName[1] = '갑옷';
   printName[2] = '보조방어구';
   printName[3] = '장신구';
+  printName[4] = '스킬 아티팩트';
   
   function getRarityText(rarity) {
     var text = '';
@@ -214,21 +211,7 @@
       <br><%= dustVal %> 가루를 획득했습니다.
     <% } %>
   </div>
-  <div class="inventoryWrap">
-    <% for (const [key, val] of Object.entries(tgtInv)) { 
-         if (!val.name) {
-           continue;
-         } %>
-      <div class="inventoryItem">
-        <form action="<%= formAction %>" method="post">
-          <button class="<%= getButtonText(val.rarity) %>" type="submit"><%= val.name %>
-            <div class="itemTooltip"><%- makeTooltip(val) %></div>
-          </button>
-          <input type="hidden" name="itemNum" value="<%= key %>">
-          <input type="hidden" name="itemUsed" value="<%= usedItem %>">
-        </form>
-      </div>
-    <% } %>
+  <div class="inventoryWrap" id="inventoryElem">
   </div>
   <div class="backLink">
     <a href="/">돌아가기</a>

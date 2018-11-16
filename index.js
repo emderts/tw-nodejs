@@ -67,6 +67,7 @@ app
 
 var ring = [];
 var people = [];
+var trades = {};
 io.on('connection', (socket) => {
   socket.on('login', function(userName, uid) {
     socket.request.session.userName = userName;
@@ -86,12 +87,16 @@ io.on('connection', (socket) => {
   socket.on('tradeInit', function(mode, uid) {
     console.log('tradeInit');
     if (mode == 1) {
-      socket.broadcast.emit('tradeReq', uid, socket.request.session.charUid);
+      socket.broadcast.emit('tradeReq', uid, socket.request.session.charUid, socket.request.session.userName);
+      var tradeData = {};
+      tradeData.ouid = uid;
+      tradeData.socket = socket;
+      trades[socket.request.session.charUid] = tradeData;
+    } else if (mode == 2) {
+      var tradeData = trades[uid];
+      socket.emit('tradeAck', socket.request.session.charData.inventory);
+      tradeData.socket.emit('tradeAck', tradeData.socket.request.session.charData.inventory);
     }
-    socket.request.session.userName = userName;
-    socket.request.session.charData = chara.julius;//await getCharacter(uid);
-    people.push(userName);
-    socket.emit('logged in', ring, people);
   });
   
   socket.on('disconnect', function() {
@@ -214,11 +219,8 @@ function procLogout (req, res) {
 }  
 
 function _getItem(rank, rarity, type) {
-  var usedRank = rank;
-  if (usedRank > 1 && Math.random() > 0.9) {
-    usedRank--;
-  }
-  if (rarity == cons.ITEM_RARITY_UNCOMMON) {
+  var usedRank = rank < 1 ? 1 : rank;
+  if (rarity == cons.ITEM_RARITY_COMMON_UNCOMMON) {
     var tgtList = item.list.filter(x => x.rank === usedRank && (x.rarity === cons.ITEM_RARITY_COMMON || x.rarity === rarity));
   } else {
     var tgtList = item.list.filter(x => x.rank === usedRank && x.rarity === rarity);    
@@ -247,7 +249,7 @@ async function procUseItem (req, res) {
             return;
           }
           chara.inventory.splice(body.itemNum, 1);
-          var itemType = (tgtObj.type === cons.ITEM_TYPE_WEAPON) ? 'weapon' : ((tgtObj.type === cons.ITEM_TYPE_ARMOR) ? 'armor' : ((tgtObj.type === cons.ITEM_TYPE_SUBARMOR) ? 'subarmor' : 'trinket'));
+          var itemType = (tgtObj.type === cons.ITEM_TYPE_WEAPON) ? 'weapon' : ((tgtObj.type === cons.ITEM_TYPE_ARMOR) ? 'armor' : ((tgtObj.type === cons.ITEM_TYPE_SUBARMOR) ? 'subarmor' : ((tgtObj.type === cons.ITEM_TYPE_TRINKET) ? 'trinket' : 'skillArtifact')));
           var curItem = chara.items[itemType];
           if (curItem) {
             chara.items[itemType] = undefined;
@@ -259,28 +261,43 @@ async function procUseItem (req, res) {
           chara.inventory.splice(body.itemNum, 1);
           if (tgtObj.resultType === undefined) {
             var rand = Math.random();
-            if (rand < 0.4) {
-              var picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_UNCOMMON);
+            if (rand < 0.193) {
+              var picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_COMMON_UNCOMMON);
               chara.inventory.push(picked);
               res.render('pages/resultCard', {item : picked});
-            } else if (rand < 0.5) {
+            } else if (rand < 0.239) {
               var picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_RARE);
               chara.inventory.push(picked);
               await addItemNews(client, chara, tgtObj, picked);
               res.render('pages/resultCard', {item : picked});
-            } else if (rand < 0.54) {
+            } else if (rand < 0.249) {
               var picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_UNIQUE);
               chara.inventory.push(picked);
               await addItemNews(client, chara, tgtObj, picked);
               res.render('pages/resultCard', {item : picked});
-            } else if (rand < 0.55) {
+            } else if (rand < 0.25) {
               var picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_EPIC);
               chara.inventory.push(picked);
               await addItemNews(client, chara, tgtObj, picked);
               res.render('pages/resultCard', {item : picked});
-            } else if (rand < 0.9) {
+            } else if (rand < 0.58) {
               chara.premiumPoint += 1;
               res.render('pages/resultCard', {item : {name : '프리미엄 포인트 1점' , rarity : cons.ITEM_RARITY_COMMON}});
+            } else if (rand < 0.6) {
+              chara.premiumPoint += 2;
+              res.render('pages/resultCard', {item : {name : '프리미엄 포인트 2점' , rarity : cons.ITEM_RARITY_RARE}});
+            } else if (rand < 0.8) {
+              const dustValue = 7 * Math.pow(2, 9 - tgt.rank);
+              chara.dust += dustValue;
+              res.render('pages/resultCard', {item : {name : dustValue + ' 가루' , rarity : cons.ITEM_RARITY_COMMON}});
+            } else if (rand < 0.89) {
+              const dustValue = 13 * Math.pow(2, 9 - tgt.rank);
+              chara.dust += dustValue;
+              res.render('pages/resultCard', {item : {name : dustValue + ' 가루' , rarity : cons.ITEM_RARITY_UNCOMMON}});
+            } else if (rand < 0.9) {
+              const dustValue = 50 * Math.pow(2, 9 - tgt.rank);
+              chara.dust += dustValue;
+              res.render('pages/resultCard', {item : {name : dustValue + ' 가루' , rarity : cons.ITEM_RARITY_RARE}});
             } else {
               var picked = makeDayStone();
               chara.inventory.push(picked);
@@ -288,17 +305,22 @@ async function procUseItem (req, res) {
             }
           } else if (tgtObj.resultType !== undefined) {
             var rand = Math.random();
-            if (rand < 0.7) {
+            if (rand < 0.74) {
               var picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_UNCOMMON, tgtObj.resultType);
               chara.inventory.push(picked);
               res.render('pages/resultCard', {item : picked});
-            } else if (rand < 0.9) {
+            } else if (rand < 0.92) {
               var picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_RARE, tgtObj.resultType);
               chara.inventory.push(picked);
               await addItemNews(client, chara, tgtObj, picked);
               res.render('pages/resultCard', {item : picked});
-            } else if (rand < 0.98) {
+            } else if (rand < 0.96) {
               var picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_UNIQUE, tgtObj.resultType);
+              chara.inventory.push(picked);
+              await addItemNews(client, chara, tgtObj, picked);
+              res.render('pages/resultCard', {item : picked});
+            } else if (rand < 0.992) {
+              var picked = _getItem(tgtObj.rank - 1, cons.ITEM_RARITY_COMMON_UNCOMMON, tgtObj.resultType);
               chara.inventory.push(picked);
               await addItemNews(client, chara, tgtObj, picked);
               res.render('pages/resultCard', {item : picked});
@@ -362,22 +384,14 @@ async function procEnchantItem (req, res) {
         chara = JSON.parse(resultChar.rows[0].char_data);
         var used = chara.inventory[body.itemUsed];
         var tgt = chara.inventory[body.itemNum];
-        if (tgt.type < 10 && used.type === cons.ITEM_TYPE_DAYSTONE) {
-          var minRank = used.level >= 3 ? 7 : (used.level === 2 ? 8 : 9); 
-          if (tgt.rank <= minRank) {
-            if (used.day === 1 && (tgt.type === 1 || tgt.type === 2)) {
-              client.release();
-              res.send('');
-              return;
-            }
-            if (used.day === 5 && (tgt.type === 0 || tgt.type === 3)) {
-              client.release();
-              res.send('');
-              return;
-            }
-            chara.inventory.splice(body.itemUsed, 1);
-            tgt.socket = used;
-            calcItemStats(tgt);
+        if (tgt.type < 4 && used.type === cons.ITEM_TYPE_DAYSTONE) {
+          chara.inventory.splice(body.itemUsed, 1);
+          if (!tgt.socket) {
+            tgt.socket = [];
+          }
+          var sockNum = tgt.maxSocket ? tgt.maxSocket : 1;
+          if (body.itemSocket < sockNum) {
+            tgt.socket[body.itemSocket] = used;
           }
         }
         await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(chara), result.rows[0].uid]);
@@ -449,8 +463,12 @@ async function procBattle(req, res) {
       if (left.expBoost && left.expBoost > 0) {
         left.expBoost--;
       }
-      addResultCard(left);
-      addResultCard(right);
+      for (var i=0; i < re.resultLeft; i++) {
+        addResultCard(left);
+      }
+      for (var i=0; i < re.resultRight; i++) {
+        addResultCard(right);
+      }
       left.battleRecord = left.battleRecord ? left.battleRecord : {};
       left.winRecord = left.winRecord ? left.winRecord : {};
       right.battleRecord = right.battleRecord ? right.battleRecord : {};
@@ -460,12 +478,10 @@ async function procBattle(req, res) {
       right.battleCnt++;
       right.battleRecord[cuid] = right.battleRecord[cuid] ? right.battleRecord[cuid] + 1 : 1;
       if (re.winnerLeft) {
-        addResultCard(left);
         left.winCnt++;
         left.winRecord[body.charUid] = left.winRecord[body.charUid] ? left.winRecord[body.charUid] + 1 : 1;
       }
       if (re.winnerRight) {
-        addResultCard(right);
         right.winCnt++;
         right.winRecord[cuid] = right.winRecord[cuid] ? right.winRecord[cuid] + 1 : 1;
       }
@@ -679,7 +695,7 @@ async function procDismantleItem (req, res) {
     const charRow = await getCharacter(sess.userUid);
     const char = JSON.parse(charRow.char_data);
     var tgt = char.inventory[body.itemNum];
-    if (tgt.type <= 3) {
+    if (tgt.type <= 4) {
       char.inventory.splice(body.itemNum, 1);
       var dustVal = Math.round(dustInfo[tgt.rarity] * Math.pow(2, 9 - tgt.rank));
       char.dust += dustVal;
@@ -702,7 +718,7 @@ async function procUseStatPoint (req, res) {
   const char = JSON.parse(charRow.char_data);
   if (char.statPoint > 0) {
     char.statPoint -= 1;
-    var value = (req.body.keyType ==='maxHp') ? 10 : 1;
+    var value = (req.body.keyType ==='maxHp') ? 10 : 1.25;
     char.base[req.body.keyType] += value;
     calcStats(char);
   } 
@@ -797,15 +813,16 @@ function addExp(chara, exp) {
 }
 
 const dayStoneData = [
-                      [[[3, 9], [6, 15], [12, 21], [18, 27], [24, 33]]], 
-                      [[[1, 3], [2, 5], [4, 7], [6, 9], [8, 11]]], 
-                      [[[2, 6], [4, 10], [8, 14], [12, 18], [16, 22]]], 
-                      [[[2, 6], [4, 10], [8, 14], [12, 18], [16, 22]]], 
-                      [[[1, 3], [2, 5], [4, 7], [6, 9], [8, 11]], [[0, 1], [0, 2], [1, 3], [2, 3], [2, 4]]], 
-                      [[[1, 3], [2, 5], [4, 7], [6, 9], [8, 11]]], 
-                      [[[7, 35], [25, 80], [70, 145], [135, 225], [210, 315]]]];
+                      [[[15, 35], [20, 60], [25, 90], [30, 120], [40, 150]]], 
+                      [[[5, 25], [10, 40], [15, 60], [20, 85], [30, 110]]], 
+                      [[[10, 35], [15, 50], [20, 70], [25, 100], [35, 140]]], 
+                      [[[10, 35], [15, 50], [20, 70], [25, 100], [35, 140]]], 
+                      [[[10, 30], [15, 45], [20, 65], [25, 90], [30, 120]]], 
+                      [[[10, 20], [15, 35], [20, 55], [25, 75], [35, 100]]], 
+                      [[[10, 35], [15, 50], [20, 70], [25, 95], [35, 125]]]];
 const dayStonePrefix = ['최하급 ', '하급 ', '중급 ', '상급 ', '최상급 '];
 const dayStoneName = ['일석', '월석', '화석', '수석', '목석', '금석', '토석'];
+const dayStoneEffect = ['치명피해', '치명', '물리공격력', '마법공격력', 'SP 소모량', '저항', '생명력'];
 function makeDayStone(dayIn) {
   var rand = Math.random();
   var item = {};
@@ -814,38 +831,32 @@ function makeDayStone(dayIn) {
   item.day = dayIn ? dayIn : new Date().getDay();
   item.level = (rand < 0.39) ? 0 : ((rand < 0.68) ? 1 : ((rand < 0.88) ? 2 : ((rand < 0.98) ? 3 : 4)));
   item.name = dayStonePrefix[item.level] + dayStoneName[item.day];
-  item.stat = {};
   var fval = dayStoneData[item.day][0][item.level];
-  var val = Math.floor(Math.random() * (fval[1] - fval[0]) + fval[0]);
+  var val = Math.floor(Math.random() * (fval[1] - fval[0]) + fval[0]) / 1000;
+  item.effectDesc = dayStoneEffect[item.day] + ' ' + (val*100) + '%';
   switch (item.day) {
   case 0:
-    item.stat.critDmg = val * 0.01;
+    item.effect = [{active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'critDmg', value : val}];
     break;
   case 1:
-    item.stat.crit = val * 0.01;
+    item.effect = [{active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'crit', value : val}];
     break;
   case 2:
-    item.stat.phyAtkMin = val;
-    item.stat.phyAtkMax = val;
+    item.effect = [{active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_PERCENTAGE, key : 'phyAtk', value : val}];
     break;
   case 3:
-    item.stat.magAtkMin = val;
-    item.stat.magAtkMax = val;
+    item.effect = [{active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_PERCENTAGE, key : 'magAtk', value : val}];
     break;
   case 4:
-    item.stat.hpRegen = val;
-    fval = dayStoneData[item.day][1][item.level];
-    val = Math.floor(Math.random() * (fval[1] - fval[0]) + fval[0]);
-    if (val > 0) {
-      item.stat.spRegen = val;
-    }
+    item.effect = [{active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_SP_COST_PERCENTAGE, key : 'drive', value : val},
+                   {active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_SP_COST_PERCENTAGE, key : 'special', value : val}];
     break;
   case 5:
-    item.stat.phyReduce = val * 0.01;
-    item.stat.magReduce = val * 0.01;
+    item.effect = [{active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'phyReduce', value : val},
+                   {active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'magReduce', value : val}];
     break;
   case 6:
-    item.stat.maxHp = val;
+    item.effect = [{active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_PERCENTAGE, key : 'maxHp', value : val}];
     break;
   }
   return item;
@@ -917,6 +928,7 @@ printName[0] = '무기';
 printName[1] = '갑옷';
 printName[2] = '보조방어구';
 printName[3] = '장신구';
+printName[4] = '스킬 아티팩트';
 
 function getRarityText(rarity) {
   var text = '';
@@ -978,7 +990,9 @@ function makeTooltip(item) {
       rtext += ', ' + item.effectDesc;
     }
     if (item.socket) {
-      rtext += '<br><br>[' + item.socket.name + '] ' + getStatList(item.socket);
+      for (sock of item.socket) {
+        rtext += '<br><br>[' + sock.name + '] ' + sock.effectDesc;
+      }
     }
     if (item.flavor && item.flavor.length > 0) {
       rtext += '<br><br><span class="tooltipFlavor">' + item.flavor + '</span>';

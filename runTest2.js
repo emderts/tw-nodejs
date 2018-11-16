@@ -6,7 +6,7 @@ const excel = require('exceljs');
 const fs = require('fs');
 
 //procFullTest(9, 'testResult.xlsx');
-procFullTest(8, 'testResult2.xlsx');
+procFullTest(7, 'testResult2x.xlsx');
 function procFullTest(testRank, resFile) {
   var testCount = 1000;
   var workbook = new excel.Workbook();

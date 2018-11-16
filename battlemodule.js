@@ -71,6 +71,10 @@ function _doBattleEnd() {
   retObj.winnerLeft = (charLeft.curHp > 0);
   retObj.winnerRight = (charRight.curHp > 0);
   retObj.turnCount = turnCount;
+  retObj.resultLeft = retObj.winnerLeft ? 2 : 1;
+  retObj.resultRight = retObj.winnerRight ? 2 : 1;
+  resolveEffects(charLeft, charRight, getBuffEffects(charLeft, cons.ACTIVE_TYPE_BATTLE_END), retObj, true);
+  resolveEffects(charRight, charLeft, getBuffEffects(charRight, cons.ACTIVE_TYPE_BATTLE_END), retObj, false);
   
   result += '<div class="resultWrap"><div class="resultCharInfo">';
   var expTurn = turnCount < 200 ? turnCount : 200;
@@ -80,20 +84,22 @@ function _doBattleEnd() {
   }
   if (retObj.winnerLeft) {    
     retObj.expLeft = Math.round((30 + 0.35 * expTurn * expRate) * 0.75);
-    result += '<span class="colorLeft">Victory!</span><br>' + charLeft.name + '의 승리입니다!<br>경험치를 ' + retObj.expLeft + ' 획득했습니다.<br>리설트 카드 2장을 획득했습니다.';
+    result += '<span class="colorLeft">Victory!</span><br>' + charLeft.name + '의 승리입니다!<br>';
   } else {
     retObj.expLeft = Math.round((0.7 * (30 + 0.35 * expTurn * expRate)) * 0.75);
-    result += '<span class="colorRight">Defeat...</span><br>' + charLeft.name + '의 패배입니다..<br>경험치를 ' + retObj.expLeft + ' 획득했습니다.<br>리설트 카드 1장을 획득했습니다.';    
+    result += '<span class="colorRight">Defeat...</span><br>' + charLeft.name + '의 패배입니다..<br>';    
   }
+  result += '경험치를 ' + retObj.expLeft + ' 획득했습니다.<br>리설트 카드 ' + retObj.resultLeft + '장을 획득했습니다.';
   result += '</div><div class="resultCharInfo">';
   var expRate = charRight.rank > charLeft.rank ? 0.9 : (charRight.rank < charLeft.rank ? 1 : 1.1);
   if (retObj.winnerRight) {
     retObj.expRight = Math.round((30 + 0.35 * expTurn * expRate) * 0.25);
-    result += '<span class="colorLeft">Victory!</span><br>' + charRight.name + '의 승리입니다!<br>경험치를 ' + retObj.expRight + ' 획득했습니다.<br>리설트 카드 2장을 획득했습니다.';
+    result += '<span class="colorLeft">Victory!</span><br>' + charRight.name + '의 승리입니다!<br>';
   } else {
     retObj.expRight = Math.round((0.7 * (30 + 0.35 * expTurn * expRate)) * 0.25);
-    result += '<span class="colorRight">Defeat...</span><br>' + charRight.name + '의 패배입니다..<br>경험치를 ' + retObj.expRight + ' 획득했습니다.<br>리설트 카드 1장을 획득했습니다.';    
+    result += '<span class="colorRight">Defeat...</span><br>' + charRight.name + '의 패배입니다..<br>';    
   }
+  result += '경험치를 ' + retObj.expRight + ' 획득했습니다.<br>리설트 카드 ' + retObj.resultRight + '장을 획득했습니다.';
   result += '</div></div>';
   retObj.result = result;
   return retObj;
@@ -112,6 +118,7 @@ function _doBattleTurn() {
     // decide skill
     var skillUsed = undefined;
     var skillFailed = undefined;
+    var skillNum = 0;
     while (!skillUsed) {
       var rand = Math.random();
       if (rand < 0.33) {
@@ -120,9 +127,11 @@ function _doBattleTurn() {
       } else if (rand < 0.66) {
         skillUsed = winner.skill.base[1];
         skillFailed = loser.skill.base[0];
+        skillNum = 1;
       } else if (rand < 0.99) {
         skillUsed = winner.skill.base[2];
         skillFailed = loser.skill.base[1];
+        skillNum = 2;
       }
     }
     result += '<div class="skillResolutionWrap"><span class="skillUse">';
@@ -182,8 +191,8 @@ function _doBattleTurn() {
       return;
     }
   } 
-  resolveEffects(winner, loser, getBuffEffects(winner, cons.ACTIVE_TYPE_SKILL_WIN), skillUsed);
-  resolveEffects(winner, loser, getItemEffects(winner, cons.ACTIVE_TYPE_SKILL_WIN), skillUsed);
+  resolveEffects(winner, loser, getBuffEffects(winner, cons.ACTIVE_TYPE_SKILL_WIN), skillUsed, skillNum);
+  resolveEffects(winner, loser, getItemEffects(winner, cons.ACTIVE_TYPE_SKILL_WIN), skillUsed, skillNum);
   resolveEffects(loser, winner, getBuffEffects(loser, cons.ACTIVE_TYPE_SKILL_LOSE), skillUsed);
   resolveEffects(loser, winner, getItemEffects(loser, cons.ACTIVE_TYPE_SKILL_LOSE), skillUsed);
 
@@ -235,22 +244,34 @@ function _doBattleTurn() {
   }
 
   if (winner.skill.special.cost <= winner.curSp && findBuffByCode(winner, 10004).length == 0 && findBuffByCode(winner, 10005).length == 0) {
-    result += '<div class="specialSkill">[ ' + winner.name + ' ] Special Skill - [ ' + winner.skill.special.name + ' ] 발동!</div>';
-    winner.curSp = 0;
-    resolveEffects(winner, loser, winner.skill.special.effect);
-    resolveEffects(winner, loser, getBuffEffects(winner, cons.ACTIVE_TYPE_USE_SPECIAL), damage);
-    resolveEffects(winner, loser, getItemEffects(winner, cons.ACTIVE_TYPE_USE_SPECIAL), damage);
-    resolveEffects(loser, winner, getBuffEffects(loser, cons.ACTIVE_TYPE_OPP_USE_SPECIAL), damage);
-    resolveEffects(loser, winner, getItemEffects(loser, cons.ACTIVE_TYPE_OPP_USE_SPECIAL), damage);
+    resolveEffects(winner, loser, getBuffEffects(winner, cons.ACTIVE_TYPE_BEFORE_USE_SPECIAL), damage);
+    resolveEffects(winner, loser, getItemEffects(winner, cons.ACTIVE_TYPE_BEFORE_USE_SPECIAL), damage);
+    resolveEffects(loser, winner, getBuffEffects(loser, cons.ACTIVE_TYPE_BEFORE_OPP_USE_SPECIAL), damage);
+    resolveEffects(loser, winner, getItemEffects(loser, cons.ACTIVE_TYPE_BEFORE_OPP_USE_SPECIAL), damage);
+    if (winner.skill.special.cost <= winner.curSp && findBuffByCode(winner, 10004).length == 0 && findBuffByCode(winner, 10005).length == 0) {
+      result += '<div class="specialSkill">[ ' + winner.name + ' ] Special Skill - [ ' + winner.skill.special.name + ' ] 발동!</div>';
+      winner.curSp = 0;
+      resolveEffects(winner, loser, winner.skill.special.effect);
+      resolveEffects(winner, loser, getBuffEffects(winner, cons.ACTIVE_TYPE_USE_SPECIAL), damage);
+      resolveEffects(winner, loser, getItemEffects(winner, cons.ACTIVE_TYPE_USE_SPECIAL), damage);
+      resolveEffects(loser, winner, getBuffEffects(loser, cons.ACTIVE_TYPE_OPP_USE_SPECIAL), damage);
+      resolveEffects(loser, winner, getItemEffects(loser, cons.ACTIVE_TYPE_OPP_USE_SPECIAL), damage);
+    }
   }
   if (loser.skill.special.cost <= loser.curSp && findBuffByCode(loser, 10004).length == 0 && findBuffByCode(loser, 10005).length == 0) {
-    result += '<div class="specialSkill">[ ' + loser.name + ' ] Special Skill - [ ' + loser.skill.special.name + ' ] 발동!</div>';
-    loser.curSp = 0;
-    resolveEffects(loser, winner, loser.skill.special.effect);
-    resolveEffects(loser, winner, getBuffEffects(loser, cons.ACTIVE_TYPE_USE_SPECIAL), damage);
-    resolveEffects(loser, winner, getItemEffects(loser, cons.ACTIVE_TYPE_USE_SPECIAL), damage);
-    resolveEffects(winner, loser, getBuffEffects(winner, cons.ACTIVE_TYPE_OPP_USE_SPECIAL), damage);
-    resolveEffects(winner, loser, getItemEffects(winner, cons.ACTIVE_TYPE_OPP_USE_SPECIAL), damage);
+    resolveEffects(loser, winner, getBuffEffects(loser, cons.ACTIVE_TYPE_BEFORE_USE_SPECIAL), damage);
+    resolveEffects(loser, winner, getItemEffects(loser, cons.ACTIVE_TYPE_BEFORE_USE_SPECIAL), damage);
+    resolveEffects(winner, loser, getBuffEffects(winner, cons.ACTIVE_TYPE_BEFORE_OPP_USE_SPECIAL), damage);
+    resolveEffects(winner, loser, getItemEffects(winner, cons.ACTIVE_TYPE_BEFORE_OPP_USE_SPECIAL), damage);
+    if (loser.skill.special.cost <= loser.curSp && findBuffByCode(loser, 10004).length == 0 && findBuffByCode(loser, 10005).length == 0) {
+      result += '<div class="specialSkill">[ ' + loser.name + ' ] Special Skill - [ ' + loser.skill.special.name + ' ] 발동!</div>';
+      loser.curSp = 0;
+      resolveEffects(loser, winner, loser.skill.special.effect);
+      resolveEffects(loser, winner, getBuffEffects(loser, cons.ACTIVE_TYPE_USE_SPECIAL), damage);
+      resolveEffects(loser, winner, getItemEffects(loser, cons.ACTIVE_TYPE_USE_SPECIAL), damage);
+      resolveEffects(winner, loser, getBuffEffects(winner, cons.ACTIVE_TYPE_OPP_USE_SPECIAL), damage);
+      resolveEffects(winner, loser, getItemEffects(winner, cons.ACTIVE_TYPE_OPP_USE_SPECIAL), damage);
+    }
   }
 
   resolveTurnEnd(winner, loser);
@@ -280,7 +301,7 @@ function calcDamage(winner, loser, skill) {
   var isPhysical = (skill.type === cons.DAMAGE_TYPE_PHYSICAL);
   retObj.atkRat = isPhysical ? winner.stat.phyAtk : winner.stat.magAtk;
   retObj.reduce = (skill.type % 2 == 1) ? loser.stat.phyReduce : loser.stat.magReduce;
-  retObj.randDmg = Math.random() * 0.2 + 0.9;
+  retObj.randDmg = Math.random() * 0.1 + 1.0;
   retObj.skillRat = skill.damage;
   retObj.atkMin = isPhysical ? winner.stat.phyAtkMin : winner.stat.magAtkMin;
   retObj.atkMax = isPhysical ? winner.stat.phyAtkMax : winner.stat.magAtkMax;
@@ -291,6 +312,7 @@ function calcDamage(winner, loser, skill) {
   var critMod = loser.stat.evasion < 0 ? -loser.stat.evasion : 0;
   retObj.crit = getRandom(winner.stat.crit + critMod);
   retObj.type = skill.type;
+  retObj.value = (retObj.skillRat * retObj.atkRat) * (1 - retObj.reduce);
   
   resolveEffects(winner, loser, getBuffEffects(winner, cons.ACTIVE_TYPE_CALC_DAMAGE), retObj, skill);
   resolveEffects(winner, loser, getItemEffects(winner, cons.ACTIVE_TYPE_CALC_DAMAGE), retObj, skill);
@@ -382,6 +404,9 @@ function resolveEffects(winner, loser, effects, damage, skill) {
     if (eff.chk && findBuffByIds(winner, eff.chk).length === 0) {
       continue;
     }
+    if (eff.chkAll && findBuffByIds(winner, eff.chkAll).length < eff.chkAll.length) {
+      continue;
+    }
     if (eff.chkOppNot && findBuffByIds(loser, eff.chkOppNot).length > 0) {
       continue;
     }
@@ -410,6 +435,15 @@ function resolveEffects(winner, loser, effects, damage, skill) {
       continue;
     }
     if (eff.chkStackUnder && eff.chkStackUnder <= eff.buff.stack) {
+      continue;
+    }
+    const checkInv = function(n, e) {
+      return e.id == n;
+    }
+    if (eff.chkInventory && !winner.inventory.some(checkInv.bind(this, eff.chkInventory))) {
+      continue;
+    }
+    if (eff.chkPercentDamage && damage.value < winner.curHp * eff.chkPercentDamage) {
       continue;
     }
     var stackMpl = eff.noStack ? 1 : (eff.buff ? (eff.buff.stack ? eff.buff.stack : 1) : 1);
@@ -457,6 +491,12 @@ function resolveEffects(winner, loser, effects, damage, skill) {
         valueUsed *= winner.base[eff.percentKey];
       } else if (eff.isPercentDamage) {
         valueUsed *= damage.value;
+      } else if (eff.isPercentOpp) {
+        valueUsed *= loser[eff.percentKey];
+      } else if (eff.isPercentOppStat) {
+        valueUsed *= loser.stat[eff.percentKey];
+      } else if (eff.isPercentSkill) {
+        valueUsed *= skill[eff.percentKey];
       }
       valueUsed = Math.round(valueUsed * stackMpl);
       var target = 'SP';
@@ -476,12 +516,12 @@ function resolveEffects(winner, loser, effects, damage, skill) {
       var source = eff.name ? ' [ ' + eff.name + ' ] 효과로 ' : ' ';
       var act = (valueUsed > 0) ? '회복했다' : '잃었다';
       result += dst.name + getUnnun(dst.nameType) + source + target + '를 ' + Math.abs(valueUsed) + ' ' + act + '!<br>';
-    } else if (eff.code === cons.EFFECT_TYPE_ADD_HIT || eff.code === cons.EFFECT_TYPE_SELF_HIT || eff.code === cons.EFFECT_TYPE_OPP_HIT) {
+    } else if (eff.code === cons.EFFECT_TYPE_ADD_HIT || eff.code === cons.EFFECT_TYPE_SELF_HIT || eff.code === cons.EFFECT_TYPE_OPP_HIT || eff.code === cons.EFFECT_TYPE_OPP_SELF_HIT) {
       var tempObj = {};
       tempObj.damage = eff.value * stackMpl;
       tempObj.type = eff.type;
-      var source = eff.code === cons.EFFECT_TYPE_OPP_HIT ? loser : winner;
-      var target = eff.code === cons.EFFECT_TYPE_ADD_HIT ? loser : winner;
+      var source = eff.code === cons.EFFECT_TYPE_OPP_HIT || eff.code === cons.EFFECT_TYPE_OPP_SELF_HIT ? loser : winner;
+      var target = eff.code === cons.EFFECT_TYPE_ADD_HIT || eff.code === cons.EFFECT_TYPE_OPP_SELF_HIT ? loser : winner;
       
       if (eff.isPercentChar) {
         tempObj.damage *= source[eff.percentKey];
@@ -491,6 +531,8 @@ function resolveEffects(winner, loser, effects, damage, skill) {
         tempObj.damage *= source.base[eff.percentKey];
       } else if (eff.isPercentDamage) {
         tempObj.damage *= damage.value;
+      } else if (eff.isPercentOpp) {
+        valueUsed *= loser[eff.percentKey];
       }
       
       if (eff.buffTarget) {
@@ -649,6 +691,8 @@ function resolveEffects(winner, loser, effects, damage, skill) {
       } else if (eff.noSkill && skill.code === undefined) {
         damage.skillRat *= eff.value;
         result += '[ ' + eff.name + ' ] 효과로 공격력이 ' + Math.round((eff.value - 1) * 100) + '\% 올랐습니다!<br>';    
+      } else if (eff.all) {
+        damage.skillRat *= eff.value;
       } else {
         continue;
       }
@@ -677,6 +721,57 @@ function resolveEffects(winner, loser, effects, damage, skill) {
       }
       result += '[ ' + damage.name + ' ] 효과의 지속시간이 ' + eff.value + ' 감소합니다!<br>';
       damage.dur -= eff.value;
+    } else if (eff.code === cons.EFFECT_TYPE_REMOVE_BUFF) {
+      var buffTarget = eff.standard ? [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12] : eff.buffTarget;
+      for (buff of winner.buffs) {
+        if (buffTarget.includes(buff.id)) {
+          removeBuff(buff);
+          result += '[ ' + buff.name + ' ] 효과가 제거됩니다!<br>';
+        }
+      }
+    } else if (eff.code === cons.EFFECT_TYPE_SET_ITEM_VALUE) {
+      var valueUsed = eff.value;
+      if (eff.isPercentDamage) {
+        valueUsed *= damage.value;
+      }
+      valueUsed += eff.item.itemValue;
+      if (valueUsed > eff.maxValue) {
+        valueUsed = eff.maxValue;
+      }
+      result += '[ ' + eff.item.name + ' ] 아이템에 에너지가 ' + valueUsed + ' 쌓였습니다!<br>';
+      
+      eff.item.itemValue = valueUsed;
+    } else if (eff.code === cons.EFFECT_TYPE_DUPLICATE_ITEM) {
+      winner.items[eff.dupKey] = winner.items[eff.key];
+      result += '[ ' + winner.items[eff.key].name + ' ] 아이템이 복제됩니다!<br>';
+    } else if (eff.code === cons.EFFECT_TYPE_SWAP_SP) {
+      var swap = winner.curSp;
+      winner.curSp = loser.curSp;
+      loser.curSp = swap;
+      result += 'SP가 서로 바뀝니다!<br>';
+    } else if (eff.code === cons.EFFECT_TYPE_CHANGE_SKILL) {
+      var newSkill = winner.skill.base[eff.value];
+      for (key in damage) {
+        damage[key] = newSkill[key];
+      }
+      result += '[ ' + damage.name + ' ] 스킬이 사용됩니다!<br>';
+    } else if (eff.code === cons.EFFECT_TYPE_RESOLVE_SKILL) {
+      var keyUsed = eff.randomSkill ? Math.floor(Math.random() * 3) : eff.value;
+      var resolvedDamage = calcDamage(winner, loser, winner.skill.base[keyUsed]);
+      if (resolvedDamage.hit) {
+        dealDamage(winner, loser, resolvedDamage);
+        result += '<span class="skillDamage">' + winner.name + getIga(winner.nameType) + ' [ ' + winner.skill.base[keyUsed].name + ' ] ' + getUro(winner.skill.base[keyUsed].nameType) + ' ';
+        result += loser.name + getUlrul(loser.nameType) + ' 공격해 ' + resolvedDamage.value + '대미지를 입혔습니다!<br>';
+        resolveEffects(winner, loser, winner.skill.base[keyUsed].effect, damage);
+      }
+    } else if (eff.code === cons.EFFECT_TYPE_ADD_RESULT_CARD) {
+      // 5th arg = isLeft
+      if (skill) {
+        damage.resultLeft += eff.value;
+      } else {
+        damage.resultRight += eff.value;
+      }
+      result += winner.name + '의 리설트 카드 갯수가 ' + eff.value + ' 되었습니다!<br>';
     }
     
     if (eff.setCooldown) {
@@ -742,8 +837,8 @@ function resolveTurnEnd(winner, loser) {
   }
   calcStats(winner, loser);
   calcStats(loser, winner);
-  resolveTurnEndChar(winner, loser);
-  resolveTurnEndChar(loser, winner);
+  resolveTurnEndChar(winner, loser, 0);
+  resolveTurnEndChar(loser, winner, 1);
   if (winner.curHp > winner.stat.maxHp) {
     winner.curHp = winner.stat.maxHp;
   }
@@ -752,12 +847,15 @@ function resolveTurnEnd(winner, loser) {
   }
 }
 
-function resolveTurnEndChar(chara, opp) {
+function resolveTurnEndChar(chara, opp, flag) {
   chara.curHp += chara.stat.hpRegen;
   chara.curSp += chara.stat.spRegen;
+  chara.curHp = Math.round(10 * chara.curHp) / 10;
+  chara.curSp = Math.round(10 * chara.curSp) / 10;
 
   resolveEffects(chara, opp, getBuffEffects(chara, cons.ACTIVE_TYPE_TURN_END));
   resolveEffects(chara, opp, getItemEffects(chara, cons.ACTIVE_TYPE_TURN_END));
+  resolveEffects(chara, opp, getBuffEffects(chara, cons.ACTIVE_TYPE_TURN_END_WIN + flag));
   for (buff of chara.buffs) {
     if (buff.durOff === cons.DURATION_TYPE_TURN_END) {
       buff.dur--;
@@ -797,6 +895,7 @@ function giveBuff(src, recv, buffObj, printFlag) {
   
   for (var eff of buffObj.effect) {
     eff.buff = buffObj;
+    eff.name = buffObj.name;
   }
 
   var buffChk = recv.buffs.find(e => (e.id === buffObj.id));
@@ -858,6 +957,11 @@ function getItemEffects(chara, active) {
   var rval = [];
   for (val in chara.items) {
     rval = rval.concat(chara.items[val].effect.filter(x => (x.active === active)));
+    if (val.socket) {
+      for (sock of val.socket) {
+        rval = rval.concat(sock.effect.filter(x => (x.active === active)));
+      }
+    }
   }
   return rval;
 }
@@ -869,7 +973,7 @@ function getBuffEffects(chara, active) {
   if (!chara.buffs || chara.buffs.length === 0) {
     return [];
   }
-  return chara.buffs.map(x => x.effect).reduce((acc, val) => acc.concat(val)).filter(x => (x.active == active)).map(x => Object.assign({}, x, { name : x.buff.name }));
+  return chara.buffs.map(x => x.effect).reduce((acc, val) => acc.concat(val)).filter(x => (x.active == active));
 }
 
 function calcStats(chara, opp) {
@@ -884,11 +988,19 @@ function calcStats(chara, opp) {
       chara.stat[keyItem] += chara.items[key]['stat'][keyItem];
     }
   }
+  chara.skill = JSON.parse(JSON.stringify(chara.skillOri));
 
   for (val of getBuffEffects(chara, cons.ACTIVE_TYPE_CALC_STATS)) {
     var stackMpl = val.buff ? (val.buff.stack ? val.buff.stack : 1) : 1;
     if (val.code === cons.EFFECT_TYPE_STAT_ADD) {
       chara.stat[val.key] += val.value * stackMpl;
+    } else if (val.code === cons.EFFECT_TYPE_SET_SKILL) {
+      if (val.key === 'base') {
+        var valueSel = val.randomValue ? Math.floor(Math.random() * 3) : val.value;
+        chara.skill.base[valueSel] = val.target;
+      } else if (val.key) {
+        chara.skill[val.key] = val.target;
+      }
     }
   }
   for (val of getBuffEffects(opp, cons.ACTIVE_TYPE_OPP_CALC_STATS)) {
@@ -901,6 +1013,20 @@ function calcStats(chara, opp) {
     var stackMpl = val.buff ? (val.buff.stack ? val.buff.stack : 1) : 1;
     if (val.isPercentStat) {
       stackMpl *= chara.stat[val.percentKey];
+    } else if (val.isPercentItemValue) {
+      stackMpl *= val.item.itemValue;
+    } 
+    
+    if (val.countInv) {
+      var usedMpl = chara.inventory.length;
+      if (usedMpl > val.maxValue) {
+        usedMpl = val.maxValue;
+      }
+      stackMpl *= usedMpl;
+    }
+    
+    if (val.chk && findBuffByIds(chara, val.chk).length === 0) {
+      continue;
     }
     if (val.code === cons.EFFECT_TYPE_STAT_ADD) {
       chara.stat[val.key] += val.value * stackMpl;
@@ -914,6 +1040,8 @@ function calcStats(chara, opp) {
       chara.stat[val.key] *= Math.pow(val.value, stackMpl);
     } else if (val.code === cons.EFFECT_TYPE_STAT_PERCENTAGE) {
       chara.stat[val.key] *= (1 + val.value * stackMpl);
+    } else if (val.code === cons.EFFECT_TYPE_SP_COST_PERCENTAGE) {
+      chara.skill[val.key].cost *= (1 + val.value * stackMpl);
     }
   }
   for (val of getItemEffects(chara, cons.ACTIVE_TYPE_CALC_STATS)) {
@@ -922,10 +1050,14 @@ function calcStats(chara, opp) {
       chara.stat[val.key] *= Math.pow(val.value, stackMpl);
     } else if (val.code === cons.EFFECT_TYPE_STAT_PERCENTAGE) {
       chara.stat[val.key] *= (1 + val.value * stackMpl);
+    } else if (val.code === cons.EFFECT_TYPE_SP_COST_PERCENTAGE) {
+      chara.skill[val.key].cost *= (1 + val.value * stackMpl);
     }
   }
   
   chara.stat.maxHp = Math.round(chara.stat.maxHp);
+  chara.stat.hpRegen = Math.round(10 * chara.stat.hpRegen) / 10;
+  chara.stat.spRegen = Math.round(10 * chara.stat.spRegen) / 10;
 }
 
 function _isBattleFinished() {
@@ -956,6 +1088,12 @@ function _initChar(char) {
   char.curHp = char.stat.maxHp;
   char.curSp = 0;
   char.buffs = [];
+  char.skillOri = JSON.parse(JSON.stringify(char.skill));
+  for (val in char.items) {
+    for (eff of char.items[val].effect) {
+      eff.item = char.items[val];
+    }
+  }
 }
 
 function getShieldValue (chara) {
