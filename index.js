@@ -659,7 +659,9 @@ async function procShop(req, res) {
     const sess = req.session; 
     const charRow = await getCharacter(sess.userUid);
     const char = JSON.parse(charRow.char_data);
-    res.render('pages/shop', {premiumPoint : char.premiumPoint, dust : char.dust, dayStoneBought : char.dayStoneBought, actionBought : char.actionBought, rankFactor : Math.pow(2, 9 - char.rank)});
+    res.render('pages/shop', {premiumPoint : char.premiumPoint, dust : char.dust, dayStoneBought : char.dayStoneBought, 
+      actionBought : char.actionBought, rankFactor : Math.pow(2, 9 - char.rank), currencies : char.currencies,
+      item : {mevious : [item.list[412], item.list[413], item.list[414], item.list[415]]}});
   } catch (err) {
     console.error(err);
     res.send('내부 오류');
@@ -709,7 +711,7 @@ async function procUseShop (req, res) {
         char.premiumPoint -= 10;
         addSpecialResultCard(char, body.option - 4);
       }
-    } else if (body.option >= 102) {
+    } else if (body.option >= 102 && body.option < 90000) {
       var cost = body.option >= 106 ? 100 : 140;
       cost *= Math.pow(2, 9 - char.rank);
       if (char.dust < cost) {
@@ -717,6 +719,14 @@ async function procUseShop (req, res) {
       } else {
         char.dust -= cost;
         addSpecialResultCard(char, body.option - 102);
+      }
+    } else if (body.option >= 90001) {
+      var cost = body.option <= 90002 ? 10 : (body.option == 90003 ? 30 : 60);
+      if (char.currencies.mevious < cost) {
+        res.send('메비우스 섬멸의 증표가 부족합니다.');
+      } else {
+        char.currencies.mevious -= cost;
+        char.inventory.push(JSON.parse(JSON.stringify(item.list[412 + (body.option - 90001)])));
       }
     }
     await client.query('update characters set char_data = $1, actionpoint = $3 where uid = $2', [JSON.stringify(char), charRow.uid, action]);

@@ -8,6 +8,8 @@
     <link href="https://fonts.googleapis.com/css?family=Nanum+Gothic" rel="stylesheet">
     <style>
       body {font-family: "Nanum Gothic", sans-serif; }
+      .charItem button {width: 450px; max-width: 100%; background-color: #ffffea; }
+      .charItem button:hover {background-color: #ffffcc; }
       .turnWrap {text-align: center; }
       span.turnCount {font-size: 20px; font-weight: bold; }
       span.skillUseWinner {font-weight: bold; }
@@ -21,6 +23,10 @@
       .charInfo {text-align: center; width: 49%; float: left; border-top: 1px solid black; }
       .resultWrap {width: 70%; max-width: 510px; margin: 10px auto; overflow: hidden; }
       .backLink {text-align: center; width: 40%; margin: 10px auto; overflow: hidden; }
+      table {margin: 30px auto; text-align: center; }
+      tr {background-color: gainsboro; }
+      tr.tblTitle {background-color: lightblue; }
+      td {padding: 10px; }
     </style>
   <script>
     function reveal() {
@@ -30,7 +36,7 @@
 </head>
 <body>
     <table>
-      <tr>
+      <tr class="tblTitle">
         <td>페이즈</td>
         <td>몬스터</td>
         <td>결과</td>
@@ -43,12 +49,14 @@
       </tr>
     <% } %>
     </table>
-    <div onclick="reveal();">전투 보기</div>
+    <div class="charItem">
+      <button type="button" onclick="reveal();">전투 보기</button>
+    </div>
     <div id="battleResult" style="display: none">
     <%- result %>
     </div>
     <% if (isFinished) { %>
-      <%- reward %>
+      <div class="backLink"><%- reward %></div>
       <div class="backLink"><a href="/">돌아가기</a></div>
     <% } else { %>
       <div class="backLink"><a href="/nextPhaseDungeon">다음 단계로</a></div>

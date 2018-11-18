@@ -11,9 +11,129 @@
       div {width: 450px; max-width: 100%; margin: 0 auto; }
       .charItem button {width: 450px; max-width: 100%; background-color: #ffffea; }
       .charItem button:hover {background-color: #ffffcc; }
+      .itemTooltip {font-family: "Nanum Gothic", sans-serif; visibility: hidden; width: 250px; background-color: black; color: #fff; text-align: center; font-size: 13.3333px; border-radius: 6px; padding: 5px 0; position: absolute; z-index: 1; }
+      .charItem .itemTooltip {visibility: visible; }
       .backLink {text-align: center; width: 40%; margin: 10px auto; overflow: hidden; }
     </style>
 </head>
+<%  
+  var printName = {};
+  printName.maxHp = '생명력';
+  printName.hpRegen = 'HP재생';
+  printName.spRegen = 'SP재생';
+  printName.spCharge = 'SP충전';
+  printName.phyAtk = '물리공격력';
+  printName.magAtk = '마법공격력';
+  printName.crit = '치명';
+  printName.critDmg = '치명피해';
+  printName.phyReduce = '물리저항';
+  printName.magReduce = '마법저항';
+  printName.hit = '명중';
+  printName.evasion = '회피';
+  printName.dmgReduce = '피해감소';
+  printName.pierce = '관통';
+  printName[0] = '무기';
+  printName[1] = '갑옷';
+  printName[2] = '보조방어구';
+  printName[3] = '장신구';
+  printName[4] = '스킬 아티팩트';
+  
+  function getRarityText(rarity) {
+    var text = '';
+    var cname = 'rarity';
+    switch (rarity) {
+    case 0:
+      text = '커먼';
+      cname += 'Common';
+      break;
+    case 1:
+      text = '언커먼';
+      cname += 'Uncommon';
+      break;
+    case 2:
+      text = '레어';
+      cname += 'Rare';
+      break;
+    case 3:
+      text = '프리미엄';
+      cname += 'Premium';
+      break;
+    case 4:
+      text = '유니크';
+      cname += 'Unique';
+      break;
+    case 5:
+      text = '에픽';
+      cname += 'Epic';
+      break;
+    }
+    return '<span class="' + cname + '">' + text + '</span>';
+  }
+  
+  function getStatList(val) {
+    return Object.entries(val.stat).map(arr => { 
+      if (arr[0] == 'phyAtkMin') {
+        return  '물리공격력 +' + arr[1] + '~' + val.stat.phyAtkMax;
+      } else if (arr[0] == 'magAtkMin') {
+        return  '마법공격력 +' + arr[1] + '~' + val.stat.magAtkMax;        
+      } else if (arr[0] == 'phyAtkMax' || arr[0] == 'magAtkMax') {
+        return '';
+      } else {
+        var sign = arr[1] > 0 ? '+' : '';
+        if (arr[0] == 'phyReduce' || arr[0] == 'magReduce' || arr[0] == 'crit' || arr[0] == 'critDmg' || arr[0] == 'crit' || arr[0] == 'hit' || arr[0] == 'evasion' || arr[0] == 'pierce') {
+          arr[1] = (arr[1] * 100).toFixed(2) + '%'; 
+        }
+        return printName[arr[0]] + ' ' + sign + arr[1];
+      }      
+    }).filter(x => x.length > 0).join(', ');
+  }
+  
+  function makeTooltip(item) {
+    var rtext = '';
+    rtext += item.name;
+    if (item.type < 10) {
+      rtext += '<br>' + item.rank + '급 ' + getRarityText(item.rarity) + ' ' + printName[item.type];
+      rtext += '<br>' + getStatList(item);
+      if (item.effectDesc && item.effectDesc.length > 0) {
+        rtext += ', ' + item.effectDesc;
+      }
+    if (item.socket) {
+      for (sock of item.socket) {
+        rtext += '<br><br>[' + sock.name + '] ' + sock.effectDesc;
+      }
+    }
+      if (item.flavor && item.flavor.length > 0) {
+        rtext += '<br><br><span class="tooltipFlavor">' + item.flavor + '</span>';
+      }
+    }
+    return rtext;
+  }
+  
+  function getGlowText(rarity) {
+    var cname = 'glow';
+    switch (rarity) {
+    case 0:
+      cname += 'Common';
+      break;
+    case 1:
+      cname += 'Uncommon';
+      break;
+    case 2:
+      cname += 'Rare';
+      break;
+    case 3:
+      cname += 'Premium';
+      break;
+    case 4:
+      cname += 'Unique';
+      break;
+    case 5:
+      cname += 'Epic';
+      break;
+    }
+    return cname;
+  }
+%>
 <body>
   <div class="backLink">
     프리미엄 샵 (현재 프리미엄 포인트 : <%= premiumPoint %>)
@@ -93,6 +213,39 @@
       <input type="hidden" name="option" value="105">
     </form>
   </div>
+  <% if (currencies.mevious) { %>
+  <div class="backLink">
+    메비우스 섬멸 병참장교 (현재 메비우스 섬멸의 증표 : <%= currencies.mevious %>)
+  </div>
+  <div class="charItem">
+    <form action="/useShop" method="post">
+      <button type="submit">크로울러의 민첩한 눈 [10 메비우스 섬멸의 증표]</button>
+      <div class="itemTooltip"><%- makeTooltip(item.mevious[0]) %></div> 
+      <input type="hidden" name="option" value="90001">
+    </form>
+  </div>
+  <div class="charItem">
+    <form action="/useShop" method="post">
+      <button type="submit">헤드 헌터의 괴창 [10 메비우스 섬멸의 증표]</button>
+      <div class="itemTooltip"><%- makeTooltip(item.mevious[1]) %></div> 
+      <input type="hidden" name="option" value="90002">
+    </form>
+  </div>
+  <div class="charItem">
+    <form action="/useShop" method="post">
+      <button type="submit">메비우스 소탕자 [30 메비우스 섬멸의 증표]</button>
+      <div class="itemTooltip"><%- makeTooltip(item.mevious[2]) %></div> 
+      <input type="hidden" name="option" value="90003">
+    </form>
+  </div>
+  <div class="charItem">
+    <form action="/useShop" method="post">
+      <button type="submit">빅토리어스의 의지 [60 메비우스 섬멸의 증표]</button>
+      <div class="itemTooltip"><%- makeTooltip(item.mevious[3]) %></div> 
+      <input type="hidden" name="option" value="90004">
+    </form>
+  </div>
+  <% ) %>
   <div class="backLink">
     <a href="/">돌아가기</a>
   </div>
