@@ -766,6 +766,7 @@ async function procEnterDungeon(req, res) {
       var resultList = [{phase : 1, monImage : enemy.image, monName : enemy.name, 
         result : re.winnerLeft ? '승리' : '패배', hpLeft : re.winnerLeft ? re.leftInfo.curHp : re.rightInfo.curHp}];
       re.leftInfo.buffs = [];
+      re.leftInfo.items = char.items;
       req.session.dungeonProgress = {code : body.option, phase : 1, resultList : resultList, charData : re.leftInfo};
       await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
       res.render('pages/dungeonResult', {result: re.result, resultList: resultList, isFinished : false});
