@@ -58,7 +58,7 @@ function _doBattleStart(flag) {
   if (flag === undefined) {
     charLeft.curHp = charLeft.stat.maxHp;
   } else {
-    char.curHp = char.curHp ? char.curHp : char.stat.maxHp;
+    charLeft.curHp = charLeft.curHp ? charLeft.curHp : charLeft.stat.maxHp;
   }  
   charRight.curHp = charRight.stat.maxHp;
 
