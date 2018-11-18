@@ -5,6 +5,7 @@ const PORT = process.env.PORT || 5000;
 const bodyParser = require('body-parser');
 const session = require('express-session');
 const bcrypt = require('bcrypt-nodejs');
+const JSON = require('circular-json');
 const { Pool } = require('pg');
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
