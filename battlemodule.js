@@ -90,7 +90,7 @@ function _doBattleEnd(flag) {
     retObj.expLeft = Math.round((0.7 * (30 + 0.35 * expTurn * expRate)) * 0.75);
     result += '<span class="colorRight">Defeat...</span><br>' + charLeft.name + '의 패배입니다..<br>';    
   }
-  if (!flag) {
+  if (flag === undefined) {
     result += '경험치를 ' + retObj.expLeft + ' 획득했습니다.<br>리설트 카드 ' + retObj.resultLeft + '장을 획득했습니다.';
   }
   result += '</div><div class="resultCharInfo">';
@@ -102,7 +102,7 @@ function _doBattleEnd(flag) {
     retObj.expRight = Math.round((0.7 * (30 + 0.35 * expTurn * expRate)) * 0.25);
     result += '<span class="colorRight">Defeat...</span><br>' + charRight.name + '의 패배입니다..<br>';    
   }
-  if (!flag) {
+  if (flag === undefined) {
     result += '경험치를 ' + retObj.expRight + ' 획득했습니다.<br>리설트 카드 ' + retObj.resultRight + '장을 획득했습니다.';
   }
   result += '</div></div>';
