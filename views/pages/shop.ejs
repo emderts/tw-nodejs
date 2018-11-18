@@ -16,6 +16,7 @@
       .backLink {text-align: center; width: 40%; margin: 10px auto; overflow: hidden; }
     </style>
 </head>
+<body>
 <%  
   var printName = {};
   printName.maxHp = '생명력';
@@ -134,7 +135,6 @@
     return cname;
   }
 %>
-<body>
   <div class="backLink">
     프리미엄 샵 (현재 프리미엄 포인트 : <%= premiumPoint %>)
   </div>
@@ -245,7 +245,7 @@
       <input type="hidden" name="option" value="90004">
     </form>
   </div>
-  <% ) %>
+  <% } %>
   <div class="backLink">
     <a href="/">돌아가기</a>
   </div>
