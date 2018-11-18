@@ -681,6 +681,9 @@ function resolveEffects(winner, loser, effects, damage, skill) {
       } else {
         var picked = JSON.parse(JSON.stringify(tgtList[eff.value]));
       }
+      for (eff of picked.effect) {
+        eff.item = picked;
+      }
       result += '[ ' + winner.items[eff.key].name + ' ] 아이템이 [ ' + picked.name + ' ] 아이템으로 바뀌었다!<br>';
       winner.items[eff.key] = picked;
     } else if (eff.code === cons.EFFECT_TYPE_ADD_DAMAGE) {
@@ -1105,6 +1108,11 @@ function _initChar(char) {
   char.curSp = 0;
   char.buffs = [];
   char.skillOri = JSON.parse(JSON.stringify(char.skill));
+  for (item of char.items) {
+    for (eff of item.effect) {
+      eff.item = item;
+    }
+  }
 }
 
 function getShieldValue (chara) {

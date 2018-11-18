@@ -5,7 +5,6 @@ const PORT = process.env.PORT || 5000;
 const bodyParser = require('body-parser');
 const session = require('express-session');
 const bcrypt = require('bcrypt-nodejs');
-const JSON = require('circular-json');
 const { Pool } = require('pg');
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
@@ -54,6 +53,7 @@ const app = express()
 .post('/doRankup', procRankup)
 .get('/test', (req, res) => res.render('pages/battle', {result: battlemodule.doBattle(chara.julius, chara.aeohelm).result}))
 .get('/test2', (req, res) => res.send(setCharacter('kemderts', 1, chara.kines)))
+.get('/test3', (req, res) => res.send(setCharacter('thelichking', 2, chara.lk)))
 //.get('/test3', (req, res) => res.send(procInit()))
 .get('/test5', (req, res) => res.render('pages/resultCard', {item : {name: 'test', rarity: Math.floor(Math.random() * 6)}}))
 .get('/test6', (req, res) => res.render('pages/index', {

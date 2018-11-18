@@ -876,6 +876,5 @@ itemList.forEach(function(tgt) {
   tgt.base = JSON.parse(JSON.stringify(tgt.stat));
   tgt.effect.forEach(function(eff) {
     eff.name = tgt.name;
-    eff.item = tgt;
   })
 })
