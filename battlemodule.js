@@ -1108,6 +1108,7 @@ function _initChar(char, flag) {
     char.curHp = char.stat.maxHp;
     char.curSp = 0;
   }
+  char.curSp = char.curSp ? char.curSp : 0;
   char.buffs = [];
   char.skillOri = JSON.parse(JSON.stringify(char.skill));
   if (char.items.weapon) {

@@ -834,7 +834,7 @@ async function procNextPhaseDungeon(req, res) {
         reward += '메비우스 섬멸 공훈 카드 1개를 획득했습니다.';  
       }
       await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
-      res.render('pages/dungeonResult', {result: re.result, resultList: resultList, isFinished : isFinished, reward : reward});
+      res.render('pages/dungeonResult', {result: re.result, resultList: req.session.dungeonProgress.resultList, isFinished : isFinished, reward : reward});
     } else {
       res.redirect('/');
     }
