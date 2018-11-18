@@ -57,7 +57,9 @@ function _doBattleStart(flag) {
 
   if (flag === undefined) {
     charLeft.curHp = charLeft.stat.maxHp;
-  }
+  } else {
+    char.curHp = char.curHp ? char.curHp : char.stat.maxHp;
+  }  
   charRight.curHp = charRight.stat.maxHp;
 
   printCharInfo(0);
@@ -1110,7 +1112,6 @@ function _initChar(char, flag) {
     char.curHp = char.stat.maxHp;
     char.curSp = 0;
   }
-  char.curHp = char.curHp ? char.curHp : char.stat.maxHp;
   char.curSp = char.curSp ? char.curSp : 0;
   char.buffs = [];
   char.skillOri = JSON.parse(JSON.stringify(char.skill));

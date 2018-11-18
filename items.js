@@ -871,6 +871,17 @@ itemList[414] = { id : 414, name : '메비우스 소탕자', nameType : cons.NAM
 itemList[415] = { id : 415, name : '빅토리어스의 의지', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SKILL_ARTIFACT, flavor : '', rank : 8, rarity : cons.ITEM_RARITY_UNIQUE, stat : {  }, 
     effectDesc : '현재 생명력이 50% 이하라면 피격 피해량을 10% 경감', 
     effect : [{code : cons.EFFECT_TYPE_CANCEL_DAMAGE, active : cons.ACTIVE_TYPE_TAKE_HIT, value : 0.1, chkHp : 0.5}] };
+itemList[416] = { id : 416, name : '잔불 : 백령의 조언', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_SKILL_ARTIFACT, flavor : '', rank : 8, rarity : cons.ITEM_RARITY_UNCOMMON, stat : {  }, 
+    effectDesc : '', 
+    effect : [] };
+itemList[417] = { id : 417, name : '잔불 : 암령의 광기', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SKILL_ARTIFACT, flavor : '', rank : 8, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { phyAtk : 5, magAtk : 5 }, 
+    effectDesc : '', effect : [] };
+itemList[418] = { id : 418, name : '잿더미 : 나선의 검', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_SKILL_ARTIFACT, flavor : '', rank : 8, rarity : cons.ITEM_RARITY_RARE, stat : { }, 
+    effectDesc : '', 
+    effect : [] };
+itemList[419] = { id : 419, name : '잿더미 : 장작의 왕', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_SKILL_ARTIFACT, flavor : '', rank : 8, rarity : cons.ITEM_RARITY_UNIQUE, stat : {  }, 
+    effectDesc : '', 
+    effect : [] };
 
 itemList.forEach(function(tgt) {
   tgt.base = JSON.parse(JSON.stringify(tgt.stat));

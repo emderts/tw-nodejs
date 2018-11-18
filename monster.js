@@ -54,6 +54,54 @@ const item = require('./items');
   };
   module.exports.mTaurus = charLeft;
   
+  charLeft = {name : '부러진 직검을 든 망자', nameType : cons.NAME_KOR_NO_END_CONS, title : '재의 묘소', rank : 8, level : 20, 
+      stat : {maxHp : 1090, phyAtk : 48, magAtk : 40}};
+  _initChar(charLeft);
+  
+  charLeft.items = {weapon : item.list[58]};
+  charLeft.image = '';
+
+  charLeft.skill = {
+      base : [
+              {code : 90012, name : '물리 공격', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1.0, effect : []},
+              {code : 90013, name : '물리 공격', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1.0, effect : []},
+              {code : 90014, name : '마법 공격', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 1.0, effect : []}
+             ]
+  };
+  module.exports.eBroken = charLeft;
+  
+  charLeft = {name : '석궁수 망자', nameType : cons.NAME_KOR_NO_END_CONS, title : '재의 묘소', rank : 8, level : 20, 
+      stat : {maxHp : 1090, phyAtk : 48, magAtk : 40}};
+  _initChar(charLeft);
+  
+  charLeft.items = {weapon : item.list[58]};
+  charLeft.image = '';
+
+  charLeft.skill = {
+      base : [
+              {code : 90015, name : '물리 공격', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1.0, effect : []},
+              {code : 90016, name : '물리 공격', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1.0, effect : []},
+              {code : 90017, name : '마법 공격', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 1.0, effect : []}
+             ]
+  };
+  module.exports.eCrossbow = charLeft;
+  
+  charLeft = {name : '재의 심판자, 군다', nameType : cons.NAME_KOR_NO_END_CONS, title : '재의 묘소', rank : 8, level : 30, 
+      stat : {maxHp : 1090, phyAtk : 48, magAtk : 40}};
+  _initChar(charLeft);
+  
+  charLeft.items = {weapon : item.list[58]};
+  charLeft.image = '';
+
+  charLeft.skill = {
+      base : [
+              {code : 90015, name : '물리 공격', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1.0, effect : []},
+              {code : 90016, name : '물리 공격', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1.0, effect : []},
+              {code : 90017, name : '마법 공격', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 1.0, effect : []}
+             ]
+  };
+  module.exports.eGunda = charLeft;
+  
   function _initChar(char) {
     char.stat.spCharge = 5;
     char.stat.hpRegen = 0;

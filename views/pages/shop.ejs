@@ -251,6 +251,39 @@
     </form>
   </div>
   <% } %>
+  <% if (currencies.ember) { %>
+  <div class="backLink">
+    잔불 교환자 (현재 잔불 : <%= currencies.ember %>)
+  </div>
+  <div class="charItem">
+    <form action="/useShop" method="post">
+      <button type="submit">잔불 : 백령의 조언 [5 잔불]</button>
+      <div class="itemTooltip"><%- makeTooltip(item.ember[0]) %></div> 
+      <input type="hidden" name="option" value="90005">
+    </form>
+  </div>
+  <div class="charItem">
+    <form action="/useShop" method="post">
+      <button type="submit">잔불 : 암령의 광기 [15 잔불]</button>
+      <div class="itemTooltip"><%- makeTooltip(item.ember[1]) %></div> 
+      <input type="hidden" name="option" value="90006">
+    </form>
+  </div>
+  <div class="charItem">
+    <form action="/useShop" method="post">
+      <button type="submit">잿더미 : 나선의 검 [30 잔불]</button>
+      <div class="itemTooltip"><%- makeTooltip(item.ember[2]) %></div> 
+      <input type="hidden" name="option" value="90007">
+    </form>
+  </div>
+  <div class="charItem">
+    <form action="/useShop" method="post">
+      <button type="submit">잿더미 : 장작의 왕 [60 잔불]</button>
+      <div class="itemTooltip"><%- makeTooltip(item.ember[3]) %></div> 
+      <input type="hidden" name="option" value="90008">
+    </form>
+  </div>
+  <% } %>
   <div class="backLink">
     <a href="/">돌아가기</a>
   </div>

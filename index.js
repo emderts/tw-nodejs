@@ -47,6 +47,7 @@ const app = express()
 .get('/dungeon', procDungeon)
 .post('/enterDungeon', procEnterDungeon)
 .get('/nextPhaseDungeon', procNextPhaseDungeon)
+.get('/stopDungeon', procStopDungeon)
 .get('/dismantlingYard', procDismantlingYard)
 .post('/dismantleItem', procDismantleItem)
 .post('/useStatPoint', procUseStatPoint)
@@ -386,6 +387,57 @@ async function procUseItem (req, res) {
               chara.inventory.push(picked);
               res.render('pages/resultCard', {item : picked});              
             }            
+          } else if (tgtObj.resultType == 90002) {
+            var rand = Math.random();
+            if (rand < 0.193) {
+              var picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_COMMON_UNCOMMON);
+              chara.inventory.push(picked);
+              res.render('pages/resultCard', {item : picked});
+            } else if (rand < 0.239) {
+              var picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_RARE);
+              chara.inventory.push(picked);
+              await addItemNews(client, chara, tgtObj, picked);
+              res.render('pages/resultCard', {item : picked});
+            } else if (rand < 0.249) {
+              var picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_UNIQUE);
+              chara.inventory.push(picked);
+              await addItemNews(client, chara, tgtObj, picked);
+              res.render('pages/resultCard', {item : picked});
+            } else if (rand < 0.25) {
+              var picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_EPIC);
+              chara.inventory.push(picked);
+              await addItemNews(client, chara, tgtObj, picked);
+              res.render('pages/resultCard', {item : picked});
+            } else if (rand < 0.42) {
+              chara.currencies.ember += 2;
+              res.render('pages/resultCard', {item : {name : '잔불 2개' , rarity : cons.ITEM_RARITY_COMMON}});
+            } else if (rand < 0.58) {
+              chara.premiumPoint += 1;
+              res.render('pages/resultCard', {item : {name : '프리미엄 포인트 1점' , rarity : cons.ITEM_RARITY_COMMON}});
+            } else if (rand < 0.6) {
+              chara.premiumPoint += 2;
+              res.render('pages/resultCard', {item : {name : '프리미엄 포인트 2점' , rarity : cons.ITEM_RARITY_RARE}});
+            } else if (rand < 0.78) {
+              const dustValue = 7 * Math.pow(2, 9 - tgtObj.rank);
+              chara.dust += dustValue;
+              res.render('pages/resultCard', {item : {name : dustValue + ' 가루' , rarity : cons.ITEM_RARITY_COMMON}});
+            } else if (rand < 0.85) {
+              const dustValue = 13 * Math.pow(2, 9 - tgtObj.rank);
+              chara.dust += dustValue;
+              res.render('pages/resultCard', {item : {name : dustValue + ' 가루' , rarity : cons.ITEM_RARITY_UNCOMMON}});
+            } else if (rand < 0.89) {
+              var picked = JSON.parse(JSON.stringify(item.list[416 + Math.floor(Math.random() * 4)]));
+              chara.inventory.push(picked);
+              res.render('pages/resultCard', {item : picked});
+            } else if (rand < 0.9) {
+              const dustValue = 50 * Math.pow(2, 9 - tgtObj.rank);
+              chara.dust += dustValue;
+              res.render('pages/resultCard', {item : {name : dustValue + ' 가루' , rarity : cons.ITEM_RARITY_RARE}});
+            } else {
+              var picked = makeDayStone();
+              chara.inventory.push(picked);
+              res.render('pages/resultCard', {item : picked});              
+            }            
           }
         } else if (tgtObj.type === cons.ITEM_TYPE_DAYSTONE) {
           res.render('pages/selectItem', {title : '요일석 사용', inv : chara.inventory, mode : 1, usedItem : body.itemNum});
@@ -661,7 +713,8 @@ async function procShop(req, res) {
     const char = JSON.parse(charRow.char_data);
     res.render('pages/shop', {premiumPoint : char.premiumPoint, dust : char.dust, dayStoneBought : char.dayStoneBought, 
       actionBought : char.actionBought, rankFactor : Math.pow(2, 9 - char.rank), currencies : char.currencies,
-      item : {mevious : [item.list[412], item.list[413], item.list[414], item.list[415]]}});
+      item : {mevious : [item.list[412], item.list[413], item.list[414], item.list[415]], 
+              ember : [item.list[416], item.list[417], item.list[418], item.list[419]]}});
   } catch (err) {
     console.error(err);
     res.send('내부 오류');
@@ -720,13 +773,21 @@ async function procUseShop (req, res) {
         char.dust -= cost;
         addSpecialResultCard(char, body.option - 102);
       }
-    } else if (body.option >= 90001) {
+    } else if (body.option >= 90001 && body.option < 90005) {
       var cost = body.option <= 90002 ? 10 : (body.option == 90003 ? 30 : 60);
       if (char.currencies.mevious < cost) {
         res.send('메비우스 섬멸의 증표가 부족합니다.');
       } else {
         char.currencies.mevious -= cost;
         char.inventory.push(JSON.parse(JSON.stringify(item.list[412 + (body.option - 90001)])));
+      }
+    } else if (body.option >= 90005 && body.option < 90009) {
+      var cost = body.option == 90005 ? 5 : (body.option == 90006 ? 15 : (body.option == 90007 ? 30 : 60));
+      if (char.currencies.ember < cost) {
+        res.send('잔불이 부족합니다.');
+      } else {
+        char.currencies.ember -= cost;
+        char.inventory.push(JSON.parse(JSON.stringify(item.list[416 + (body.option - 90005)])));
       }
     }
     await client.query('update characters set char_data = $1, actionpoint = $3 where uid = $2', [JSON.stringify(char), charRow.uid, action]);
@@ -770,6 +831,11 @@ async function procEnterDungeon(req, res) {
         char.dungeonInfos.runMevious = true;
         enemy = rand < 0.5 ? monster.mCrawler : monster.mHeadHunter;
       }
+    } else if (body.option == 2) {
+      if (!char.dungeonInfos.runEmberCrypt && (char.rank <= 8 || char.level >= 20)) {
+        char.dungeonInfos.runEmberCrypt = true;
+        enemy = rand < 0.5 ? monster.eBroken : monster.eCrossbow;
+      }
     }
     if (enemy) {
       var re = battlemodule.doBattle(JSON.parse(JSON.stringify(char)), JSON.parse(JSON.stringify(enemy)), 1);
@@ -779,7 +845,7 @@ async function procEnterDungeon(req, res) {
       re.leftInfo.items = char.items;
       req.session.dungeonProgress = {code : body.option, phase : 1, resultList : resultList, charData : re.leftInfo};
       await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
-      res.render('pages/dungeonResult', {result: re.result, resultList: resultList, isFinished : false});
+      res.render('pages/dungeonResult', {result: re.result, resultList: resultList, isFinished : false, stop : (body.option == 2)});
     } else {
       res.redirect('/');
     }
@@ -799,18 +865,22 @@ async function procNextPhaseDungeon(req, res) {
     var enemy;
     // check entering cond
     const rand = Math.random();
-    if (req.session.dungeonProgress) {
-      if (req.session.dungeonProgress.code == 1) {
-        req.session.dungeonProgress.charData.curHp += (req.session.dungeonProgress.charData.stat.maxHp - req.session.dungeonProgress.charData.curHp) * 0.15;
-        if (req.session.dungeonProgress.phase == 1) {
+    if (sess.dungeonProgress) {
+      if (sess.dungeonProgress.code == 1) {
+        sess.dungeonProgress.charData.curHp += (sess.dungeonProgress.charData.stat.maxHp - sess.dungeonProgress.charData.curHp) * 0.15;
+        if (sess.dungeonProgress.phase == 1) {
           enemy = rand < 0.5 ? monster.mCrawler : monster.mHeadHunter;
         } else {
           enemy = rand < 0.15 ? monster.mTaurus : (rand < 0.575 ? monster.mCrawler : monster.mHeadHunter);
         }
+      } else if (sess.dungeonProgress.code == 2) {
+        sess.dungeonProgress.charData.curHp = sess.dungeonProgress.charData.stat.maxHp;
+        if (sess.dungeonProgress.phase == 1) {
+          enemy = monster.eGunda;
+        } 
       }
     }
     if (enemy) {
-      console.log(req.session.dungeonProgress.charData.curHp);
       var re = battlemodule.doBattle(JSON.parse(JSON.stringify(req.session.dungeonProgress.charData)), JSON.parse(JSON.stringify(enemy)), 1);
       req.session.dungeonProgress.resultList.push({phase : req.session.dungeonProgress.phase + 1, monImage : enemy.image, monName : enemy.name, 
         result : re.winnerLeft ? '승리' : '패배', hpLeft : re.winnerLeft ? re.leftInfo.curHp : re.rightInfo.curHp});
@@ -844,9 +914,66 @@ async function procNextPhaseDungeon(req, res) {
         }
         char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '메비우스 섬멸 공훈 카드', rank : 8, resultType : 90001});
         reward += '메비우스 섬멸 공훈 카드 1개를 획득했습니다.';  
+      } else if (req.session.dungeonProgress.code == 2 && req.session.dungeonProgress.phase == 2) {
+        isFinished = true;
+        if (!char.dungeonInfos.clearEmberCrypt) {
+          char.dungeonInfos.clearEmberCrypt = true;
+          char.statPoint += 5;
+          reward += '첫 번째 [어나더 게이트 - 재의 묘소] 클리어!<br>스탯 포인트 5를 획득했습니다.<br>';
+        }
+        const curr = 3 + Math.floor(3 * Math.random());
+        if (char.currencies.ember) {
+          char.currencies.ember += curr;
+        } else {
+          char.currencies.ember = curr;
+        }
+        reward += '잔불 ' + curr + '개를 획득했습니다.<br>';
+        char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '재의 묘소 리설트 카드', rank : 8, resultType : 90002});
+        reward += '재의 묘소 리설트 카드 1개를 획득했습니다.';  
       }
       await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
       res.render('pages/dungeonResult', {result: re.result, resultList: req.session.dungeonProgress.resultList, isFinished : isFinished, reward : reward});
+    } else {
+      res.redirect('/');
+    }
+    client.release();
+  } catch (err) {
+    console.error(err);
+    res.send('내부 오류');
+  }
+}
+
+async function procStopDungeon(req, res) {
+  try {
+    const client = await pool.connect();
+    const sess = req.session; 
+    const charRow = await getCharacter(sess.userUid);
+    const char = JSON.parse(charRow.char_data);
+    var enemy;
+    // check entering cond
+    const rand = Math.random();
+    if (sess.dungeonProgress) {
+      if (sess.dungeonProgress.code == 2) {
+        if (sess.dungeonProgress.phase == 1) {
+          enemy = true;
+        } 
+      }
+    }
+    if (enemy) {
+      req.session.dungeonProgress.phase = req.session.dungeonProgress.phase + 1;
+      
+      var reward = '';
+      if (req.session.dungeonProgress.code == 2 && req.session.dungeonProgress.phase == 2) {
+        const curr = 2 + Math.floor(3 * Math.random());
+        if (char.currencies.ember) {
+          char.currencies.ember += curr;
+        } else {
+          char.currencies.ember = curr;
+        }
+        reward += '잔불 ' + curr + '개를 획득했습니다.<br>';
+      }
+      await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
+      res.render('pages/dungeonResult', {result: re.result, resultList: req.session.dungeonProgress.resultList, isFinished : true, reward : reward});
     } else {
       res.redirect('/');
     }
