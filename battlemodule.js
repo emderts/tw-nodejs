@@ -1104,10 +1104,11 @@ function getUnnun(type) {
 }
 
 function _initChar(char, flag) {
-  if (!flag) {
+  if (flag === undefined) {
     char.curHp = char.stat.maxHp;
     char.curSp = 0;
   }
+  char.curHp = char.curHp ? char.curHp : char.stat.maxHp;
   char.curSp = char.curSp ? char.curSp : 0;
   char.buffs = [];
   char.skillOri = JSON.parse(JSON.stringify(char.skill));
