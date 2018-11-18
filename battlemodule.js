@@ -35,7 +35,7 @@ var bpTurn;
 module.exports.doBattle = function (left, right, flag) {
   charLeft = left;
   charRight = right;
-  _doBattleStart();
+  _doBattleStart(flag);
 
   while (!_isBattleFinished()) {
     _doBattleTurn();
@@ -44,12 +44,12 @@ module.exports.doBattle = function (left, right, flag) {
   return _doBattleEnd(flag);
 }
 
-function _doBattleStart() {
+function _doBattleStart(flag) {
   result = '';
   turnCount = 0;
   timeCrash = 0;
 
-  _initChar(charLeft);
+  _initChar(charLeft, flag);
   _initChar(charRight);
 
   calcStats(charLeft, charRight);
@@ -1103,14 +1103,36 @@ function getUnnun(type) {
   return (type === cons.NAME_KOR_NO_END_CONS) ? '는' : '은';
 }
 
-function _initChar(char) {
-  char.curHp = char.stat.maxHp;
-  char.curSp = 0;
+function _initChar(char, flag) {
+  if (!flag) {
+    char.curHp = char.stat.maxHp;
+    char.curSp = 0;
+  }
   char.buffs = [];
   char.skillOri = JSON.parse(JSON.stringify(char.skill));
-  for (item of char.items) {
-    for (eff of item.effect) {
-      eff.item = item;
+  if (char.items.weapon) {
+    for (eff of char.items.weapon.effect) {
+      eff.item = char.items.weapon;
+    }
+  }
+  if (char.items.armor) {
+    for (eff of char.items.armor.effect) {
+      eff.item = char.items.armor;
+    }
+  }
+  if (char.items.subarmor) {
+    for (eff of char.items.subarmor.effect) {
+      eff.item = char.items.subarmor;
+    }
+  }
+  if (char.items.trinket) {
+    for (eff of char.items.trinket.effect) {
+      eff.item = char.items.trinket;
+    }
+  }
+  if (char.items.skillAtrifact) {
+    for (eff of char.items.skillAtrifact.effect) {
+      eff.item = char.items.skillAtrifact;
     }
   }
 }
@@ -1134,7 +1156,7 @@ function printChar(chara, name, flag) {
   }
   
   resultStr +=  '<span class="charInfoPointRegen colorHp">(+' + chara.stat.hpRegen + ') </span>' +
-  '</div><div class="charInfoPoint"><span class="charInfoPointView">' + chara.curSp + ' / ' + chara.skill.special ? chara.skill.special.cost : 'X' + '</span> ' +
+  '</div><div class="charInfoPoint"><span class="charInfoPointView">' + chara.curSp + ' / ' + (chara.skill.special ? chara.skill.special.cost : 'X') + '</span> ' +
   '<span class="charInfoPointRegen colorSp">(+' + chara.stat.spRegen + ')</span></div>';
 
   if (flag === 0) {
@@ -1196,6 +1218,6 @@ function getItemText(key, val) {
   if (val.effectDesc && val.effectDesc.length > 0) {
     resultStr += ', ' + val.effectDesc;
   }
-  resultStr += ')<br>'
+  resultStr += ')<br>';
   return resultStr;
 }
