@@ -801,7 +801,7 @@ async function procNextPhaseDungeon(req, res) {
     const rand = Math.random();
     if (req.session.dungeonProgress) {
       if (req.session.dungeonProgress.code == 1) {
-        req.session.dungeonProgress.charData.curHp += (req.session.dungeonProgress.charData.maxHp - req.session.dungeonProgress.charData.curHp) * 0.15;
+        req.session.dungeonProgress.charData.curHp += (req.session.dungeonProgress.charData.stat.maxHp - req.session.dungeonProgress.charData.curHp) * 0.15;
         if (req.session.dungeonProgress.phase == 1) {
           enemy = rand < 0.5 ? monster.mCrawler : monster.mHeadHunter;
         } else {
@@ -810,6 +810,7 @@ async function procNextPhaseDungeon(req, res) {
       }
     }
     if (enemy) {
+      console.log(req.session.dungeonProgress.charData.curHp);
       var re = battlemodule.doBattle(JSON.parse(JSON.stringify(req.session.dungeonProgress.charData)), JSON.parse(JSON.stringify(enemy)), 1);
       req.session.dungeonProgress.resultList.push({phase : req.session.dungeonProgress.phase + 1, monImage : enemy.image, monName : enemy.name, 
         result : re.winnerLeft ? '승리' : '패배', hpLeft : re.winnerLeft ? re.leftInfo.curHp : re.rightInfo.curHp});
