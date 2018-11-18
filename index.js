@@ -14,6 +14,7 @@ const battlemodule = require('./battlemodule');
 const chara = require('./chara');
 const cons = require('./constant');
 const item = require('./items');
+const monster = require('./monster');
 const sessionMiddleware = session({
   secret: 'ewqwwolpe!d.ldx42EsCCXD#!$()_*#@',
   resave: true,
@@ -43,12 +44,15 @@ const app = express()
 .post('/viewChar', procView)
 .get('/shop', procShop)
 .post('/useShop', procUseShop)
+.get('/dungeon', procDungeon)
+.post('/enterDungeon', procEnterDungeon)
+.get('/nextPhaseDungeon', procNextPhaseDungeon)
 .get('/dismantlingYard', procDismantlingYard)
 .post('/dismantleItem', procDismantleItem)
 .post('/useStatPoint', procUseStatPoint)
 .post('/doRankup', procRankup)
 .get('/test', (req, res) => res.render('pages/battle', {result: battlemodule.doBattle(chara.julius, chara.aeohelm).result}))
-//.get('/test2', (req, res) => res.send(setCharacter('thelichking', 1, chara.lk)))
+.get('/test2', (req, res) => res.send(setCharacter('kemderts', 1, chara.kines)))
 //.get('/test3', (req, res) => res.send(procInit()))
 .get('/test5', (req, res) => res.render('pages/resultCard', {item : {name: 'test', rarity: Math.floor(Math.random() * 6)}}))
 .get('/test6', (req, res) => res.render('pages/index', {
@@ -221,9 +225,9 @@ function procLogout (req, res) {
 function _getItem(rank, rarity, type) {
   var usedRank = rank < 1 ? 1 : rank;
   if (rarity == cons.ITEM_RARITY_COMMON_UNCOMMON) {
-    var tgtList = item.list.filter(x => x.rank === usedRank && (x.rarity === cons.ITEM_RARITY_COMMON || x.rarity === rarity));
+    var tgtList = item.list.filter(x => x.rank === usedRank && (x.rarity === cons.ITEM_RARITY_COMMON || x.rarity === rarity) && x.type <= 3);
   } else {
-    var tgtList = item.list.filter(x => x.rank === usedRank && x.rarity === rarity);    
+    var tgtList = item.list.filter(x => x.rank === usedRank && x.rarity === rarity && x.type <= 3);    
   }
   if (type <= 3) {
     tgtList = tgtList.filter(x => x.type === type)
@@ -303,7 +307,7 @@ async function procUseItem (req, res) {
               chara.inventory.push(picked);
               res.render('pages/resultCard', {item : picked});              
             }
-          } else if (tgtObj.resultType !== undefined) {
+          } else if (tgtObj.resultType < 90000) {
             var rand = Math.random();
             if (rand < 0.74) {
               var picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_UNCOMMON, tgtObj.resultType);
@@ -330,6 +334,57 @@ async function procUseItem (req, res) {
               await addItemNews(client, chara, tgtObj, picked);
               res.render('pages/resultCard', {item : picked});
             } 
+          } else if (tgtObj.resultType == 90001) {
+            var rand = Math.random();
+            if (rand < 0.193) {
+              var picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_COMMON_UNCOMMON);
+              chara.inventory.push(picked);
+              res.render('pages/resultCard', {item : picked});
+            } else if (rand < 0.239) {
+              var picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_RARE);
+              chara.inventory.push(picked);
+              await addItemNews(client, chara, tgtObj, picked);
+              res.render('pages/resultCard', {item : picked});
+            } else if (rand < 0.249) {
+              var picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_UNIQUE);
+              chara.inventory.push(picked);
+              await addItemNews(client, chara, tgtObj, picked);
+              res.render('pages/resultCard', {item : picked});
+            } else if (rand < 0.25) {
+              var picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_EPIC);
+              chara.inventory.push(picked);
+              await addItemNews(client, chara, tgtObj, picked);
+              res.render('pages/resultCard', {item : picked});
+            } else if (rand < 0.42) {
+              chara.currencies.mevious += 2;
+              res.render('pages/resultCard', {item : {name : '메비우스 섬멸의 증표 2개' , rarity : cons.ITEM_RARITY_COMMON}});
+            } else if (rand < 0.58) {
+              chara.premiumPoint += 1;
+              res.render('pages/resultCard', {item : {name : '프리미엄 포인트 1점' , rarity : cons.ITEM_RARITY_COMMON}});
+            } else if (rand < 0.6) {
+              chara.premiumPoint += 2;
+              res.render('pages/resultCard', {item : {name : '프리미엄 포인트 2점' , rarity : cons.ITEM_RARITY_RARE}});
+            } else if (rand < 0.78) {
+              const dustValue = 7 * Math.pow(2, 9 - tgtObj.rank);
+              chara.dust += dustValue;
+              res.render('pages/resultCard', {item : {name : dustValue + ' 가루' , rarity : cons.ITEM_RARITY_COMMON}});
+            } else if (rand < 0.85) {
+              const dustValue = 13 * Math.pow(2, 9 - tgtObj.rank);
+              chara.dust += dustValue;
+              res.render('pages/resultCard', {item : {name : dustValue + ' 가루' , rarity : cons.ITEM_RARITY_UNCOMMON}});
+            } else if (rand < 0.89) {
+              var picked = JSON.parse(JSON.stringify(item.list[412 + Math.floor(Math.random() * 4)]));
+              chara.inventory.push(picked);
+              res.render('pages/resultCard', {item : picked});
+            } else if (rand < 0.9) {
+              const dustValue = 50 * Math.pow(2, 9 - tgtObj.rank);
+              chara.dust += dustValue;
+              res.render('pages/resultCard', {item : {name : dustValue + ' 가루' , rarity : cons.ITEM_RARITY_RARE}});
+            } else {
+              var picked = makeDayStone();
+              chara.inventory.push(picked);
+              res.render('pages/resultCard', {item : picked});              
+            }            
           }
         } else if (tgtObj.type === cons.ITEM_TYPE_DAYSTONE) {
           res.render('pages/selectItem', {title : '요일석 사용', inv : chara.inventory, mode : 1, usedItem : body.itemNum});
@@ -674,6 +729,118 @@ async function procUseShop (req, res) {
   }
 }
 
+async function procDungeon(req, res) {
+  try {
+    const sess = req.session; 
+    const charRow = await getCharacter(sess.userUid);
+    const char = JSON.parse(charRow.char_data);
+    var dungeonList = [];
+    dungeonList.push({name : '메모리얼 게이트 - 메비우스 섬멸', code : 1, active : !char.dungeonInfos.runMevious && (char.rank <= 8 || char.level >= 20)});
+    dungeonList.push({name : '어나더 게이트 - 재의 묘소', code : 2, active : !char.dungeonInfos.runEmberCrypt && (char.rank <= 8 || char.level >= 20)});
+    res.render('pages/dungeon', {dungeonList : dungeonList});
+  } catch (err) {
+    console.error(err);
+    res.send('내부 오류');
+  }
+}
+
+async function procEnterDungeon(req, res) {
+  try {
+    const body = req.body;
+    const client = await pool.connect();
+    const charRow = await getCharacter(sess.userUid);
+    const char = JSON.parse(charRow.char_data);
+    var enemy;
+    // check entering cond
+    const rand = Math.random();
+    if (body.option == 1) {
+      if (!char.dungeonInfos.runMevious && (char.rank <= 8 || char.level >= 20)) {
+        char.dungeonInfos.runMevious = true;
+        enemy = rand < 0.5 ? monster.mCrawler : monster.mHeadHunter;
+      }
+    }
+    if (enemy) {
+      var re = battlemodule.doBattle(JSON.parse(JSON.stringify(char)), JSON.parse(JSON.stringify(enemy)), 1);
+      var resultList = [{phase : 1, monImage : enemy.image, monName : enemy.name, 
+        result : re.winnerLeft ? '승리' : '패배', hpLeft : re.winnerLeft ? re.leftInfo.curHp : re.rightInfo.curHp}];
+      re.leftInfo.buffs = [];
+      req.session.dungeonProgress = {code : body.option, phase : 1, resultList : resultList, charData : re.leftInfo};
+      await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
+      res.render('pages/dungeonResult', {result: re.result, resultList: resultList, isFinished : false});
+    } else {
+      res.redirect('/');
+    }
+    client.release();
+  } catch (err) {
+    console.error(err);
+    res.send('내부 오류');
+  }
+}
+
+async function procNextPhaseDungeon(req, res) {
+  try {
+    const client = await pool.connect();
+    const charRow = await getCharacter(sess.userUid);
+    const char = JSON.parse(charRow.char_data);
+    var enemy;
+    // check entering cond
+    const rand = Math.random();
+    if (req.session.dungeonProgress) {
+      if (req.session.dungeonProgress.code == 1) {
+        req.session.dungeonProgress.charData.curHp += (req.session.dungeonProgress.charData.maxHp - req.session.dungeonProgress.charData.curHp) * 0.15;
+        if (req.session.dungeonProgress.phase == 1) {
+          enemy = rand < 0.5 ? monster.mCrawler : monster.mHeadHunter;
+        } else {
+          enemy = rand < 0.15 ? monster.mTaurus : (rand < 0.575 ? monster.mCrawler : monster.mHeadHunter);
+        }
+      }
+    }
+    if (enemy) {
+      var re = battlemodule.doBattle(JSON.parse(JSON.stringify(req.session.dungeonProgress.charData)), JSON.parse(JSON.stringify(enemy)), 1);
+      req.session.dungeonProgress.resultList.push({phase : req.session.dungeonProgress.phase + 1, monImage : enemy.image, monName : enemy.name, 
+        result : re.winnerLeft ? '승리' : '패배', hpLeft : re.winnerLeft ? re.leftInfo.curHp : re.rightInfo.curHp});
+      re.leftInfo.buffs = [];
+      req.session.dungeonProgress.charData = re.leftInfo;
+      req.session.dungeonProgress.phase = req.session.dungeonProgress.phase + 1;
+      
+      var isFinished = false;
+      var reward = '';
+      if (!re.winnerLeft) {
+        isFinished = true;
+        reward += '패배했습니다..';
+      } else if (req.session.dungeonProgress.code == 1 && req.session.dungeonProgress.phase == 3) {
+        isFinished = true;
+        if (!char.dungeonInfos.clearMevious) {
+          char.dungeonInfos.clearMevious = true;
+          char.statPoint += 5;
+          reward += '첫 번째 [메모리얼 게이트 - 메비우스 섬멸] 클리어!<br>스탯 포인트 5를 획득했습니다.<br>';
+        }
+        const curr = 3 + Math.floor(3 * Math.random());
+        if (char.currencies.mevious) {
+          char.currencies.mevious += curr;
+        } else {
+          char.currencies.mevious = curr;
+        }
+        reward += '메비우스 섬멸의 증표 ' + curr + '개를 획득했습니다.<br>';
+        if (enemy.name == '메비우스 타우러스') {
+          char.currencies.mevious += 5;
+          reward += '타우러스를 처치했으므로 메비우스 섬멸의 증표 5개를 추가로 획득했습니다.<br>';          
+        }
+        char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '메비우스 섬멸 공훈 카드', rank : 8, resultType : 90001});
+        reward += '메비우스 섬멸 공훈 카드 1개를 획득했습니다.';  
+      }
+      await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
+      res.render('pages/dungeonResult', {result: re.result, resultList: resultList, isFinished : isFinished, reward : reward});
+    } else {
+      res.redirect('/');
+    }
+    client.release();
+  } catch (err) {
+    console.error(err);
+    res.send('내부 오류');
+  }
+}
+
 async function procDismantlingYard(req, res) {
   try {
     const sess = req.session; 
@@ -842,10 +1009,14 @@ function makeDayStone(dayIn) {
     item.effect = [{active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'crit', value : val}];
     break;
   case 2:
-    item.effect = [{active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_PERCENTAGE, key : 'phyAtk', value : val}];
+    item.effect = [{active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_PERCENTAGE, key : 'phyAtk', value : val},
+                   {active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_PERCENTAGE, key : 'phyAtkMin', value : val},
+                   {active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_PERCENTAGE, key : 'phyAtkMax', value : val}];
     break;
   case 3:
-    item.effect = [{active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_PERCENTAGE, key : 'magAtk', value : val}];
+    item.effect = [{active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_PERCENTAGE, key : 'magAtk', value : val},
+                   {active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_PERCENTAGE, key : 'magAtkMin', value : val},
+                   {active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_PERCENTAGE, key : 'magAtkMax', value : val}];
     break;
   case 4:
     item.effect = [{active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_SP_COST_PERCENTAGE, key : 'drive', value : val},

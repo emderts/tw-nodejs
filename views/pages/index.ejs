@@ -450,6 +450,32 @@
           <td class="charViewContent"></td>
         </tr>
       <% } %>
+      <% if (char.items.skillArtifact) { %>
+        <tr>
+          <td class="charViewTitle">스킬 아티팩트</td>
+          <td class="charViewContent"><%= char.items.skillArtifact.rank %></td>
+          <td class="charViewContent"><%- getRarityText(char.items.skillArtifact.rarity) %></td>
+          <td class="charViewContent"><%= char.items.skillArtifact.name %>
+            <div class="itemTooltip">
+              <%- makeTooltip(char.items.skillArtifact) %>
+            </div>
+          </td>
+          <td class="charViewContent">
+            <form action="/unequipItem" method="post">
+              <button type="submit">해제</button>
+              <input type="hidden" name="itemType" value="skillArtifact">
+            </form>
+          </td>
+        </tr>
+      <% } else { %>
+        <tr>
+          <td class="charViewTitle">스킬 아티팩트</td>
+          <td class="charViewContent"></td>
+          <td class="charViewContent"></td>
+          <td class="charViewContent"></td>
+          <td class="charViewContent"></td>
+        </tr>
+      <% } %>
     </table>
     
     <table class="skillInfo">
@@ -552,6 +578,9 @@
       </div>
       <div class="menuItem">
         <a href="/dismantlingYard">아이템 해체</a>
+      </div>
+      <div class="menuItem">
+        <a href="/dungeon">던전 입장</a>
       </div>
     </div>
     <%  } else { %>

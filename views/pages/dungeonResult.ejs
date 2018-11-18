@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>ThirdWorld - 던전</title>
+    <link href="https://fonts.googleapis.com/css?family=Nanum+Gothic" rel="stylesheet">
+    <style>
+      body {font-family: "Nanum Gothic", sans-serif; }
+      .turnWrap {text-align: center; }
+      span.turnCount {font-size: 20px; font-weight: bold; }
+      span.skillUseWinner {font-weight: bold; }
+      .driveSkill {margin-top: 5px; font-weight: bold; }
+      .specialSkill {margin-top: 7px; font-weight: bold; }
+      .colorLeft {color: red; font-weight: bold; }
+      .colorRight {color: blue; font-weight: bold; }
+      .colorHp {color: green; }
+      .colorSp {color: blue; }
+      .charInfoWrap {width: 70%; max-width: 510px; margin: 10px auto; overflow: hidden; }
+      .charInfo {text-align: center; width: 49%; float: left; border-top: 1px solid black; }
+      .resultWrap {width: 70%; max-width: 510px; margin: 10px auto; overflow: hidden; }
+      .backLink {text-align: center; width: 40%; margin: 10px auto; overflow: hidden; }
+    </style>
+  <script>
+    function reveal() {
+      document.getElementById('battleResult').setAttribute('style', 'display: block');
+    }
+  </script>
+</head>
+<body>
+    <table>
+      <tr>
+        <td>페이즈</td>
+        <td>몬스터</td>
+        <td>결과</td>
+      </tr>
+    <% for (res of resultList) { %>
+      <tr>
+        <td><%= res.phase %></td>
+        <td><img src="<%= res.monImage %>" /><br><%= res.monName %></td>
+        <td><%= res.result %> (HP <%= res.hpLeft %>)</td>
+      </tr>
+    <% } %>
+    </table>
+    <div onclick="reveal();">전투 보기</div>
+    <div id="battleResult" style="display: none">
+    <%- result %>
+    <div>
+    <% if (isFinished) { %>
+      <%- reward %>
+      <div class="backLink"><a href="/">돌아가기</a></div>
+    <% } else { %>
+      <div class="backLink"><a href="/nextPhaseDungeon">다음 단계로</a></div>
+    <% } %>
+</body>
+</html> 

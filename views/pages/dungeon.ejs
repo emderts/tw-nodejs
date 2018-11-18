@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>ThirdWorld - 던전 입장</title>
+    <link href="https://fonts.googleapis.com/css?family=Nanum+Gothic" rel="stylesheet">
+    <style>
+      body {font-family: "Nanum Gothic", sans-serif; }
+      div {width: 450px; max-width: 100%; margin: 0 auto; }
+      .charItem button {width: 450px; max-width: 100%; background-color: #ffffea; }
+      .charItem button:hover {background-color: #ffffcc; }
+      .backLink {text-align: center; width: 40%; margin: 10px auto; overflow: hidden; }
+    </style>
+</head>
+<body>
+  <div class="backLink">
+    던전 입장
+  </div>
+  <% for (dun of dungeonList) { %>
+  <div class="charItem">
+    <form action="/enterDungeon" method="post">
+      <button type="submit"<%= dun.active ? '' : ' disabled' %>><%= dun.name %></button>
+      <input type="hidden" name="option" value="<%= dun.code %>">
+    </form>
+  </div>
+  <% } %>
+  <div class="backLink">
+    <a href="/">돌아가기</a>
+  </div>
+</body>
+</html> 

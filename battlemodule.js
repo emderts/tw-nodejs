@@ -8,6 +8,7 @@ printName.weapon = '무기';
 printName.armor = '갑옷';
 printName.subarmor = '보조방어구';
 printName.trinket = '장신구';
+printName.skillAtrifact = '스킬 아티팩트';
 printName.maxHp = '생명력';
 printName.hpRegen = '생명력 재생';
 printName.spRegen = 'SP 재생';
@@ -31,7 +32,7 @@ var bpLeft;
 var bpRight;
 var bpTurn;
 
-module.exports.doBattle = function (left, right) {
+module.exports.doBattle = function (left, right, flag) {
   charLeft = left;
   charRight = right;
   _doBattleStart();
@@ -40,7 +41,7 @@ module.exports.doBattle = function (left, right) {
     _doBattleTurn();
   }
 
-  return _doBattleEnd();
+  return _doBattleEnd(flag);
 }
 
 function _doBattleStart() {
@@ -66,7 +67,7 @@ function _doBattleStart() {
   result += '</div>';
 }
 
-function _doBattleEnd() {
+function _doBattleEnd(flag) {
   var retObj = {};
   retObj.winnerLeft = (charLeft.curHp > 0);
   retObj.winnerRight = (charRight.curHp > 0);
@@ -89,7 +90,9 @@ function _doBattleEnd() {
     retObj.expLeft = Math.round((0.7 * (30 + 0.35 * expTurn * expRate)) * 0.75);
     result += '<span class="colorRight">Defeat...</span><br>' + charLeft.name + '의 패배입니다..<br>';    
   }
-  result += '경험치를 ' + retObj.expLeft + ' 획득했습니다.<br>리설트 카드 ' + retObj.resultLeft + '장을 획득했습니다.';
+  if (!flag) {
+    result += '경험치를 ' + retObj.expLeft + ' 획득했습니다.<br>리설트 카드 ' + retObj.resultLeft + '장을 획득했습니다.';
+  }
   result += '</div><div class="resultCharInfo">';
   var expRate = charRight.rank > charLeft.rank ? 0.9 : (charRight.rank < charLeft.rank ? 1 : 1.1);
   if (retObj.winnerRight) {
@@ -99,9 +102,13 @@ function _doBattleEnd() {
     retObj.expRight = Math.round((0.7 * (30 + 0.35 * expTurn * expRate)) * 0.25);
     result += '<span class="colorRight">Defeat...</span><br>' + charRight.name + '의 패배입니다..<br>';    
   }
-  result += '경험치를 ' + retObj.expRight + ' 획득했습니다.<br>리설트 카드 ' + retObj.resultRight + '장을 획득했습니다.';
+  if (!flag) {
+    result += '경험치를 ' + retObj.expRight + ' 획득했습니다.<br>리설트 카드 ' + retObj.resultRight + '장을 획득했습니다.';
+  }
   result += '</div></div>';
   retObj.result = result;
+  retObj.leftInfo = charLeft;
+  retObj.rightInfo = charRight;
   return retObj;
   
 }
@@ -243,7 +250,7 @@ function _doBattleTurn() {
     loser = confused;
   }
 
-  if (winner.skill.special.cost <= winner.curSp && findBuffByCode(winner, 10004).length == 0 && findBuffByCode(winner, 10005).length == 0) {
+  if (winner.skill.special && winner.skill.special.cost <= winner.curSp && findBuffByCode(winner, 10004).length == 0 && findBuffByCode(winner, 10005).length == 0) {
     resolveEffects(winner, loser, getBuffEffects(winner, cons.ACTIVE_TYPE_BEFORE_USE_SPECIAL), damage);
     resolveEffects(winner, loser, getItemEffects(winner, cons.ACTIVE_TYPE_BEFORE_USE_SPECIAL), damage);
     resolveEffects(loser, winner, getBuffEffects(loser, cons.ACTIVE_TYPE_BEFORE_OPP_USE_SPECIAL), damage);
@@ -258,7 +265,7 @@ function _doBattleTurn() {
       resolveEffects(loser, winner, getItemEffects(loser, cons.ACTIVE_TYPE_OPP_USE_SPECIAL), damage);
     }
   }
-  if (loser.skill.special.cost <= loser.curSp && findBuffByCode(loser, 10004).length == 0 && findBuffByCode(loser, 10005).length == 0) {
+  if (loser.skill.special && loser.skill.special.cost <= loser.curSp && findBuffByCode(loser, 10004).length == 0 && findBuffByCode(loser, 10005).length == 0) {
     resolveEffects(loser, winner, getBuffEffects(loser, cons.ACTIVE_TYPE_BEFORE_USE_SPECIAL), damage);
     resolveEffects(loser, winner, getItemEffects(loser, cons.ACTIVE_TYPE_BEFORE_USE_SPECIAL), damage);
     resolveEffects(winner, loser, getBuffEffects(winner, cons.ACTIVE_TYPE_BEFORE_OPP_USE_SPECIAL), damage);
@@ -385,6 +392,9 @@ function resolveEffects(winner, loser, effects, damage, skill) {
     if (eff.chanceAddKey) {
       chance += winner.stat[eff.chanceAddKey];
     }
+    if (eff.chanceSubKeyOpp) {
+      chance -= loser.stat[eff.chanceSubKeyOpp];
+    }
     if (eff.cooldown && eff.cooldown > 0) {
       eff.cooldown--;
       continue;
@@ -444,6 +454,9 @@ function resolveEffects(winner, loser, effects, damage, skill) {
       continue;
     }
     if (eff.chkPercentDamage && damage.value < winner.curHp * eff.chkPercentDamage) {
+      continue;
+    }
+    if (eff.chkTitle && loser.title !== eff.chkTitle) {
       continue;
     }
     var stackMpl = eff.noStack ? 1 : (eff.buff ? (eff.buff.stack ? eff.buff.stack : 1) : 1);
@@ -934,6 +947,9 @@ function removeBuff(buff) {
 }
 
 function checkDrive(chara, active) {
+  if (!chara.skill.drive) {
+    return false;
+  }
   if (chara.skill.drive.chkNot && findBuffByIds(chara, chara.skill.drive.chkNot).length > 0) {
     return false;
   }
@@ -1089,11 +1105,6 @@ function _initChar(char) {
   char.curSp = 0;
   char.buffs = [];
   char.skillOri = JSON.parse(JSON.stringify(char.skill));
-  for (val in char.items) {
-    for (eff of char.items[val].effect) {
-      eff.item = char.items[val];
-    }
-  }
 }
 
 function getShieldValue (chara) {
@@ -1115,7 +1126,7 @@ function printChar(chara, name, flag) {
   }
   
   resultStr +=  '<span class="charInfoPointRegen colorHp">(+' + chara.stat.hpRegen + ') </span>' +
-  '</div><div class="charInfoPoint"><span class="charInfoPointView">' + chara.curSp + ' / ' + chara.skill.special.cost + '</span> ' +
+  '</div><div class="charInfoPoint"><span class="charInfoPointView">' + chara.curSp + ' / ' + chara.skill.special ? chara.skill.special.cost : 'X' + '</span> ' +
   '<span class="charInfoPointRegen colorSp">(+' + chara.stat.spRegen + ')</span></div>';
 
   if (flag === 0) {
@@ -1131,6 +1142,9 @@ function printChar(chara, name, flag) {
     }
     if (chara.items.trinket) {
       resultStr += getItemText('trinket', chara.items.trinket);
+    }
+    if (chara.items.skillAtrifact) {
+      resultStr += getItemText('skillAtrifact', chara.items.skillAtrifact);
     }
     resultStr += '</div>';
   }

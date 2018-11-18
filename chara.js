@@ -8,13 +8,14 @@ const item = require('./items');
   charLeft.title = '고대 흑마법사';
   charLeft.level = 20;
   charLeft.statPoint = 40;
-  charLeft.premiumPoint = 10;
+  charLeft.premiumPoint = 100;
   
   charLeft.items = {};
   charLeft.items.weapon = item.list[338];
   charLeft.items.armor = item.list[296];
   charLeft.items.subarmor = item.list[241];
   charLeft.items.trinket = item.list[335];
+  charLeft.inventory.push(item.list[413]);
 
   charLeft.skill = {};
   charLeft.skill.base = [];
@@ -1314,6 +1315,8 @@ const item = require('./items');
     char.battleRecord = {};
     char.winRecord = {};
     char.dust = 0;
+    char.dungeonInfos = {};
+    char.currencies = {};
   }
 
   module.exports.kines = charLeft;

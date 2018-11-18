@@ -245,6 +245,25 @@
           <td class="charViewContent"></td>
         </tr>
       <% } %>
+      <% if (char.items.skillArtifact) { %>
+        <tr>
+          <td class="charViewTitle">스킬 아티팩트</td>
+          <td class="charViewContent"><%= char.items.skillArtifact.rank %></td>
+          <td class="charViewContent"><%- getRarityText(char.items.skillArtifact.rarity) %></td>
+          <td class="charViewContent"><%= char.items.skillArtifact.name %>
+            <div class="itemTooltip">
+              <%- makeTooltip(char.items.skillArtifact) %>
+            </div>
+          </td>
+        </tr>
+      <% } else { %>
+        <tr>
+          <td class="charViewTitle">스킬 아티팩트</td>
+          <td class="charViewContent"></td>
+          <td class="charViewContent"></td>
+          <td class="charViewContent"></td>
+        </tr>
+      <% } %>
     </table>
     
     <table class="skillInfo">

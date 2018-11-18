@@ -2476,6 +2476,19 @@ module.exports.getBuffData = function(eff) {
     effectObj.value = -0.5;
     retObj.effect.push(effectObj);
     break;
+  case 90001 : 
+    retObj.name = '전투의 포효';
+    retObj.nameType = cons.NAME_KOR_NO_END_CONS;
+    retObj.stackType = 1;
+    retObj.durOff = cons.DURATION_TYPE_TURN_END;
+    retObj.isDebuff = false;
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_STAT_ADD;
+    effectObj.key = 'hpRegen';
+    effectObj.value = 50;
+    retObj.effect.push(effectObj);
+    break;
   }
 
   return retObj;

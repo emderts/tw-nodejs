@@ -773,7 +773,7 @@ itemList[387] = { id : 387, name : '청룡의 은혜', nameType : cons.NAME_KOR_
     effectDesc : '피격 시 25% 확률로 적에게 30 물리 고정 피해', 
     effect : [{code : cons.EFFECT_TYPE_ADD_HIT, active : cons.ACTIVE_TYPE_TAKE_HIT, chance : 0.25, type : cons.DAMAGE_TYPE_PHYSICAL_FIXED, value : 30}] };
 itemList[388] = { id : 388, name : '마석방패', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '마력을 지닌 돌, 마석으로 이루어진 방패. 다른 마석의 힘을 흡수할 수도 있다.', rank : 7, rarity : cons.ITEM_RARITY_EPIC, stat : { maxHp : 66, dmgReduce : 8 }, 
-    effectDesc : '', effect : [] };
+    effectDesc : '요일석 강화 슬롯 +1', effect : [], maxSocket : 2 };
 itemList[389] = { id : 389, name : '강습 기수의 장화', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '강습 기수들이 사용했다는 장화. 특수한 기력을 빠르게 채워 주는 힘이 있다.', rank : 7, rarity : cons.ITEM_RARITY_EPIC, stat : { maxHp : 84, spCharge : 1, evasion : 0.05 }, 
     effectDesc : '드라이브 스킬 사용 시 소모 SP의 절반만큼 SP 회복', 
     effect : [{code : cons.EFFECT_TYPE_SELF_SP, active : cons.ACTIVE_TYPE_USE_DRIVE, value : 0.5, isPercentSkill : true, percentKey : 'cost'}] };
@@ -861,10 +861,21 @@ itemList[411] = { id : 411, name : '영롱한 마나수정', nameType : cons.NAM
     effect : [{code : cons.EFFECT_TYPE_MULTIPLE, active : cons.ACTIVE_TYPE_TURN_START, setCooldown : 4, chkTurn : 5,  
       target : [{code : cons.EFFECT_TYPE_SELF_SP, value : 12},
                 {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 10066, buffDur : null}]}] };
+itemList[412] = { id : 412, name : '크로울러의 민첩한 눈', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_SKILL_ARTIFACT, flavor : '', rank : 8, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { hit : 0.04 }, 
+    effectDesc : '', effect : [] };
+itemList[413] = { id : 413, name : '헤드 헌터의 괴창', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_SKILL_ARTIFACT, flavor : '', rank : 8, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { crit : 0.02 }, 
+    effectDesc : '', effect : [] };
+itemList[414] = { id : 414, name : '메비우스 소탕자', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SKILL_ARTIFACT, flavor : '', rank : 8, rarity : cons.ITEM_RARITY_RARE, stat : { }, 
+    effectDesc : '\'메비우스\' 몬스터를 상대로 피해량 6% 증가', 
+    effect : [{code : cons.EFFECT_TYPE_MULTIPLY_DAMAGE, active : cons.ACTIVE_TYPE_CALC_DAMAGE, value : 1.06, all : true, chkTitle : '메비우스'}] };
+itemList[415] = { id : 415, name : '빅토리어스의 의지', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SKILL_ARTIFACT, flavor : '', rank : 8, rarity : cons.ITEM_RARITY_UNIQUE, stat : {  }, 
+    effectDesc : '현재 생명력이 50% 이하라면 피격 피해량을 10% 경감', 
+    effect : [{code : cons.EFFECT_TYPE_CANCEL_DAMAGE, active : cons.ACTIVE_TYPE_TAKE_HIT, value : 0.1, chkHp : 0.5}] };
 
 itemList.forEach(function(tgt) {
   tgt.base = JSON.parse(JSON.stringify(tgt.stat));
   tgt.effect.forEach(function(eff) {
     eff.name = tgt.name;
+    eff.item = tgt;
   })
 })

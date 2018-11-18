@@ -3,12 +3,13 @@ const chara = require('./chara2');
 const cons = require('./constant');
 const item = require('./items');
 const excel = require('exceljs');
+const JSON = require('circular-json');
 const fs = require('fs');
 
 //procFullTest(9, 'testResult.xlsx');
 procFullTest(7, 'testResult2x.xlsx');
 function procFullTest(testRank, resFile) {
-  var testCount = 1000;
+  var testCount = 100;
   var workbook = new excel.Workbook();
   var workSheet = workbook.addWorksheet('Test');
 
