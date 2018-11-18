@@ -804,6 +804,7 @@ async function procNextPhaseDungeon(req, res) {
       req.session.dungeonProgress.resultList.push({phase : req.session.dungeonProgress.phase + 1, monImage : enemy.image, monName : enemy.name, 
         result : re.winnerLeft ? '승리' : '패배', hpLeft : re.winnerLeft ? re.leftInfo.curHp : re.rightInfo.curHp});
       re.leftInfo.buffs = [];
+      re.leftInfo.items = char.items;
       req.session.dungeonProgress.charData = re.leftInfo;
       req.session.dungeonProgress.phase = req.session.dungeonProgress.phase + 1;
       
