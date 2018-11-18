@@ -169,7 +169,7 @@ function _doBattleTurn() {
 
     var redecide = false;
     if (findBuffByCode(loser, 10004).length == 0 && findBuffByCode(loser, 10005).length == 0) {
-      if (!redecide && skillFailed.effect[0].code === cons.EFFECT_TYPE_SKILL_RESELECT && getRandom(skillFailed.effect[0].chance)) {
+      if (!redecide && skillFailed.effect[0] && skillFailed.effect[0].code === cons.EFFECT_TYPE_SKILL_RESELECT && getRandom(skillFailed.effect[0].chance)) {
         result += '[ ' + skillFailed.name + ' ] 효과로 스킬이 재선택됩니다!<br>';
         continue;
       } 
