@@ -748,6 +748,7 @@ async function procDungeon(req, res) {
 async function procEnterDungeon(req, res) {
   try {
     const body = req.body;
+    const sess = req.session; 
     const client = await pool.connect();
     const charRow = await getCharacter(sess.userUid);
     const char = JSON.parse(charRow.char_data);
@@ -781,6 +782,7 @@ async function procEnterDungeon(req, res) {
 async function procNextPhaseDungeon(req, res) {
   try {
     const client = await pool.connect();
+    const sess = req.session; 
     const charRow = await getCharacter(sess.userUid);
     const char = JSON.parse(charRow.char_data);
     var enemy;

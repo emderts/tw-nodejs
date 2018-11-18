@@ -8,7 +8,7 @@ printName.weapon = '무기';
 printName.armor = '갑옷';
 printName.subarmor = '보조방어구';
 printName.trinket = '장신구';
-printName.skillAtrifact = '스킬 아티팩트';
+printName.skillArtifact = '스킬 아티팩트';
 printName.maxHp = '생명력';
 printName.hpRegen = '생명력 재생';
 printName.spRegen = 'SP 재생';
@@ -1130,9 +1130,9 @@ function _initChar(char, flag) {
       eff.item = char.items.trinket;
     }
   }
-  if (char.items.skillAtrifact) {
-    for (eff of char.items.skillAtrifact.effect) {
-      eff.item = char.items.skillAtrifact;
+  if (char.items.skillArtifact) {
+    for (eff of char.items.skillArtifact.effect) {
+      eff.item = char.items.skillArtifact;
     }
   }
 }
@@ -1173,8 +1173,8 @@ function printChar(chara, name, flag) {
     if (chara.items.trinket) {
       resultStr += getItemText('trinket', chara.items.trinket);
     }
-    if (chara.items.skillAtrifact) {
-      resultStr += getItemText('skillAtrifact', chara.items.skillAtrifact);
+    if (chara.items.skillArtifact) {
+      resultStr += getItemText('skillArtifact', chara.items.skillAtrifact);
     }
     resultStr += '</div>';
   }
