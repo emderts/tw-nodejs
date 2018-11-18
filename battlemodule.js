@@ -1174,7 +1174,7 @@ function printChar(chara, name, flag) {
       resultStr += getItemText('trinket', chara.items.trinket);
     }
     if (chara.items.skillArtifact) {
-      resultStr += getItemText('skillArtifact', chara.items.skillAtrifact);
+      resultStr += getItemText('skillArtifact', chara.items.skillArtifact);
     }
     resultStr += '</div>';
   }
