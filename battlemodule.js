@@ -982,8 +982,10 @@ function getItemEffects(chara, active) {
     rval = rval.concat(chara.items[val].effect.filter(x => (x.active === active)));
     if (val.socket) {
       for (sock of val.socket) {
+        console.log(JSON.stringify(sock));
         rval = rval.concat(sock.effect.filter(x => (x.active === active)));
       }
+      console.log(JSON.stringify(val));
     }
   }
   return rval;

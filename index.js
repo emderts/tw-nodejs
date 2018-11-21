@@ -703,7 +703,7 @@ async function procTrade(req, res) {
     for (val of result.rows) {
       var charData = JSON.parse(val.char_data);
     }
-    res.render('pages/selectItem', {title : '아이템 주기', inv : char.inventory, mode : 3, name : charData.name, uid : req.body.charUid});
+    res.render('pages/selectItem', {title : '아이템 주기', inv : char.inventory, mode : 3, name : charData.name, uid : req.body.charUid, usedItem : null});
     client.release();
   } catch (err) {
     console.error(err);
@@ -729,7 +729,7 @@ async function procGive(req, res) {
     await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(charTgt), charRow2.uid]);
     client.release();
     if (!res.headersSent) {
-      res.render('pages/selectItem', {title : '아이템 주기', inv : char.inventory, mode : 3, name : charData.name, uid : req.body.charUid});
+      res.render('pages/selectItem', {title : '아이템 주기', inv : char.inventory, mode : 3, name : charData.name, uid : req.body.charUid, usedItem : null});
     }
   } catch (err) {
     console.error(err);
