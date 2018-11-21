@@ -54,11 +54,11 @@ const item = require('./items');
   };
   module.exports.mTaurus = charLeft;
   
-  charLeft = {name : '부러진 직검을 든 망자', nameType : cons.NAME_KOR_NO_END_CONS, title : '재의 묘소', rank : 8, level : 20, 
-      stat : {maxHp : 1090, phyAtk : 48, magAtk : 40}};
+  charLeft = {name : '부러진 직검을 든 망자', nameType : cons.NAME_KOR_NO_END_CONS, title : '재의 묘소', rank : 8, level : 25, 
+      stat : {maxHp : 928, phyAtk : 34, magAtk : 34}};
   _initChar(charLeft);
   
-  charLeft.items = {weapon : item.list[58]};
+  charLeft.items = {weapon : item.list[1]};
   charLeft.image = '';
 
   charLeft.skill = {
@@ -70,8 +70,8 @@ const item = require('./items');
   };
   module.exports.eBroken = charLeft;
   
-  charLeft = {name : '석궁수 망자', nameType : cons.NAME_KOR_NO_END_CONS, title : '재의 묘소', rank : 8, level : 20, 
-      stat : {maxHp : 1090, phyAtk : 48, magAtk : 40}};
+  charLeft = {name : '석궁수 망자', nameType : cons.NAME_KOR_NO_END_CONS, title : '재의 묘소', rank : 8, level : 25, 
+      stat : {maxHp : 576, phyAtk : 61, magAtk : 61}};
   _initChar(charLeft);
   
   charLeft.items = {weapon : item.list[58]};
@@ -87,18 +87,23 @@ const item = require('./items');
   module.exports.eCrossbow = charLeft;
   
   charLeft = {name : '재의 심판자, 군다', nameType : cons.NAME_KOR_NO_END_CONS, title : '재의 묘소', rank : 8, level : 30, 
-      stat : {maxHp : 1090, phyAtk : 48, magAtk : 40}};
+      stat : {maxHp : 1062, phyAtk : 70, magAtk : 54}};
   _initChar(charLeft);
   
-  charLeft.items = {weapon : item.list[58]};
-  charLeft.image = '';
+  charLeft.items = {weapon : item.list[43], armor : item.list[286], skillArtifact : item.list[418]};
+  charLeft.image = 'http://www.microsoftinsider.es/wp-content/uploads/2016/02/dark-souls-3-1.jpg';
 
   charLeft.skill = {
       base : [
-              {code : 90015, name : '물리 공격', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1.0, effect : []},
-              {code : 90016, name : '물리 공격', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1.0, effect : []},
-              {code : 90017, name : '마법 공격', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 1.0, effect : []}
-             ]
+              {code : 90015, name : '찌르기', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1.0, effect : []},
+              {code : 90016, name : '종베기', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1.0, effect : []},
+              {code : 90017, name : '휘두르기', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 1.0, effect : []}
+             ],
+             drive : {code : 90018, name : '각성', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_DRIVE, active : cons.ACTIVE_TYPE_TURN_END,
+               cost : 0, chance : 1, effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 90002, buffDur : null}], chkNot : [90002]},
+             special : {code : 90019, name : '잡기', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 75, 
+               effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 6, buffDur : 3},
+                         {code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL, value : 1.3}]}
   };
   module.exports.eGunda = charLeft;
   

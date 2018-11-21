@@ -42,6 +42,9 @@ const app = express()
 .post('/battleLog', procBattleLog)
 .get('/viewList', procViewList)
 .post('/viewChar', procView)
+.get('/tradeList', procTradeList)
+.post('/doTrade', procTrade)
+.post('/giveItem', procGive)
 .get('/shop', procShop)
 .post('/useShop', procUseShop)
 .get('/dungeon', procDungeon)
@@ -693,13 +696,41 @@ async function procTradeList(req, res) {
 async function procTrade(req, res) {
   try {
     const client = await pool.connect();
+    const sess = req.session; 
+    const charRow = await getCharacter(sess.userUid);
+    const char = JSON.parse(charRow.char_data);
     const result = await client.query('select * from characters where uid = $1', [req.body.charUid]);
     for (val of result.rows) {
       var charData = JSON.parse(val.char_data);
     }
-    var mode = req.body.mode || 1;
-    res.render('pages/trade', {mode: mode, char: charData, uid: req.body.charUid});
+    res.render('pages/selectItem', {title : '아이템 주기', inv : char.inventory, mode : 3, name : charData.name, uid : req.body.charUid});
     client.release();
+  } catch (err) {
+    console.error(err);
+    res.send('내부 오류');
+  }
+}
+
+async function procGive(req, res) {
+  try {
+    const body = req.body;
+    const client = await pool.connect();
+    const sess = req.session; 
+    const charRow = await getCharacter(sess.userUid);
+    const char = JSON.parse(charRow.char_data);
+    const charRow2 = await getCharacter(body.charUid);
+    const charTgt = JSON.parse(charRow2.char_data);
+    var tgt = char.inventory[body.itemNum];
+    if (tgt.type <= 3) {
+      char.inventory.splice(body.itemNum, 1);
+      charTgt.inventory.push(tgt);
+    }
+    await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
+    await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(charTgt), charRow2.uid]);
+    client.release();
+    if (!res.headersSent) {
+      res.render('pages/selectItem', {title : '아이템 주기', inv : char.inventory, mode : 3, name : charData.name, uid : req.body.charUid});
+    }
   } catch (err) {
     console.error(err);
     res.send('내부 오류');
@@ -806,10 +837,21 @@ async function procDungeon(req, res) {
     const sess = req.session; 
     const charRow = await getCharacter(sess.userUid);
     const char = JSON.parse(charRow.char_data);
+    const client = await pool.connect();
+    if (char.rank <= 7) {
+      const result = await client.query('select * from raids');
+    }
     var dungeonList = [];
     dungeonList.push({name : '메모리얼 게이트 - 메비우스 섬멸', code : 1, active : !char.dungeonInfos.runMevious && (char.rank <= 8 || char.level >= 20)});
     dungeonList.push({name : '어나더 게이트 - 재의 묘소', code : 2, active : !char.dungeonInfos.runEmberCrypt && (char.rank <= 8 || char.level >= 20)});
+    dungeonList.push({name : '시즌 레이드 - 불타는 과수원', code : 3, active : char.rank <= 7});
+    if (result && result.rows) {
+      for (row of result.rows) {
+        
+      }
+    }
     res.render('pages/dungeon', {dungeonList : dungeonList});
+    client.release();
   } catch (err) {
     console.error(err);
     res.send('내부 오류');
@@ -843,9 +885,15 @@ async function procEnterDungeon(req, res) {
         result : re.winnerLeft ? '승리' : '패배', hpLeft : re.winnerLeft ? re.leftInfo.curHp : re.rightInfo.curHp}];
       re.leftInfo.buffs = [];
       re.leftInfo.items = char.items;
+      var isFinished = false;
+      var reward = '';
+      if (!re.winnerLeft) {
+        isFinished = true;
+        reward += '패배했습니다..';
+      }
       req.session.dungeonProgress = {code : body.option, phase : 1, resultList : resultList, charData : re.leftInfo};
       await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
-      res.render('pages/dungeonResult', {result: re.result, resultList: resultList, isFinished : false, stop : (body.option == 2)});
+      res.render('pages/dungeonResult', {result: re.result, resultList: resultList, isFinished : isFinished, reward : reward, stop : (body.option == 2)});
     } else {
       res.redirect('/');
     }
@@ -973,7 +1021,7 @@ async function procStopDungeon(req, res) {
         reward += '잔불 ' + curr + '개를 획득했습니다.<br>';
       }
       await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
-      res.render('pages/dungeonResult', {result: re.result, resultList: req.session.dungeonProgress.resultList, isFinished : true, reward : reward});
+      res.render('pages/dungeonResult', {result: '', resultList: req.session.dungeonProgress.resultList, isFinished : true, reward : reward});
     } else {
       res.redirect('/');
     }
@@ -1028,7 +1076,7 @@ async function procUseStatPoint (req, res) {
   const char = JSON.parse(charRow.char_data);
   if (char.statPoint > 0) {
     char.statPoint -= 1;
-    var value = (req.body.keyType ==='maxHp') ? 10 : 1.25;
+    var value = (req.body.keyType ==='maxHp') ? 8 : 1.25;
     char.base[req.body.keyType] += value;
     calcStats(char);
   } 
@@ -1132,7 +1180,7 @@ const dayStoneData = [
                       [[[10, 35], [15, 50], [20, 70], [25, 95], [35, 125]]]];
 const dayStonePrefix = ['최하급 ', '하급 ', '중급 ', '상급 ', '최상급 '];
 const dayStoneName = ['일석', '월석', '화석', '수석', '목석', '금석', '토석'];
-const dayStoneEffect = ['치명피해', '치명', '물리공격력', '마법공격력', 'SP 소모량', '저항', '생명력'];
+const dayStoneEffect = ['치명피해', '치명', '물리공격력', '마법공격력', 'SP 소모량 감소', '저항', '생명력'];
 function makeDayStone(dayIn) {
   var rand = Math.random();
   var item = {};
@@ -1143,7 +1191,7 @@ function makeDayStone(dayIn) {
   item.name = dayStonePrefix[item.level] + dayStoneName[item.day];
   var fval = dayStoneData[item.day][0][item.level];
   var val = Math.floor(Math.random() * (fval[1] - fval[0]) + fval[0]) / 1000;
-  item.effectDesc = dayStoneEffect[item.day] + ' ' + (val*100) + '%';
+  item.effectDesc = dayStoneEffect[item.day] + ' ' + (Math.round(val*1000)/10) + '%';
   switch (item.day) {
   case 0:
     item.effect = [{active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'critDmg', value : val}];
@@ -1162,8 +1210,8 @@ function makeDayStone(dayIn) {
                    {active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_PERCENTAGE, key : 'magAtkMax', value : val}];
     break;
   case 4:
-    item.effect = [{active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_SP_COST_PERCENTAGE, key : 'drive', value : val},
-                   {active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_SP_COST_PERCENTAGE, key : 'special', value : val}];
+    item.effect = [{active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_SP_COST_PERCENTAGE, key : 'drive', value : ~val},
+                   {active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_SP_COST_PERCENTAGE, key : 'special', value : ~val}];
     break;
   case 5:
     item.effect = [{active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'phyReduce', value : val},

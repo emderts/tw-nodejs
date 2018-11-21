@@ -2489,6 +2489,19 @@ module.exports.getBuffData = function(eff) {
     effectObj.value = 50;
     retObj.effect.push(effectObj);
     break;
+  case 90002 : 
+    retObj.name = '각성';
+    retObj.nameType = cons.NAME_KOR_NO_END_CONS;
+    retObj.stackType = 1;
+    retObj.durOff = null;
+    retObj.isDebuff = false;
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_STAT_PERCENTAGE;
+    effectObj.key = 'phyAtk';
+    effectObj.value = 0.5;
+    retObj.effect.push(effectObj);
+    break;
   }
 
   return retObj;
