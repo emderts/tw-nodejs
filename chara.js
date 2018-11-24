@@ -1278,7 +1278,7 @@ const item = require('./items');
   
   function _initChar(char) {
     char.stat = {};
-    char.stat.maxHp = 7300;
+    char.stat.maxHp = 400;
     char.stat.spCharge = 5;
     char.stat.hpRegen = 0;
     char.stat.spRegen = 5;
@@ -1299,12 +1299,8 @@ const item = require('./items');
     char.base = JSON.parse(JSON.stringify(char.stat));
     char.inventory = [];
     char.items = {};
-    //char.items.weapon = item.list[0];
-    //char.items.armor = item.list[114];
-    char.items.weapon = item.list[10];
-    char.items.armor = item.list[142];
-    char.items.subarmor = item.list[168];
-    char.items.trinket = item.list[252];
+    char.items.weapon = item.list[0];
+    char.items.armor = item.list[114];
     char.rank = 9;
     char.level = 1;
     char.exp = 0;
@@ -1319,7 +1315,6 @@ const item = require('./items');
     char.dungeonInfos = {};
     char.currencies = {};
   }
-  charSeriers.items.skillArtifact = item.list[423];
 
   module.exports.kines = charLeft;
   module.exports.lk = charRight;

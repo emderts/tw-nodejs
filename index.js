@@ -157,6 +157,15 @@ async function procInit () {
   await setCharacter('bear1704', 5, chara.aeika);
   await setCharacter('megaxzero', 6, chara.seriers);
   await setCharacter('kyrus1300', 7, chara.aeohelm);
+  try {
+    const client = await pool.connect();
+    const result = await client.query('insert into raids(rindex, open, phase, monsters) values (2, \'C\', 1, $1)', 
+        [JSON.stringify({1 : monster.oEleLord, 2 : monster.oStoneist, 3 : monster.oDeathKnight, 4 : monster.oLegor})]);
+
+    client.release();
+  } catch (err) {
+    console.error(err);
+  }
 }
 
 async function procInit2 () {
@@ -767,7 +776,7 @@ async function procGive(req, res) {
     await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(charTgt), charRow2.uid]);
     client.release();
     if (!res.headersSent) {
-      res.render('pages/selectItem', {title : '아이템 주기', inv : char.inventory, mode : 3, name : charData.name, uid : req.body.charUid, usedItem : null});
+      res.render('pages/selectItem', {title : '아이템 주기', inv : char.inventory, mode : 3, name : charTgt.name, uid : req.body.charUid, usedItem : null});
     }
   } catch (err) {
     console.error(err);
@@ -897,7 +906,7 @@ async function procDungeon(req, res) {
     if (result && result.rows) {
       for (row of result.rows) {
         var tgt = dungeonList[row.rindex];
-        if (row.rindex == 2) {
+        if (row.rindex == 2 && row.phase <= 4) {
           tgt.active = row.open == 'O' && char.rank <= 7 && !char.dungeonInfos.runBurningOrchard;
           if (row.open == 'O') {
             tgt.phase = row.phase;
