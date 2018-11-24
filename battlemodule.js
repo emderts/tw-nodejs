@@ -457,7 +457,7 @@ function resolveEffects(winner, loser, effects, damage, skill) {
     if (eff.chkInventory && !winner.inventory.some(checkInv.bind(this, eff.chkInventory))) {
       continue;
     }
-    if (eff.chkPercentDamage && damage.value < winner.curHp * eff.chkPercentDamage) {
+    if (eff.chkPercentDamage && damage.value < winner.stat.maxHp * eff.chkPercentDamage) {
       continue;
     }
     if (eff.chkTitle && loser.title !== eff.chkTitle) {

@@ -51,7 +51,7 @@ function procFullTest(testRank, resFile) {
         rval[51] += testResults[ind][indr];
       }
     }
-    rval[51] = Math.round(rval[51] / 42) / 10;
+    rval[51] = Math.round(rval[51] / 42) / 1;
     workSheet.addRow(rval);
   }
   for (itm of item.list.filter(x => x.rank === testRank && x.type === cons.ITEM_TYPE_ARMOR)) {
@@ -79,7 +79,7 @@ function procFullTest(testRank, resFile) {
         rval[51] += testResults[ind][indr];
       }
     }
-    rval[51] = Math.round(rval[51] / 42) / 10;
+    rval[51] = Math.round(rval[51] / 42) / 1;
     workSheet.addRow(rval);
   }
   for (itm of item.list.filter(x => x.rank === testRank && x.type === cons.ITEM_TYPE_SUBARMOR)) {
@@ -107,7 +107,7 @@ function procFullTest(testRank, resFile) {
         rval[51] += testResults[ind][indr];
       }
     }
-    rval[51] = Math.round(rval[51] / 42) / 10;
+    rval[51] = Math.round(rval[51] / 42) / 1;
     workSheet.addRow(rval);
   }
   for (itm of item.list.filter(x => x.rank === testRank && x.type === cons.ITEM_TYPE_TRINKET)) {
@@ -135,7 +135,7 @@ function procFullTest(testRank, resFile) {
         rval[51] += testResults[ind][indr];
       }
     }
-    rval[51] = Math.round(rval[51] / 42) / 10;
+    rval[51] = Math.round(rval[51] / 42) / 1;
     workSheet.addRow(rval);
   }
 

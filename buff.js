@@ -503,7 +503,7 @@ module.exports.getBuffData = function(eff) {
     effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
     effectObj.code = cons.EFFECT_TYPE_STAT_ADD;
     effectObj.key = 'phyReduce';
-    effectObj.value = 0.1;
+    effectObj.value = 0.07;
     retObj.effect.push(effectObj);
     effectObj = {};
     effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
@@ -571,7 +571,6 @@ module.exports.getBuffData = function(eff) {
     effectObj.code = cons.EFFECT_TYPE_ADD_HIT;
     effectObj.type = cons.DAMAGE_TYPE_MAGICAL_FIXED;
     effectObj.value = 12;
-    effectObj.removeBuff = true;
     retObj.effect.push(effectObj);
     break;
   case 10026 : 
@@ -765,7 +764,7 @@ module.exports.getBuffData = function(eff) {
     effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
     effectObj.code = cons.EFFECT_TYPE_STAT_ADD;
     effectObj.key = 'critDmg';
-    effectObj.value = -0.04;
+    effectObj.value = -0.05;
     retObj.effect.push(effectObj);
     break;
   case 10038 : 
@@ -931,7 +930,7 @@ module.exports.getBuffData = function(eff) {
     effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
     effectObj.code = cons.EFFECT_TYPE_STAT_PERCENTAGE;
     effectObj.key = 'maxHp';
-    effectObj.value = -0.015;
+    effectObj.value = -0.011;
     retObj.effect.push(effectObj);
     effectObj = {};
     effectObj.active = cons.ACTIVE_TYPE_TURN_END;
@@ -1039,7 +1038,7 @@ module.exports.getBuffData = function(eff) {
     effectObj.active = cons.ACTIVE_TYPE_TURN_END;
     effectObj.code = cons.EFFECT_TYPE_SELF_HIT;
     effectObj.type = cons.DAMAGE_TYPE_ABSOLUTE;
-    effectObj.value = 6;
+    effectObj.value = 4;
     retObj.effect.push(effectObj);
     break;
   case 10050 : 
@@ -1187,7 +1186,7 @@ module.exports.getBuffData = function(eff) {
     effectObj = {};
     effectObj.active = cons.ACTIVE_TYPE_DEAL_DAMAGE_RECEIVE;
     effectObj.code = cons.EFFECT_TYPE_SHIELD;
-    effectObj.value = 70;
+    effectObj.value = 40;
     retObj.effect.push(effectObj);
     effectObj = {};
     effectObj.active = cons.ACTIVE_TYPE_TURN_END;
@@ -1200,7 +1199,7 @@ module.exports.getBuffData = function(eff) {
     retObj.name = '해골 궁수';
     retObj.nameType = cons.NAME_KOR_NO_END_CONS;
     retObj.stackType = 2;
-    retObj.stack = 4;
+    retObj.stack = 3;
     retObj.isDebuff = false;
     retObj.durOff = null;
     effectObj = {};
@@ -1554,7 +1553,7 @@ module.exports.getBuffData = function(eff) {
     skillObj.name = '마과학 실험 개시';
     skillObj.nameType = cons.NAME_KOR_NO_END_CONS;
     skillObj.type = cons.DAMAGE_TYPE_MAGICAL;
-    skillObj.damage = 1.1;
+    skillObj.damage = 1.5;
     skillObj.effect = [{code : cons.EFFECT_TYPE_SELECTION, selectChances : [0.5, 1],
       options : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 10076, buffDur : null},
                 {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 10077, buffDur : null}]}];    

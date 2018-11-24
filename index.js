@@ -58,7 +58,7 @@ const app = express()
 .get('/test', (req, res) => res.render('pages/battle', {result: battlemodule.doBattle(chara.seriers, monster.oLegor, 1).result}))
 .get('/test2', (req, res) => res.send(setCharacter('kemderts', 1, chara.kines)))
 .get('/test3', (req, res) => res.send(setCharacter('thelichking', 2, chara.lk)))
-.get('/test4', (req, res) => res.send(procInit2()))
+.get('/test4', (req, res) => res.send(procInit()))
 .get('/test5', (req, res) => res.render('pages/resultCard', {item : {name: 'test', rarity: Math.floor(Math.random() * 6)}}))
 .get('/test6', (req, res) => res.render('pages/index', {
   user: {name: 'kk'},
