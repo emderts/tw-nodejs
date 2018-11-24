@@ -58,7 +58,7 @@ const app = express()
 .get('/test', (req, res) => res.render('pages/battle', {result: battlemodule.doBattle(chara.seriers, monster.oLegor, 1).result}))
 .get('/test2', (req, res) => res.send(setCharacter('kemderts', 1, chara.kines)))
 .get('/test3', (req, res) => res.send(setCharacter('thelichking', 2, chara.lk)))
-.get('/test4', (req, res) => res.send(procInit()))
+//.get('/test4', (req, res) => res.send(procInit()))
 .get('/test5', (req, res) => res.render('pages/resultCard', {item : {name: 'test', rarity: Math.floor(Math.random() * 6)}}))
 .get('/test6', (req, res) => res.render('pages/index', {
   user: {name: 'kk'},
@@ -907,9 +907,9 @@ async function procDungeon(req, res) {
     const client = await pool.connect();
     const result = await client.query('select * from raids');
     var dungeonList = [];
-    dungeonList.push({name : '메모리얼 게이트 - 메비우스 섬멸', code : 1, active : !char.dungeonInfos.runMevious && (char.rank <= 8 || char.level >= 20)});
-    dungeonList.push({name : '어나더 게이트 - 재의 묘소', code : 2, active : !char.dungeonInfos.runEmberCrypt && (char.rank <= 8 || char.level >= 20)});
-    dungeonList.push({name : '시즌 레이드 - 불타는 과수원', code : 3, active : false});
+    dungeonList.push({name : '메모리얼 게이트 - 메비우스 섬멸 [9급 20레벨 이상]', code : 1, active : !char.dungeonInfos.runMevious && (char.rank <= 8 || char.level >= 20)});
+    dungeonList.push({name : '어나더 게이트 - 재의 묘소 [9급 20레벨 이상]', code : 2, active : !char.dungeonInfos.runEmberCrypt && (char.rank <= 8 || char.level >= 20)});
+    dungeonList.push({name : '시즌 레이드 - 불타는 과수원 [7급 이상]', code : 3, active : false});
     if (result && result.rows) {
       for (row of result.rows) {
         var tgt = dungeonList[row.rindex];
