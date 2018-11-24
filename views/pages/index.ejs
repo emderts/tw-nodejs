@@ -70,9 +70,7 @@
     for (const val of chatRecord) {
       addMessage(val.userName, val.message);
     }
-    for (const val of peopleList) {
-      addPerson(val);
-    }
+    addPerson(val);
   });
   
   socket.on('chat message', function(userName, msg) {
@@ -80,9 +78,7 @@
   });
   
   socket.on('person left', function(peopleList) {
-    for (const val of peopleList) {
-      addPerson(val);
-    }
+    addPerson(peopleList);
   });
   
   socket.on('tradeReq', function(suid, ouid, oname) {
@@ -99,14 +95,16 @@
     ul.scrollTop = ul.scrollHeight;
   }
   
-  function addPerson(userName) {
+  function addPerson(peopleList) {
     var ul = document.getElementById('people');
     while (ul.lastChild) {
       ul.removeChild(ul.lastChild);
     }
-    var li = document.createElement('li');
-    li.appendChild(document.createTextNode(userName));
-    ul.appendChild(li);
+    for (const val of peopleList) {
+      var li = document.createElement('li');
+      li.appendChild(document.createTextNode(val));
+      ul.appendChild(li);
+    }
   }
   
   function showAlert(ouid, oname) {

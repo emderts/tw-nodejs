@@ -116,7 +116,6 @@ io.on('connection', (socket) => {
   });
   
   socket.on('disconnect', function() {
-    console.log('dc');
     people = people.filter(x => x != socket.request.session.userName);
     io.emit('person left', people);
   });
