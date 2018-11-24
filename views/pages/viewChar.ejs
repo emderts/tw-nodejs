@@ -117,7 +117,9 @@
       }
     if (item.socket) {
       for (sock of item.socket) {
-        rtext += '<br><br>[' + sock.name + '] ' + sock.effectDesc;
+        if (sock) {
+          rtext += '<br><br>[' + sock.name + '] ' + sock.effectDesc;
+        }
       }
     }
       if (item.flavor && item.flavor.length > 0) {
