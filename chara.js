@@ -16,7 +16,7 @@ const item = require('./items');
   charLeft.items.armor = item.list[296];
   charLeft.items.subarmor = item.list[241];
   charLeft.items.trinket = item.list[335];
-  charLeft.inventory.push(item.list[413]);
+  charLeft.inventory.push(item.list[388]);
 
   charLeft.skill = {};
   charLeft.skill.base = [];
