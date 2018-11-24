@@ -1105,7 +1105,6 @@ function calcStats(chara, opp) {
       chara.stat[val.key] *= (1 + val.value * stackMpl);
     } else if (val.code === cons.EFFECT_TYPE_SP_COST_PERCENTAGE) {
       chara.skill[val.key].cost *= (1 + val.value * stackMpl);
-      console.log(chara.skill[val.key].cost + ';' + val.value);
     }
   }
   

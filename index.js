@@ -944,7 +944,7 @@ async function procEnterDungeon(req, res) {
         curData = JSON.parse(row.monsters);
         //char.dungeonInfos.runBurningOrchard = true;
         enemy = curData[row.phase];
-        hpBefore = enemy.curHp;
+        hpBefore = enemy.curHp ? enemy.curHp : enemy.stat.maxHp;
       }
     }
     if (enemy) {

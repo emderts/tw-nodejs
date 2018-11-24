@@ -25,7 +25,7 @@
       <input type="hidden" name="option" value="<%= dun.code %>">
     </form>
     <% if (dun.phase) { 
-      const hpPercent = Math.round((dun.curHp * 100) / dun.maxHp) / 100; %>
+      const hpPercent = Math.round((dun.curHp * 10000) / dun.maxHp) / 100; %>
       <div class="backLink">
         <%= dun.bossName %><br>
         <img src="<%= dun.image %>"><br>
