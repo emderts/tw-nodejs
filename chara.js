@@ -6,6 +6,7 @@ const item = require('./items');
   charLeft.name = '카이네스 엠더츠';
   charLeft.nameType = cons.NAME_KOR_NO_END_CONS;
   charLeft.title = '고대 흑마법사';
+  charLeft.rank = 7;
   charLeft.level = 20;
   charLeft.statPoint = 40;
   charLeft.premiumPoint = 100;
