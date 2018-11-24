@@ -162,7 +162,7 @@ async function procInit () {
 async function procInit2 () {
   try {
     const client = await pool.connect();
-    const result = await client.query('insert into raids(rindex, open, phase, monster) values (2, \'O\', 1, $1)', 
+    const result = await client.query('insert into raids(rindex, open, phase, monsters) values (2, \'O\', 1, $1)', 
         [JSON.stringify({1 : monster.oEleLord, 2 : monster.oStoneist, 3 : monster.oDeathKnight, 4 : monster.oLegor})]);
 
     client.release();
@@ -1088,7 +1088,7 @@ async function procNextPhaseDungeon(req, res) {
         reward += '재의 묘소 리설트 카드 1개를 획득했습니다.';  
       }
       await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
-      res.render('pages/dungeonResult', {result: re.result, resultList: req.session.dungeonProgress.resultList, isFinished : isFinished, reward : reward});
+      res.render('pages/dungeonResult', {result: re.result, resultList: req.session.dungeonProgress.resultList, isFinished : isFinished, reward : reward, stop : false});
     } else {
       res.redirect('/');
     }
