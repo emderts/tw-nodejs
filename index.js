@@ -87,8 +87,15 @@ io.on('connection', (socket) => {
   
   socket.on('chat message', function(msg) {
     ring.push({userName : socket.request.session.userName, message : msg });
-    if (ring.length > 30) {
-      ring.shift();
+    if (ring.length > 30) {      
+      try {
+        const client = await pool.connect();
+        await client.query('insert into chat(content, date) values ($1, $2)', [ring.shift(), new Date()]);
+
+        client.release();
+      } catch (err) {
+        console.error(err);
+      }
     }
     io.emit('chat message', socket.request.session.userName, msg);
   });
