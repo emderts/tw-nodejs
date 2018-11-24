@@ -721,11 +721,11 @@ itemList[370] = { id : 370, name : '무너진 가문의 재건', nameType : cons
     effect : [{code : cons.EFFECT_TYPE_SET_ITEM_VALUE, active : cons.ACTIVE_TYPE_TAKE_HIT, value : 1, isPercentDamage : true, maxValue : 1000},
               {code : cons.EFFECT_TYPE_STAT_ADD, active : cons.ACTIVE_TYPE_CALC_STATS, key : 'phyAtkMax', value : 0.02, isPercentItemValue : true},
               {code : cons.EFFECT_TYPE_STAT_ADD, active : cons.ACTIVE_TYPE_CALC_STATS, key : 'magAtkMax', value : 0.02, isPercentItemValue : true}] };
-itemList[371] = { id : 371, name : '중력 갑옷', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_ARMOR, flavor : '중력의 힘으로 강화되도록 특수 제작된 갑옷.', rank : 7, rarity : cons.ITEM_RARITY_UNIQUE, stat : { phyReduce : 0.039, magReduce : 0.039, maxHp : 254, evasion : -0.05 }, 
+itemList[371] = { id : 371, name : '중력 갑옷', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_ARMOR, flavor : '중력의 힘으로 강화되도록 특수 제작된 갑옷.', rank : 7, rarity : cons.ITEM_RARITY_UNIQUE, stat : { phyReduce : 0.039, magReduce : 0.039, maxHp : 254, evasion : -0.03 }, 
     effectDesc : '인벤토리 내의 아이템 갯수*0.2%의 물리/마법저항값을 추가로 갖는다. (최대 4%)', 
     effect : [{code : cons.EFFECT_TYPE_STAT_ADD, active : cons.ACTIVE_TYPE_CALC_STATS, key : 'phyReduce', value : 0.002, countInv : true},
               {code : cons.EFFECT_TYPE_STAT_ADD, active : cons.ACTIVE_TYPE_CALC_STATS, key : 'magReduce', value : 0.002, countInv : true}] };
-itemList[372] = { id : 372, name : '수호 영석 갑옷', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_ARMOR, flavor : '연금술사 에이카가 사용했다던 수호 영석으로 만들어진 갑옷. 전투 시엔 서서히 수호 영석들이 생성된다고 한다.', rank : 7, rarity : cons.ITEM_RARITY_UNIQUE, stat : { phyReduce : 0.03, magReduce : 0.03, maxHp : 307, evasion : -0.05 }, 
+itemList[372] = { id : 372, name : '수호 영석 갑옷', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_ARMOR, flavor : '연금술사 에이카가 사용했다던 수호 영석으로 만들어진 갑옷. 전투 시엔 서서히 수호 영석들이 생성된다고 한다.', rank : 7, rarity : cons.ITEM_RARITY_UNIQUE, stat : { phyReduce : 0.03, magReduce : 0.03, maxHp : 307, evasion : -0.03 }, 
     effectDesc : '턴 시작 시 자신에게 [수호 영석] 버프 부여 (최대 80중첩)<br><br>[수호 영석] : 물리/마법저항 +0.1%', 
     effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_TURN_START, buffCode : 10056, buffDur : null}] };
 itemList[373] = { id : 373, name : '케폴로크 - 강령사의 로브', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_ARMOR, flavor : '중부 대륙의 강령사들 중 우두머리 급의 강력한 자들이 착용했다는 로브. 강령술의 기운이 넘치게 실려 있어 강령술에 조예가 없더라도 어느 정도의 강령술 사용이 가능해진다고 한다.', rank : 7, rarity : cons.ITEM_RARITY_EPIC, stat : { phyReduce : 0.042, magReduce : 0.042, maxHp : 147, spRegen : 1, evasion : 0.05 }, 
@@ -735,7 +735,7 @@ itemList[373] = { id : 373, name : '케폴로크 - 강령사의 로브', nameTyp
 itemList[374] = { id : 374, name : '쌍검사의 보조 경갑', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_ARMOR, flavor : '', rank : 7, rarity : cons.ITEM_RARITY_EPIC, stat : { phyReduce : 0.042, magReduce : 0.042, maxHp : 210, crit : -0.04, critDmg : 0.1, hit : -0.15 }, 
     effectDesc : '전투 시작 시 자신이 착용한 무기 능력 추가 획득', 
     effect : [{code : cons.EFFECT_TYPE_DUPLICATE_ITEM, active : cons.ACTIVE_TYPE_BATTLE_START, key : 'weapon', dupKey : 'addWeapon'}] };
-itemList[375] = { id : 375, name : '죽음인도자의 형상', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_ARMOR, flavor : '', rank : 7, rarity : cons.ITEM_RARITY_EPIC, stat : { phyReduce : 0.042, magReduce : 0.042, maxHp : 273, evasion : -0.05 }, 
+itemList[375] = { id : 375, name : '죽음인도자의 형상', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_ARMOR, flavor : '', rank : 7, rarity : cons.ITEM_RARITY_EPIC, stat : { phyReduce : 0.042, magReduce : 0.042, maxHp : 273, evasion : -0.03 }, 
     effectDesc : '전투 시작 및 드라이브 스킬 사용 시마다 자신에게 [혈기의 형상], [냉기의 형상], [부정의 형상] 버프 중 하나 부여 (이전 버프 교체) 및 [형상 강화] 버프 부여 (최대 5중첩)<br><br>[혈기의 형상] : HP재생 +4<br><br>[냉기의 형상] : 상대 피해감소 -4<br><br>[부정의 형상] : SP충전 +5, SP재생 +2<br><br>[형상 강화] : 물리/마법저항 +1%', 
     effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_BATTLE_START, buffCode : [10059, 10060, 10061], buffDur : null, multiple : true}] };
 itemList[376] = { id : 376, name : '가시 박힌 거대한 보루', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '엄청난 크기의 보루방패. 가시까지 박혀 있어 다루기가 더욱 어려워졌다.', rank : 7, rarity : cons.ITEM_RARITY_RARE, stat : { phyAtkMax : 9, maxHp : 72, hit : -0.04, evasion : -0.04, dmgReduce : 10 }, 
