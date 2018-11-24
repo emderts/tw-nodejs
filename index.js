@@ -58,7 +58,7 @@ const app = express()
 .get('/test', (req, res) => res.render('pages/battle', {result: battlemodule.doBattle(chara.seriers, monster.oLegor, 1).result}))
 .get('/test2', (req, res) => res.send(setCharacter('kemderts', 1, chara.kines)))
 .get('/test3', (req, res) => res.send(setCharacter('thelichking', 2, chara.lk)))
-//.get('/test4', (req, res) => res.send(procInit()))
+.get('/test4', (req, res) => res.send(procInit()))
 .get('/test5', (req, res) => res.render('pages/resultCard', {item : {name: 'test', rarity: Math.floor(Math.random() * 6)}}))
 .get('/test6', (req, res) => res.render('pages/index', {
   user: {name: 'kk'},
@@ -176,15 +176,7 @@ async function procInit () {
 }
 
 async function procInit2 () {
-  try {
-    const client = await pool.connect();
-    const result = await client.query('insert into raids(rindex, open, phase, monsters) values (2, \'O\', 1, $1)', 
-        [JSON.stringify({1 : monster.oEleLord, 2 : monster.oStoneist, 3 : monster.oDeathKnight, 4 : monster.oLegor})]);
-
-    client.release();
-  } catch (err) {
-    console.error(err);
-  }
+  
 }
 
 async function procIndex (req, res) {
