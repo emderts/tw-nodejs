@@ -1277,7 +1277,7 @@ const item = require('./items');
   
   function _initChar(char) {
     char.stat = {};
-    char.stat.maxHp = 730;
+    char.stat.maxHp = 7300;
     char.stat.spCharge = 5;
     char.stat.hpRegen = 0;
     char.stat.spRegen = 5;
@@ -1318,6 +1318,7 @@ const item = require('./items');
     char.dungeonInfos = {};
     char.currencies = {};
   }
+  charSeriers.items.skillArtifact = item.list[423];
 
   module.exports.kines = charLeft;
   module.exports.lk = charRight;

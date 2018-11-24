@@ -284,6 +284,45 @@
     </form>
   </div>
   <% } %>
+  <% if (currencies.burntMark) { %>
+  <div class="backLink">
+    불탄 증표 병참장교 (현재 불탄 증표 : <%= currencies.burntMark %>)
+  </div>
+  <div class="charItem">
+    <form action="/useShop" method="post">
+      <button type="submit">불타는 과수원 재입장 허가 [5 잔불]</button>
+      <input type="hidden" name="option" value="90013">
+    </form>
+  </div>
+  <div class="charItem">
+    <form action="/useShop" method="post">
+      <button type="submit">무력화 토템 [5 잔불]</button>
+      <div class="itemTooltip"><%- makeTooltip(item.burntMark[0]) %></div> 
+      <input type="hidden" name="option" value="90009">
+    </form>
+  </div>
+  <div class="charItem">
+    <form action="/useShop" method="post">
+      <button type="submit">해제의 지팡이 [10 잔불]</button>
+      <div class="itemTooltip"><%- makeTooltip(item.burntMark[1]) %></div> 
+      <input type="hidden" name="option" value="90010">
+    </form>
+  </div>
+  <div class="charItem">
+    <form action="/useShop" method="post">
+      <button type="submit">석상 파괴자 [30 잔불]</button>
+      <div class="itemTooltip"><%- makeTooltip(item.burntMark[2]) %></div> 
+      <input type="hidden" name="option" value="90011">
+    </form>
+  </div>
+  <div class="charItem">
+    <form action="/useShop" method="post">
+      <button type="submit">무결한 물의 정령석 [60 잔불]</button>
+      <div class="itemTooltip"><%- makeTooltip(item.burntMark[3]) %></div> 
+      <input type="hidden" name="option" value="90012">
+    </form>
+  </div>
+  <% } %>
   <div class="backLink">
     <a href="/">돌아가기</a>
   </div>

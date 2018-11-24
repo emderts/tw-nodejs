@@ -185,6 +185,9 @@
           <input type="hidden" name="itemNum" value="<%= key %>">
           <input type="hidden" name="itemUsed" value="<%= usedItem %>">
           <input type="hidden" name="itemSocket" value="<%= i %>">
+          <% if (uid) { %>
+          <input type="hidden" name="charUid" value="<%= uid %>">
+          <% } %>
         </form>
       </div>
     <%  } 

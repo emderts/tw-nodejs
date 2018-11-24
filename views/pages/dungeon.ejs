@@ -24,6 +24,14 @@
       <button type="submit"<%= dun.active ? '' : ' disabled' %>><%= dun.name %></button>
       <input type="hidden" name="option" value="<%= dun.code %>">
     </form>
+    <% if (dun.phase) { 
+      const hpPercent = Math.round((dun.curHp * 100) / dun.maxHp) / 100; %>
+      <div class="backLink">
+        <%= dun.bossName %><br>
+        <img src="<%= dun.image %>"><br>
+        <%= dun.curHp %> / <%= dun.maxHp %> (<%= hpPercent %>)
+      </div>
+    <% } %>
   </div>
   <% } %>
   <div class="backLink">

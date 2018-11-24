@@ -463,6 +463,9 @@ function resolveEffects(winner, loser, effects, damage, skill) {
     if (eff.chkTitle && loser.title !== eff.chkTitle) {
       continue;
     }
+    if (eff.chkName && loser.name !== eff.chkName) {
+      continue;
+    }
     var stackMpl = eff.noStack ? 1 : (eff.buff ? (eff.buff.stack ? eff.buff.stack : 1) : 1);
     if (eff.code === cons.EFFECT_TYPE_SELF_BUFF || eff.code === cons.EFFECT_TYPE_OPP_BUFF) {
       var buffObj = buffMdl.getBuffData(eff);
@@ -550,6 +553,10 @@ function resolveEffects(winner, loser, effects, damage, skill) {
         tempObj.damage *= damage.value;
       } else if (eff.isPercentOpp) {
         valueUsed *= loser[eff.percentKey];
+      }
+      
+      if ((eff.percentKey == 'maxHp' || eff.percentKey == 'curHp') && source.boss) {
+        valueUsed *= 0.05;
       }
       
       if (eff.buffTarget) {
@@ -741,10 +748,22 @@ function resolveEffects(winner, loser, effects, damage, skill) {
       }
       result += '[ ' + damage.name + ' ] 효과의 지속시간이 ' + eff.value + ' 감소합니다!<br>';
       damage.dur -= eff.value;
-    } else if (eff.code === cons.EFFECT_TYPE_REMOVE_BUFF) {
+    } else if (eff.code === cons.EFFECT_TYPE_SET_BUFF_VALUE) {
+      if (eff.buffCode && eff.buffCode !== damage.id) {
+        continue;
+      } else if (eff.anyDebuff && (!damage.isDebuff || !damage.dispellable || !damage.durOff)) {
+        continue;
+      }
+      if (eff.isEffect) {
+        if (eff.multiply) {
+          damage.effect[eff.effNum][eff.effKey] *= eff.value;
+        }
+      }
+    } else if (eff.code === cons.EFFECT_TYPE_REMOVE_BUFF || eff.code === cons.EFFECT_TYPE_OPP_REMOVE_BUFF) {
       var buffTarget = eff.standard ? [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12] : eff.buffTarget;
-      for (buff of winner.buffs) {
-        if (buffTarget.includes(buff.id)) {
+      const recv = (eff.code === cons.EFFECT_TYPE_REMOVE_BUFF) ? winner : loser;
+      for (buff of recv.buffs) {
+        if (eff.all || buffTarget.includes(buff.id)) {
           removeBuff(buff);
           result += '[ ' + buff.name + ' ] 효과가 제거됩니다!<br>';
         }
@@ -906,6 +925,8 @@ function giveBuff(src, recv, buffObj, printFlag) {
     result += ' [ ' + buffObj.name + ' ] 효과가 무효화되었다!<br>';
     return;
   }
+  resolveEffects(src, recv, getBuffEffects(src, cons.ACTIVE_TYPE_GIVE_BUFF), buffObj);
+  resolveEffects(src, recv, getItemEffects(src, cons.ACTIVE_TYPE_GIVE_BUFF), buffObj);
   resolveEffects(recv, src, getBuffEffects(recv, cons.ACTIVE_TYPE_RECEIVE_BUFF), buffObj);
   resolveEffects(recv, src, getItemEffects(recv, cons.ACTIVE_TYPE_RECEIVE_BUFF), buffObj);
   
@@ -960,6 +981,12 @@ function checkDrive(chara, active) {
   if (chara.skill.drive.chkNot && findBuffByIds(chara, chara.skill.drive.chkNot).length > 0) {
     return false;
   }
+  if (chara.skill.drive.chkHp && chara.curHp > (chara.stat.maxHp * chara.skill.drive.chkHp)) {
+    return false;
+  }
+  if (chara.skill.drive.fireOnce) {
+    chara.skillOri.drive.active = null;
+  }
   return chara.skill.drive.active === active && getRandom(chara.skill.drive.chance) && chara.curSp >= chara.skill.drive.cost && findBuffByCode(chara, 10010).length == 0;
 }
 
@@ -980,12 +1007,10 @@ function getItemEffects(chara, active) {
   var rval = [];
   for (val in chara.items) {
     rval = rval.concat(chara.items[val].effect.filter(x => (x.active === active)));
-    if (val.socket) {
-      for (sock of val.socket) {
-        console.log(JSON.stringify(sock));
+    if (chara.items[val].socket) {
+      for (sock of chara.items[val].socket) {
         rval = rval.concat(sock.effect.filter(x => (x.active === active)));
       }
-      console.log(JSON.stringify(val));
     }
   }
   return rval;
@@ -1051,6 +1076,9 @@ function calcStats(chara, opp) {
     }
     
     if (val.chk && findBuffByIds(chara, val.chk).length === 0) {
+      continue;
+    }
+    if (val.chkTitle && opp.title !== val.chkTitle) {
       continue;
     }
     if (val.code === cons.EFFECT_TYPE_STAT_ADD) {

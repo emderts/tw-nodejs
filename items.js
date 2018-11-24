@@ -797,7 +797,7 @@ itemList[396] = { id : 396, name : '시져스 오브 #7', nameType : cons.NAME_K
     effectDesc : '공격 성공 시 15% 확률로 공격에 성공한 스킬 대신 가위 스킬로 공격', 
     effect : [{code : cons.EFFECT_TYPE_CHANGE_SKILL, active : cons.ACTIVE_TYPE_SKILL_WIN, chance : 0.15, value : 0}] };
 itemList[397] = { id : 397, name : '페이퍼 오브 #7', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '보자기 모양이 새겨진 구슬.', rank : 7, rarity : cons.ITEM_RARITY_RARE, stat : { phyReduce : 0.02, magReduce : 0.02 }, 
-    effectDesc : '공격 성공시 15% 확률로 공격에 성공한 스킬 대신 보 스킬로 공격', 
+    effectDesc : '공격 성공 시 15% 확률로 공격에 성공한 스킬 대신 보 스킬로 공격', 
     effect : [{code : cons.EFFECT_TYPE_CHANGE_SKILL, active : cons.ACTIVE_TYPE_SKILL_WIN, chance : 0.15, value : 2}] };
 itemList[398] = { id : 398, name : '사슬 절단기', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '주박으로부터 벗어나라!', rank : 7, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 25 }, 
     effectDesc : '[봉인], [기절] 상태이상 지속 턴 1턴 감소', 
@@ -872,16 +872,31 @@ itemList[415] = { id : 415, name : '빅토리어스의 의지', nameType : cons.
     effectDesc : '현재 생명력이 50% 이하라면 피격 피해량을 10% 경감', 
     effect : [{code : cons.EFFECT_TYPE_CANCEL_DAMAGE, active : cons.ACTIVE_TYPE_TAKE_HIT, value : 0.1, chkHp : 0.5}] };
 itemList[416] = { id : 416, name : '잔불 : 백령의 조언', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_SKILL_ARTIFACT, flavor : '', rank : 8, rarity : cons.ITEM_RARITY_UNCOMMON, stat : {  }, 
-    effectDesc : '', 
-    effect : [] };
+    effectDesc : '재의 묘소 던전에서 회피 +15%', 
+    effect : [{code : cons.EFFECT_TYPE_STAT_ADD, active : cons.ACTIVE_TYPE_CALC_STATS, key : 'evasion', value : 0.15, chkTitle : '재의 묘소'}] };
 itemList[417] = { id : 417, name : '잔불 : 암령의 광기', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SKILL_ARTIFACT, flavor : '', rank : 8, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { phyAtk : 5, magAtk : 5 }, 
     effectDesc : '', effect : [] };
 itemList[418] = { id : 418, name : '잿더미 : 나선의 검', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_SKILL_ARTIFACT, flavor : '', rank : 8, rarity : cons.ITEM_RARITY_RARE, stat : { }, 
-    effectDesc : '', 
-    effect : [] };
+    effectDesc : '전투 시작 시 적에게 2턴 간 [봉인], 1턴 간 [마비] 상태이상 부여', 
+    effect : [{code : cons.EFFECT_TYPE_MULTIPLE, active : cons.ACTIVE_TYPE_BATTLE_START, 
+      target : [{code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 10, buffDur : 2},
+                {code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 9, buffDur : 1}]}] };
 itemList[419] = { id : 419, name : '잿더미 : 장작의 왕', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_SKILL_ARTIFACT, flavor : '', rank : 8, rarity : cons.ITEM_RARITY_UNIQUE, stat : {  }, 
-    effectDesc : '', 
-    effect : [] };
+    effectDesc : '자신이 부여하는 [화상]의 상태이상 피해량 +15%', 
+    effect : [{code : cons.EFFECT_TYPE_SET_BUFF_VALUE, active : cons.ACTIVE_TYPE_GIVE_BUFF, buffCode : 1, isEffect : true, effNum : 0, effKey : 'value', multiply : true, value : 1.15}] };
+itemList[420] = { id : 420, name : '무력화 토템', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_SKILL_ARTIFACT, flavor : '', rank : 7, rarity : cons.ITEM_RARITY_UNCOMMON, stat : {  }, 
+    effectDesc : '턴 종료 시 50% 확률로 적의 [불의 정령] 버프 제거', 
+    effect : [{code : cons.EFFECT_TYPE_OPP_REMOVE_BUFF, active : cons.ACTIVE_TYPE_TURN_END, chance : 0.5, buffTarget : [90003]}] };
+itemList[421] = { id : 421, name : '해제의 지팡이', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SKILL_ARTIFACT, flavor : '', rank : 7, rarity : cons.ITEM_RARITY_UNCOMMON, stat : {  }, 
+    effectDesc : '타오르는 영석술사와 전투 시 10의 배수 턴마다 자신과 적의 모든 효과 제거', 
+    effect : [{code : cons.EFFECT_TYPE_REMOVE_BUFF, active : cons.ACTIVE_TYPE_TURN_END, all : true, setCooldown : 9, chkTurn : 10, chkName : '타오르는 영석술사'},
+              {code : cons.EFFECT_TYPE_OPP_REMOVE_BUFF, active : cons.ACTIVE_TYPE_TURN_END, all : true, setCooldown : 9, chkTurn : 10, chkName : '타오르는 영석술사'}] };
+itemList[422] = { id : 422, name : '석상 파괴자', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SKILL_ARTIFACT, flavor : '', rank : 7, rarity : cons.ITEM_RARITY_RARE, stat : { pierce : 0.04 }, 
+    effectDesc : '공격 시 적의 [가고일] 버프 제거', 
+    effect : [{code : cons.EFFECT_TYPE_OPP_REMOVE_BUFF, active : cons.ACTIVE_TYPE_ATTACK, buffTarget : [90011]}] };
+itemList[423] = { id : 423, name : '무결한 물의 정령석', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_SKILL_ARTIFACT, flavor : '', rank : 7, rarity : cons.ITEM_RARITY_UNIQUE, stat : {  }, 
+    effectDesc : '불타는 과수원에서 전투 시작 시 적에게 20턴 [봉인] 상태이상 부여', 
+    effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, active : cons.ACTIVE_TYPE_BATTLE_START, buffCode : 10, buffDur : 20, chkTitle : '불타는 과수원'}] };
 
 itemList.forEach(function(tgt) {
   tgt.base = JSON.parse(JSON.stringify(tgt.stat));
