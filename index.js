@@ -85,7 +85,7 @@ io.on('connection', (socket) => {
     socket.emit('logged in', ring, people);
   });
   
-  socket.on('chat message', function(msg) {
+  socket.on('chat message', async function(msg) {
     ring.push({userName : socket.request.session.userName, message : msg });
     if (ring.length > 30) {      
       try {
