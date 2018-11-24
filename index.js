@@ -150,8 +150,8 @@ function procFullTest() {
 }
 
 async function procInit () {
-  await setCharacter('thelichking', 1, chara.lk);
-  await setCharacter('kemderts', 2, chara.kines);
+  //await setCharacter('thelichking', 1, chara.lk);
+  //await setCharacter('kemderts', 2, chara.kines);
   await setCharacter('bemderts', 3, chara.julius);
   await setCharacter('renia1369', 4, chara.psi);
   await setCharacter('bear1704', 5, chara.aeika);
@@ -952,7 +952,7 @@ async function procEnterDungeon(req, res) {
       const row = result.rows[0];
       if (!char.dungeonInfos.runBurningOrchard && (char.rank <= 7 && row.open == 'O')) {
         curData = JSON.parse(row.monsters);
-        //char.dungeonInfos.runBurningOrchard = true;
+        char.dungeonInfos.runBurningOrchard = true;
         enemy = curData[row.phase];
         hpBefore = enemy.curHp ? enemy.curHp : enemy.stat.maxHp;
       }
