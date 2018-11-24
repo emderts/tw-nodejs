@@ -755,7 +755,8 @@ async function procGive(req, res) {
     const sess = req.session; 
     const charRow = await getCharacter(sess.userUid);
     const char = JSON.parse(charRow.char_data);
-    const charRow2 = await getCharacter(body.charUid);
+    const result = await client.query('select * from characters where uid = $1', [body.charUid]);
+    const charRow2 = result.rows[0];
     const charTgt = JSON.parse(charRow2.char_data);
     var tgt = char.inventory[body.itemNum];
     if (tgt.type <= 3) {
@@ -860,10 +861,10 @@ async function procUseShop (req, res) {
       }
     } else if (body.option >= 90009 && body.option < 90014) {
       var cost = (body.option == 90009 || body.option == 90013) ? 5 : (body.option == 90010 ? 10 : (body.option == 90011 ? 30 : 60));
-      if (char.currencies.ember < cost) {
+      if (char.currencies.burntMark < cost) {
         res.send('불탄 증표가 부족합니다.');
       } else {
-        char.currencies.ember -= cost;
+        char.currencies.burntMark -= cost;
         if (body.option != 90013) {
           char.inventory.push(JSON.parse(JSON.stringify(item.list[420 + (body.option - 90009)])));
         } else {
