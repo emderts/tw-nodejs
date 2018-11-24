@@ -552,11 +552,11 @@ function resolveEffects(winner, loser, effects, damage, skill) {
       } else if (eff.isPercentDamage) {
         tempObj.damage *= damage.value;
       } else if (eff.isPercentOpp) {
-        valueUsed *= loser[eff.percentKey];
+        tempObj.damage *= loser[eff.percentKey];
       }
       
-      if ((eff.percentKey == 'maxHp' || eff.percentKey == 'curHp') && source.boss) {
-        valueUsed *= 0.05;
+      if ((eff.percentKey == 'maxHp' || eff.percentKey == 'curHp') && target.boss) {
+        tempObj.damage *= 0.05;
       }
       
       if (eff.buffTarget) {

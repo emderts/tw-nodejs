@@ -996,7 +996,7 @@ async function procEnterDungeon(req, res) {
           char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '불타는 영웅의 증명 카드', rank : 7, resultType : 90003});
           reward += re.leftInfo.name + getUlrul(re.leftInfo.nameType) + ' 처치했습니다!<br>불탄 징표 20개와 불타는 영웅의 증명 카드 3개, 스탯 포인트 10을 획득했습니다.<br>';
           await client.query('insert into news(content, date) values ($1, $2)', 
-              [chara.name + getIga(chara.nameType) + ' 불타는 과수원에서 ' + re.leftInfo.name + getUlrul(re.leftInfo.nameType) + ' 처치했습니다!', new Date()]);
+              [char.name + getIga(char.nameType) + ' 불타는 과수원에서 ' + re.leftInfo.name + getUlrul(re.leftInfo.nameType) + ' 처치했습니다!', new Date()]);
         } 
         await client.query('update raids set phase = $1, monsters = $2 where rindex = $3', [row.phase + (re.winnerLeft ? 0 : 1), JSON.stringify(curData), row.rindex]);
       }
