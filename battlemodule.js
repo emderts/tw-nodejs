@@ -49,6 +49,8 @@ module.exports.doBattle = function (left, right, flag) {
 function _doBattleStart(flag) {
   result = '';
   turnCount = 0;
+  leftWin = 0;
+  rightWin = 0;
   timeCrash = 0;
 
   _initChar(charLeft, flag);
