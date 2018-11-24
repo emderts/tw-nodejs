@@ -568,7 +568,7 @@ async function procBattleList(req, res) {
     const client = await pool.connect();
     const resultUser = await client.query('select * from users where id = $1', [req.session.userUid]);
     const cuid = resultUser.rows[0].uid;
-    const result = await client.query('select * from characters where uid <> $1', [cuid]);
+    const result = await client.query('select * from characters where uid <> $1 order by uid', [cuid]);
     var rval = [];
     for (val of result.rows) {
       var charData = JSON.parse(val.char_data);
@@ -687,7 +687,7 @@ async function procViewList(req, res) {
   try {
     const client = await pool.connect();
     const resultUser = await client.query('select * from users where id = $1', [req.session.userUid]);
-    const result = await client.query('select * from characters where uid <> $1', [resultUser.rows[0].uid]);
+    const result = await client.query('select * from characters where uid <> $1 order by uid', [resultUser.rows[0].uid]);
     var rval = [];
     for (val of result.rows) {
       var charData = JSON.parse(val.char_data);
@@ -723,7 +723,7 @@ async function procTradeList(req, res) {
   try {
     const client = await pool.connect();
     const resultUser = await client.query('select * from users where id = $1', [req.session.userUid]);
-    const result = await client.query('select * from characters where uid <> $1', [resultUser.rows[0].uid]);
+    const result = await client.query('select * from characters where uid <> $1 order by uid', [resultUser.rows[0].uid]);
     var rval = [];
     for (val of result.rows) {
       var charData = JSON.parse(val.char_data);
