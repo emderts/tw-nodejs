@@ -903,7 +903,7 @@ async function procDungeon(req, res) {
             const curData = JSON.parse(row.monsters);
             tgt.image = curData[row.phase].image;
             tgt.bossName = curData[row.phase].name;
-            tgt.curHp = curData[row.phase].curHp ? curData[row.phase].curHp : 0;
+            tgt.curHp = curData[row.phase].curHp ? curData[row.phase].curHp : curData[row.phase].stat.maxHp;
             tgt.maxHp = curData[row.phase].stat.maxHp;
           }
         }
@@ -924,7 +924,7 @@ async function procEnterDungeon(req, res) {
     const client = await pool.connect();
     const charRow = await getCharacter(sess.userUid);
     const char = JSON.parse(charRow.char_data);
-    var enemy;
+    var enemy, curData, hpBefore;
     // check entering cond
     const rand = Math.random();
     if (body.option == 1) {
@@ -941,10 +941,10 @@ async function procEnterDungeon(req, res) {
       const result = await client.query('select * from raids where rindex = 2');
       const row = result.rows[0];
       if (!char.dungeonInfos.runBurningOrchard && (char.rank <= 7 && row.open == 'O')) {
-        const curData = JSON.parse(row.monsters);
-        char.dungeonInfos.runBurningOrchard = true;
+        curData = JSON.parse(row.monsters);
+        //char.dungeonInfos.runBurningOrchard = true;
         enemy = curData[row.phase];
-        const hpBefore = enemy.curHp;
+        hpBefore = enemy.curHp;
       }
     }
     if (enemy) {
@@ -1318,8 +1318,8 @@ function makeDayStone(dayIn) {
                    {active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_PERCENTAGE, key : 'magAtkMax', value : val}];
     break;
   case 4:
-    item.effect = [{active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_SP_COST_PERCENTAGE, key : 'drive', value : ~val},
-                   {active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_SP_COST_PERCENTAGE, key : 'special', value : ~val}];
+    item.effect = [{active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_SP_COST_PERCENTAGE, key : 'drive', value : 0-val},
+                   {active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_SP_COST_PERCENTAGE, key : 'special', value : 0-val}];
     break;
   case 5:
     item.effect = [{active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'phyReduce', value : val},
