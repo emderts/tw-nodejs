@@ -9,7 +9,7 @@ const fs = require('fs');
 //procFullTest(9, 'testResult.xlsx');
 procFullTest(7, 'testResult2x.xlsx');
 function procFullTest(testRank, resFile) {
-  var testCount = 100;
+  var testCount = 10;
   var workbook = new excel.Workbook();
   var workSheet = workbook.addWorksheet('Test');
 

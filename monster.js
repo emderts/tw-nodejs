@@ -204,7 +204,7 @@ const item = require('./items');
       stat : {maxHp : 42000, phyAtk : 100, magAtk : 100}};
   _initChar(charLeft);
   
-  charLeft.items = {weapon : item.list[356], armor : item.list[373], subarmor : item.list[384], trinket : item.list[393]};
+  charLeft.items = {weapon : item.list[356], armor : item.list[373], subarmor : item.list[384], trinket : item.list[408]};
   charLeft.image = 'https://i.imgur.com/8EkPS8P.png';
   charLeft.boss = true;
 

@@ -31,6 +31,8 @@ var turnCount = 0;
 var bpLeft; 
 var bpRight;
 var bpTurn;
+var leftWin = 0;
+var rightWin = 0;
 
 module.exports.doBattle = function (left, right, flag) {
   charLeft = left;
@@ -109,6 +111,8 @@ function _doBattleEnd(flag) {
   if (flag === undefined) {
     result += '경험치를 ' + retObj.expRight + ' 획득했습니다.<br>리설트 카드 ' + retObj.resultRight + '장을 획득했습니다.';
   }
+  result += '</div><br><div class="resultCharInfo">';
+  result += '공격 성공 횟수 : ' + leftWin + ' : ' + rightWin;
   result += '</div></div>';
   retObj.result = result;
   retObj.leftInfo = charLeft;
@@ -206,6 +210,12 @@ function _doBattleTurn() {
   resolveEffects(winner, loser, getItemEffects(winner, cons.ACTIVE_TYPE_SKILL_WIN), skillUsed, skillNum);
   resolveEffects(loser, winner, getBuffEffects(loser, cons.ACTIVE_TYPE_SKILL_LOSE), skillUsed);
   resolveEffects(loser, winner, getItemEffects(loser, cons.ACTIVE_TYPE_SKILL_LOSE), skillUsed);
+  
+  if (winner == charLeft) {
+    leftWin++;
+  } else {
+    rightWin++;
+  }
 
   // calc damage
   var damage = calcDamage(winner, loser, skillUsed);
@@ -695,6 +705,7 @@ function resolveEffects(winner, loser, effects, damage, skill) {
       for (eff of picked.effect) {
         eff.item = picked;
       }
+      console.log(eff.key);
       result += '[ ' + winner.items[eff.key].name + ' ] 아이템이 [ ' + picked.name + ' ] 아이템으로 바뀌었다!<br>';
       winner.items[eff.key] = picked;
     } else if (eff.code === cons.EFFECT_TYPE_ADD_DAMAGE) {
