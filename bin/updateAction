@@ -33,6 +33,15 @@ try {
       await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(charData), val.uid]);
     } 
   }
+  if (hour % 6 == 0) {
+  
+    const result = await client.query('select * from characters');
+    for (val of result.rows) {
+      var charData = JSON.parse(val.char_data);
+      charData.dungeonInfos.runBurningOrchard = false;
+      await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(charData), val.uid]);
+    } 
+  }
   client.release();  
   } catch (err) {
   }

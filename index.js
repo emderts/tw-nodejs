@@ -480,7 +480,7 @@ async function procUseItem (req, res) {
             } 
           }
         } else if (tgtObj.type === cons.ITEM_TYPE_DAYSTONE) {
-          res.render('pages/selectItem', {title : '요일석 사용', inv : chara.inventory, mode : 1, usedItem : body.itemNum});
+          res.render('pages/selectItem', {title : '요일석 사용', inv : chara.inventory, mode : 1, usedItem : body.itemNum, uid : null});
         }
         await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(chara), result.rows[0].uid]);
       }
@@ -897,13 +897,13 @@ async function procDungeon(req, res) {
       for (row of result.rows) {
         var tgt = dungeonList[row.rindex];
         if (row.rindex == 2) {
-          tgt.active = row.open == 'O' && char.rank <= 7 && char.dungeonInfos.runBurningOrchard;
+          tgt.active = row.open == 'O' && char.rank <= 7 && !char.dungeonInfos.runBurningOrchard;
           if (row.open == 'O') {
             tgt.phase = row.phase;
             const curData = JSON.parse(row.monsters);
             tgt.image = curData[row.phase].image;
             tgt.bossName = curData[row.phase].name;
-            tgt.curHp = curData[row.phase].curHp;
+            tgt.curHp = curData[row.phase].curHp ? curData[row.phase].curHp : 0;
             tgt.maxHp = curData[row.phase].stat.maxHp;
           }
         }
