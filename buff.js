@@ -2360,7 +2360,7 @@ module.exports.getBuffData = function(eff) {
     effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
     effectObj.code = cons.EFFECT_TYPE_STAT_ADD;
     effectObj.key = 'pierce';
-    effectObj.value = 1;
+    effectObj.value = 0.75;
     retObj.effect.push(effectObj);
     break;
   case 201739 : 
@@ -2379,6 +2379,12 @@ module.exports.getBuffData = function(eff) {
     effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
     effectObj.code = cons.EFFECT_TYPE_STAT_ADD;
     effectObj.key = 'magReduce';
+    effectObj.value = eff.value;
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_STAT_ADD;
+    effectObj.key = 'evasion';
     effectObj.value = eff.value;
     retObj.effect.push(effectObj);
     effectObj = {};
@@ -2466,13 +2472,13 @@ module.exports.getBuffData = function(eff) {
     effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
     effectObj.code = cons.EFFECT_TYPE_STAT_ADD;
     effectObj.key = 'phyReduce';
-    effectObj.value = -0.5;
+    effectObj.value = -0.3;
     retObj.effect.push(effectObj);
     effectObj = {};
     effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
     effectObj.code = cons.EFFECT_TYPE_STAT_ADD;
     effectObj.key = 'magReduce';
-    effectObj.value = -0.5;
+    effectObj.value = -0.3;
     retObj.effect.push(effectObj);
     break;
   case 90001 : 

@@ -1149,20 +1149,21 @@ const item = require('./items');
   skillObj.damage = 1.3;
   skillObj.effect = [];
   var effectObj = {};
-  effectObj.code = cons.EFFECT_TYPE_SELF_BUFF;
+  effectObj.code = cons.EFFECT_TYPE_ADD_HIT;
   effectObj.chance = 1;
-  effectObj.buffCode = 201737;
-  effectObj.buffDur = 2;
-  effectObj.critNot = true;
+  effectObj.type = cons.DAMAGE_TYPE_ABSOLUTE;
+  effectObj.value = 1;
+  effectObj.isPercentOppStat = true;
+  effectObj.percentKey = 'dmgReduce';
+  effectObj.onCrit = true;
   skillObj.effect.push(effectObj);
   effectObj = {};
   effectObj.code = cons.EFFECT_TYPE_SELF_BUFF;
   effectObj.chance = 1;
   effectObj.buffCode = 201738;
   effectObj.buffDur = 2;
-  effectObj.onCrit = true;
   skillObj.effect.push(effectObj);
-  skillObj.tooltip = '100\% 확률로 자신에게 2턴 간 [조사] 상태 부여';
+  skillObj.tooltip = '100\% 확률로 자신에게 2턴 간 [정밀 조사] 버프 부여, 치명 타격 시 상대의 피해감소값만큼 추가 절대 피해<br><br>[정밀 조사] : 관통 +75%';
   skillObj.flavor = '귀차니즘인 눅스에게 오류 같은걸 발견하면 만들어 놓은 Lookup이란 만능명령어로 모든 오류를 발견하고 바로 처리한다. 물론 눅스가 평범하기 때문에(절대로 그렇지 않지만) 쓸 일이 많이 없다.';
   charNux.skill.base.push(skillObj);
 
@@ -1178,7 +1179,7 @@ const item = require('./items');
   effectObj.chance = 1;
   effectObj.buffCode = 201739;
   effectObj.buffDur = null;
-  effectObj.value = 0.25;
+  effectObj.value = 0.2;
   effectObj.critNot = true;
   skillObj.effect.push(effectObj);
   effectObj = {};
@@ -1186,10 +1187,10 @@ const item = require('./items');
   effectObj.chance = 1;
   effectObj.buffCode = 201739;
   effectObj.buffDur = null;
-  effectObj.value = 0.4;
+  effectObj.value = 0.35;
   effectObj.onCrit = true;
   skillObj.effect.push(effectObj);
-  skillObj.tooltip = '100\% 확률로 자신에게 1턴간 [키보드 샷건] 버프 부여<br><br>[키보드 샷건] : 스킬 공격 계수 +30\%';
+  skillObj.tooltip = '100\% 확률로 자신에게 [고속 대응 명령어] 버프 부여<br><br>[고속 대응 명령어] : 저항/회피 +25% (치명타 시 +40%), 피격 시 소거';
   skillObj.flavor = '왜인지 모르겠지만 눅스에게는 하루에 3번은 해킹 시도가 나타납니다. 따로 프로그램으로 대응하지도 않고 키보드로 엄청난 연타로 해킹 시도를 저지합니다.';
   charNux.skill.base.push(skillObj);
 
@@ -1199,40 +1200,19 @@ const item = require('./items');
   skillObj.nameType = cons.NAME_KOR_END_CONS;
   skillObj.type = cons.DAMAGE_TYPE_PHYSICAL;
   skillObj.damage = 0.5;
-  skillObj.effect = [];
-  effectObj = {};
-  effectObj.code = cons.EFFECT_TYPE_OPP_BUFF;
-  effectObj.chance = 0.5;
-  effectObj.buffCode = [6, 7, 8, 9, 10, 11];
-  effectObj.buffDur = 2;
-  effectObj.critNot = true;
-  effectObj.multiple = true;
-  skillObj.effect.push(effectObj);
-  effectObj = {};
-  effectObj.code = cons.EFFECT_TYPE_OPP_BUFF;
-  effectObj.chance = 0.5;
-  effectObj.buffCode = [6, 7, 8, 9, 10, 11];
-  effectObj.buffDur = 2;
-  effectObj.critNot = true;
-  effectObj.multiple = true;
-  skillObj.effect.push(effectObj);
-  effectObj = {};
-  effectObj.code = cons.EFFECT_TYPE_OPP_BUFF;
-  effectObj.chance = 1;
-  effectObj.buffCode = [6, 7, 8, 9, 10, 11];
-  effectObj.buffDur = 2;
-  effectObj.onCrit = true;
-  effectObj.multiple = true;
-  skillObj.effect.push(effectObj);
-  effectObj = {};
-  effectObj.code = cons.EFFECT_TYPE_OPP_BUFF;
-  effectObj.chance = 1;
-  effectObj.buffCode = [6, 7, 8, 9, 10, 11];
-  effectObj.buffDur = 2;
-  effectObj.onCrit = true;
-  effectObj.multiple = true;
-  skillObj.effect.push(effectObj);
-  skillObj.tooltip = '100\% 확률로 자신에게 2턴간 [해탈] 버프 부여<br><br>[해탈] : SP 재생 +5, 물리저항 -15\%p, 마법저항 +15\%p, 해로운 버프 무시';
+  skillObj.effect = [{code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.25, buffCode : 6, buffDur : 2, critNot : true},
+                     {code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.25, buffCode : 7, buffDur : 2, critNot : true},
+                     {code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.25, buffCode : 8, buffDur : 2, critNot : true},
+                     {code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.25, buffCode : 9, buffDur : 2, critNot : true},
+                     {code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.25, buffCode : 10, buffDur : 2, critNot : true},
+                     {code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.25, buffCode : 11, buffDur : 2, critNot : true},
+                     {code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.4, buffCode : 6, buffDur : 2, onCrit : true},
+                     {code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.4, buffCode : 7, buffDur : 2, onCrit : true},
+                     {code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.4, buffCode : 8, buffDur : 2, onCrit : true},
+                     {code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.4, buffCode : 9, buffDur : 2, onCrit : true},
+                     {code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.4, buffCode : 10, buffDur : 2, onCrit : true},
+                     {code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.4, buffCode : 11, buffDur : 2, onCrit : true}];
+  skillObj.tooltip = '각각 25\% (치명타 시 40%) 확률로 적에게 2턴 간 [탈진], [침묵], [실명], [마비], [봉인], [혼란] 상태이상 부여';
   skillObj.flavor = '뒷세계에서 받은 기이한 물체, 테이저 건 같이 날아가서 붙이는데 이 때 감각 자체가 해킹이 돼서 오감의 활동을 불가능하게 만들어버린다.';
   charNux.skill.base.push(skillObj);
 
@@ -1256,7 +1236,7 @@ const item = require('./items');
   optObj.chance = 1;
   optObj.buffCode = 201740;
   optObj.buffDur = 1;
-  optObj.value = 45;
+  optObj.value = 55;
   effectObj.options.push(optObj);
   optObj = {};
   optObj.code = cons.EFFECT_TYPE_SELF_BUFF;
@@ -1266,7 +1246,7 @@ const item = require('./items');
   optObj.value = 0;
   effectObj.options.push(optObj);
   skillObj.effect.push(effectObj);
-  skillObj.tooltip = '물리 피격 시 3\% 확률로 받은 피해의 30%만큼을 즉시 회복하거나 3\% 확률로 자신에게 [거북이] 버프 부여 (최대 5중첩)<br>마법 피격 시 3\% 확률로 자신에게 [꼬장부리기] 버프 부여 혹은 3\% 확률로 자신에게 [팩트폭격] 버프 부여 (최대 5중첩)<br><br>[거북이] : 물리방어 +3\%p<br>[꼬장부리기] : 다음 스킬 피해에 15\% 절대 피해 추가<br>[팩트폭격] : 물리/마법방어 -3\%p';
+  skillObj.tooltip = '턴 시작 시 5\% 확률로 공격 시 SP를 55 회복하거나 SP재생/SP충전 1턴 간 0으로 고정';
   skillObj.flavor = '';
   charNux.skill.drive = skillObj;
 
@@ -1283,7 +1263,7 @@ const item = require('./items');
   effectObj.buffCode = 201742;
   effectObj.buffDur = 3;
   skillObj.effect.push(effectObj);
-  skillObj.tooltip = '50\% 확률로 적에게 [한심한 시선] 버프 부여 혹은 50\% 확률로 적에게 [화병] 버프 부여, 자신에게 1턴간 [한심함] 버프 부여<br><br>[한심한 시선] : 치명피해 -10\%p, SP 재생 -1, SP 충전 -1<br>[화병] : HP 재생 -3, SP 재생 -1, SP 충전 -1<br>[한심함] : 회피 +100\%p';
+  skillObj.tooltip = '적에게 3턴 간 [종말] 디버프 부여<br><br>[종말] : [탈진], 상성 패배 시 적 공격 계수 +30%, 종료 시 적에게 1턴 간 [만사 귀차니즘] 디버프 부여<br>[만사 귀차니즘] : [기절], 저항 -30%';
   skillObj.flavor = '뒷세계에 연이 된 몇 명과 함께 만든 최악의 해킹시스템. 원래 만들 의향은 아니었지만 꽤 큰 돈을 받아서 조금 의욕은 있었지만 귀찮아서 대충 70% 정도 되는 양을 담당해서 만들었다. 30%는 아직 이해하는 중이라서 자신도 걸리면 조금 골치 아프다. 물론 못 풀지는 않기에 뒷세계 참여한 사람들은 눅스에게 이것을 잘 사용하지 않는다.';
   charNux.skill.special = skillObj;
   

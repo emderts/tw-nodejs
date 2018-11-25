@@ -55,7 +55,7 @@ const app = express()
 .post('/dismantleItem', procDismantleItem)
 .post('/useStatPoint', procUseStatPoint)
 .post('/doRankup', procRankup)
-.get('/test', (req, res) => res.render('pages/battle', {result: battlemodule.doBattle(chara.seriers, monster.oLegor, 1).result}))
+.get('/test', (req, res) => res.render('pages/battle', {result: battlemodule.doBattle(chara.nux, monster.mCrawler, 1).result}))
 .get('/test2', (req, res) => res.send(setCharacter('kemderts', 1, chara.kines)))
 .get('/test3', (req, res) => res.send(setCharacter('thelichking', 2, chara.lk)))
 .get('/test4', (req, res) => res.send(procInit2()))
@@ -175,9 +175,12 @@ async function procInit () {
 }
 
 async function procInit2 () {
-  await setCharacter('jj', 8, chara.bks);
-  await setCharacter('kk', 9, chara.nux);
-  
+  const client = await pool.connect();
+  const charRow = await getCharacter('9');
+  const char = JSON.parse(charRow.char_data);
+  char.skill = chara.nux.skill;
+  await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
+  client.release();  
 }
 
 async function procIndex (req, res) {

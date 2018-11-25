@@ -114,7 +114,7 @@ function _doBattleEnd(flag) {
     result += '경험치를 ' + retObj.expRight + ' 획득했습니다.<br>리설트 카드 ' + retObj.resultRight + '장을 획득했습니다.';
   }
   result += '</div><br><div class="resultCharInfo">';
-  result += '공격 성공 횟수 : ' + leftWin + ' : ' + rightWin;
+  result += '공격 성공 횟수 - ' + leftWin + ' : ' + rightWin;
   result += '</div></div>';
   retObj.result = result;
   retObj.leftInfo = charLeft;
@@ -565,6 +565,8 @@ function resolveEffects(winner, loser, effects, damage, skill) {
         tempObj.damage *= damage.value;
       } else if (eff.isPercentOpp) {
         tempObj.damage *= loser[eff.percentKey];
+      } else if (eff.isPercentOppStat) {
+        tempObj.damage *= target.stat[eff.percentKey];
       }
       
       if ((eff.percentKey == 'maxHp' || eff.percentKey == 'curHp') && target.boss) {
