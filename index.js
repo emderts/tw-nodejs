@@ -182,6 +182,9 @@ async function procInit2 () {
     char.skill = chara.nux.skill;
     await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
      client.release();
+  } catch (err) {
+    console.error(err);
+    res.send('내부 오류');
   }
 }
 
