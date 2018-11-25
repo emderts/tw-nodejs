@@ -175,12 +175,14 @@ async function procInit () {
 }
 
 async function procInit2 () {
-  const client = await pool.connect();
-  const charRow = await getCharacter('9');
-  const char = JSON.parse(charRow.char_data);
-  char.skill = chara.nux.skill;
-  await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
-  client.release();  
+  try {
+    const client = await pool.connect();
+    const charRow = await getCharacter(9);
+     const char = JSON.parse(charRow.char_data);
+    char.skill = chara.nux.skill;
+    await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
+     client.release();
+  }
 }
 
 async function procIndex (req, res) {
