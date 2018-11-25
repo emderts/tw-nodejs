@@ -777,37 +777,11 @@ const item = require('./items');
   effectObj.buffCode = 201716;
   effectObj.buffDur = null;
   skillObj.effect.push(effectObj);
-  effectObj = {};
-  effectObj.code = cons.EFFECT_TYPE_SELF_BUFF;
-  effectObj.chance = 1;
-  effectObj.buffCode = 201721;
-  effectObj.buffDur = 3;
-  effectObj.chkHp = 0.2;
-  effectObj.chkNot = [201722];
-  skillObj.effect.push(effectObj);
-  effectObj = {};
-  effectObj.code = cons.EFFECT_TYPE_SELF_BUFF_REFRESH;
-  effectObj.chance = 1;
-  effectObj.buffTarget = [201725];
-  effectObj.stack = -5;
-  effectObj.chkHp = 0.2;
-  effectObj.chkNot = [201722];
-  skillObj.effect.push(effectObj);
-  effectObj = {};
-  effectObj.code = cons.EFFECT_TYPE_SELF_HP;
-  effectObj.chance = 1;
-  effectObj.isPercentMax = true;
-  effectObj.value = 0.3;
-  effectObj.chkHp = 0.2;
-  effectObj.chkNot = [201722];
-  skillObj.effect.push(effectObj);
-  effectObj = {};
-  effectObj.code = cons.EFFECT_TYPE_SELF_BUFF;
-  effectObj.chance = 1;
-  effectObj.buffCode = 201722;
-  effectObj.buffDur = 20;
-  effectObj.chkHp = 0.2;
-  effectObj.chkNot = [201722];
+  effectObj = {code : cons.EFFECT_TYPE_MULTIPLE, chkHp : 0.2, chkNot : [201722],
+      target : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201721, buffDur : 3},
+                {code : cons.EFFECT_TYPE_SELF_BUFF_REFRESH, buffTarget : [201725], stack : -5},
+                {code : cons.EFFECT_TYPE_SELF_HP, isPercentMax : true, value : 0.3},
+                {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201722, buffDur : 20}]};
   skillObj.effect.push(effectObj);
   skillObj.tooltip = '턴 종료 시 자신에게 [에너지 코어] 버프가 없다면 100\% 확률로 자신에게 1턴간 [방전] 버프 부여 및 [에너지 코어] 버프 3중첩 부여, 추가로 현재 생명력이 20\% 이하일 시 최대 생명력의 30\%만큼 생명력을 즉시 회복하고 자신에게 3턴 간 [재구축 중..] 버프 부여<br><br>[방전] : [기절] 상태이상, 종료 시 자신에게 [전하 충전] 버프 부여 (최대 5중첩)<br>[재구축 중..] : 물리/마법 저항 -50\%p, SP 재생 0으로 고정<br>[전하 충전] : 물리/마법저항 +2\%p';
   skillObj.flavor = '에이카가 붕괴 위험을 감지하고 재구축 프로토콜에 들어갑니다.';
@@ -1350,8 +1324,52 @@ const item = require('./items');
                 {code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL, chance : 0.4, value : 0.3, hitMod : 0.5},
                 {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201748, buffDur : 2}],
       tooltip : '적에게 10-12회의 물리 0.3 피해 (명중 보정 50\%), 자신에게 1턴 간 [과열] 디버프 부여<br><br>[과열] : 저항 -30\%',
-      flavor : ' 갑주를 최대 전개하여 무한의 탄환으로 적을 공격한다.'};
+      flavor : '갑주를 최대 전개하여 무한의 탄환으로 적을 공격한다.'};
   charDekais.skill.special = skillObj;
+
+
+  var charLozic = {};
+  _initChar(charLozic);
+  
+  charLozic.name = '세컨드 로직';
+  charLozic.nameType = cons.NAME_KOR_END_CONS;
+  charLozic.title = '두 번째 수호자';
+  
+  charLozic.skill = {};
+  charLozic.skill.base = [];
+
+  var skillObj = {code : 201741, name : '되비침의 방패', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 0.8, 
+      effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201749, buffDur : 2}],
+      tooltip : '100\% 확률로 자신에게 2턴 간 [되비침의 방패] 부여<br><br>[되비침의 방패] : 표준 상태이상을 한 가지 무효화하고 그 절반의 턴만큼 적에게 부여, SP 10 회복 후 버프 소거',
+      flavor : '자신의 방패에 부정한 것을 되비쳐 상대에게 일깨움을 주는 힘을 부여한다.'};  
+  charLozic.skill.base.push(skillObj);
+
+  skillObj = {code : 201742, name : '반격의 기회', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1, 
+      effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201750, buffDur : 1}],
+      tooltip : '100\% 확률로 자신에게 1턴 간 [반격의 기회] 부여<br><br>[반격의 기회] : 피격 시 피해량의 50%를 경감하고 SP 20 회복',
+      flavor : '적의 공격을 예상하여 몸을 숙이고 피해를 최소화한다.'};  
+  charLozic.skill.base.push(skillObj);
+
+  skillObj = {code : 201743, name : '심판의 천정', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 1.2,
+      calcEffect : [{code : cons.EFFECT_TYPE_ADD_DAMAGE, value : 0.3, chkLessAttack : true}],
+      effect : [{code : cons.EFFECT_TYPE_SPLIT_SP, value : 0.5, chkMoreAttack : true},
+                {code : cons.EFFECT_TYPE_SPLIT_SP, value : 0.5, chkEqualAttack : true}],
+      tooltip : '자신의 공격횟수가 적보다 적을 경우 공격 계수 +0.3, 같거나 많은 경우 자신과 상대의 SP를 서로 합한 후 나눔',
+      flavor : '심판의 저울을 기울여 균형의 힘을 발휘한다.'};  
+  charLozic.skill.base.push(skillObj);
+
+  skillObj = {code : 201744, name : '축성', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_DRIVE, 
+      active : cons.ACTIVE_TYPE_TURN_END, cost : 4, chance : 1, cooldown : 1,
+      effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : [201751, 201752, 201753], buffDur : null, multiple : true}],
+      tooltip : '2턴마다 자신에게 [축성-물리], [축성-마법], [축성-보호] 버프 중 하나 부여 (최대 10중첩)<br><br>[축성-물리] : 물리저항 +1\%<br>[축성-마법] : 마법저항 +1\%<br>[축성-보호] : 피해감소 +1',
+      flavor : '수호자의 힘은 시간이 지날 수록 더욱 견고해진다.'};
+  charLozic.skill.drive = skillObj;
+
+  skillObj = {code : 201745, name : '두 번의 의지', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 130, 
+      effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201754, buffDur : null, stack : 2}],
+      tooltip : '자신에게 [두 번의 의지] 버프 2중첩 부여<br><br>[두 번의 의지] : 스킬 공격 계수 +0.1, 공격 성공 시 자신의 잃은 생명력의 8%를 회복하고 1중첩 소거',
+      flavor : '수호자의 불굴의 의지.'};
+  charLozic.skill.special = skillObj;
   
   function _initChar(char) {
     char.stat = {};
