@@ -212,6 +212,10 @@ function _doBattleTurn() {
   resolveEffects(winner, loser, getItemEffects(winner, cons.ACTIVE_TYPE_SKILL_WIN), skillUsed, skillNum);
   resolveEffects(loser, winner, getBuffEffects(loser, cons.ACTIVE_TYPE_SKILL_LOSE), skillUsed);
   resolveEffects(loser, winner, getItemEffects(loser, cons.ACTIVE_TYPE_SKILL_LOSE), skillUsed);
+
+  if (checkDrive(loser, cons.ACTIVE_TYPE_SKILL_LOSE)) {
+    resolveDrive(loser, winner, null);
+  }
   
   if (winner == charLeft) {
     leftWin++;
@@ -249,6 +253,8 @@ function _doBattleTurn() {
     resolveEffects(loser, winner, getBuffEffects(loser, cons.ACTIVE_TYPE_TAKE_HIT), damage);
     resolveEffects(loser, winner, getItemEffects(loser, cons.ACTIVE_TYPE_TAKE_HIT), damage);
     resolveEffects(winner, loser, skillUsed.effect, damage);
+    resolveEffects(winner, loser, getBuffEffects(winner, cons.ACTIVE_TYPE_AFTER_SKILL), damage, skillUsed);
+    resolveEffects(winner, loser, getItemEffects(winner, cons.ACTIVE_TYPE_AFTER_SKILL), damage, skillUsed);
     if (checkDrive(winner, cons.ACTIVE_TYPE_ATTACK)) {
       resolveDrive(winner, loser, damage);
     }
@@ -331,7 +337,11 @@ function calcDamage(winner, loser, skill) {
   
   var diff = retObj.atkMax - retObj.atkMin;
   retObj.diffDmg = Math.floor(Math.random() * diff) + retObj.atkMin;
-  retObj.hit = getRandom(winner.stat.hit - loser.stat.evasion);
+  var hitUsed = winner.stat.hit;
+  if (skill.hitMod) {
+    hitUsed *= skill.hitMod;
+  }
+  retObj.hit = getRandom(hitUsed - loser.stat.evasion);
   var critMod = loser.stat.evasion < 0 ? -loser.stat.evasion : 0;
   retObj.crit = getRandom(winner.stat.crit + critMod);
   retObj.type = skill.type;
@@ -478,6 +488,9 @@ function resolveEffects(winner, loser, effects, damage, skill) {
     if (eff.chkName && loser.name !== eff.chkName) {
       continue;
     }
+    if (eff.chkSkillCode && skill.code !== eff.chkSkillCode) {
+      continue;
+    }
     var stackMpl = eff.noStack ? 1 : (eff.buff ? (eff.buff.stack ? eff.buff.stack : 1) : 1);
     if (eff.code === cons.EFFECT_TYPE_SELF_BUFF || eff.code === cons.EFFECT_TYPE_OPP_BUFF) {
       var buffObj = buffMdl.getBuffData(eff);
@@ -550,6 +563,7 @@ function resolveEffects(winner, loser, effects, damage, skill) {
       var tempObj = {};
       tempObj.damage = eff.value * stackMpl;
       tempObj.type = eff.type;
+      tempObj.hitMod = eff.hitMod;
       var source = eff.code === cons.EFFECT_TYPE_OPP_HIT || eff.code === cons.EFFECT_TYPE_OPP_SELF_HIT ? loser : winner;
       var target = eff.code === cons.EFFECT_TYPE_ADD_HIT || eff.code === cons.EFFECT_TYPE_OPP_SELF_HIT ? loser : winner;
       
@@ -590,13 +604,17 @@ function resolveEffects(winner, loser, effects, damage, skill) {
       }
       var damageAdd = calcDamage(source, target, tempObj);
 
-      var source = eff.name ? ' [ ' + eff.name + ' ] 효과로 ' : ' 추가로 ';
-      result += '<span class="skillDamage">' + target.name + getUnnun(target.nameType) + source + damageAdd.value + '대미지를 입었습니다!';
-      if (damageAdd.crit) {
-        result += ' (치명타)';
+      if (!eff.hitMod || damageAdd.hit) {
+        var source = eff.name ? ' [ ' + eff.name + ' ] 효과로 ' : ' 추가로 ';
+        result += '<span class="skillDamage">' + target.name + getUnnun(target.nameType) + source + damageAdd.value + '대미지를 입었습니다!';
+        if (damageAdd.crit) {
+          result += ' (치명타)';
+        }
+        result += '</span><br>';
+        dealDamage(source, target, damageAdd);
+      } else {
+        result += '공격이 빗나갔습니다!<br>';
       }
-      result += '</span><br>';
-      dealDamage(source, target, damageAdd);
     } else if (eff.code === cons.EFFECT_TYPE_SHIELD_FROM_DAMAGE) {
       var buffObj = buffMdl.getBuffData(eff);
       buffObj.dur = eff.buffDur;
@@ -999,7 +1017,6 @@ function checkDrive(chara, active) {
   if (chara.skill.drive.fireOnce) {
     chara.skillOri.drive.active = null;
   }
-  var chanceUsed = chara.skill.drive.chance;
   return chara.skill.drive.active === active && getRandom(chara.skill.drive.chance) && chara.curSp >= chara.skill.drive.cost && findBuffByCode(chara, 10010).length == 0;
 }
 

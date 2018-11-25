@@ -786,14 +786,6 @@ const item = require('./items');
   effectObj.chkNot = [201722];
   skillObj.effect.push(effectObj);
   effectObj = {};
-  effectObj.code = cons.EFFECT_TYPE_SELF_BUFF;
-  effectObj.chance = 1;
-  effectObj.buffCode = 201722;
-  effectObj.buffDur = 20;
-  effectObj.chkHp = 0.2;
-  effectObj.chkNot = [201722];
-  skillObj.effect.push(effectObj);
-  effectObj = {};
   effectObj.code = cons.EFFECT_TYPE_SELF_BUFF_REFRESH;
   effectObj.chance = 1;
   effectObj.buffTarget = [201725];
@@ -806,6 +798,14 @@ const item = require('./items');
   effectObj.chance = 1;
   effectObj.isPercentMax = true;
   effectObj.value = 0.3;
+  effectObj.chkHp = 0.2;
+  effectObj.chkNot = [201722];
+  skillObj.effect.push(effectObj);
+  effectObj = {};
+  effectObj.code = cons.EFFECT_TYPE_SELF_BUFF;
+  effectObj.chance = 1;
+  effectObj.buffCode = 201722;
+  effectObj.buffDur = 20;
   effectObj.chkHp = 0.2;
   effectObj.chkNot = [201722];
   skillObj.effect.push(effectObj);
@@ -1296,6 +1296,62 @@ const item = require('./items');
   skillObj.tooltip = '적에게 3턴 간 [종말] 디버프 부여<br><br>[종말] : [탈진], 상성 패배 시 적 공격 계수 +30%, 종료 시 적에게 1턴 간 [만사 귀차니즘] 디버프 부여<br>[만사 귀차니즘] : [기절], 저항 -30%';
   skillObj.flavor = '뒷세계에 연이 된 몇 명과 함께 만든 최악의 해킹시스템. 원래 만들 의향은 아니었지만 꽤 큰 돈을 받아서 조금 의욕은 있었지만 귀찮아서 대충 70% 정도 되는 양을 담당해서 만들었다. 30%는 아직 이해하는 중이라서 자신도 걸리면 조금 골치 아프다. 물론 못 풀지는 않기에 뒷세계 참여한 사람들은 눅스에게 이것을 잘 사용하지 않는다.';
   charNux.skill.special = skillObj;
+
+
+  var charDekais = {};
+  _initChar(charDekais);
+  
+  charDekais.name = '데 카이츠';
+  charDekais.nameType = cons.NAME_KOR_NO_END_CONS;
+  charDekais.title = '메탈 스트라이커';
+  
+  charDekais.skill = {};
+  charDekais.skill.base = [];
+
+  var skillObj = {code : 201736, name : '버스트 캐논 리로드', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 0.5, 
+      effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201745, buffDur : null, chkNot : [201745]}],
+      tooltip : '100\% 확률로 자신에게 [버스트 캐논] 버프 부여<br><br>[버스트 캐논] : 재부여 시 소거 후 물리 1.2 추가 피해',
+      flavor : '무장을 순식간에 핸드캐논 형태로 바꾸어 발사한다.'};  
+  charDekais.skill.base.push(skillObj);
+
+  skillObj = {code : 201737, name : '판타스마 윈드밀', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 1, 
+      effect : [{code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_ABSOLUTE, value : 0.02, isPercentStat : true, percentKey : 'maxHp'},
+                {code : cons.EFFECT_TYPE_SELF_HP, value : -0.02, isPercentStat : true, percentKey : 'maxHp'}],
+      tooltip : '100\% 확률로 자신의 최대 생명력의 2\%를 소모하여 그만큼 적에게 절대 피해',
+      flavor : '갑주 상태라고는 믿을 수 없는 속도로 주변을 몰아내는 풍차 공격을 가한다.'};  
+  charDekais.skill.base.push(skillObj);
+
+  skillObj = {code : 201738, name : '파괴의 창', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1.5, hitMod : 0.6,
+      effect : [{code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL, value : 0.5}],
+      tooltip : '이 스킬의 명중률은 기본값의 60\%가 된다. 100\% 확률로 물리 0.5 추가 피해',
+      flavor : '갑주를 무수한 투창으로 변환하여 적에게 흩뿌린다.'};  
+  charDekais.skill.base.push(skillObj);
+
+  skillObj = {code : 201739, name : '메탈 스크럽', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_DRIVE, 
+      active : cons.ACTIVE_TYPE_SKILL_LOSE, cost : 10, chance : 0.1, cooldown : 0,
+      effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201746, buffDur : 1},
+                {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201747, buffDur : 2}],
+      tooltip : '피격 시 10\% 확률로 자신에게 1턴 간 [메탈 스크럽] 버프 부여<br><br>[메탈 스크럽] : 저항 +30\%, 치명/명중 +10\%',
+      flavor : '강철 조각을 흩뿌려 적의 공격을 경감하고, 회심의 공격 기회를 부여한다.'};
+  charDekais.skill.drive = skillObj;
+
+  skillObj = {code : 201740, name : '하이퍼 헤비 머신건', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 165, 
+      effect : [{code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL, value : 0.3, hitMod : 0.5},
+                {code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL, value : 0.3, hitMod : 0.5},
+                {code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL, value : 0.3, hitMod : 0.5},
+                {code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL, value : 0.3, hitMod : 0.5},
+                {code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL, value : 0.3, hitMod : 0.5},
+                {code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL, value : 0.3, hitMod : 0.5},
+                {code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL, value : 0.3, hitMod : 0.5},
+                {code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL, value : 0.3, hitMod : 0.5},
+                {code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL, value : 0.3, hitMod : 0.5},
+                {code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL, value : 0.3, hitMod : 0.5},
+                {code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL, chance : 0.4, value : 0.3, hitMod : 0.5},
+                {code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL, chance : 0.4, value : 0.3, hitMod : 0.5},
+                {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201748, buffDur : 2}],
+      tooltip : '적에게 10-12회의 물리 0.3 피해 (명중 보정 50\%), 자신에게 1턴 간 [과열] 디버프 부여<br><br>[과열] : 저항 -30\%',
+      flavor : ' 갑주를 최대 전개하여 무한의 탄환으로 적을 공격한다.'};
+  charDekais.skill.special = skillObj;
   
   function _initChar(char) {
     char.stat = {};
@@ -1346,3 +1402,4 @@ const item = require('./items');
   module.exports.aeohelm = charAeohelm;
   module.exports.bks = charBks;
   module.exports.nux = charNux;
+  module.exports.dekaitz = charDekais;
