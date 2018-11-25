@@ -55,7 +55,7 @@ const app = express()
 .post('/dismantleItem', procDismantleItem)
 .post('/useStatPoint', procUseStatPoint)
 .post('/doRankup', procRankup)
-.get('/test', (req, res) => res.render('pages/battle', {result: battlemodule.doBattle(chara.nux, monster.mCrawler, 1).result}))
+.get('/test', (req, res) => res.render('pages/battle', {result: battlemodule.doBattle(chara.nux, chara.bks, 1).result}))
 .get('/test2', (req, res) => res.send(setCharacter('kemderts', 1, chara.kines)))
 .get('/test3', (req, res) => res.send(setCharacter('thelichking', 2, chara.lk)))
 .get('/test4', (req, res) => res.send(procInit2()))
@@ -177,11 +177,15 @@ async function procInit () {
 async function procInit2 () {
   try {
     const client = await pool.connect();
-    const charRow = await getCharacter('mun9659');
-     const char = JSON.parse(charRow.char_data);
+    var charRow = await getCharacter('mun9659');
+    var char = JSON.parse(charRow.char_data);
     char.skill = chara.nux.skill;
     await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
-     client.release();
+    charRow = await getCharacter('xko1023');
+    char = JSON.parse(charRow.char_data);
+    char.skill = chara.bks.skill;
+    await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
+    client.release();
   } catch (err) {
     console.error(err);
     res.send('내부 오류');
@@ -1074,6 +1078,8 @@ async function procNextPhaseDungeon(req, res) {
           char.dungeonInfos.clearMevious = true;
           char.statPoint += 5;
           reward += '첫 번째 [메모리얼 게이트 - 메비우스 섬멸] 클리어!<br>스탯 포인트 5를 획득했습니다.<br>';
+          await client.query('insert into news(content, date) values ($1, $2)', 
+              [char.name + getIga(char.nameType) + ' [메모리얼 게이트 - 메비우스 섬멸]을 돌파했습니다!', new Date()]);
         }
         const curr = 3 + Math.floor(3 * Math.random());
         if (char.currencies.mevious) {
@@ -1094,6 +1100,8 @@ async function procNextPhaseDungeon(req, res) {
           char.dungeonInfos.clearEmberCrypt = true;
           char.statPoint += 5;
           reward += '첫 번째 [어나더 게이트 - 재의 묘소] 클리어!<br>스탯 포인트 5를 획득했습니다.<br>';
+          await client.query('insert into news(content, date) values ($1, $2)', 
+              [char.name + getIga(char.nameType) + ' [어나더 게이트 - 재의 묘소]를 돌파했습니다!', new Date()]);
         }
         const curr = 3 + Math.floor(3 * Math.random());
         if (char.currencies.ember) {
@@ -1226,6 +1234,8 @@ async function procRankup (req, res) {
     calcStats(char);
   } 
   await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
+  await client.query('insert into news(content, date) values ($1, $2)', 
+      [char.name + getIga(char.nameType) + ' ' + char.rank + '급을 달성했습니다!', new Date()]);
   client.release();
   res.redirect('/');
 }
@@ -1380,21 +1390,6 @@ function calcStats(chara) {
       chara.stat[keyItem] += chara.items[key]['stat'][keyItem];
     }
   }
-}
-
-function calcItemStats(item) {
-  item.stat = {};
-  for (var key in item.base) {
-    item.stat[key] = item.base[key];
-  }
-
-  for (var key in item.socket.stat) {
-    if (!item.stat[key]) {
-      item.stat[key] = 0;
-    }
-    item.stat[key] += item.socket.stat[key];
-  }
-
 }
 
 var printName = {};

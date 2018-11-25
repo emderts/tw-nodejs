@@ -502,8 +502,6 @@ function resolveEffects(winner, loser, effects, damage, skill) {
         buffObj.effect[0].value = Math.round(buffObj.effect[0].value * winner.stat.maxHp);
       } else if (buffObj.id === 201727) {
         buffObj.effect[0].value *= findBuffByIds(winner, eff.buffTarget).length;
-      } else if (buffObj.id === 201737) {
-        buffObj.effect[0].value = buffObj.effect[0].value * 0.5 * (loser.stat.phyReduce + loser.stat.magReduce);
       }
 
       var recv = (eff.code === cons.EFFECT_TYPE_SELF_BUFF) ? winner : loser;
@@ -706,10 +704,9 @@ function resolveEffects(winner, loser, effects, damage, skill) {
       } else {
         var picked = JSON.parse(JSON.stringify(tgtList[eff.value]));
       }
-      for (eff of picked.effect) {
-        eff.item = picked;
+      for (efft of picked.effect) {
+        efft.item = picked;
       }
-      console.log(eff);
       result += '[ ' + winner.items[eff.key].name + ' ] 아이템이 [ ' + picked.name + ' ] 아이템으로 바뀌었다!<br>';
       winner.items[eff.key] = picked;
     } else if (eff.code === cons.EFFECT_TYPE_ADD_DAMAGE) {
@@ -1002,6 +999,7 @@ function checkDrive(chara, active) {
   if (chara.skill.drive.fireOnce) {
     chara.skillOri.drive.active = null;
   }
+  var chanceUsed = chara.skill.drive.chance;
   return chara.skill.drive.active === active && getRandom(chara.skill.drive.chance) && chara.curSp >= chara.skill.drive.cost && findBuffByCode(chara, 10010).length == 0;
 }
 
@@ -1066,6 +1064,8 @@ function calcStats(chara, opp) {
       } else if (val.key) {
         chara.skill[val.key] = val.target;
       }
+    } else if (val.code === cons.EFFECT_TYPE_ADD_SKILL_VALUE) {
+      chara.skill[val.type][val.key] += val.value * stackMpl;
     }
   }
   for (val of getBuffEffects(opp, cons.ACTIVE_TYPE_OPP_CALC_STATS)) {
