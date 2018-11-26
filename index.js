@@ -185,20 +185,10 @@ async function procInit2 () {
     await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);*/
     const result = await client.query('select * from characters');
     for (val of result.rows) {
-      if (val.uid == '10') {
-        var charData = JSON.parse(val.char_data);
-        if (charData.exp == 0) {
-          await client.query('delete from characters where char_data = $1', [JSON.stringify(charData)]);
-        }
+      if (val.uid == '010') {
+        console.log(JSON.stringify(charData));
       }
-      await client.query('update characters set uid = $1 where uid = $2', ['0' + val.uid, val.uid]);
-    } 
-    const result3 = await client.query('select * from users');
-    for (val of result3.rows) {
-      if (val.uid == '10') {
-        continue;
-      }
-      await client.query('update users set uid = $1 where uid = $2', ['0' + val.uid, val.uid]);
+          await client.query('delete from characters where uid = $1', ['010']);
     } 
     client.release();
   } catch (err) {
