@@ -213,7 +213,7 @@ itemList[204] = { id : 204, name : '꿈의 사슬', nameType : cons.NAME_KOR_END
               {code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_TAKE_HIT, chance : 0.01, buffCode : 5, buffDur : 1}] };
 itemList[205] = { id : 205, name : '호박석 검', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_WEAPON, flavor : '녹아내린 호박석이 검날을 따라 흘러내리는 의식용으로나 쓸 법한 검.', rank : 9, rarity : cons.ITEM_RARITY_RARE, stat : { phyAtkMin : 4, phyAtkMax : 8, magAtkMin : 16, magAtkMax : 20, crit : 0.02 }, 
     effectDesc : '마법 공격 성공 시 15% 확률로 적에게 2턴 간 [화상] 상태이상 부여', 
-    effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, active : cons.ACTIVE_TYPE_ATTACK, chance : 0.15, buffCode : 1, buffDur : 2}] };
+    effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, active : cons.ACTIVE_TYPE_ATTACK, chance : 0.15, buffCode : 1, buffDur : 2, chkDmgType : cons.DAMAGE_TYPE_MAGICAL}] };
 itemList[206] = { id : 206, name : '심플리스트 #9', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_WEAPON, flavor : '단순함이 최고라고들 한다.', rank : 9, rarity : cons.ITEM_RARITY_RARE, stat : { phyAtkMin : 13, phyAtkMax : 14, magAtkMin : 13, magAtkMax : 14, crit : 0.03 }, 
     effectDesc : '', effect : [] };
 itemList[207] = { id : 207, name : '갱단의 비밀무기', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_WEAPON, flavor : '어느 뒷골목 갱단이 중요한 일에 사용하는 검. 손잡이의 버튼을 누르면 검날에 갈라진 틈을 통해 독이 새어나온다. 잘못 휘두르면 자기가 독을 뒤집어 쓸 수 있다고 한다.', rank : 9, rarity : cons.ITEM_RARITY_RARE, stat : { phyAtkMin : 8, phyAtkMax : 12, magAtkMin : 8, magAtkMax : 12, crit : 0.04 }, 

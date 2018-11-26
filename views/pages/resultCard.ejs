@@ -177,7 +177,9 @@
       document.getElementById('cardBack').setAttribute('style', 'transform: rotateY(180deg)');
       document.getElementById('cardBack').setAttribute('class', 'cardBack');
       document.getElementById('cardFront').setAttribute('class', 'cardFront <%= getGlowText(item.rarity) %> <%= item.rarity >= 2 ? 'shake' : '' %>');
-      window.navigator.vibrate(1000);
+      if (window.navigator.vibrate) {
+        window.navigator.vibrate(1000);
+      }
       setTimeout(function() {
         document.getElementById('cardBack').setAttribute('style', 'display: none');        
       }, 620);
