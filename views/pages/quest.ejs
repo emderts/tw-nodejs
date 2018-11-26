@@ -48,7 +48,7 @@
     <div class="questItem">
       <div><%= printName[val.code] %></div>
       <div><%= printDesc[val.code] + ' ' + val.progress + ' / ' + val.target %></div>
-      <div><%= printReward(vsl) %></div>
+      <div><%= printReward(val) %></div>
       <form action="/submitQuest" method="post">
         <button type="submit"<%= val.progress >= val.target ? '' : ' disabled' %>>완료</button>
         <input type="hidden" name="option" value="<%= val.code %>">
