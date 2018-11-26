@@ -188,48 +188,9 @@ async function procInit2 () {
     for (val of result.rows) {
       var char = JSON.parse(val.char_data);
       if (val.uid == '02') {
-        char.quest = {};
-        var quests = [{code : 1, progress : 0, target : 3},
-                      {code : 2, progress : 0, target : 5},
-                      {code : 3, progress : 0, target : 5},
-                      {code : 4, progress : 0, target : 5},
-                      {code : 5, progress : 0, target : 3},
-                      {code : 6, progress : 0, target : 8},
-                      {code : 7, progress : 0, target : 2},
-                      {code : 8, progress : 0, target : 1},
-                      {code : 9, progress : 0, target : 1},
-                      {code : 10, progress : 0, target : 10},
-                      {code : 11, progress : 0, target : 1},
-                      {code : 12, progress : 0, target : 50}];
-        var rand = Math.floor(Math.random() * 12);
-        var target = quests[rand];
-        target.rewardType = Math.floor(Math.random() * 4);
-        target.rewardAmt = Math.random() < 0.8 ? 0 : 1;
-        char.quest[target.code] = target;
-        quests.splice(rand, 1);
-        var rand = Math.floor(Math.random() * 11);
-        var target = quests[rand];
-        target.rewardType = Math.floor(Math.random() * 4);
-        target.rewardAmt = Math.random() < 0.8 ? 0 : 1;
-        char.quest[target.code] = target;
-        quests.splice(rand, 1);
-        var rand = Math.floor(Math.random() * 10);
-        var target = quests[rand];
-        target.rewardType = Math.floor(Math.random() * 4);
-        target.rewardAmt = Math.random() < 0.8 ? 0 : 1;
-        char.quest[target.code] = target;
-        quests.splice(rand, 1);
+        char.premiumPoint += 100;
       }
-      for (var i = 3; i< 10; i++) {
-        if (!char.winRecord['0'+i]) {
-          char.winRecord['0'+i] = 0;
-        }
-        char.winRecord['0'+i] += char.winRecord['' + i] ? char.winRecord['' + i] : 0;
-      }
-      if (!char.winRecord['10']) {
-        char.winRecord['10'] = 0;
-      }
-      char.winRecord['10'] += char.winRecord['010'] ? char.winRecord['010'] : 0;
+      char.quest = {};
       await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), val.uid]);
     } 
     client.release();
