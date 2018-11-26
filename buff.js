@@ -2202,6 +2202,7 @@ module.exports.getBuffData = function(eff) {
     effectObj = {};
     effectObj.active = cons.ACTIVE_TYPE_RECEIVE_BUFF;
     effectObj.code = cons.EFFECT_TYPE_PREVENT_DEBUFF;
+    effectObj.standard = true;
     retObj.effect.push(effectObj);
     effectObj = {};
     effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;

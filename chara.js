@@ -21,99 +21,32 @@ const item = require('./items');
   charLeft.skill = {};
   charLeft.skill.base = [];
 
-  var skillObj = {};
-  skillObj.code = 20101;
-  skillObj.name = '혼돈의 화살';
-  skillObj.nameType = cons.NAME_KOR_END_CONS;
-  skillObj.type = cons.DAMAGE_TYPE_MAGICAL;
-  skillObj.damage = 1.2;
-  skillObj.effect = [];
-  var effectObj = {};
-  effectObj.code = cons.EFFECT_TYPE_SELF_BUFF;
-  effectObj.chance = 1;
-  effectObj.buffCode = 20101;
-  effectObj.buffDur = 2;
-  effectObj.value = 0.6;
-  skillObj.effect.push(effectObj);
-  skillObj.tooltip = '100\% 확률로 자신에게 2턴간 [혼돈의 힘] 버프 부여<br><br>[혼돈의 힘] : 혼돈의 화살 공격력 +0.6';
+  var skillObj = {code : 20101, name : '혼돈의 화살', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 1.2,
+      effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 20101, buffDur : 2, value : 0.6}],
+      tooltip : '100\% 확률로 자신에게 2턴간 [혼돈의 힘] 버프 부여<br><br>[혼돈의 힘] : 혼돈의 화살 공격력 +0.6'};
   charLeft.skill.base.push(skillObj);
 
-  skillObj = {};
-  skillObj.code = 20102;
-  skillObj.name = '파괴의 저주';
-  skillObj.nameType = cons.NAME_KOR_NO_END_CONS;
-  skillObj.type = cons.DAMAGE_TYPE_MAGICAL;
-  skillObj.damage = 0.7;
-  skillObj.effect = [];
-  effectObj = {};
-  effectObj.code = cons.EFFECT_TYPE_OPP_BUFF;
-  effectObj.chance = 0.5;
-  effectObj.buffCode = 20102;
-  effectObj.buffDur = 3;
-  effectObj.value = 0.1;
-  skillObj.effect.push(effectObj);
-  skillObj.tooltip = '50\% 확률로 적에게 3턴간 [파괴됨] 버프 부여<br><br>[파괴됨] : 마법 0.1 피해';
+  skillObj = {code : 20102, name : '파괴의 저주', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 0.7, 
+      effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.5, buffCode : 20102, buffDur : 3, value : 0.1}],
+      tooltip : '50\% 확률로 적에게 3턴간 [파괴됨] 버프 부여<br><br>[파괴됨] : 마법 0.1 피해'};
   charLeft.skill.base.push(skillObj);
 
-  skillObj = {};
-  skillObj.code = 20103;
-  skillObj.name = '망각의 계약';
-  skillObj.nameType = cons.NAME_KOR_END_CONS;
-  skillObj.type = cons.DAMAGE_TYPE_MAGICAL;
-  skillObj.damage = 1.1;
-  skillObj.effect = [];
-  effectObj = {};
-  effectObj.code = cons.EFFECT_TYPE_SELF_SP;
-  effectObj.chance = 0.3;
-  effectObj.value = 15;
-  skillObj.effect.push(effectObj);
-  skillObj.tooltip = '30\% 확률로 자신의 SP 15 회복';
+  skillObj = {code : 20103, name : '망각의 계약', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 1.1, 
+      effect : [{code : cons.EFFECT_TYPE_SELF_SP, chance : 0.3, value : 15}],
+      tooltip : '30\% 확률로 자신의 SP 15 회복'};
   charLeft.skill.base.push(skillObj);
 
-  skillObj = {};
-  skillObj.code = 20104;
-  skillObj.name = '생명력 전환';
-  skillObj.nameType = cons.NAME_KOR_END_CONS;
-  skillObj.type = cons.SKILL_TYPE_DRIVE;
-  skillObj.active = cons.ACTIVE_TYPE_ATTACK;
-  skillObj.cost = 0;
-  skillObj.chance = 0.5;
-  skillObj.effect = [];
-  effectObj = {};
-  effectObj.code = cons.EFFECT_TYPE_SELF_SP;
-  effectObj.chance = 1;
-  effectObj.value = 25;
-  skillObj.effect.push(effectObj);
-  effectObj = {};
-  effectObj.code = cons.EFFECT_TYPE_SELF_HP;
-  effectObj.chance = 1;
-  effectObj.value = -20;
-  skillObj.effect.push(effectObj);
-  skillObj.tooltip = '공격 성공 시 50\% 확률로 자신의 HP를 20 잃고 SP 25 회복';
+  skillObj = {code : 20104, name : '생명력 전환', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_DRIVE, 
+      active : cons.ACTIVE_TYPE_ATTACK, cost : 0, chance : 0.5, 
+      effect : [{code : cons.EFFECT_TYPE_SELF_SP, value : 25},
+                {code : cons.EFFECT_TYPE_SELF_HP, value : -20}],
+      tooltip : '공격 성공 시 50\% 확률로 자신의 HP를 20 잃고 SP 25 회복'};
   charLeft.skill.drive = skillObj;
 
-  skillObj = {};
-  skillObj.code = 20105;
-  skillObj.name = '지옥불길';
-  skillObj.nameType = cons.NAME_KOR_END_CONS;
-  skillObj.type = cons.SKILL_TYPE_SPECIAL;
-  skillObj.cost = 90;
-  skillObj.effect = [];
-  effectObj = {};
-  effectObj.code = cons.EFFECT_TYPE_SELF_BUFF;
-  effectObj.chance = 1;
-  effectObj.buffCode = 20103;
-  effectObj.buffDur = 5;
-  effectObj.value = 0.4;
-  skillObj.effect.push(effectObj);
-  effectObj = {};
-  effectObj.code = cons.EFFECT_TYPE_OPP_BUFF;
-  effectObj.chance = 1;
-  effectObj.buffCode = 20104;
-  effectObj.buffDur = 5;
-  effectObj.value = 0.4;
-  skillObj.effect.push(effectObj);
-  skillObj.tooltip = '자신과 적에게 5턴간 [지옥불길] 버프 부여<br><br>[지옥불길] : 마법 0.4 피해';
+  skillObj = {code : 20105, name : '지옥불길', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 90, 
+      effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 20103, buffDur : 5, value : 0.4},
+                {code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 20104, buffDur : 5, value : 0.4}],
+      tooltip : '자신과 적에게 5턴간 [지옥불길] 버프 부여<br><br>[지옥불길] : 마법 0.4 피해'};
   charLeft.skill.special = skillObj;
 
 
@@ -1373,7 +1306,7 @@ const item = require('./items');
   
   function _initChar(char) {
     char.stat = {};
-    char.stat.maxHp = 400;
+    char.stat.maxHp = 4400;
     char.stat.spCharge = 5;
     char.stat.hpRegen = 0;
     char.stat.spRegen = 5;

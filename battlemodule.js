@@ -726,6 +726,7 @@ function resolveEffects(winner, loser, effects, damage, skill) {
         efft.item = picked;
       }
       result += '[ ' + winner.items[eff.key].name + ' ] 아이템이 [ ' + picked.name + ' ] 아이템으로 바뀌었다!<br>';
+      result += getItemText(null, picked);
       winner.items[eff.key] = picked;
     } else if (eff.code === cons.EFFECT_TYPE_ADD_DAMAGE) {
       if (eff.skillCode && eff.skillCode === skill.code) {
@@ -951,9 +952,14 @@ function findBuffByIds(chara, ids) {
 }
 
 function giveBuff(src, recv, buffObj, printFlag) {
-  if (findBuffByCode(recv, cons.EFFECT_TYPE_PREVENT_DEBUFF).length > 0 && buffObj.isDebuff && buffObj.dispellable) {
-    result += ' [ ' + buffObj.name + ' ] 효과가 무효화되었다!<br>';
-    return;
+  for (eff of findBuffByCode(recv, cons.EFFECT_TYPE_PREVENT_DEBUFF)) { 
+    if (eff.standard && ![0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].includes(buffObj.id)) {
+      continue;
+    }
+    if (buffObj.isDebuff && buffObj.dispellable) {
+      result += ' [ ' + buffObj.name + ' ] 효과가 무효화되었다!<br>';
+      return;
+    }
   }
   resolveEffects(src, recv, getBuffEffects(src, cons.ACTIVE_TYPE_GIVE_BUFF), buffObj);
   resolveEffects(src, recv, getItemEffects(src, cons.ACTIVE_TYPE_GIVE_BUFF), buffObj);
@@ -1266,7 +1272,7 @@ function printChar(chara, name, flag) {
 
 function getItemText(key, val) {
   var resultStr = '';
-  resultStr += printName[key] + ' : ' + val.name + '<br>(';
+  resultStr += (key ? (printName[key] + ' : ') : '') + val.name + '<br>(';
   resultStr += Object.entries(val.stat).map(arr => { 
     if (arr[0] == 'phyAtkMin') {
       return  '물리공격력 +' + arr[1] + '~' + val.stat.phyAtkMax;

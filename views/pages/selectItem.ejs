@@ -26,6 +26,18 @@
       .buttonEpic {background-color: #f79646; }
       .backLink {text-align: center; width: 40%; margin: 10px auto; overflow: hidden; }
     </style>
+    <script>
+      
+  function invClick(thisNode, event) {
+    if (thisNode.type !== 'submit') {
+      event.preventDefault();
+      for (item of document.getElementsByClassName('inventoryButton')) {
+        item.type = 'button';
+      }
+      thisNode.setAttribute('type', 'submit');
+    }
+  }
+    </script>
 </head>
 <body>
 <% 
@@ -144,6 +156,10 @@
       if (item.flavor && item.flavor.length > 0) {
         rtext += '<br><br><span class="tooltipFlavor">' + item.flavor + '</span>';
       }
+      const dustInfo = [10, 14, 26, 26, 62, 170];
+      if (mode == 2) {
+        rtext += '<br><br>가루 양 : ' + Math.round(dustInfo[item.rarity] * Math.pow(2, 9 - item.rank));
+      }
     }
     return rtext;
   }
@@ -181,7 +197,8 @@
          for (var i = 0; i<sockNum; i++) { %>
       <div class="inventoryItem">
         <form action="<%= formAction %>" method="post">
-          <button class="<%= getButtonText(val.rarity) %>" type="submit"><%= val.name + (sockNum == 1 ? '' : ' (' + (i+1) + ')') %>
+          <button class="<%= getButtonText(val.rarity) %> inventoryButton" onclick="invClick(this, event)" type="button">
+            <%= val.name + (sockNum == 1 ? '' : ' (' + (i+1) + ')') %>
             <div class="itemTooltip"><%- makeTooltip(val) %></div>
           </button>
           <input type="hidden" name="itemNum" value="<%= key %>">

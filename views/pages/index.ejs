@@ -35,7 +35,7 @@
       .buttonPremium {background-color: #00b050; }
       .buttonUnique {background-color: #ff33cc; }
       .buttonEpic {background-color: #f79646; }
-      .chatWrap ul {height: 200px; overflow: scroll; list-style-type: none; margin: 0; padding: 0; max-width: 250px; }
+      .chatWrap ul {height: 200px; overflow: scroll; list-style-type: none; margin: 0; padding: 0; max-width: 230px; }
       .chatWrap ul.peopleList {width: 100px; float: left; border-left: 1px solid black; }
       .chatWrap ul li { padding: 5px 10px; }
       .chatWrap ul li:nth-child(odd) { background: #eee; }
@@ -244,6 +244,8 @@
       if (item.flavor && item.flavor.length > 0) {
         rtext += '<br><br><span class="tooltipFlavor">' + item.flavor + '</span>';
       }
+    } else if (item.type == 999 && item.tooltip) {
+      rtext += '<br>' + item.tooltip;
     }
     return rtext;
   }

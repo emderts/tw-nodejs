@@ -55,10 +55,10 @@ const app = express()
 .post('/dismantleItem', procDismantleItem)
 .post('/useStatPoint', procUseStatPoint)
 .post('/doRankup', procRankup)
-.get('/test', (req, res) => res.render('pages/battle', {result: battlemodule.doBattle(chara.dekaitz, chara.aeika, 1).result}))
+.get('/test', (req, res) => res.render('pages/battle', {result: battlemodule.doBattle(chara.bks, monster.oLegor, 1).result}))
 .get('/test2', (req, res) => res.send(setCharacter('kemderts', 1, chara.kines)))
 .get('/test3', (req, res) => res.send(setCharacter('thelichking', 2, chara.lk)))
-.get('/test4', (req, res) => res.send(procFullTest()))
+.get('/test4', (req, res) => res.send(procInit2()))
 .get('/test5', (req, res) => res.render('pages/resultCard', {item : {name: 'test', rarity: Math.floor(Math.random() * 6)}}))
 .get('/test6', (req, res) => res.render('pages/index', {
   user: {name: 'kk'},
@@ -178,9 +178,9 @@ async function procInit () {
 async function procInit2 () {
   try {
     const client = await pool.connect();
-    var charRow = await getCharacter('mun9659');
+    var charRow = await getCharacter('bear1704');
     var char = JSON.parse(charRow.char_data);
-    char.skill = chara.nux.skill;
+    char.skill = chara.aeika.skill;
     await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
     charRow = await getCharacter('xko1023');
     char = JSON.parse(charRow.char_data);
@@ -1328,6 +1328,7 @@ function makeDayStone(dayIn) {
   item.name = dayStonePrefix[item.level] + dayStoneName[item.day];
   var fval = dayStoneData[item.day][0][item.level];
   var val = Math.floor(Math.random() * (fval[1] - fval[0]) + fval[0]) / 1000;
+  item.tooltip = dayStoneEffect[item.day] + ' ' + (Math.round(fval[0]*1000)/10) + '% - ' + (Math.round(fval[1]*1000)/10) + '%';
   item.effectDesc = dayStoneEffect[item.day] + ' ' + (Math.round(val*1000)/10) + '%';
   switch (item.day) {
   case 0:
