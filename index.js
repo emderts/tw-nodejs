@@ -186,7 +186,7 @@ async function procInit2 () {
     const result = await client.query('select * from characters');
     for (val of result.rows) {
       if (val.uid == '010') {
-        console.log(JSON.stringify(charData));
+        console.log(val.char_data);
       }
           await client.query('delete from characters where uid = $1', ['010']);
     } 
