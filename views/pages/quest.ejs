@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>ThirdWorld - 퀘스트</title>
+    <link href="https://fonts.googleapis.com/css?family=Nanum+Gothic" rel="stylesheet">
+    <style>
+      body {font-family: "Nanum Gothic", sans-serif; }
+      div {width: 450px; max-width: 100%; margin: 0 auto; }
+      .questItem {float: left; }
+      .questItem button {width: 450px; max-width: 100%; background-color: #ffffea; }
+      .questItem button:hover {background-color: #ffffcc; }
+      .backLink {text-align: center; width: 40%; margin: 10px auto; overflow: hidden; }
+    </style>
+</head>
+<body>
+<%
+  function printReward(val) {
+    var cname = '';
+    switch (val.rewardType) {
+    case 0:
+      cname += '프리미엄 포인트 ' + (3 + 2 * val.rewardAmt) + '점';
+      break;
+    case 1:
+      cname += '일반 리설트 카드 ' + (2 + 2 * val.rewardAmt) + '장';
+      break;
+    case 1:
+      cname += '추가 피로도 ' + (2 + 1 * val.rewardAmt) + '점';
+      break;
+    case 1:
+      cname += '장비 리설트 카드 ' + (1 + 1 * val.rewardAmt) + '장';
+      break;
+    }
+    return cname;
+  }
+  
+  printName = ['', '승리가 눈 앞에 있다!', '도장 깨기', '저를 때려주세요', '가루족망겜', '실력갓흥겜', '안되겠소! 갑시다!', '왕위를 계승 중입니다, 아버지', '존버하지 마세요', '위대한 해체가', '도로우! 버서커 소울!', '오늘은 n요일이에요', '공격왕 김공격'];
+  printDesc = ['', '대전 승리', '각 다른 플레이어와 대전', '대전 신청받음', '리설트 카드에서 가루 획득', '리설트 카드에서 레어 이상 획득', '아이템 해체', '아서스 메네실과 대전', '상점 아이템 구매', '유니크 장비 이상 해체', '리설트 카드 개봉', '오늘의 요일석 부여', '공격 성공'];
+%>
+  <div class="backLink">
+    퀘스트
+  </div>
+  <div class="questWrap">
+  <% for (key in quest) { 
+       val = quest[key]; %>
+    <div class="questItem">
+      <div><%= printName[val.code] %></div>
+      <div><%= printDesc[val.code] + ' ' + val.progress + ' / ' + val.target %></div>
+      <div><%= printReward(vsl) %></div>
+      <form action="/submitQuest" method="post">
+        <button type="submit"<%= val.progress >= val.target ? '' : ' disabled' %>>완료</button>
+        <input type="hidden" name="option" value="<%= val.code %>">
+      </form>
+    </div>
+  <% } %>
+  </div>
+  <div class="backLink">
+    <a href="/">돌아가기</a>
+  </div>
+</body>
+</html> 

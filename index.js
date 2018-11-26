@@ -51,6 +51,7 @@ const app = express()
 .post('/enterDungeon', procEnterDungeon)
 .get('/nextPhaseDungeon', procNextPhaseDungeon)
 .get('/stopDungeon', procStopDungeon)
+.get('/quest', procQuest)
 .get('/dismantlingYard', procDismantlingYard)
 .post('/dismantleItem', procDismantleItem)
 .post('/useStatPoint', procUseStatPoint)
@@ -1186,6 +1187,18 @@ async function procStopDungeon(req, res) {
       res.redirect('/');
     }
     client.release();
+  } catch (err) {
+    console.error(err);
+    res.send('내부 오류');
+  }
+}
+
+async function procQuest(req, res) {
+  try {
+    const sess = req.session; 
+    const charRow = await getCharacter(sess.userUid);
+    const char = JSON.parse(charRow.char_data);
+    res.render('pages/quest', {quest : char.quest});
   } catch (err) {
     console.error(err);
     res.send('내부 오류');
