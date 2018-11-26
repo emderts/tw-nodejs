@@ -376,7 +376,7 @@ itemList[264] = { id : 264, name : '황금깃털', nameType : cons.NAME_KOR_END_
     effectDesc : '', effect : [] };
 itemList[265] = { id : 265, name : '실버 애뮬릿', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '', rank : 9, rarity : cons.ITEM_RARITY_RARE, stat : { phyReduce : 0.015, magReduce : 0.015, dmgReduce : 1 }, 
     effectDesc : '', effect : [] };
-itemList[266] = { id : 266, name : '무형의 조각', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '그 어떤 형태로도 확정할 수 없는 작은 조각. 계속 변이하는 듯하다..', rank : 9, rarity : cons.ITEM_RARITY_UNIQUE, stat : {  }, 
+itemList[266] = { id : 266, name : '무형의 조각', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '그 어떤 형태로도 확정할 수 없는 작은 조각. 계속 변이하는 듯하다..', rank : 9, rarity : cons.ITEM_RARITY_UNIQUE, stat : {  }, 
     effectDesc : '전투 시작 시 무작위 9급 아이템 하나가 선택된다. 그 전투 동안 이 아이템은 그 아이템의 능력을 발휘한다.', 
     effect : [{code : cons.EFFECT_TYPE_CONVERT_ITEM, active : cons.ACTIVE_TYPE_BATTLE_START, key : 'trinket', randomItem : 9}] };
 itemList[267] = { id : 267, name : '5000원짜리 지폐', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '너도 좀 나가!!!', rank : 9, rarity : cons.ITEM_RARITY_UNIQUE, stat : { maxHp : 25 }, 

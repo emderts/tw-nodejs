@@ -55,7 +55,7 @@ const app = express()
 .post('/dismantleItem', procDismantleItem)
 .post('/useStatPoint', procUseStatPoint)
 .post('/doRankup', procRankup)
-.get('/test', (req, res) => res.render('pages/battle', {result: battlemodule.doBattle(chara.bks, monster.oLegor, 1).result}))
+.get('/test', (req, res) => res.render('pages/battle', {result: battlemodule.doBattle(chara.aeika, monster.mCrawler, 1).result}))
 .get('/test2', (req, res) => res.send(setCharacter('kemderts', 1, chara.kines)))
 .get('/test3', (req, res) => res.send(setCharacter('thelichking', 2, chara.lk)))
 .get('/test4', (req, res) => res.send(procInit2()))
@@ -365,7 +365,6 @@ async function procUseItem (req, res) {
             } else if (rand < 0.9895) {
               var picked = _getItem(tgtObj.rank - 1, cons.ITEM_RARITY_COMMON_UNCOMMON, tgtObj.resultType);
               chara.inventory.push(picked);
-              await addItemNews(client, chara, tgtObj, picked);
               res.render('pages/resultCard', {item : picked});
             } else {
               var picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_EPIC, tgtObj.resultType);

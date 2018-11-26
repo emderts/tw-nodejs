@@ -2015,7 +2015,7 @@ module.exports.getBuffData = function(eff) {
     effectObj.active = cons.ACTIVE_TYPE_TURN_END;
     effectObj.code = cons.EFFECT_TYPE_SELF_BUFF;
     effectObj.buffCode = 201719;
-    effectObj.buffDur = null;
+    effectObj.buffDur = 1;
     retObj.effect.push(effectObj);
     break;
   case 201719 : 
@@ -2023,11 +2023,10 @@ module.exports.getBuffData = function(eff) {
     retObj.nameType = cons.NAME_KOR_END_CONS;
     retObj.stackType = 1;
     retObj.isDebuff = false;
-    retObj.durOff = null;
     effectObj = {};
     effectObj.active = cons.ACTIVE_TYPE_DEAL_DAMAGE_RECEIVE;
     effectObj.code = cons.EFFECT_TYPE_SHIELD;
-    effectObj.value = 0.1;
+    effectObj.value = 0.07;
     retObj.effect.push(effectObj);
     break;
   case 201720 : 
