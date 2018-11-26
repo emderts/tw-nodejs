@@ -1254,8 +1254,7 @@ const item = require('./items');
                 {code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL, value : 0.3, hitMod : 0.5},
                 {code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL, value : 0.3, hitMod : 0.5},
                 {code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL, chance : 0.4, value : 0.3, hitMod : 0.5},
-                {code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL, chance : 0.4, value : 0.3, hitMod : 0.5},
-                {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201748, buffDur : 2}],
+                {code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL, chance : 0.4, value : 0.3, hitMod : 0.5}],
       tooltip : '적에게 10-12회의 물리 0.3 피해 (명중 보정 50\%), 자신에게 1턴 간 [과열] 디버프 부여<br><br>[과열] : 저항 -30\%',
       flavor : '갑주를 최대 전개하여 무한의 탄환으로 적을 공격한다.'};
   charDekais.skill.special = skillObj;
@@ -1278,13 +1277,13 @@ const item = require('./items');
   charLozic.skill.base.push(skillObj);
 
   skillObj = {code : 201742, name : '반격의 기회', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1, 
-      effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201750, buffDur : 1}],
+      effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201750, buffDur : 2}],
       tooltip : '100\% 확률로 자신에게 1턴 간 [반격의 기회] 부여<br><br>[반격의 기회] : 피격 시 피해량의 50%를 경감하고 SP 20 회복',
       flavor : '적의 공격을 예상하여 몸을 숙이고 피해를 최소화한다.'};  
   charLozic.skill.base.push(skillObj);
 
   skillObj = {code : 201743, name : '심판의 천정', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 1.2,
-      calcEffect : [{code : cons.EFFECT_TYPE_ADD_DAMAGE, value : 0.3, chkLessAttack : true}],
+      calcEffect : [{name : '기회 포착', code : cons.EFFECT_TYPE_ADD_DAMAGE, value : 0.3, chkLessAttack : true, skillCode : 201743}],
       effect : [{code : cons.EFFECT_TYPE_SPLIT_SP, value : 0.5, chkMoreAttack : true},
                 {code : cons.EFFECT_TYPE_SPLIT_SP, value : 0.5, chkEqualAttack : true}],
       tooltip : '자신의 공격횟수가 적보다 적을 경우 공격 계수 +0.3, 같거나 많은 경우 자신과 상대의 SP를 서로 합한 후 나눔',
@@ -1292,7 +1291,7 @@ const item = require('./items');
   charLozic.skill.base.push(skillObj);
 
   skillObj = {code : 201744, name : '축성', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_DRIVE, 
-      active : cons.ACTIVE_TYPE_TURN_END, cost : 4, chance : 1, cooldown : 1,
+      active : cons.ACTIVE_TYPE_TURN_END, cost : 4, chance : 1, setCooldown : 2,
       effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : [201751, 201752, 201753], buffDur : null, multiple : true}],
       tooltip : '2턴마다 자신에게 [축성-물리], [축성-마법], [축성-보호] 버프 중 하나 부여 (최대 10중첩)<br><br>[축성-물리] : 물리저항 +1\%<br>[축성-마법] : 마법저항 +1\%<br>[축성-보호] : 피해감소 +1',
       flavor : '수호자의 힘은 시간이 지날 수록 더욱 견고해진다.'};
@@ -1303,10 +1302,20 @@ const item = require('./items');
       tooltip : '자신에게 [두 번의 의지] 버프 2중첩 부여<br><br>[두 번의 의지] : 스킬 공격 계수 +0.1, 공격 성공 시 자신의 잃은 생명력의 8%를 회복하고 1중첩 소거',
       flavor : '수호자의 불굴의 의지.'};
   charLozic.skill.special = skillObj;
+
+  charLozic.expBoost = 10;
+  charLozic.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '흔들리는 달빛의 무기 카드', rank : 9, resultType : 0});
+  charLozic.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '흔들리는 달빛의 무기 카드', rank : 9, resultType : 0});
+  charLozic.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '흔들리는 달빛의 방어구 카드', rank : 9, resultType : 1});
+  charLozic.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '흔들리는 달빛의 방어구 카드', rank : 9, resultType : 1});
+  charLozic.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '흔들리는 달빛의 보조방어구 카드', rank : 9, resultType : 2});
+  charLozic.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '흔들리는 달빛의 보조방어구 카드', rank : 9, resultType : 2});
+  charLozic.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '흔들리는 달빛의 장신구 카드', rank : 9, resultType : 3});
+  charLozic.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '흔들리는 달빛의 장신구 카드', rank : 9, resultType : 3});
   
   function _initChar(char) {
     char.stat = {};
-    char.stat.maxHp = 4400;
+    char.stat.maxHp = 400;
     char.stat.spCharge = 5;
     char.stat.hpRegen = 0;
     char.stat.spRegen = 5;
@@ -1334,7 +1343,7 @@ const item = require('./items');
     char.exp = 0;
     char.reqExp = 100;
     char.statPoint = 0;
-    char.premiumPoint = 10;
+    char.premiumPoint = 20;
     char.battleCnt = 0;
     char.winCnt = 0;
     char.battleRecord = {};
@@ -1354,3 +1363,4 @@ const item = require('./items');
   module.exports.bks = charBks;
   module.exports.nux = charNux;
   module.exports.dekaitz = charDekais;
+  module.exports.lozic = charLozic;

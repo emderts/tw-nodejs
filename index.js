@@ -55,10 +55,10 @@ const app = express()
 .post('/dismantleItem', procDismantleItem)
 .post('/useStatPoint', procUseStatPoint)
 .post('/doRankup', procRankup)
-.get('/test', (req, res) => res.render('pages/battle', {result: battlemodule.doBattle(chara.aeika, monster.mCrawler, 1).result}))
+.get('/test', (req, res) => res.render('pages/battle', {result: battlemodule.doBattle(chara.nux, chara.lozic, 1).result}))
 .get('/test2', (req, res) => res.send(setCharacter('kemderts', 1, chara.kines)))
 .get('/test3', (req, res) => res.send(setCharacter('thelichking', 2, chara.lk)))
-.get('/test4', (req, res) => res.send(procInit2()))
+.get('/test4', (req, res) => res.send(procInit()))
 .get('/test5', (req, res) => res.render('pages/resultCard', {item : {name: 'test', rarity: Math.floor(Math.random() * 6)}}))
 .get('/test6', (req, res) => res.render('pages/index', {
   user: {name: 'kk'},
@@ -157,9 +157,10 @@ function procFullTest() {
 }
 
 async function procInit () {
+  await setCharacter('sxngho', 10, chara.lozic);
   //await setCharacter('thelichking', 1, chara.lk);
   //await setCharacter('kemderts', 2, chara.kines);
-  await setCharacter('bemderts', 3, chara.julius);
+  /*await setCharacter('bemderts', 3, chara.julius);
   await setCharacter('renia1369', 4, chara.psi);
   await setCharacter('bear1704', 5, chara.aeika);
   await setCharacter('megaxzero', 6, chara.seriers);
@@ -172,7 +173,7 @@ async function procInit () {
     client.release();
   } catch (err) {
     console.error(err);
-  }
+  }*/
 }
 
 async function procInit2 () {
@@ -1298,7 +1299,7 @@ async function getCharacter (id) {
 async function setCharacter (id, uid, data) {
   try {
     const client = await pool.connect();
-    const result = await client.query('insert into characters(uid, char_data, actionpoint) values ($1, $2, 5)', [uid, data]);
+    const result = await client.query('insert into characters(uid, char_data, actionpoint) values ($1, $2, 10)', [uid, data]);
     const result2 = await client.query('update users set uid = $1 where id = $2', [uid, id]);
 
     client.release();

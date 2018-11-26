@@ -88,7 +88,7 @@ function _doBattleEnd(flag) {
   result += '<div class="resultWrap"><div class="resultCharInfo">';
   var expTurn = turnCount < 200 ? turnCount : 200;
   var expRate = charLeft.rank > charRight.rank ? 0.9 : (charLeft.rank < charRight.rank ? 1.1 : 1);
-  if (charLeft.expBoost && charLeft.ezpBoost > 0) {
+  if (charLeft.expBoost && charLeft.expBoost > 0) {
     expRate += 0.15;
   }
   if (retObj.winnerLeft) {    
@@ -346,7 +346,10 @@ function calcDamage(winner, loser, skill) {
   retObj.crit = getRandom(winner.stat.crit + critMod);
   retObj.type = skill.type;
   retObj.value = (retObj.skillRat * retObj.atkRat) * (1 - retObj.reduce);
-  
+
+  if (skill.calcEffect) {
+    resolveEffects(winner, loser, skill.calcEffect, retObj, skill);
+  }
   resolveEffects(winner, loser, getBuffEffects(winner, cons.ACTIVE_TYPE_CALC_DAMAGE), retObj, skill);
   resolveEffects(winner, loser, getItemEffects(winner, cons.ACTIVE_TYPE_CALC_DAMAGE), retObj, skill);
   resolveEffects(loser, winner, getBuffEffects(loser, cons.ACTIVE_TYPE_CALC_DAMAGE_RECEIVE), retObj, skill);
@@ -491,8 +494,23 @@ function resolveEffects(winner, loser, effects, damage, skill) {
     if (eff.chkSkillCode && skill.code !== eff.chkSkillCode) {
       continue;
     }
+    const isLeft = (winner == charLeft);
+    if (eff.chkLessAttack && ((isLeft && leftWin >= rightWin) || (!isLeft && leftWin <= rightWin))) {
+      continue;
+    }
+    if (eff.chkMoreAttack && ((isLeft && leftWin <= rightWin) || (!isLeft && leftWin >= rightWin))) {
+      continue;
+    }
+    if (eff.chkEqualAttack && leftWin != rightWin) {
+      continue;
+    }
     var stackMpl = eff.noStack ? 1 : (eff.buff ? (eff.buff.stack ? eff.buff.stack : 1) : 1);
     if (eff.code === cons.EFFECT_TYPE_SELF_BUFF || eff.code === cons.EFFECT_TYPE_OPP_BUFF) {
+      if (eff.direct) {
+        damage.dur *= eff.durMod;
+        giveBuff(winner, loser, damage, true);
+        continue;
+      }
       var buffObj = buffMdl.getBuffData(eff);
       buffObj.dur = eff.buffDur;
       if (eff.addEffect) {
@@ -540,6 +558,8 @@ function resolveEffects(winner, loser, effects, damage, skill) {
         valueUsed *= loser.stat[eff.percentKey];
       } else if (eff.isPercentSkill) {
         valueUsed *= skill[eff.percentKey];
+      } else if (eff.isPercentHpLost) {
+        valueUsed *= (winner.stat.maxHp - winner.curHp);
       }
       valueUsed = Math.round(valueUsed * stackMpl);
       var target = 'SP';
@@ -842,6 +862,11 @@ function resolveEffects(winner, loser, effects, damage, skill) {
         damage.resultRight += eff.value;
       }
       result += winner.name + '의 리설트 카드 갯수가 ' + eff.value + ' 되었습니다!<br>';
+    } else if (eff.code === cons.EFFECT_TYPE_SPLIT_SP) {
+      var swap = winner.curSp + loser.curSp;
+      winner.curSp = Math.round(swap * eff.value);
+      loser.curSp = swap - winner.curSp;
+      result += 'SP가 재분배됩니다!<br>';
     }
     
     if (eff.setCooldown) {
@@ -922,6 +947,9 @@ function resolveTurnEndChar(chara, opp, flag) {
   chara.curSp += chara.stat.spRegen;
   chara.curHp = Math.round(10 * chara.curHp) / 10;
   chara.curSp = Math.round(10 * chara.curSp) / 10;
+  if (chara.skillOri.drive && chara.skillOri.drive.cooldown > 0) {
+    chara.skillOri.drive.cooldown--;
+  }
 
   resolveEffects(chara, opp, getBuffEffects(chara, cons.ACTIVE_TYPE_TURN_END));
   resolveEffects(chara, opp, getItemEffects(chara, cons.ACTIVE_TYPE_TURN_END));
@@ -952,12 +980,14 @@ function findBuffByIds(chara, ids) {
 }
 
 function giveBuff(src, recv, buffObj, printFlag) {
-  for (eff of findBuffByCode(recv, cons.EFFECT_TYPE_PREVENT_DEBUFF)) { 
+  for (eff of findBuffByCode(recv, cons.EFFECT_TYPE_PREVENT_DEBUFF)) {
     if (eff.standard && ![0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].includes(buffObj.id)) {
       continue;
     }
     if (buffObj.isDebuff && buffObj.dispellable) {
       result += ' [ ' + buffObj.name + ' ] 효과가 무효화되었다!<br>';
+      resolveEffects(recv, src, getBuffEffects(recv, cons.ACTIVE_TYPE_PREVENT_DEBUFF), buffObj);
+      resolveEffects(recv, src, getItemEffects(recv, cons.ACTIVE_TYPE_PREVENT_DEBUFF), buffObj);
       return;
     }
   }
@@ -1020,6 +1050,9 @@ function checkDrive(chara, active) {
   if (chara.skill.drive.chkHp && chara.curHp > (chara.stat.maxHp * chara.skill.drive.chkHp)) {
     return false;
   }
+  if (chara.skillOri.drive.cooldown && chara.skillOri.drive.cooldown > 0) {
+    return false;
+  }
   if (chara.skill.drive.fireOnce) {
     chara.skillOri.drive.active = null;
   }
@@ -1027,6 +1060,7 @@ function checkDrive(chara, active) {
 }
 
 function resolveDrive(chara, opp, damage) {
+  chara.skillOri.drive.cooldown = chara.skill.drive.setCooldown;
   chara.curSp -= chara.skill.drive.cost;
   result += '<div class="driveSkill">[ ' + chara.name + ' ] Drive Skill - [ ' + chara.skill.drive.name + ' ] 발동!</div>';
   resolveEffects(chara, opp, chara.skill.drive.effect, damage);
