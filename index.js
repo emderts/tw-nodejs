@@ -188,9 +188,38 @@ async function procInit2 () {
     for (val of result.rows) {
       var char = JSON.parse(val.char_data);
       if (val.uid == '02') {
-        char.premiumPoint += 100;
+        char.quest = {};
+        var quests = [{code : 1, progress : 0, target : 3},
+                      {code : 2, progress : 0, target : 5},
+                      {code : 3, progress : 0, target : 5},
+                      {code : 4, progress : 0, target : 5},
+                      {code : 5, progress : 0, target : 3},
+                      {code : 6, progress : 0, target : 8},
+                      {code : 7, progress : 0, target : 2},
+                      {code : 8, progress : 0, target : 1},
+                      {code : 9, progress : 0, target : 1},
+                      {code : 10, progress : 0, target : 10},
+                      {code : 11, progress : 0, target : 1},
+                      {code : 12, progress : 0, target : 50}];
+        var rand = Math.floor(Math.random() * 12);
+        var target = quests[rand];
+        target.rewardType = Math.floor(Math.random() * 4);
+        target.rewardAmt = Math.random() < 0.8 ? 0 : 1;
+        char.quest[target.code] = target;
+        quests.splice(rand, 1);
+        var rand = Math.floor(Math.random() * 11);
+        var target = quests[rand];
+        target.rewardType = Math.floor(Math.random() * 4);
+        target.rewardAmt = Math.random() < 0.8 ? 0 : 1;
+        char.quest[target.code] = target;
+        quests.splice(rand, 1);
+        var rand = Math.floor(Math.random() * 10);
+        var target = quests[rand];
+        target.rewardType = Math.floor(Math.random() * 4);
+        target.rewardAmt = Math.random() < 0.8 ? 0 : 1;
+        char.quest[target.code] = target;
+        quests.splice(rand, 1);
       }
-      char.quest = {};
       await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), val.uid]);
     } 
     client.release();
@@ -311,6 +340,9 @@ async function procUseItem (req, res) {
           chara.inventory.splice(body.itemNum, 1);
           var rand = Math.random();
           var picked;
+          if (chara.quest[10]) {
+            chara.quest[10].progress += 1;
+          }
           if (tgtObj.resultType === undefined) {
             if (rand < 0.236) {
               picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_COMMON_UNCOMMON);
@@ -319,14 +351,23 @@ async function procUseItem (req, res) {
               picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_RARE);
               chara.inventory.push(picked);
               await addItemNews(client, chara, tgtObj, picked);
+              if (chara.quest[5]) {
+                chara.quest[5].progress += 1;
+              }
             } else if (rand < 0.2985) {
               picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_UNIQUE);
               chara.inventory.push(picked);
               await addItemNews(client, chara, tgtObj, picked);
+              if (chara.quest[5]) {
+                chara.quest[5].progress += 3;
+              }
             } else if (rand < 0.3) {
               picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_EPIC);
               chara.inventory.push(picked);
               await addItemNews(client, chara, tgtObj, picked);
+              if (chara.quest[5]) {
+                chara.quest[5].progress += 3;
+              }
             } else if (rand < 0.62) {
               chara.premiumPoint += 1;
               picked = {name : '프리미엄 포인트 1점' , rarity : cons.ITEM_RARITY_COMMON};
@@ -337,14 +378,23 @@ async function procUseItem (req, res) {
               const dustValue = 7 * Math.pow(2, 9 - tgtObj.rank);
               chara.dust += dustValue;
               picked = {name : dustValue + ' 가루' , rarity : cons.ITEM_RARITY_COMMON};
+              if (chara.quest[4]) {
+                chara.quest[4].progress += 1;
+              }
             } else if (rand < 0.88) {
               const dustValue = 13 * Math.pow(2, 9 - tgtObj.rank);
               chara.dust += dustValue;
               picked = {name : dustValue + ' 가루' , rarity : cons.ITEM_RARITY_UNCOMMON};
+              if (chara.quest[4]) {
+                chara.quest[4].progress += 1;
+              }
             } else if (rand < 0.9) {
               const dustValue = 50 * Math.pow(2, 9 - tgtObj.rank);
               chara.dust += dustValue;
               picked = {name : dustValue + ' 가루' , rarity : cons.ITEM_RARITY_RARE};
+              if (chara.quest[4]) {
+                chara.quest[4].progress += 1;
+              }
             } else {
               picked = makeDayStone();
               chara.inventory.push(picked);
@@ -358,10 +408,16 @@ async function procUseItem (req, res) {
               picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_RARE, tgtObj.resultType);
               chara.inventory.push(picked);
               await addItemNews(client, chara, tgtObj, picked);
+              if (chara.quest[5]) {
+                chara.quest[5].progress += 1;
+              }
             } else if (rand < 0.9365) {
               picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_UNIQUE, tgtObj.resultType);
               chara.inventory.push(picked);
               await addItemNews(client, chara, tgtObj, picked);
+              if (chara.quest[5]) {
+                chara.quest[5].progress += 3;
+              }
             } else if (rand < 0.9895) {
               picked = _getItem(tgtObj.rank - 1, cons.ITEM_RARITY_COMMON_UNCOMMON, tgtObj.resultType);
               chara.inventory.push(picked);
@@ -369,6 +425,9 @@ async function procUseItem (req, res) {
               picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_EPIC, tgtObj.resultType);
               chara.inventory.push(picked);
               await addItemNews(client, chara, tgtObj, picked);
+              if (chara.quest[5]) {
+                chara.quest[5].progress += 3;
+              }
             } 
             res.render('pages/resultCard', {item : picked});
           } else if (tgtObj.resultType == 90001) {
@@ -379,14 +438,23 @@ async function procUseItem (req, res) {
               picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_RARE);
               chara.inventory.push(picked);
               await addItemNews(client, chara, tgtObj, picked);
+              if (chara.quest[5]) {
+                chara.quest[5].progress += 1;
+              }
             } else if (rand < 0.249) {
               picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_UNIQUE);
               chara.inventory.push(picked);
               await addItemNews(client, chara, tgtObj, picked);
+              if (chara.quest[5]) {
+                chara.quest[5].progress += 3;
+              }
             } else if (rand < 0.25) {
               picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_EPIC);
               chara.inventory.push(picked);
               await addItemNews(client, chara, tgtObj, picked);
+              if (chara.quest[5]) {
+                chara.quest[5].progress += 3;
+              }
             } else if (rand < 0.42) {
               chara.currencies.mevious += 2;
               picked = {name : '메비우스 섬멸의 증표 2개' , rarity : cons.ITEM_RARITY_COMMON};
@@ -400,10 +468,16 @@ async function procUseItem (req, res) {
               const dustValue = 7 * Math.pow(2, 9 - tgtObj.rank);
               chara.dust += dustValue;
               picked = {name : dustValue + ' 가루' , rarity : cons.ITEM_RARITY_COMMON};
+              if (chara.quest[4]) {
+                chara.quest[4].progress += 1;
+              }
             } else if (rand < 0.85) {
               const dustValue = 13 * Math.pow(2, 9 - tgtObj.rank);
               chara.dust += dustValue;
               picked = {name : dustValue + ' 가루' , rarity : cons.ITEM_RARITY_UNCOMMON};
+              if (chara.quest[4]) {
+                chara.quest[4].progress += 1;
+              }
             } else if (rand < 0.89) {
               picked = JSON.parse(JSON.stringify(item.list[412 + Math.floor(Math.random() * 4)]));
               chara.inventory.push(picked);
@@ -411,6 +485,9 @@ async function procUseItem (req, res) {
               const dustValue = 50 * Math.pow(2, 9 - tgtObj.rank);
               chara.dust += dustValue;
               picked = {name : dustValue + ' 가루' , rarity : cons.ITEM_RARITY_RARE};
+              if (chara.quest[4]) {
+                chara.quest[4].progress += 1;
+              }
             } else {
               picked = makeDayStone();
               chara.inventory.push(picked);           
@@ -425,14 +502,23 @@ async function procUseItem (req, res) {
               picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_RARE);
               chara.inventory.push(picked);
               await addItemNews(client, chara, tgtObj, picked);
+              if (chara.quest[5]) {
+                chara.quest[5].progress += 1;
+              }
             } else if (rand < 0.249) {
               picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_UNIQUE);
               chara.inventory.push(picked);
               await addItemNews(client, chara, tgtObj, picked);
+              if (chara.quest[5]) {
+                chara.quest[5].progress += 3;
+              }
             } else if (rand < 0.25) {
               picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_EPIC);
               chara.inventory.push(picked);
               await addItemNews(client, chara, tgtObj, picked);
+              if (chara.quest[5]) {
+                chara.quest[5].progress += 3;
+              }
             } else if (rand < 0.42) {
               chara.currencies.ember += 2;
               picked = {name : '잔불 2개' , rarity : cons.ITEM_RARITY_COMMON};
@@ -446,10 +532,16 @@ async function procUseItem (req, res) {
               const dustValue = 7 * Math.pow(2, 9 - tgtObj.rank);
               chara.dust += dustValue;
               picked = {name : dustValue + ' 가루' , rarity : cons.ITEM_RARITY_COMMON};
+              if (chara.quest[4]) {
+                chara.quest[4].progress += 1;
+              }
             } else if (rand < 0.85) {
               const dustValue = 13 * Math.pow(2, 9 - tgtObj.rank);
               chara.dust += dustValue;
               picked = {name : dustValue + ' 가루' , rarity : cons.ITEM_RARITY_UNCOMMON};
+              if (chara.quest[4]) {
+                chara.quest[4].progress += 1;
+              }
             } else if (rand < 0.89) {
               picked = JSON.parse(JSON.stringify(item.list[416 + Math.floor(Math.random() * 4)]));
               chara.inventory.push(picked);
@@ -457,6 +549,9 @@ async function procUseItem (req, res) {
               const dustValue = 50 * Math.pow(2, 9 - tgtObj.rank);
               chara.dust += dustValue;
               picked = {name : dustValue + ' 가루' , rarity : cons.ITEM_RARITY_RARE};
+              if (chara.quest[4]) {
+                chara.quest[4].progress += 1;
+              }
             } else {
               picked = makeDayStone();
               chara.inventory.push(picked);            
@@ -471,10 +566,16 @@ async function procUseItem (req, res) {
               picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_RARE, tgtObj.resultType);
               chara.inventory.push(picked);
               await addItemNews(client, chara, tgtObj, picked);
+              if (chara.quest[5]) {
+                chara.quest[5].progress += 1;
+              }
             } else if (rand < 0.85) {
               picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_UNIQUE, tgtObj.resultType);
               chara.inventory.push(picked);
               await addItemNews(client, chara, tgtObj, picked);
+              if (chara.quest[5]) {
+                chara.quest[5].progress += 3;
+              }
             } else if (rand < 0.98) {
               chara.currencies.burntMark += 5;
               picked = {name : '불탄 증표 5개' , rarity : cons.ITEM_RARITY_COMMON};
@@ -482,6 +583,9 @@ async function procUseItem (req, res) {
               picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_EPIC, tgtObj.resultType);
               chara.inventory.push(picked);
               await addItemNews(client, chara, tgtObj, picked);
+              if (chara.quest[5]) {
+                chara.quest[5].progress += 3;
+              }
             } 
             res.render('pages/resultCard', {item : picked});
           }
@@ -542,6 +646,9 @@ async function procEnchantItem (req, res) {
         var used = chara.inventory[body.itemUsed];
         var tgt = chara.inventory[body.itemNum];
         if (tgt.type < 4 && used.type === cons.ITEM_TYPE_DAYSTONE) {
+          if (chara.quest[11] && tgt.day == new Date().getDay()) {
+            chara.quest[11].progress += 1;
+          }
           chara.inventory.splice(body.itemUsed, 1);
           if (!tgt.socket) {
             tgt.socket = [];
@@ -637,10 +744,37 @@ async function procBattle(req, res) {
       if (re.winnerLeft) {
         left.winCnt++;
         left.winRecord[body.charUid] = left.winRecord[body.charUid] ? left.winRecord[body.charUid] + 1 : 1;
+        if (left.quest[1]) {
+          left.quest[1].progress += 1;
+        }
+        if (left.quest[2]) {
+          if (!left.quest[2].data) {
+            left.quest[2].data = [];
+          }
+          if (left.quest[2].data.includes(body.charUid)) {
+            left.quest[2].data.push(body.charUid);
+            left.quest[2].progress += 1;            
+          }
+        }
+        if (left.quest[7] && right.title == '리치 왕') {
+          left.quest[7].progress += 1;
+        }
+        if (left.quest[12]) {
+          left.quest[12].progress += re.leftWin;
+        }
       }
       if (re.winnerRight) {
         right.winCnt++;
         right.winRecord[cuid] = right.winRecord[cuid] ? right.winRecord[cuid] + 1 : 1;
+        if (right.quest[1]) {
+          right.quest[1].progress += 1;
+        }
+        if (right.quest[3]) {
+          right.quest[3].progress += 1;
+        }
+        if (right.quest[12]) {
+          right.quest[12].progress += re.rightWin;
+        }
       }
       await client.query('update characters set char_data = $1, actionPoint = $2 where uid = $3', [JSON.stringify(left), cap-1,  cuid]);
       await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(right), body.charUid]);
@@ -1254,6 +1388,12 @@ async function procDismantleItem (req, res) {
       char.inventory.splice(body.itemNum, 1);
       var dustVal = Math.round(dustInfo[tgt.rarity] * Math.pow(2, 9 - tgt.rank));
       char.dust += dustVal;
+      if (char.quest[6]) {
+        char.quest[6].progress += 1;
+      }
+      if (char.quest[9] && tgt.rarity >= cons.ITEM_RARITY_UNIQUE) {
+        char.quest[9].progress += 1;
+      }
     }
     await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
     client.release();

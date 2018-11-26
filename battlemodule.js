@@ -119,6 +119,8 @@ function _doBattleEnd(flag) {
   retObj.result = result;
   retObj.leftInfo = charLeft;
   retObj.rightInfo = charRight;
+  retObj.leftWin = leftWin;
+  retObj.rightWin = rightWin;
   return retObj;
   
 }
