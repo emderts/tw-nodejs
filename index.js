@@ -193,8 +193,8 @@ async function procInit2 () {
       }
       await client.query('update characters set uid = $1 where uid = $2', ['0' + val.uid, val.uid]);
     } 
-    const result = await client.query('select * from users');
-    for (val of result.rows) {
+    const result3 = await client.query('select * from users');
+    for (val of result3.rows) {
       if (val.uid == '10') {
         continue;
       }
