@@ -9,7 +9,10 @@
     <style>
       body {font-family: "Nanum Gothic", sans-serif; }
       div {width: 450px; max-width: 100%; margin: 0 auto; }
-      .questItem {float: left; }
+      .questItem {width: 60%; padding: 3%; text-align: center; border: 0.1px solid gainsboro; background-color: aliceblue; }
+      .questTitle {font-weight: bold; font-size: 17px; margin-bottom: 2px; }
+      .questDesc {font-size: 15px; margin-bottom: 8px; }
+      .questReward {font-size: 15px; margin-bottom: 3px; }
       .questItem button {width: 450px; max-width: 100%; background-color: #ffffea; }
       .questItem button:hover {background-color: #ffffcc; }
       .backLink {text-align: center; width: 40%; margin: 10px auto; overflow: hidden; }
@@ -26,10 +29,10 @@
     case 1:
       cname += '일반 리설트 카드 ' + (2 + 2 * val.rewardAmt) + '장';
       break;
-    case 1:
+    case 2:
       cname += '추가 피로도 ' + (2 + 1 * val.rewardAmt) + '점';
       break;
-    case 1:
+    case 3:
       cname += '장비 리설트 카드 ' + (1 + 1 * val.rewardAmt) + '장';
       break;
     }
@@ -46,9 +49,9 @@
   <% for (key in quest) { 
        val = quest[key]; %>
     <div class="questItem">
-      <div><%= printName[val.code] %></div>
-      <div><%= printDesc[val.code] + ' ' + val.progress + ' / ' + val.target %></div>
-      <div><%= printReward(val) %></div>
+      <div class="questTitle"><%= printName[val.code] %></div>
+      <div class="questDesc"><%= printDesc[val.code] + ' ' + val.progress + ' / ' + val.target %></div>
+      <div class="questReward"><%= printReward(val) %></div>
       <form action="/submitQuest" method="post">
         <button type="submit"<%= val.progress >= val.target ? '' : ' disabled' %>>완료</button>
         <input type="hidden" name="option" value="<%= val.code %>">

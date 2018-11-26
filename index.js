@@ -856,6 +856,9 @@ async function procUseShop (req, res) {
         var picked = makeDayStone(Math.floor(Math.random() * 7));
         char.inventory.push(picked);
         char.dayStoneBought = true;
+        if (char.quest[8]) {
+          char.quest[8].progress += 1;
+        }
       }
     } else if (body.option == 2) {
       if (char.premiumPoint < 10) {
@@ -865,6 +868,9 @@ async function procUseShop (req, res) {
       } else {
         char.premiumPoint -= 10;
         char.expBoost = 5;
+        if (char.quest[8]) {
+          char.quest[8].progress += 1;
+        }
       }
     } else if (body.option == 3) {
       var cost = char.actionBought ? 15 : 10;
@@ -874,6 +880,9 @@ async function procUseShop (req, res) {
         char.premiumPoint -= cost;
         action += 2;
         char.actionBought = true;
+        if (char.quest[8]) {
+          char.quest[8].progress += 1;
+        }
       }
     } else if (body.option <= 7) {
       if (char.premiumPoint < 10) {
@@ -881,6 +890,9 @@ async function procUseShop (req, res) {
       } else {
         char.premiumPoint -= 10;
         addSpecialResultCard(char, body.option - 4);
+        if (char.quest[8]) {
+          char.quest[8].progress += 1;
+        }
       }
     } else if (body.option >= 102 && body.option < 90000) {
       var cost = body.option >= 106 ? 100 : 140;
@@ -890,6 +902,9 @@ async function procUseShop (req, res) {
       } else {
         char.dust -= cost;
         addSpecialResultCard(char, body.option - 102);
+        if (char.quest[8]) {
+          char.quest[8].progress += 1;
+        }
       }
     } else if (body.option >= 90001 && body.option < 90005) {
       var cost = body.option <= 90002 ? 10 : (body.option == 90003 ? 30 : 60);
@@ -898,6 +913,9 @@ async function procUseShop (req, res) {
       } else {
         char.currencies.mevious -= cost;
         char.inventory.push(JSON.parse(JSON.stringify(item.list[412 + (body.option - 90001)])));
+        if (char.quest[8]) {
+          char.quest[8].progress += 1;
+        }
       }
     } else if (body.option >= 90005 && body.option < 90009) {
       var cost = body.option == 90005 ? 5 : (body.option == 90006 ? 15 : (body.option == 90007 ? 30 : 60));
@@ -906,6 +924,9 @@ async function procUseShop (req, res) {
       } else {
         char.currencies.ember -= cost;
         char.inventory.push(JSON.parse(JSON.stringify(item.list[416 + (body.option - 90005)])));
+        if (char.quest[8]) {
+          char.quest[8].progress += 1;
+        }
       }
     } else if (body.option >= 90009 && body.option < 90014) {
       var cost = (body.option == 90009 || body.option == 90013) ? 5 : (body.option == 90010 ? 10 : (body.option == 90011 ? 30 : 60));
@@ -915,6 +936,9 @@ async function procUseShop (req, res) {
         char.currencies.burntMark -= cost;
         if (body.option != 90013) {
           char.inventory.push(JSON.parse(JSON.stringify(item.list[420 + (body.option - 90009)])));
+          if (char.quest[8]) {
+            char.quest[8].progress += 1;
+          }
         } else {
           char.dungeonInfos.runBurningOrchard = false;
         }
@@ -1199,6 +1223,45 @@ async function procQuest(req, res) {
     const charRow = await getCharacter(sess.userUid);
     const char = JSON.parse(charRow.char_data);
     res.render('pages/quest', {quest : char.quest});
+  } catch (err) {
+    console.error(err);
+    res.send('내부 오류');
+  }
+}
+
+async function procSubmitQuest (req, res) {
+  try {
+    const body = req.body;
+    const sess = req.session; 
+    const client = await pool.connect();
+    const charRow = await getCharacter(sess.userUid);
+    const char = JSON.parse(charRow.char_data);
+    var tgt = char.quest[body.option];
+    if (tgt.progress >= tgt.target) {
+      if (tgt.rewardType == 0) {
+        char.premiumPoint += 3 + 2 * tgt.rewardAmt;
+      } else if (tgt.rewardType == 1) {
+        addResultCard(char);
+        addResultCard(char);
+        if (tgt.rewardAmt == 1) {
+          addResultCard(char);
+          addResultCard(char);
+        }
+      } else if (tgt.rewardType == 2) {
+        await client.query('update characters set actionpoint = actionpoint + $1 where uid = $2', [2 + 1 * tgt.rewardAmt, charRow.uid]);
+      } else if (tgt.rewardType == 3) {
+        addSpecialResultCard(char, 4);
+        if (tgt.rewardAmt == 1) {
+          addSpecialResultCard(char, 4);
+        }
+      }
+      delete char.quest[body.option];
+    }
+    await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
+    client.release();
+    if (!res.headersSent) {
+      res.render('pages/quest', {quest : char.quest});
+    }
   } catch (err) {
     console.error(err);
     res.send('내부 오류');
