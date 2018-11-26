@@ -176,7 +176,7 @@
   } else if (mode === 3 && inv) { 
     var description = name + '에게 아이템을 줍니다.';
     var formAction = '/giveItem';
-    var tgtInv = inv.map(x => (x.type <= 3) ? x : {}); 
+    var tgtInv = inv.map(x => (x.type <= 3 || x.type == 90001) ? x : {}); 
   }
   %>
   <div>
