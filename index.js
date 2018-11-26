@@ -1328,7 +1328,7 @@ function makeDayStone(dayIn) {
   item.name = dayStonePrefix[item.level] + dayStoneName[item.day];
   var fval = dayStoneData[item.day][0][item.level];
   var val = Math.floor(Math.random() * (fval[1] - fval[0]) + fval[0]) / 1000;
-  item.tooltip = dayStoneEffect[item.day] + ' ' + (Math.round(fval[0]*1000)/10) + '% - ' + (Math.round(fval[1]*1000)/10) + '%';
+  item.tooltip = dayStoneEffect[item.day] + ' ' + (fval[0]/10) + '% - ' + (fval[1]/10) + '%';
   item.effectDesc = dayStoneEffect[item.day] + ' ' + (Math.round(val*1000)/10) + '%';
   switch (item.day) {
   case 0:

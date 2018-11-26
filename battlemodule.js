@@ -726,7 +726,7 @@ function resolveEffects(winner, loser, effects, damage, skill) {
         efft.item = picked;
       }
       result += '[ ' + winner.items[eff.key].name + ' ] 아이템이 [ ' + picked.name + ' ] 아이템으로 바뀌었다!<br>';
-      result += getItemText(null, picked);
+      result += '<br>' + getItemText(null, picked);
       winner.items[eff.key] = picked;
     } else if (eff.code === cons.EFFECT_TYPE_ADD_DAMAGE) {
       if (eff.skillCode && eff.skillCode === skill.code) {
