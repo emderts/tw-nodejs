@@ -45,6 +45,20 @@ try {
                     {code : 12, progress : 0, target : 50}];
       var rand = Math.floor(Math.random() * 12);
       var target = quests[rand];
+      target.rewardType = Math.floor(Math.random() * 4);
+      target.rewardAmt = Math.random() < 0.8 ? 0 : 1;
+      charData.quest[target.code] = target;
+      quests.splice(rand, 1);
+      var rand = Math.floor(Math.random() * 11);
+      var target = quests[rand];
+      target.rewardType = Math.floor(Math.random() * 4);
+      target.rewardAmt = Math.random() < 0.8 ? 0 : 1;
+      charData.quest[target.code] = target;
+      quests.splice(rand, 1);
+      var rand = Math.floor(Math.random() * 10);
+      var target = quests[rand];
+      target.rewardType = Math.floor(Math.random() * 4);
+      target.rewardAmt = Math.random() < 0.8 ? 0 : 1;
       charData.quest[target.code] = target;
       quests.splice(rand, 1);
       
