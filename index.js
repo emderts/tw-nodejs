@@ -58,7 +58,7 @@ const app = express()
 .get('/test', (req, res) => res.render('pages/battle', {result: battlemodule.doBattle(chara.nux, chara.lozic, 1).result}))
 .get('/test2', (req, res) => res.send(setCharacter('kemderts', 1, chara.kines)))
 .get('/test3', (req, res) => res.send(setCharacter('thelichking', 2, chara.lk)))
-.get('/test4', (req, res) => res.send(procInit()))
+.get('/test4', (req, res) => res.send(procInit2()))
 .get('/test5', (req, res) => res.render('pages/resultCard', {item : {name: 'test', rarity: Math.floor(Math.random() * 6)}}))
 .get('/test6', (req, res) => res.render('pages/index', {
   user: {name: 'kk'},
@@ -186,7 +186,10 @@ async function procInit2 () {
     const result = await client.query('select * from characters');
     for (val of result.rows) {
       if (val.uid == '10') {
-        continue;
+        var charData = JSON.parse(val.char_data);
+        if (charData.exp == 0) {
+          await client.query('delete from characters where char_data = $1', [JSON.stringify(charData)]);
+        }
       }
       await client.query('update characters set uid = $1 where uid = $2', ['0' + val.uid, val.uid]);
     } 
