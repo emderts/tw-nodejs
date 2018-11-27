@@ -45,6 +45,7 @@ const app = express()
 .get('/tradeList', procTradeList)
 .post('/doTrade', procTrade)
 .post('/giveItem', procGive)
+.post('/givePoint', procGivePoint)
 .get('/shop', procShop)
 .post('/useShop', procUseShop)
 .get('/dungeon', procDungeon)
@@ -900,10 +901,13 @@ async function procGivePoint(req, res) {
     const charTgt = JSON.parse(charRow2.char_data);
     if (body.point <= char.premiumPoint) {
       char.premiumPoint -= body.point;
+      console.log(body.point);
+      console.log(charTgt.premiumPoint);
       charTgt.premiumPoint += body.point;
+      console.log(charTgt.premiumPoint);
     }
     await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
-    await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(charTgt), charRow2.uid]);
+    //await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(charTgt), charRow2.uid]);
     client.release();
     if (!res.headersSent) {
       res.render('pages/selectItem', {title : '아이템 주기', premiumPoint : char.premiumPoint, inv : char.inventory, mode : 3, name : charTgt.name, uid : req.body.charUid, usedItem : null});
