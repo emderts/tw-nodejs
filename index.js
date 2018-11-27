@@ -647,7 +647,7 @@ async function procEnchantItem (req, res) {
         var used = chara.inventory[body.itemUsed];
         var tgt = chara.inventory[body.itemNum];
         if (tgt.type < 4 && used.type === cons.ITEM_TYPE_DAYSTONE) {
-          if (chara.quest[11] && tgt.day == new Date().getDay()) {
+          if (chara.quest[11] && used.day == new Date().getDay()) {
             chara.quest[11].progress += 1;
           }
           chara.inventory.splice(body.itemUsed, 1);
@@ -742,26 +742,32 @@ async function procBattle(req, res) {
       left.battleRecord[body.charUid] = left.battleRecord[body.charUid] ? left.battleRecord[body.charUid] + 1 : 1;
       right.battleCnt++;
       right.battleRecord[cuid] = right.battleRecord[cuid] ? right.battleRecord[cuid] + 1 : 1;
+      if (left.quest[2]) {
+        if (!left.quest[2].data) {
+          left.quest[2].data = [];
+        }
+        if (!left.quest[2].data.includes(body.charUid)) {
+          left.quest[2].data.push(body.charUid);
+          left.quest[2].progress += 1;            
+        }
+      }
+      if (left.quest[7] && right.title == '리치 왕') {
+        left.quest[7].progress += 1;
+      }
+      if (left.quest[12]) {
+        left.quest[12].progress += re.leftWin;
+      }
+      if (right.quest[3]) {
+        right.quest[3].progress += 1;
+      }
+      if (right.quest[12]) {
+        right.quest[12].progress += re.rightWin;
+      }
       if (re.winnerLeft) {
         left.winCnt++;
         left.winRecord[body.charUid] = left.winRecord[body.charUid] ? left.winRecord[body.charUid] + 1 : 1;
         if (left.quest[1]) {
           left.quest[1].progress += 1;
-        }
-        if (left.quest[2]) {
-          if (!left.quest[2].data) {
-            left.quest[2].data = [];
-          }
-          if (left.quest[2].data.includes(body.charUid)) {
-            left.quest[2].data.push(body.charUid);
-            left.quest[2].progress += 1;            
-          }
-        }
-        if (left.quest[7] && right.title == '리치 왕') {
-          left.quest[7].progress += 1;
-        }
-        if (left.quest[12]) {
-          left.quest[12].progress += re.leftWin;
         }
       }
       if (re.winnerRight) {
@@ -769,12 +775,6 @@ async function procBattle(req, res) {
         right.winRecord[cuid] = right.winRecord[cuid] ? right.winRecord[cuid] + 1 : 1;
         if (right.quest[1]) {
           right.quest[1].progress += 1;
-        }
-        if (right.quest[3]) {
-          right.quest[3].progress += 1;
-        }
-        if (right.quest[12]) {
-          right.quest[12].progress += re.rightWin;
         }
       }
       await client.query('update characters set char_data = $1, actionPoint = $2 where uid = $3', [JSON.stringify(left), cap-1,  cuid]);
