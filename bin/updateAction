@@ -30,6 +30,7 @@ try {
         delete charData.dayStoneBought;
         delete charData.actionBought;
       }
+      charData.maxExp = 4 * charData.reqExp;
       charData.dungeonInfos.runMevious = false;
       charData.dungeonInfos.runEmberCrypt = false;
       charData.quest = {};

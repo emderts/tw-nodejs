@@ -12,6 +12,7 @@
       div.cubeWrap {padding: 10px; border: 1px solid gainsboro; background-color: aliceblue; margin: 10px 5px 0 0; }
       div.cubeItem {padding: 10px; }
       .inventoryItem button {width: 150px; float: left; padding: 2px; }
+      .inventoryItem input {width: 150px; float: left; padding: 2px; }
       .cubeItem button {width: 450px; padding: 2px; }
       .inventoryItem button:hover { }
       .itemTooltip {font-family: "Nanum Gothic", sans-serif; visibility: hidden; width: 250px; background-color: black; color: #fff; text-align: center; font-size: 13.3333px; border-radius: 6px; padding: 5px 0; position: absolute; z-index: 1; }
@@ -192,6 +193,14 @@
     <%= description %>
     <% if (mode == 2 && dustVal) { %>
       <br><%= dustVal %> 가루를 획득했습니다.
+    <% } else if (mode == 3) { %>
+      <br>프리미엄 포인트 주기 (보유량 : <%= premiumPoint %>점)
+        <form action="/givePoint" method="post">
+          <input type="tel" name="point" value="">
+          <button class="cubeButton" onclick="invClick(this, event)" type="button">
+              주기
+          </button>
+        </form>
     <% } else if (mode == 4) { %>
     <div>
       <div class="cubeWrap">

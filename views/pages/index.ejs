@@ -284,7 +284,7 @@
         </tr>
         <tr>
           <td class="charViewTitle"><%= char.rank %>급 <%= char.level %>레벨</td>
-          <td class="charViewContent"><%= char.exp + '/' + char.reqExp %></td>
+          <td class="charViewContent"><%= char.exp + '/' + char.reqExp + ' (' + char.maxExp + ')' %></td>
           <td class="charViewContent">
           <% if (char.level >= 20 && char.rank > 7) { %>
             <form action="/doRankup" method="post">
@@ -295,7 +295,7 @@
         </tr>
         <tr>
           <td class="charViewTitle">피로도</td>
-          <td class="charViewContent"><%= actionPoint %> / 20</td>
+          <td class="charViewContent"><%= actionPoint %>/20</td>
           <td class="charViewContent"><%= char.expBoost ? 'Boost ' + char.expBoost : '' %></td>
         </tr>
         <tr>

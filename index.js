@@ -45,6 +45,7 @@ const app = express()
 .get('/tradeList', procTradeList)
 .post('/doTrade', procTrade)
 .post('/giveItem', procGive)
+.post('/givePoint', procGivePoint)
 .get('/shop', procShop)
 .post('/useShop', procUseShop)
 .get('/dungeon', procDungeon)
@@ -187,25 +188,7 @@ async function procInit2 () {
     const result = await client.query('select * from characters');
     for (val of result.rows) {
       var char = JSON.parse(val.char_data);
-      if (val.uid == '03') {
-        char.birth = 4;
-      } else if (val.uid == '04') {
-        char.birth = 3;
-      } else if (val.uid == '05') {
-        char.birth = 4;
-      } else if (val.uid == '06') {
-        char.birth = 5;
-      } else if (val.uid == '07') {
-        char.birth = 2;
-      } else if (val.uid == '08') {
-        char.birth = 1;
-      } else if (val.uid == '09') {
-        char.birth = 4;
-      } else if (val.uid == '10') {
-        char.birth = 5;
-      } else if (val.uid == '11') {
-        char.birth = 5;
-      }
+      char.maxExp = 480;
       
       await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), val.uid]);
     } 
@@ -870,7 +853,7 @@ async function procTrade(req, res) {
     for (val of result.rows) {
       var charData = JSON.parse(val.char_data);
     }
-    res.render('pages/selectItem', {title : '아이템 주기', inv : char.inventory, mode : 3, name : charData.name, uid : req.body.charUid, usedItem : null});
+    res.render('pages/selectItem', {title : '아이템 주기', premiumPoint : char.premiumPoint, inv : char.inventory, mode : 3, name : charData.name, uid : req.body.charUid, usedItem : null});
     client.release();
   } catch (err) {
     console.error(err);
@@ -897,7 +880,33 @@ async function procGive(req, res) {
     await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(charTgt), charRow2.uid]);
     client.release();
     if (!res.headersSent) {
-      res.render('pages/selectItem', {title : '아이템 주기', inv : char.inventory, mode : 3, name : charTgt.name, uid : req.body.charUid, usedItem : null});
+      res.render('pages/selectItem', {title : '아이템 주기', premiumPoint : char.premiumPoint, inv : char.inventory, mode : 3, name : charTgt.name, uid : req.body.charUid, usedItem : null});
+    }
+  } catch (err) {
+    console.error(err);
+    res.send('내부 오류');
+  }
+}
+
+async function procGivePoint(req, res) {
+  try {
+    const body = req.body;
+    const sess = req.session; 
+    const client = await pool.connect();
+    const charRow = await getCharacter(sess.userUid);
+    const char = JSON.parse(charRow.char_data);
+    const result = await client.query('select * from characters where uid = $1', [body.charUid]);
+    const charRow2 = result.rows[0];
+    const charTgt = JSON.parse(charRow2.char_data);
+    if (body.point <= char.premiumPoint) {
+      char.premiumPoint -= body.point;
+      charTgt.premiumPoint += body.point;
+    }
+    await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
+    await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(charTgt), charRow2.uid]);
+    client.release();
+    if (!res.headersSent) {
+      res.render('pages/selectItem', {title : '아이템 주기', premiumPoint : char.premiumPoint, inv : char.inventory, mode : 3, name : charTgt.name, uid : req.body.charUid, usedItem : null});
     }
   } catch (err) {
     console.error(err);
@@ -950,6 +959,7 @@ async function procUseShop (req, res) {
       } else {
         char.premiumPoint -= 10;
         char.expBoost = 5;
+        char.maxExp += char.reqExp;
         if (char.quest[8]) {
           char.quest[8].progress += 1;
         }
@@ -995,9 +1005,6 @@ async function procUseShop (req, res) {
       } else {
         char.currencies.mevious -= cost;
         char.inventory.push(JSON.parse(JSON.stringify(item.list[412 + (body.option - 90001)])));
-        if (char.quest[8]) {
-          char.quest[8].progress += 1;
-        }
       }
     } else if (body.option >= 90005 && body.option < 90009) {
       var cost = body.option == 90005 ? 5 : (body.option == 90006 ? 15 : (body.option == 90007 ? 30 : 60));
@@ -1006,9 +1013,6 @@ async function procUseShop (req, res) {
       } else {
         char.currencies.ember -= cost;
         char.inventory.push(JSON.parse(JSON.stringify(item.list[416 + (body.option - 90005)])));
-        if (char.quest[8]) {
-          char.quest[8].progress += 1;
-        }
       }
     } else if (body.option >= 90009 && body.option < 90014) {
       var cost = (body.option == 90009 || body.option == 90013) ? 5 : (body.option == 90010 ? 10 : (body.option == 90011 ? 30 : 60));
@@ -1018,9 +1022,6 @@ async function procUseShop (req, res) {
         char.currencies.burntMark -= cost;
         if (body.option != 90013) {
           char.inventory.push(JSON.parse(JSON.stringify(item.list[420 + (body.option - 90009)])));
-          if (char.quest[8]) {
-            char.quest[8].progress += 1;
-          }
         } else {
           char.dungeonInfos.runBurningOrchard = false;
         }
@@ -1576,7 +1577,11 @@ async function setCharacter (id, uid, data) {
 }
 
 function addExp(chara, exp) {
+  if (exp > chara.maxExp) {
+    exp = chara.maxExp;
+  }
   chara.exp += exp;
+  chara.maxExp -= exp;
   while (chara.level < 50 && chara.exp >= chara.reqExp) {
     chara.exp -= chara.reqExp;
     chara.level++;
