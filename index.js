@@ -1452,7 +1452,7 @@ async function procActivateCube (req, res) {
         const equalDay = (day == char.stoneCube[1].day) && (day == char.stoneCube[2].day);
         if (equalLevel) {
           char.stoneCube = [];
-          chara.inventory.push(makeDayStone((equalDay ? day : Math.floor(Math.random() * 7)), null, level + 1));
+          char.inventory.push(makeDayStone((equalDay ? day : Math.floor(Math.random() * 7)), null, level + 1));
         }
       }
       await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);

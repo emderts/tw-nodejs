@@ -190,6 +190,7 @@
     <% if (mode == 2 && dustVal) { %>
       <br><%= dustVal %> 가루를 획득했습니다.
     <% } else if (mode == 4) { %>
+    <div>
       <div class="inventoryWrap">
       <% for (const [key, val] of Object.entries(cube)) { %>
       <div class="inventoryItem">
@@ -210,6 +211,7 @@
           </button>
         </form>
       </div>
+    </div>
     <% } %>
   </div>
   <div class="inventoryWrap">
