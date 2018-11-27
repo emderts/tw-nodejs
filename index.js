@@ -188,7 +188,7 @@ async function procInit2 () {
     const result = await client.query('select * from characters');
     for (val of result.rows) {
       var char = JSON.parse(val.char_data);
-      char.maxExp = 480;
+      char.resetQuest = true;
       
       await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), val.uid]);
     } 
@@ -1305,7 +1305,7 @@ async function procQuest(req, res) {
     const sess = req.session; 
     const charRow = await getCharacter(sess.userUid);
     const char = JSON.parse(charRow.char_data);
-    res.render('pages/quest', {quest : char.quest});
+    res.render('pages/quest', {quest : char.quest, resetQuest : char.resetQuest});
   } catch (err) {
     console.error(err);
     res.send('내부 오류');
@@ -1344,7 +1344,56 @@ async function procSubmitQuest (req, res) {
     await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
     client.release();
     if (!res.headersSent) {
-      res.render('pages/quest', {quest : char.quest});
+      res.render('pages/quest', {quest : char.quest, resetQuest : char.resetQuest});
+    }
+  } catch (err) {
+    console.error(err);
+    res.send('내부 오류');
+  }
+}
+
+async function procResetQuest (req, res) {
+  try {
+    const body = req.body;
+    const sess = req.session; 
+    const client = await pool.connect();
+    const charRow = await getCharacter(sess.userUid);
+    const char = JSON.parse(charRow.char_data);
+    if (char.resetQuest) {
+      char.resetQuest = false;
+      var quests = [{code : 1, progress : 0, target : 3},
+                    {code : 2, progress : 0, target : 5},
+                    {code : 3, progress : 0, target : 5},
+                    {code : 4, progress : 0, target : 5},
+                    {code : 5, progress : 0, target : 3},
+                    {code : 6, progress : 0, target : 8},
+                    {code : 7, progress : 0, target : 2},
+                    {code : 8, progress : 0, target : 1},
+                    {code : 9, progress : 0, target : 1},
+                    {code : 10, progress : 0, target : 10},
+                    {code : 11, progress : 0, target : 1},
+                    {code : 12, progress : 0, target : 50}];
+      for (key in char.quest) {
+        var i = 0;
+        for (qst of quests) {
+          if (qst.code == key) {
+            quests.splice(i, 1);
+            break;
+          }
+          i++;
+        }
+      }
+      var rand = Math.floor(Math.random() * quests.length);
+      var target = quests[rand];
+      target.rewardType = Math.floor(Math.random() * 4);
+      target.rewardAmt = 0;
+      char.quest[target.code] = target;
+      delete char.quest[body.option];
+    }
+    await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
+    client.release();
+    if (!res.headersSent) {
+      res.render('pages/quest', {quest : char.quest, resetQuest : char.resetQuest});
     }
   } catch (err) {
     console.error(err);

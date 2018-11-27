@@ -85,11 +85,11 @@ function _doBattleEnd(flag) {
   result += '<div class="resultWrap"><div class="resultCharInfo">';
   if (charLeft.rank < charRight.rank) {
     retObj.resultLeft -= (charRight.rank - charLeft.rank);
-    result += charLeft.name + '의 등급이 높아 리설트 카드 획득량이 ' + (charRight.rank - charLeft.rank) + ' 감소합니다.';
+    result += charLeft.name + '의 등급이 높아 리설트 카드 획득량이 ' + (charRight.rank - charLeft.rank) + ' 감소합니다.<br>';
   }
   if (charRight.rank < charLeft.rank) {
     retObj.resultRight -= (charLeft.rank - charRight.rank);
-    result += charRight.name + '의 등급이 높아 리설트 카드 획득량이 ' + (charLeft.rank - charRight.rank) + ' 감소합니다.';
+    result += charRight.name + '의 등급이 높아 리설트 카드 획득량이 ' + (charLeft.rank - charRight.rank) + ' 감소합니다.<br>';
   }
   resolveEffects(charLeft, charRight, getBuffEffects(charLeft, cons.ACTIVE_TYPE_BATTLE_END), retObj, true);
   resolveEffects(charRight, charLeft, getBuffEffects(charRight, cons.ACTIVE_TYPE_BATTLE_END), retObj, false);

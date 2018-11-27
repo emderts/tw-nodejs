@@ -36,7 +36,7 @@
       cname += '장비 리설트 카드 ' + (1 + 1 * val.rewardAmt) + '장';
       break;
     }
-    return cname;
+    return cname + '<br>경험치 10%';
   }
   
   printName = ['', '승리가 눈 앞에 있다!', '도장 깨기', '저를 때려주세요', '가루족망겜', '실력갓흥겜', '안되겠소! 갑시다!', '왕위를 계승 중입니다, 아버지', '존버하지 마세요', '위대한 해체가', '도로우! 버서커 소울!', '오늘은 n요일이에요', '공격왕 김공격'];
@@ -54,6 +54,10 @@
       <div class="questReward"><%= printReward(val) %></div>
       <form action="/submitQuest" method="post">
         <button type="submit"<%= val.progress >= val.target ? '' : ' disabled' %>>완료</button>
+        <input type="hidden" name="option" value="<%= val.code %>">
+      </form>
+      <form action="/resetQuest" method="post">
+        <button type="submit"<%= resetQuest ? '' : ' disabled' %>>교체</button>
         <input type="hidden" name="option" value="<%= val.code %>">
       </form>
     </div>

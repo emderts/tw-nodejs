@@ -64,6 +64,7 @@ try {
       target.rewardAmt = 0;
       charData.quest[target.code] = target;
       quests.splice(rand, 1); 
+      charData.resetQuest = true;
       
       await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(charData), val.uid]);
     } 
