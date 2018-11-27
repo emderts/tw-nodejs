@@ -845,7 +845,7 @@ const item = require('./items');
   effectObj.buffDur = 5;
   skillObj.effect.push(effectObj);
   skillObj.tooltip = '턴 시작 시 25\% 확률로 자신에게 5턴간 [환영] 버프 부여<br><br>[환영] : 치명 +2\%p, 회피 +6\%p, 회피 시 버프 하나 소거';
-  skillObj.flavor = '수많은 환영들과 협공을 합니다.';
+  skillObj.flavor = '자신의 행동을 따라하는 환영을 생성합니다.';
   charAeohelm.skill.drive = skillObj;
 
   skillObj = {};
@@ -882,7 +882,7 @@ const item = require('./items');
   effectObj.value = 0.6;
   skillObj.effect.push(effectObj);
   skillObj.tooltip = '자신에게 5턴간 [환영] 버프를 2개 부여, 자신에게 3턴간 [암흑] 버프 부여, 자신의 [환영] 버프 수만큼 물리 0.6 추가 피해<br><br>[암흑] : 치명 +10\%p, 치명타 시 SP 3 흡수';
-  skillObj.flavor = '자신의 행동을 따라하는 환영을 생성합니다.';
+  skillObj.flavor = '수많은 환영들과 협공을 합니다.';
   charAeohelm.skill.special = skillObj;
 
 
@@ -1401,6 +1401,7 @@ const item = require('./items');
     char.dungeonInfos = {};
     char.currencies = {};
     char.quest = {};
+    char.stoneCube = [];
   }
 
   module.exports.kines = charLeft;

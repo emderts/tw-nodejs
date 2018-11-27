@@ -160,6 +160,8 @@
       if (mode == 2) {
         rtext += '<br><br>가루 양 : ' + Math.round(dustInfo[item.rarity] * Math.pow(2, 9 - item.rank));
       }
+    } else if (item.type == 999 && item.tooltip) {
+      rtext += '<br>' + item.tooltip;
     }
     return rtext;
   }
@@ -177,12 +179,37 @@
     var description = name + '에게 아이템을 줍니다.';
     var formAction = '/giveItem';
     var tgtInv = inv.map(x => (x.type <= 3 || x.type == 90001) ? x : {}); 
+  } else if (mode === 4 && inv) { 
+    var description = '요일석을 합성합니다!';
+    var formAction = '/addCube';
+    var tgtInv = inv.map(x => (x.type == 999) ? x : {}); 
   }
   %>
   <div>
     <%= description %>
     <% if (mode == 2 && dustVal) { %>
       <br><%= dustVal %> 가루를 획득했습니다.
+    <% } else if (mode == 4) { %>
+      <div class="inventoryWrap">
+      <% for (const [key, val] of Object.entries(cube)) { %>
+      <div class="inventoryItem">
+        <form action="/removeCube" method="post">
+          <button class="<%= getButtonText(val.rarity) %> inventoryButton" onclick="invClick(this, event)" type="button">
+            <%= val.name %>
+            <div class="itemTooltip"><%- makeTooltip(val) %></div>
+          </button>
+          <input type="hidden" name="itemNum" value="<%= key %>">
+        </form>
+      </div>
+    <%   } %>
+    </div>
+      <div class="inventoryItem">
+        <form action="/activateCube">
+          <button class="inventoryButton" onclick="invClick(this, event)" type="button">
+              합성
+          </button>
+        </form>
+      </div>
     <% } %>
   </div>
   <div class="inventoryWrap">

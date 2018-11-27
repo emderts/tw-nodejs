@@ -55,9 +55,13 @@ const app = express()
 .post('/submitQuest', procSubmitQuest)
 .get('/dismantlingYard', procDismantlingYard)
 .post('/dismantleItem', procDismantleItem)
+.get('/stoneCube', procStoneCube)
+.post('/addCube', procAddCube)
+.post('/removeCube', procRemoveCube)
+.get('/activateCube', procActivateCube)
 .post('/useStatPoint', procUseStatPoint)
 .post('/doRankup', procRankup)
-.get('/test', (req, res) => res.render('pages/battle', {result: battlemodule.doBattle(chara.aeika, chara.aeohelm, 1).result}))
+.get('/test', (req, res) => res.render('pages/battle', {result: battlemodule.doBattle(chara.marang, monster.oLegor, 1).result}))
 .get('/test2', (req, res) => res.send(setCharacter('kemderts', 1, chara.kines)))
 .get('/test3', (req, res) => res.send(setCharacter('thelichking', 2, chara.lk)))
 .get('/test4', (req, res) => res.send(procInit2()))
@@ -187,9 +191,7 @@ async function procInit2 () {
     const result = await client.query('select * from characters');
     for (val of result.rows) {
       var char = JSON.parse(val.char_data);
-      if (val.uid == '11') {
-        char.quest = {};
-      }
+      char.stoneCube = [];
       
       await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), val.uid]);
     } 
@@ -367,7 +369,7 @@ async function procUseItem (req, res) {
                 chara.quest[4].progress += 1;
               }
             } else {
-              picked = makeDayStone();
+              picked = makeDayStone(null, tgtObj.rank);
               chara.inventory.push(picked);
             }
             res.render('pages/resultCard', {item : picked});
@@ -460,7 +462,7 @@ async function procUseItem (req, res) {
                 chara.quest[4].progress += 1;
               }
             } else {
-              picked = makeDayStone();
+              picked = makeDayStone(null, tgtObj.rank);
               chara.inventory.push(picked);           
             }
             res.render('pages/resultCard', {item : picked});
@@ -524,7 +526,7 @@ async function procUseItem (req, res) {
                 chara.quest[4].progress += 1;
               }
             } else {
-              picked = makeDayStone();
+              picked = makeDayStone(null, tgtObj.rank);
               chara.inventory.push(picked);            
             }            
             res.render('pages/resultCard', {item : picked});
@@ -1304,6 +1306,7 @@ async function procSubmitQuest (req, res) {
     const char = JSON.parse(charRow.char_data);
     var tgt = char.quest[body.option];
     if (tgt.progress >= tgt.target) {
+      addExp(char, char.reqExp / 10);
       if (tgt.rewardType == 0) {
         char.premiumPoint += 3 + 2 * tgt.rewardAmt;
       } else if (tgt.rewardType == 1) {
@@ -1377,6 +1380,93 @@ async function procDismantleItem (req, res) {
   }
 }
 
+async function procStoneCube(req, res) {
+  try {
+    const sess = req.session; 
+    const charRow = await getCharacter(sess.userUid);
+    const char = JSON.parse(charRow.char_data);
+    res.render('pages/selectItem', {title : '요일석 합성', inv : char.inventory, mode : 4, cube : char.stoneCube, usedItem : 0});
+  } catch (err) {
+    console.error(err);
+    res.send('내부 오류');
+  }
+}
+
+async function procAddCube (req, res) {
+  try {
+    const body = req.body;
+    const sess = req.session; 
+    const client = await pool.connect();
+    const charRow = await getCharacter(sess.userUid);
+    const char = JSON.parse(charRow.char_data);
+    var tgt = char.inventory[body.itemNum];
+    if (tgt.type == 999 && char.stoneCube.length < 3) {
+      char.inventory.splice(body.itemNum, 1);
+      char.stoneCube.push(tgt);
+    }
+    await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
+    client.release();
+    if (!res.headersSent) {
+      res.render('pages/selectItem', {title : '요일석 합성', inv : char.inventory, mode : 4, cube : char.stoneCube, usedItem : 0});
+    }
+  } catch (err) {
+    console.error(err);
+    res.send('내부 오류');
+  }
+}
+
+async function procRemoveCube (req, res) {
+  try {
+    const body = req.body;
+    const sess = req.session; 
+    const client = await pool.connect();
+    const charRow = await getCharacter(sess.userUid);
+    const char = JSON.parse(charRow.char_data);
+    var tgt = char.stoneCube[body.itemNum];
+    if (tgt.type == 999) {
+      char.stoneCube.splice(body.itemNum, 1);
+      char.inventory.push(tgt);
+    }
+    await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
+    client.release();
+    if (!res.headersSent) {
+      res.render('pages/selectItem', {title : '요일석 합성', inv : char.inventory, mode : 4, cube : char.stoneCube, usedItem : 0});
+    }
+  } catch (err) {
+    console.error(err);
+    res.send('내부 오류');
+  }
+}
+
+async function procActivateCube (req, res) {
+  try {
+    const sess = req.session; 
+    const client = await pool.connect();
+    const charRow = await getCharacter(sess.userUid);
+    const char = JSON.parse(charRow.char_data)
+    if (char.stoneCube.length >= 3) {
+      const level = char.stoneCube[0].level;
+      const day = char.stoneCube[0].day;
+      if (level < 4) {
+        const equalLevel = (level == char.stoneCube[1].level) && (level == char.stoneCube[2].level);
+        const equalDay = (day == char.stoneCube[1].day) && (day == char.stoneCube[2].day);
+        if (equalLevel) {
+          char.stoneCube = [];
+          chara.inventory.push(makeDayStone((equalDay ? day : Math.floor(Math.random() * 7)), null, level + 1));
+        }
+      }
+      await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
+    }
+    client.release();
+    if (!res.headersSent) {
+      res.render('pages/selectItem', {title : '요일석 합성', inv : char.inventory, mode : 4, cube : char.stoneCube, usedItem : 0});
+    }
+  } catch (err) {
+    console.error(err);
+    res.send('내부 오류');
+  }
+}
+
 async function procUseStatPoint (req, res) {
   const client = await pool.connect();
   const sess = req.session; 
@@ -1398,7 +1488,7 @@ async function procRankup (req, res) {
   const sess = req.session; 
   const charRow = await getCharacter(sess.userUid);
   const char = JSON.parse(charRow.char_data);
-  if (char.level >= 20 && char.rank > 1) {
+  if (char.level >= 20 && char.rank > 7) {
     char.level = 1;
     char.rank--;
     char.reqExp += 20;
@@ -1491,13 +1581,22 @@ const dayStoneData = [
 const dayStonePrefix = ['최하급 ', '하급 ', '중급 ', '상급 ', '최상급 '];
 const dayStoneName = ['일석', '월석', '화석', '수석', '목석', '금석', '토석'];
 const dayStoneEffect = ['치명피해', '치명', '물리공격력', '마법공격력', 'SP 소모량 감소', '저항', '생명력'];
-function makeDayStone(dayIn) {
+function makeDayStone(dayIn, rank, levelIn) {
   var rand = Math.random();
   var item = {};
   item.type = cons.ITEM_TYPE_DAYSTONE;
   item.rarity = cons.ITEM_RARITY_RARE;
   item.day = dayIn ? dayIn : new Date().getDay();
   item.level = (rand < 0.39) ? 0 : ((rand < 0.68) ? 1 : ((rand < 0.88) ? 2 : ((rand < 0.98) ? 3 : 4)));
+  if (rank == 9 && item.level > 2) {
+    item.level = 2;
+  }
+  if (rank == 8 && item.level > 3) {
+    item.level = 3;
+  }
+  if (levelIn) {
+    item.level = levelIn;
+  }
   item.name = dayStonePrefix[item.level] + dayStoneName[item.day];
   var fval = dayStoneData[item.day][0][item.level];
   var val = Math.floor(Math.random() * (fval[1] - fval[0]) + fval[0]) / 1000;

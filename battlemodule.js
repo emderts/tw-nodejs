@@ -82,8 +82,22 @@ function _doBattleEnd(flag) {
   retObj.turnCount = turnCount;
   retObj.resultLeft = retObj.winnerLeft ? 2 : 1;
   retObj.resultRight = retObj.winnerRight ? 2 : 1;
+  if (charLeft.rank < charRight.rank) {
+    retObj.resultLeft -= (charRight.rank - charLeft.rank);
+    result += charLeft.name + '의 등급이 높아 리설트 카드 획득량이 ' + (charRight.rank - charLeft.rank) + ' 감소합니다.';
+  }
+  if (charRight.rank < charLeft.rank) {
+    retObj.resultRight -= (charLeft.rank - charRight.rank);
+    result += charRight.name + '의 등급이 높아 리설트 카드 획득량이 ' + (charLeft.rank - charRight.rank) + ' 감소합니다.';
+  }
   resolveEffects(charLeft, charRight, getBuffEffects(charLeft, cons.ACTIVE_TYPE_BATTLE_END), retObj, true);
   resolveEffects(charRight, charLeft, getBuffEffects(charRight, cons.ACTIVE_TYPE_BATTLE_END), retObj, false);
+  if (retObj.resultLeft < 0) {
+    retObj.resultLeft = 0;
+  }
+  if (retObj.resultRight < 0) {
+    retObj.resultRight = 0;
+  }
   
   result += '<div class="resultWrap"><div class="resultCharInfo">';
   var expTurn = turnCount < 200 ? turnCount : 200;
@@ -1056,6 +1070,10 @@ function giveBuff(src, recv, buffObj, printFlag) {
   } else {
     recv.buffs.push(buffObj);
   }       
+  
+  if (checkDrive(recv, cons.ACTIVE_TYPE_RECEIVE_BUFF)) {
+    resolveDrive(recv, src, buffObj);
+  }
 }
 
 function removeBuff(buff) {
@@ -1066,6 +1084,9 @@ function removeBuff(buff) {
 
 function checkDrive(chara, active) {
   if (!chara.skill.drive) {
+    return false;
+  }
+  if (chara.skill.drive.chk && findBuffByIds(chara, chara.skill.drive.chk).length == 0) {
     return false;
   }
   if (chara.skill.drive.chkNot && findBuffByIds(chara, chara.skill.drive.chkNot).length > 0) {

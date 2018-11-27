@@ -13,13 +13,15 @@ doWork();
 async function doWork() {
 try {
   const client = await pool.connect();
-  if (hour != 6 && ((day >= 1 && day <= 5) || hour % 6 !== 0)) {
+  if ((day >= 1 && day <= 5) || hour % 6 !== 0) {
     await client.query('update characters set actionPoint = actionPoint + 1 where actionPoint < 20');
   } else {
     await client.query('update characters set actionPoint = actionPoint + 3');
     await client.query('update characters set actionPoint = 20 where actionPoint > 20');
   }  
   if (hour == 6) {
+    await client.query('update characters set actionPoint = actionPoint + 3');
+    await client.query('update characters set actionPoint = 20 where actionPoint > 20');
   
     const result = await client.query('select * from characters');
     for (val of result.rows) {
@@ -46,19 +48,19 @@ try {
       var rand = Math.floor(Math.random() * 12);
       var target = quests[rand];
       target.rewardType = Math.floor(Math.random() * 4);
-      target.rewardAmt = Math.random() < 0.8 ? 0 : 1;
+      target.rewardAmt = 0;
       charData.quest[target.code] = target;
       quests.splice(rand, 1);
       var rand = Math.floor(Math.random() * 11);
       var target = quests[rand];
       target.rewardType = Math.floor(Math.random() * 4);
-      target.rewardAmt = Math.random() < 0.8 ? 0 : 1;
+      target.rewardAmt = 0;
       charData.quest[target.code] = target;
       quests.splice(rand, 1);
       var rand = Math.floor(Math.random() * 10);
       var target = quests[rand];
       target.rewardType = Math.floor(Math.random() * 4);
-      target.rewardAmt = Math.random() < 0.8 ? 0 : 1;
+      target.rewardAmt = 0;
       charData.quest[target.code] = target;
       quests.splice(rand, 1);
       

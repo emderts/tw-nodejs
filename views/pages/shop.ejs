@@ -20,6 +20,18 @@
       .rarityEpic {color: #f79646; }
       .backLink {text-align: center; width: 40%; margin: 10px auto; overflow: hidden; }
     </style>
+    <script>
+      
+  function invClick(thisNode, event) {
+    if (thisNode.type !== 'submit') {
+      event.preventDefault();
+      for (item of document.getElementsByClassName('inventoryButton')) {
+        item.type = 'button';
+      }
+      thisNode.setAttribute('type', 'submit');
+    }
+  }
+    </script>
 </head>
 <body>
 <%  
@@ -145,43 +157,43 @@
   </div>
   <div class="charItem">
     <form action="/useShop" method="post">
-      <button type="submit">요일석 구매 [<%= dayStoneBought ? 10 : 5 %>pt]</button>
+      <button onclick="invClick(this, event)" type="button">요일석 구매 [<%= dayStoneBought ? 10 : 5 %>pt]</button>
       <input type="hidden" name="option" value="1">
     </form>
   </div>
   <div class="charItem">
     <form action="/useShop" method="post">
-      <button type="submit">경험치 부스트 (5회) [10pt]</button>
+      <button onclick="invClick(this, event)" type="button">경험치 부스트 (5회) [10pt]</button>
       <input type="hidden" name="option" value="2">
     </form>
   </div>
   <div class="charItem">
     <form action="/useShop" method="post">
-      <button type="submit">추가 피로도 +2 [<%= actionBought ? 15 : 10 %>pt]</button>
+      <button onclick="invClick(this, event)" type="button">추가 피로도 +2 [<%= actionBought ? 15 : 10 %>pt]</button>
       <input type="hidden" name="option" value="3">
     </form>
   </div>
   <div class="charItem">
     <form action="/useShop" method="post">
-      <button type="submit">무기 리설트 카드 [10pt]</button>
+      <button onclick="invClick(this, event)" type="button">무기 리설트 카드 [10pt]</button>
       <input type="hidden" name="option" value="4">
     </form>
   </div>
   <div class="charItem">
     <form action="/useShop" method="post">
-      <button type="submit">방어구 리설트 카드 [10pt]</button>
+      <button onclick="invClick(this, event)" type="button">방어구 리설트 카드 [10pt]</button>
       <input type="hidden" name="option" value="5">
     </form>
   </div>
   <div class="charItem">
     <form action="/useShop" method="post">
-      <button type="submit">보조방어구 리설트 카드 [10pt]</button>
+      <button onclick="invClick(this, event)" type="button">보조방어구 리설트 카드 [10pt]</button>
       <input type="hidden" name="option" value="6">
     </form>
   </div>
   <div class="charItem">
     <form action="/useShop" method="post">
-      <button type="submit">장신구 리설트 카드 [10pt]</button>
+      <button onclick="invClick(this, event)" type="button">장신구 리설트 카드 [10pt]</button>
       <input type="hidden" name="option" value="7">
     </form>
   </div>
@@ -190,31 +202,31 @@
   </div>
   <div class="charItem">
     <form action="/useShop" method="post">
-      <button type="submit">장비 리설트 카드 [<%= 100 * rankFactor %> 가루]</button>
+      <button onclick="invClick(this, event)" type="button">장비 리설트 카드 [<%= 100 * rankFactor %> 가루]</button>
       <input type="hidden" name="option" value="106">
     </form>
   </div>
   <div class="charItem">
     <form action="/useShop" method="post">
-      <button type="submit">무기 리설트 카드 [<%= 140 * rankFactor %> 가루]</button>
+      <button onclick="invClick(this, event)" type="button">무기 리설트 카드 [<%= 140 * rankFactor %> 가루]</button>
       <input type="hidden" name="option" value="102">
     </form>
   </div>
   <div class="charItem">
     <form action="/useShop" method="post">
-      <button type="submit">방어구 리설트 카드 [<%= 140 * rankFactor %> 가루]</button>
+      <button onclick="invClick(this, event)" type="button">방어구 리설트 카드 [<%= 140 * rankFactor %> 가루]</button>
       <input type="hidden" name="option" value="103">
     </form>
   </div>
   <div class="charItem">
     <form action="/useShop" method="post">
-      <button type="submit">보조방어구 리설트 카드 [<%= 140 * rankFactor %> 가루]</button>
+      <button onclick="invClick(this, event)" type="button">보조방어구 리설트 카드 [<%= 140 * rankFactor %> 가루]</button>
       <input type="hidden" name="option" value="104">
     </form>
   </div>
   <div class="charItem">
     <form action="/useShop" method="post">
-      <button type="submit">장신구 리설트 카드 [<%= 140 * rankFactor %> 가루]</button>
+      <button onclick="invClick(this, event)" type="button">장신구 리설트 카드 [<%= 140 * rankFactor %> 가루]</button>
       <input type="hidden" name="option" value="105">
     </form>
   </div>
@@ -224,28 +236,28 @@
   </div>
   <div class="charItem">
     <form action="/useShop" method="post">
-      <button type="submit">크로울러의 민첩한 눈 [10 메비우스 섬멸의 증표]</button>
+      <button onclick="invClick(this, event)" type="button">크로울러의 민첩한 눈 [10 메비우스 섬멸의 증표]</button>
       <div class="itemTooltip"><%- makeTooltip(item.mevious[0]) %></div> 
       <input type="hidden" name="option" value="90001">
     </form>
   </div>
   <div class="charItem">
     <form action="/useShop" method="post">
-      <button type="submit">헤드 헌터의 괴창 [10 메비우스 섬멸의 증표]</button>
+      <button onclick="invClick(this, event)" type="button">헤드 헌터의 괴창 [10 메비우스 섬멸의 증표]</button>
       <div class="itemTooltip"><%- makeTooltip(item.mevious[1]) %></div> 
       <input type="hidden" name="option" value="90002">
     </form>
   </div>
   <div class="charItem">
     <form action="/useShop" method="post">
-      <button type="submit">메비우스 소탕자 [30 메비우스 섬멸의 증표]</button>
+      <button onclick="invClick(this, event)" type="button">메비우스 소탕자 [30 메비우스 섬멸의 증표]</button>
       <div class="itemTooltip"><%- makeTooltip(item.mevious[2]) %></div> 
       <input type="hidden" name="option" value="90003">
     </form>
   </div>
   <div class="charItem">
     <form action="/useShop" method="post">
-      <button type="submit">빅토리어스의 의지 [60 메비우스 섬멸의 증표]</button>
+      <button onclick="invClick(this, event)" type="button">빅토리어스의 의지 [60 메비우스 섬멸의 증표]</button>
       <div class="itemTooltip"><%- makeTooltip(item.mevious[3]) %></div> 
       <input type="hidden" name="option" value="90004">
     </form>
@@ -257,28 +269,28 @@
   </div>
   <div class="charItem">
     <form action="/useShop" method="post">
-      <button type="submit">잔불 : 백령의 조언 [5 잔불]</button>
+      <button onclick="invClick(this, event)" type="button">잔불 : 백령의 조언 [5 잔불]</button>
       <div class="itemTooltip"><%- makeTooltip(item.ember[0]) %></div> 
       <input type="hidden" name="option" value="90005">
     </form>
   </div>
   <div class="charItem">
     <form action="/useShop" method="post">
-      <button type="submit">잔불 : 암령의 광기 [15 잔불]</button>
+      <button onclick="invClick(this, event)" type="button">잔불 : 암령의 광기 [15 잔불]</button>
       <div class="itemTooltip"><%- makeTooltip(item.ember[1]) %></div> 
       <input type="hidden" name="option" value="90006">
     </form>
   </div>
   <div class="charItem">
     <form action="/useShop" method="post">
-      <button type="submit">잿더미 : 나선의 검 [30 잔불]</button>
+      <button onclick="invClick(this, event)" type="button">잿더미 : 나선의 검 [30 잔불]</button>
       <div class="itemTooltip"><%- makeTooltip(item.ember[2]) %></div> 
       <input type="hidden" name="option" value="90007">
     </form>
   </div>
   <div class="charItem">
     <form action="/useShop" method="post">
-      <button type="submit">잿더미 : 장작의 왕 [60 잔불]</button>
+      <button onclick="invClick(this, event)" type="button">잿더미 : 장작의 왕 [60 잔불]</button>
       <div class="itemTooltip"><%- makeTooltip(item.ember[3]) %></div> 
       <input type="hidden" name="option" value="90008">
     </form>
@@ -290,34 +302,34 @@
   </div>
   <div class="charItem">
     <form action="/useShop" method="post">
-      <button type="submit">불타는 과수원 재입장 허가 [5 잔불]</button>
+      <button onclick="invClick(this, event)" type="button">불타는 과수원 재입장 허가 [5 불탄 증표]</button>
       <input type="hidden" name="option" value="90013">
     </form>
   </div>
   <div class="charItem">
     <form action="/useShop" method="post">
-      <button type="submit">무력화 토템 [5 잔불]</button>
+      <button onclick="invClick(this, event)" type="button">무력화 토템 [5 불탄 증표]</button>
       <div class="itemTooltip"><%- makeTooltip(item.burntMark[0]) %></div> 
       <input type="hidden" name="option" value="90009">
     </form>
   </div>
   <div class="charItem">
     <form action="/useShop" method="post">
-      <button type="submit">해제의 지팡이 [10 잔불]</button>
+      <button onclick="invClick(this, event)" type="button">해제의 지팡이 [10 불탄 증표]</button>
       <div class="itemTooltip"><%- makeTooltip(item.burntMark[1]) %></div> 
       <input type="hidden" name="option" value="90010">
     </form>
   </div>
   <div class="charItem">
     <form action="/useShop" method="post">
-      <button type="submit">석상 파괴자 [30 잔불]</button>
+      <button onclick="invClick(this, event)" type="button">석상 파괴자 [30 불탄 증표]</button>
       <div class="itemTooltip"><%- makeTooltip(item.burntMark[2]) %></div> 
       <input type="hidden" name="option" value="90011">
     </form>
   </div>
   <div class="charItem">
     <form action="/useShop" method="post">
-      <button type="submit">무결한 물의 정령석 [60 잔불]</button>
+      <button onclick="invClick(this, event)" type="button">무결한 물의 정령석 [60 불탄 증표]</button>
       <div class="itemTooltip"><%- makeTooltip(item.burntMark[3]) %></div> 
       <input type="hidden" name="option" value="90012">
     </form>
