@@ -57,7 +57,7 @@ const app = express()
 .post('/dismantleItem', procDismantleItem)
 .post('/useStatPoint', procUseStatPoint)
 .post('/doRankup', procRankup)
-.get('/test', (req, res) => res.render('pages/battle', {result: battlemodule.doBattle(chara.nux, chara.lozic, 1).result}))
+.get('/test', (req, res) => res.render('pages/battle', {result: battlemodule.doBattle(chara.aeika, chara.aeohelm, 1).result}))
 .get('/test2', (req, res) => res.send(setCharacter('kemderts', 1, chara.kines)))
 .get('/test3', (req, res) => res.send(setCharacter('thelichking', 2, chara.lk)))
 .get('/test4', (req, res) => res.send(procInit2()))
@@ -159,7 +159,6 @@ function procFullTest() {
 }
 
 async function procInit () {
-  await setCharacter('sxngho', 10, chara.lozic);
   //await setCharacter('thelichking', 1, chara.lk);
   //await setCharacter('kemderts', 2, chara.kines);
   /*await setCharacter('bemderts', 3, chara.julius);
@@ -179,6 +178,7 @@ async function procInit () {
 }
 
 async function procInit2 () {
+  await setCharacter('tkrsjs', 11, chara.marang);
   try {
     const client = await pool.connect();
     /*var charRow = await getCharacter('kyrus1300');
@@ -188,39 +188,14 @@ async function procInit2 () {
     const result = await client.query('select * from characters');
     for (val of result.rows) {
       var char = JSON.parse(val.char_data);
-      if (val.uid == '02') {
-        char.quest = {};
-        var quests = [{code : 1, progress : 0, target : 3},
-                      {code : 2, progress : 0, target : 5},
-                      {code : 3, progress : 0, target : 5},
-                      {code : 4, progress : 0, target : 5},
-                      {code : 5, progress : 0, target : 3},
-                      {code : 6, progress : 0, target : 8},
-                      {code : 7, progress : 0, target : 2},
-                      {code : 8, progress : 0, target : 1},
-                      {code : 9, progress : 0, target : 1},
-                      {code : 10, progress : 0, target : 10},
-                      {code : 11, progress : 0, target : 1},
-                      {code : 12, progress : 0, target : 50}];
-        var rand = Math.floor(Math.random() * 12);
-        var target = quests[rand];
-        target.rewardType = Math.floor(Math.random() * 4);
-        target.rewardAmt = Math.random() < 0.8 ? 0 : 1;
-        char.quest[target.code] = target;
-        quests.splice(rand, 1);
-        var rand = Math.floor(Math.random() * 11);
-        var target = quests[rand];
-        target.rewardType = Math.floor(Math.random() * 4);
-        target.rewardAmt = Math.random() < 0.8 ? 0 : 1;
-        char.quest[target.code] = target;
-        quests.splice(rand, 1);
-        var rand = Math.floor(Math.random() * 10);
-        var target = quests[rand];
-        target.rewardType = Math.floor(Math.random() * 4);
-        target.rewardAmt = Math.random() < 0.8 ? 0 : 1;
-        char.quest[target.code] = target;
-        quests.splice(rand, 1);
+      if (val.uid == '04') {
+        char.quest[7].progress = 999;
+        char.skill = chara.psi.skill;
       }
+      if (val.uid == '10') {
+        char.skill = chara.lozic.skill;
+      }
+      
       await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), val.uid]);
     } 
     client.release();

@@ -348,6 +348,7 @@ function calcDamage(winner, loser, skill) {
   retObj.crit = getRandom(winner.stat.crit + critMod);
   retObj.type = skill.type;
   retObj.value = (retObj.skillRat * retObj.atkRat) * (1 - retObj.reduce);
+  retObj.critDmg = winner.stat.critDmg;
 
   if (skill.calcEffect) {
     resolveEffects(winner, loser, skill.calcEffect, retObj, skill);
@@ -382,7 +383,7 @@ function calcDamage(winner, loser, skill) {
   }
   var damage = (retObj.skillRat * retObj.atkRat) * (1 - retObj.reduce);
   if (retObj.crit) {
-    damage *= winner.stat.critDmg;
+    damage *= retObj.critDmg;
     resolveEffects(winner, loser, getBuffEffects(winner, cons.ACTIVE_TYPE_DEAL_DAMAGE_CRIT));
   }
   if (skill.type !== cons.DAMAGE_TYPE_ABSOLUTE) {
@@ -414,6 +415,7 @@ function dealDamage(src, dst, damage) {
     resolveEffects(src, dst, getBuffEffects(src, cons.ACTIVE_TYPE_DEAL_DAMAGE), damage);
   }
   var damageDealt = shielded ? damageShield : damage.value;
+  dst.lastDamage = damageDealt;
   dst.curHp -= damageDealt;
 }
 
@@ -535,6 +537,8 @@ function resolveEffects(winner, loser, effects, damage, skill) {
         buffObj.effect[0].value = Math.round(buffObj.effect[0].value * winner.stat.maxHp);
       } else if (buffObj.id === 201727) {
         buffObj.effect[0].value *= findBuffByIds(winner, eff.buffTarget).length;
+      } else if (buffObj.id === 201757) {
+        buffObj.effect[0].value *= winner.lastDamage;
       }
 
       var recv = (eff.code === cons.EFFECT_TYPE_SELF_BUFF) ? winner : loser;
@@ -853,7 +857,11 @@ function resolveEffects(winner, loser, effects, damage, skill) {
       if (resolvedDamage.hit) {
         dealDamage(winner, loser, resolvedDamage);
         result += '<span class="skillDamage">' + winner.name + getIga(winner.nameType) + ' [ ' + winner.skill.base[keyUsed].name + ' ] ' + getUro(winner.skill.base[keyUsed].nameType) + ' ';
-        result += loser.name + getUlrul(loser.nameType) + ' 공격해 ' + resolvedDamage.value + '대미지를 입혔습니다!<br>';
+        result += loser.name + getUlrul(loser.nameType) + ' 공격해 ' + resolvedDamage.value + '대미지를 입혔습니다!';
+        if (resolvedDamage.crit) {
+          result += ' (치명타)';
+        }
+        result += '<br>';
         resolveEffects(winner, loser, winner.skill.base[keyUsed].effect, damage);
       }
     } else if (eff.code === cons.EFFECT_TYPE_ADD_RESULT_CARD) {
@@ -869,6 +877,20 @@ function resolveEffects(winner, loser, effects, damage, skill) {
       winner.curSp = Math.round(swap * eff.value);
       loser.curSp = swap - winner.curSp;
       result += 'SP가 재분배됩니다!<br>';
+    } else if (eff.code === cons.EFFECT_TYPE_FORCE_CRIT) {
+      if (eff.skillCode && eff.skillCode === skill.code) {
+        damage.crit = true;
+        result += '[ ' + eff.name + ' ] 효과로 치명타가 적용됩니다!<br>';
+      } else {
+        continue;
+      }
+    } else if (eff.code === cons.EFFECT_TYPE_MULTIPLY_DAMAGE_OBJECT) {
+      if (eff.skillCode && eff.skillCode === skill.code) {
+        damage[eff.key] *= eff.value;
+        result += '[ ' + eff.name + ' ] 효과로 ' + printName[eff.key] + '가 ' + eff.value + '배 증가합니다!<br>';
+      } else {
+        continue;
+      }
     }
     
     if (eff.setCooldown) {
@@ -1124,7 +1146,11 @@ function calcStats(chara, opp) {
         chara.skill[val.key] = val.target;
       }
     } else if (val.code === cons.EFFECT_TYPE_ADD_SKILL_VALUE) {
-      chara.skill[val.type][val.key] += val.value * stackMpl;
+      if (val.type == 'base' && val.effIndex !== undefined) {
+        chara.skill.base[val.skillKey].effect[val.effIndex][val.key] += val.value * stackMpl;
+      } else {
+        chara.skill[val.type][val.key] += val.value * stackMpl;
+      }
     }
   }
   for (val of getBuffEffects(opp, cons.ACTIVE_TYPE_OPP_CALC_STATS)) {
@@ -1219,6 +1245,7 @@ function _initChar(char, flag) {
   char.curSp = char.curSp ? char.curSp : 0;
   char.buffs = [];
   char.skillOri = JSON.parse(JSON.stringify(char.skill));
+  char.lastDamage = 0;
   if (char.items.weapon) {
     for (eff of char.items.weapon.effect) {
       eff.item = char.items.weapon;
