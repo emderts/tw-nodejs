@@ -903,7 +903,7 @@ async function procGivePoint(req, res) {
       char.premiumPoint -= body.point;
       console.log(body.point);
       console.log(charTgt.premiumPoint);
-      charTgt.premiumPoint += parseInt(body.point);
+      charTgt.premiumPoint += Number(body.point);
       console.log(charTgt.premiumPoint);
     }
     await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
