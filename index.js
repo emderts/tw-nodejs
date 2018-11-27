@@ -178,7 +178,6 @@ async function procInit () {
 }
 
 async function procInit2 () {
-  await setCharacter('tkrsjs', 11, chara.marang);
   try {
     const client = await pool.connect();
     /*var charRow = await getCharacter('kyrus1300');
@@ -188,12 +187,8 @@ async function procInit2 () {
     const result = await client.query('select * from characters');
     for (val of result.rows) {
       var char = JSON.parse(val.char_data);
-      if (val.uid == '04') {
-        char.quest[7].progress = 999;
-        char.skill = chara.psi.skill;
-      }
-      if (val.uid == '10') {
-        char.skill = chara.lozic.skill;
+      if (val.uid == '11') {
+        char.quest = {};
       }
       
       await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), val.uid]);

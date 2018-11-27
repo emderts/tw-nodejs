@@ -1400,6 +1400,7 @@ const item = require('./items');
     char.dust = 0;
     char.dungeonInfos = {};
     char.currencies = {};
+    char.quest = {};
   }
 
   module.exports.kines = charLeft;
