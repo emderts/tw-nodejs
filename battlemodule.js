@@ -82,6 +82,7 @@ function _doBattleEnd(flag) {
   retObj.turnCount = turnCount;
   retObj.resultLeft = retObj.winnerLeft ? 2 : 1;
   retObj.resultRight = retObj.winnerRight ? 2 : 1;
+  result += '<div class="resultWrap"><div class="resultCharInfo">';
   if (charLeft.rank < charRight.rank) {
     retObj.resultLeft -= (charRight.rank - charLeft.rank);
     result += charLeft.name + '의 등급이 높아 리설트 카드 획득량이 ' + (charRight.rank - charLeft.rank) + ' 감소합니다.';
@@ -99,7 +100,6 @@ function _doBattleEnd(flag) {
     retObj.resultRight = 0;
   }
   
-  result += '<div class="resultWrap"><div class="resultCharInfo">';
   var expTurn = turnCount < 200 ? turnCount : 200;
   var expRate = charLeft.rank > charRight.rank ? 0.9 : (charLeft.rank < charRight.rank ? 1.1 : 1);
   if (charLeft.expBoost && charLeft.expBoost > 0) {

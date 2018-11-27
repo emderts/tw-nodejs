@@ -184,14 +184,28 @@ async function procInit () {
 async function procInit2 () {
   try {
     const client = await pool.connect();
-    /*var charRow = await getCharacter('kyrus1300');
-    var char = JSON.parse(charRow.char_data);
-    char.skill = chara.aeohelm.skill;
-    await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);*/
     const result = await client.query('select * from characters');
     for (val of result.rows) {
       var char = JSON.parse(val.char_data);
-      char.stoneCube = [];
+      if (val.uid == '03') {
+        char.birth = 4;
+      } else if (val.uid == '04') {
+        char.birth = 3;
+      } else if (val.uid == '05') {
+        char.birth = 4;
+      } else if (val.uid == '06') {
+        char.birth = 5;
+      } else if (val.uid == '07') {
+        char.birth = 2;
+      } else if (val.uid == '08') {
+        char.birth = 1;
+      } else if (val.uid == '09') {
+        char.birth = 4;
+      } else if (val.uid == '10') {
+        char.birth = 5;
+      } else if (val.uid == '11') {
+        char.birth = 5;
+      }
       
       await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), val.uid]);
     } 

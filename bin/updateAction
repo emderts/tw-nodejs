@@ -62,7 +62,7 @@ try {
       target.rewardType = Math.floor(Math.random() * 4);
       target.rewardAmt = 0;
       charData.quest[target.code] = target;
-      quests.splice(rand, 1);
+      quests.splice(rand, 1); 
       
       await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(charData), val.uid]);
     } 
@@ -74,6 +74,9 @@ try {
       var charData = JSON.parse(val.char_data);
       charData.dungeonInfos.runBurningOrchard = false;
       await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(charData), val.uid]);
+      if (charData.birth == day) {
+        await client.query('update characters set actionPoint = actionPoint + 1 where actionPoint < 20 and uid = $1', [val.uid]);
+      }
     } 
   }
   client.release();  

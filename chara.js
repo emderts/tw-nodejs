@@ -1402,6 +1402,7 @@ const item = require('./items');
     char.currencies = {};
     char.quest = {};
     char.stoneCube = [];
+    char.birth = null;
   }
 
   module.exports.kines = charLeft;
