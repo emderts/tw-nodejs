@@ -314,7 +314,7 @@ async function procUseItem (req, res) {
         } else if (tgtObj.type === cons.ITEM_TYPE_RESULT_CARD) {
           chara.inventory.splice(body.itemNum, 1);
           const nextIdx = chara.inventory.findIndex(x => (x.type === cons.ITEM_TYPE_RESULT_CARD && x.resultType === tgtObj.resultType));
-          const rand = Math.random();
+          var rand = Math.random();
           var picked;
           if (chara.quest[10]) {
             chara.quest[10].progress += 1;
