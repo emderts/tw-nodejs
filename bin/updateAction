@@ -25,7 +25,7 @@ try {
       await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(charData), val.uid]);
     } 
   // 6시간마다 (과수원, 탄생일)
-  if (hour % 6 == 0 && minutes < 25) {
+  if (hour % 6 == 0 && min < 25) {
   
     const result = await client.query('select * from characters');
     for (val of result.rows) {
@@ -38,12 +38,12 @@ try {
     } 
   }
   // 주말 보너스
-  if ((day == 0 || day == 6) && hour % 6 == 0 && minutes < 25) {
+  if ((day == 0 || day == 6) && hour % 6 == 0 && min < 25) {
     await client.query('update characters set actionPoint = actionPoint + 12');
     await client.query('update characters set actionPoint = 100 where actionPoint > 100');
   }  
   // 6시 처리 (보너스 피로도, 던전 보상, 주간 리셋, 퀘스트)
-  if (hour == 6 && minutes < 25) {
+  if (hour == 6 && min < 25) {
     await client.query('update characters set actionPoint = actionPoint + 12');
     await client.query('update characters set actionPoint = 100 where actionPoint > 100');
   

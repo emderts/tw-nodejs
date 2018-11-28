@@ -191,16 +191,8 @@ async function procInit2 () {
     const result = await client.query('select * from characters');
     for (val of result.rows) {
       var char = JSON.parse(val.char_data);
-      char.exp = Math.round(4.5 * char.exp);
-      char.reqExp = Math.round(4.5 * char.reqExp);
-      char.maxExp = Math.round(4.5 * char.maxExp);
-      char.maxExp += char.reqExp;
-      char.resultGauge = 0;
-      char.resultMaxGauge = 0;
-      char.addExpCount = 3;
-      
-      if (val.uid == '02') {
-        char.rank = 8;
+      if (char.birth == day) {
+        await client.query('update characters set actionPoint = actionPoint + 4 where uid = $1', [val.uid]);
       }
       
       await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), val.uid]);
