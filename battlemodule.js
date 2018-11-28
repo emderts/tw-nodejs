@@ -1160,7 +1160,7 @@ function getItemEffects(chara, active) {
       if (sval.findIndex(x => x.code == sock.code) == -1) {
         var nv = JSON.parse(JSON.stringify(sock));
         nv.value = 0;
-        for (ns of socket.filter(x => x.code == sock.code)) {
+        for (ns of sockets.filter(x => x.code == sock.code)) {
           nv.value += ns.value;
         }
         sval.push(nv);
