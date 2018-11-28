@@ -191,7 +191,7 @@ async function procInit2 () {
     const result = await client.query('select * from characters');
     for (val of result.rows) {
       var char = JSON.parse(val.char_data);
-      if (char.birth == day) {
+      if (char.birth == new Date().getDay()) {
         await client.query('update characters set actionPoint = actionPoint + 4 where uid = $1', [val.uid]);
       }
       
