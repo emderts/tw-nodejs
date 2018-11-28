@@ -1157,10 +1157,10 @@ function getItemEffects(chara, active) {
   if (active == cons.ACTIVE_TYPE_CALC_STATS) {
     var sval = [];
     for (sock of sockets) {
-      if (sval.findIndex(x => x.code == sock.code) == -1) {
+      if (sval.findIndex(x => x.key == sock.key) == -1) {
         var nv = JSON.parse(JSON.stringify(sock));
         nv.value = 0;
-        for (ns of sockets.filter(x => x.code == sock.code)) {
+        for (ns of sockets.filter(x => x.key == sock.key)) {
           nv.value += ns.value;
         }
         sval.push(nv);
