@@ -191,9 +191,6 @@ async function procInit2 () {
     const result = await client.query('select * from characters');
     for (val of result.rows) {
       var char = JSON.parse(val.char_data);
-      if (char.birth == new Date().getDay()) {
-        await client.query('update characters set actionPoint = actionPoint + 4 where uid = $1', [val.uid]);
-      }
       
       await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), val.uid]);
     } 
@@ -1170,48 +1167,52 @@ async function procNextPhaseDungeon(req, res) {
       if (!re.winnerLeft) {
         isFinished = true;
         reward += '패배했습니다..';
-      } else if (req.session.dungeonProgress.code == 1 && req.session.dungeonProgress.phase == 3 && !char.dungeonInfos.rewardMevious) {
+      } else if (req.session.dungeonProgress.code == 1 && req.session.dungeonProgress.phase == 3) {
         isFinished = true;
-        char.dungeonInfos.rewardMevious = true;
-        if (!char.dungeonInfos.clearMevious) {
-          char.dungeonInfos.clearMevious = true;
-          char.statPoint += 5;
-          reward += '첫 번째 [메모리얼 게이트 - 메비우스 섬멸] 클리어!<br>스탯 포인트 5를 획득했습니다.<br>';
-          await client.query('insert into news(content, date) values ($1, $2)', 
-              [char.name + getIga(char.nameType) + ' [메모리얼 게이트 - 메비우스 섬멸]을 돌파했습니다!', new Date()]);
+        if (!char.dungeonInfos.rewardMevious) {
+          char.dungeonInfos.rewardMevious = true;
+          if (!char.dungeonInfos.clearMevious) {
+            char.dungeonInfos.clearMevious = true;
+            char.statPoint += 5;
+            reward += '첫 번째 [메모리얼 게이트 - 메비우스 섬멸] 클리어!<br>스탯 포인트 5를 획득했습니다.<br>';
+            await client.query('insert into news(content, date) values ($1, $2)', 
+                [char.name + getIga(char.nameType) + ' [메모리얼 게이트 - 메비우스 섬멸]을 돌파했습니다!', new Date()]);
+          }
+          const curr = 3 + Math.floor(3 * Math.random());
+          if (char.currencies.mevious) {
+            char.currencies.mevious += curr;
+          } else {
+            char.currencies.mevious = curr;
+          }
+          reward += '메비우스 섬멸의 증표 ' + curr + '개를 획득했습니다.<br>';
+          if (enemy.name == '메비우스 타우러스') {
+            char.currencies.mevious += 5;
+            reward += '타우러스를 처치했으므로 메비우스 섬멸의 증표 5개를 추가로 획득했습니다.<br>';          
+          }
+          char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '메비우스 섬멸 공훈 카드', rank : 8, resultType : 90001});
+          reward += '메비우스 섬멸 공훈 카드 1개를 획득했습니다.';
         }
-        const curr = 3 + Math.floor(3 * Math.random());
-        if (char.currencies.mevious) {
-          char.currencies.mevious += curr;
-        } else {
-          char.currencies.mevious = curr;
-        }
-        reward += '메비우스 섬멸의 증표 ' + curr + '개를 획득했습니다.<br>';
-        if (enemy.name == '메비우스 타우러스') {
-          char.currencies.mevious += 5;
-          reward += '타우러스를 처치했으므로 메비우스 섬멸의 증표 5개를 추가로 획득했습니다.<br>';          
-        }
-        char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '메비우스 섬멸 공훈 카드', rank : 8, resultType : 90001});
-        reward += '메비우스 섬멸 공훈 카드 1개를 획득했습니다.';  
-      } else if (req.session.dungeonProgress.code == 2 && req.session.dungeonProgress.phase == 2 && !char.dungeonInfos.rewardEmberCrypt) {
+      } else if (req.session.dungeonProgress.code == 2 && req.session.dungeonProgress.phase == 2) {
         isFinished = true;
-        char.dungeonInfos.rewardEmberCrypt = true;
-        if (!char.dungeonInfos.clearEmberCrypt) {
-          char.dungeonInfos.clearEmberCrypt = true;
-          char.statPoint += 5;
-          reward += '첫 번째 [어나더 게이트 - 재의 묘소] 클리어!<br>스탯 포인트 5를 획득했습니다.<br>';
-          await client.query('insert into news(content, date) values ($1, $2)', 
-              [char.name + getIga(char.nameType) + ' [어나더 게이트 - 재의 묘소]를 돌파했습니다!', new Date()]);
+        if (!char.dungeonInfos.rewardEmberCrypt) {
+          char.dungeonInfos.rewardEmberCrypt = true;
+          if (!char.dungeonInfos.clearEmberCrypt) {
+            char.dungeonInfos.clearEmberCrypt = true;
+            char.statPoint += 5;
+            reward += '첫 번째 [어나더 게이트 - 재의 묘소] 클리어!<br>스탯 포인트 5를 획득했습니다.<br>';
+            await client.query('insert into news(content, date) values ($1, $2)', 
+                [char.name + getIga(char.nameType) + ' [어나더 게이트 - 재의 묘소]를 돌파했습니다!', new Date()]);
+          }
+          const curr = 3 + Math.floor(3 * Math.random());
+          if (char.currencies.ember) {
+            char.currencies.ember += curr;
+          } else {
+            char.currencies.ember = curr;
+          }
+          reward += '잔불 ' + curr + '개를 획득했습니다.<br>';
+          char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '재의 묘소 리설트 카드', rank : 8, resultType : 90002});
+          reward += '재의 묘소 리설트 카드 1개를 획득했습니다.';
         }
-        const curr = 3 + Math.floor(3 * Math.random());
-        if (char.currencies.ember) {
-          char.currencies.ember += curr;
-        } else {
-          char.currencies.ember = curr;
-        }
-        reward += '잔불 ' + curr + '개를 획득했습니다.<br>';
-        char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '재의 묘소 리설트 카드', rank : 8, resultType : 90002});
-        reward += '재의 묘소 리설트 카드 1개를 획득했습니다.';  
       }
       await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
       res.render('pages/dungeonResult', {result: re.result, resultList: req.session.dungeonProgress.resultList, isFinished : isFinished, reward : reward, stop : false});
