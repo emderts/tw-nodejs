@@ -190,7 +190,7 @@ async function procInit2 () {
     const result = await client.query('select * from characters');
     for (val of result.rows) {
       var char = JSON.parse(val.char_data);
-      if (uid == '09') {
+      if (val.uid == '09') {
         char.dungeonInfos.runMevious = false;
         char.dungeonInfos.runEmberCrypt = false;
       }
