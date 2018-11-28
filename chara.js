@@ -1409,6 +1409,7 @@ const item = require('./items');
     char.birth = null;
   }
 
+  charJulius.items.trinket = {"id":330,"name":"위키의 가지","nameType":0,"type":3,"flavor":"수많은 자들의 지식이 저장된 지식의 나무 '위키'의 가지. 손에 쥐면 수많은 지식이 머리 속으로 흘러들어온다. 지나치게 의존할 경우 말투가 이상해지는 부작용이 있다.","rank":8,"rarity":4,"stat":{"spCharge":2},"effectDesc":"턴 시작 시 50% 확률로 자신에게 [켜라위키] 버프 부여, 턴 종료 시 50% 확률로 [켜라위키] 버프 1중첩 제거, [켜라위키] 5중첩 달성 시 [켜라위키] 버프 모두 제거<br><br>[켜라위키] : 마법공격력 +9, 마법저항 +3%","effect":[{"code":1,"active":3,"chance":0.5,"buffCode":10038,"buffDur":null,"name":"위키의 가지"}],"base":{"spCharge":2},"socket":[{"type":999,"rarity":2,"day":4,"level":3,"name":"상급 목석","tooltip":"SP 소모량 감소 2.5% - 9%","effectDesc":"SP 소모량 감소 5%","effect":[{"active":10,"code":46,"key":"drive","value":-0.05},{"active":10,"code":46,"key":"special","value":-0.05}]}]};
   module.exports.kines = charLeft;
   module.exports.lk = charRight;
   module.exports.seriers = charSeriers;

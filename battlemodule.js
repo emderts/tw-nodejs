@@ -1166,9 +1166,9 @@ function getItemEffects(chara, active) {
         sval.push(nv);
       }
     }
-    rval.concat(sval);
+    rval = rval.concat(sval);
   } else {
-    rval.concat(sockets);
+    rval = rval.concat(sockets);
   }
   return rval;
 }
