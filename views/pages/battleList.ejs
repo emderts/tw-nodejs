@@ -23,7 +23,7 @@
         <input type="hidden" name="charUid" value="<%= val.uid %>">
       </form>
       <% if (val.battleCnt != undefined) { %>
-        <div class="logDate">전체 <%= val.battleCnt %>전 <%= val.winCnt %>승, 당신에게 <%= val.vsBattleCnt %>전 <%= val.vsWinCnt %>승</div>
+        <div class="logDate">전체 <%= val.battleCnt %>전 <%= val.winCnt %>승 (<%= val.winRate %>%), 당신에게 <%= val.vsBattleCnt %>전 <%= val.vsWinCnt %>승</div>
       <% } %>
     </div>
   <% } %>

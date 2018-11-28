@@ -64,6 +64,7 @@ const app = express()
 .get('/activateCube', procActivateCube)
 .post('/useStatPoint', procUseStatPoint)
 .post('/doRankup', procRankup)
+.post('/getCard', procGetCard)
 .get('/test', (req, res) => res.render('pages/battle', {result: battlemodule.doBattle(chara.marang, monster.oLegor, 1).result}))
 .get('/test2', (req, res) => res.send(setCharacter('kemderts', 1, chara.kines)))
 .get('/test3', (req, res) => res.send(setCharacter('thelichking', 2, chara.lk)))
@@ -190,9 +191,16 @@ async function procInit2 () {
     const result = await client.query('select * from characters');
     for (val of result.rows) {
       var char = JSON.parse(val.char_data);
-      if (val.uid == '09') {
-        char.dungeonInfos.runMevious = false;
-        char.dungeonInfos.runEmberCrypt = false;
+      char.exp = Math.round(4.5 * char.exp);
+      char.reqExp = Math.round(4.5 * char.reqExp);
+      char.maxExp = Math.round(4.5 * char.maxExp);
+      char.maxExp += char.reqExp;
+      char.resultGauge = 0;
+      char.resultMaxGauge = 0;
+      char.addExpCount = 3;
+      
+      if (val.uid == '02') {
+        char.rank = 8;
       }
       
       await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), val.uid]);
@@ -405,132 +413,76 @@ async function procUseItem (req, res) {
               }
             } 
           } else if (tgtObj.resultType == 90001) {
-            if (rand < 0.193) {
+            if (rand < 0.405) {
               picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_COMMON_UNCOMMON);
               chara.inventory.push(picked);
-            } else if (rand < 0.239) {
+            } else if (rand < 0.681) {
               picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_RARE);
               chara.inventory.push(picked);
               await addItemNews(client, chara, tgtObj, picked);
               if (chara.quest[5]) {
                 chara.quest[5].progress += 1;
               }
-            } else if (rand < 0.249) {
+            } else if (rand < 0.7365) {
               picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_UNIQUE);
               chara.inventory.push(picked);
               await addItemNews(client, chara, tgtObj, picked);
               if (chara.quest[5]) {
                 chara.quest[5].progress += 3;
               }
-            } else if (rand < 0.25) {
+            } else if (rand < 0.7895) {
+              picked = _getItem(tgtObj.rank - 1, cons.ITEM_RARITY_COMMON_UNCOMMON, tgtObj.resultType);
+              chara.inventory.push(picked);
+            } else if (rand < 0.8) {
               picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_EPIC);
               chara.inventory.push(picked);
               await addItemNews(client, chara, tgtObj, picked);
               if (chara.quest[5]) {
                 chara.quest[5].progress += 3;
               }
-            } else if (rand < 0.42) {
+            } else if (rand < 0.95) {
               chara.currencies.mevious += 2;
               picked = {name : '메비우스 섬멸의 증표 2개' , rarity : cons.ITEM_RARITY_COMMON};
-            } else if (rand < 0.58) {
-              chara.premiumPoint += 1;
-              picked = {name : '프리미엄 포인트 1점' , rarity : cons.ITEM_RARITY_COMMON};
-            } else if (rand < 0.6) {
-              chara.premiumPoint += 2;
-              picked = {name : '프리미엄 포인트 2점' , rarity : cons.ITEM_RARITY_RARE};
-            } else if (rand < 0.78) {
-              const dustValue = 7 * Math.pow(2, 9 - tgtObj.rank);
-              chara.dust += dustValue;
-              picked = {name : dustValue + ' 가루' , rarity : cons.ITEM_RARITY_COMMON};
-              if (chara.quest[4]) {
-                chara.quest[4].progress += 1;
-              }
-            } else if (rand < 0.85) {
-              const dustValue = 13 * Math.pow(2, 9 - tgtObj.rank);
-              chara.dust += dustValue;
-              picked = {name : dustValue + ' 가루' , rarity : cons.ITEM_RARITY_UNCOMMON};
-              if (chara.quest[4]) {
-                chara.quest[4].progress += 1;
-              }
-            } else if (rand < 0.89) {
-              picked = JSON.parse(JSON.stringify(item.list[412 + Math.floor(Math.random() * 4)]));
-              chara.inventory.push(picked);
-            } else if (rand < 0.9) {
-              const dustValue = 50 * Math.pow(2, 9 - tgtObj.rank);
-              chara.dust += dustValue;
-              picked = {name : dustValue + ' 가루' , rarity : cons.ITEM_RARITY_RARE};
-              if (chara.quest[4]) {
-                chara.quest[4].progress += 1;
-              }
             } else {
-              picked = makeDayStone(null, tgtObj.rank);
-              chara.inventory.push(picked);           
-            }
+              picked = JSON.parse(JSON.stringify(item.list[412 + Math.floor(Math.random() * 2)]));
+              chara.inventory.push(picked);
+            } 
           } else if (tgtObj.resultType == 90002) {
-            var rand = Math.random();
-            if (rand < 0.193) {
+            if (rand < 0.405) {
               picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_COMMON_UNCOMMON);
               chara.inventory.push(picked);
-            } else if (rand < 0.239) {
+            } else if (rand < 0.681) {
               picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_RARE);
               chara.inventory.push(picked);
               await addItemNews(client, chara, tgtObj, picked);
               if (chara.quest[5]) {
                 chara.quest[5].progress += 1;
               }
-            } else if (rand < 0.249) {
+            } else if (rand < 0.7365) {
               picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_UNIQUE);
               chara.inventory.push(picked);
               await addItemNews(client, chara, tgtObj, picked);
               if (chara.quest[5]) {
                 chara.quest[5].progress += 3;
               }
-            } else if (rand < 0.25) {
+            } else if (rand < 0.7895) {
+              picked = _getItem(tgtObj.rank - 1, cons.ITEM_RARITY_COMMON_UNCOMMON, tgtObj.resultType);
+              chara.inventory.push(picked);
+            } else if (rand < 0.8) {
               picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_EPIC);
               chara.inventory.push(picked);
               await addItemNews(client, chara, tgtObj, picked);
               if (chara.quest[5]) {
                 chara.quest[5].progress += 3;
               }
-            } else if (rand < 0.42) {
+            } else if (rand < 0.95) {
               chara.currencies.ember += 2;
               picked = {name : '잔불 2개' , rarity : cons.ITEM_RARITY_COMMON};
-            } else if (rand < 0.58) {
-              chara.premiumPoint += 1;
-              picked = {name : '프리미엄 포인트 1점' , rarity : cons.ITEM_RARITY_COMMON};
-            } else if (rand < 0.6) {
-              chara.premiumPoint += 2;
-              picked = {name : '프리미엄 포인트 2점' , rarity : cons.ITEM_RARITY_RARE};
-            } else if (rand < 0.78) {
-              const dustValue = 7 * Math.pow(2, 9 - tgtObj.rank);
-              chara.dust += dustValue;
-              picked = {name : dustValue + ' 가루' , rarity : cons.ITEM_RARITY_COMMON};
-              if (chara.quest[4]) {
-                chara.quest[4].progress += 1;
-              }
-            } else if (rand < 0.85) {
-              const dustValue = 13 * Math.pow(2, 9 - tgtObj.rank);
-              chara.dust += dustValue;
-              picked = {name : dustValue + ' 가루' , rarity : cons.ITEM_RARITY_UNCOMMON};
-              if (chara.quest[4]) {
-                chara.quest[4].progress += 1;
-              }
-            } else if (rand < 0.89) {
-              picked = JSON.parse(JSON.stringify(item.list[416 + Math.floor(Math.random() * 4)]));
-              chara.inventory.push(picked);
-            } else if (rand < 0.9) {
-              const dustValue = 50 * Math.pow(2, 9 - tgtObj.rank);
-              chara.dust += dustValue;
-              picked = {name : dustValue + ' 가루' , rarity : cons.ITEM_RARITY_RARE};
-              if (chara.quest[4]) {
-                chara.quest[4].progress += 1;
-              }
             } else {
-              picked = makeDayStone(null, tgtObj.rank);
-              chara.inventory.push(picked);            
-            }            
+              picked = JSON.parse(JSON.stringify(item.list[416 + Math.floor(Math.random() * 2)]));
+              chara.inventory.push(picked);
+            } 
           } else if (tgtObj.resultType == 90003) {
-            var rand = Math.random();
             if (rand < 0.5) {
               picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_UNCOMMON, tgtObj.resultType);
               chara.inventory.push(picked);
@@ -644,17 +596,24 @@ async function procEnchantItem (req, res) {
 async function procBattleList(req, res) {
   try {
     const client = await pool.connect();
+    const sess = req.session; 
     const resultUser = await client.query('select * from users where id = $1', [req.session.userUid]);
     const cuid = resultUser.rows[0].uid;
+    const charRow = await getCharacter(sess.userUid);
+    const char = JSON.parse(charRow.char_data);
     const result = await client.query('select * from characters where uid <> $1 order by uid', [cuid]);
     var rval = [];
     for (val of result.rows) {
+      if (char.lastBattle == val.uid) {
+        continue;
+      }
       var charData = JSON.parse(val.char_data);
       var obj = {};
       obj.name = charData.name + ', ' + charData.title + ' [' + charData.rank + '급]';
       obj.uid = val.uid;
       obj.battleCnt = charData.battleCnt;
       obj.winCnt = charData.winCnt;
+      obj.winRate = Math.round((obj.battleCnt ? obj.winCnt / obj.battleCnt : 0) * 10000) / 100;
       // temp code
       charData.battleRecord = charData.battleRecord ? charData.battleRecord : {};
       charData.winRecord = charData.winRecord ? charData.winRecord : {};
@@ -692,19 +651,17 @@ async function procBattle(req, res) {
         right = JSON.parse(val.char_data);
       }
     } 
-    if (left && right) {
+    if (left && right && left.lastBattle != body.charUid) {
       var re = battlemodule.doBattle(JSON.parse(JSON.stringify(left)), JSON.parse(JSON.stringify(right)));
-      addExp(left, re.expLeft);
-      addExp(right, re.expRight);
       if (left.expBoost && left.expBoost > 0) {
         left.expBoost--;
+        left.maxExp += re.expLeft;
       }
-      for (var i=0; i < re.resultLeft; i++) {
-        addResultCard(left);
-      }
-      for (var i=0; i < re.resultRight; i++) {
-        addResultCard(right);
-      }
+      addExp(left, re.expLeft);
+      addExp(right, re.expRight);
+      addResultGauge(left, re.resultLeft);
+      addResultGauge(right, re.resultRight);
+      left.lastBattle = body.charUid;
       left.battleRecord = left.battleRecord ? left.battleRecord : {};
       left.winRecord = left.winRecord ? left.winRecord : {};
       right.battleRecord = right.battleRecord ? right.battleRecord : {};
@@ -966,6 +923,19 @@ async function procUseShop (req, res) {
           char.quest[8].progress += 1;
         }
       }
+    } else if (body.option == 8) {
+      if (char.premiumPoint < 10) {
+        res.send('프리미엄 포인트가 부족합니다.');
+      } else if (char.addExpCount == 0) {
+        res.send('오늘 최대치를 구매했습니다.');
+      } else {
+        char.premiumPoint -= 10;
+        char.addExpCount -= 1;
+        char.maxExp += char.reqExp;
+        if (char.quest[8]) {
+          char.quest[8].progress += 1;
+        }
+      }
     } else if (body.option == 3) {
       var cost = char.actionBought ? 15 : 10;
       if (char.premiumPoint < cost) {
@@ -1208,8 +1178,9 @@ async function procNextPhaseDungeon(req, res) {
       if (!re.winnerLeft) {
         isFinished = true;
         reward += '패배했습니다..';
-      } else if (req.session.dungeonProgress.code == 1 && req.session.dungeonProgress.phase == 3) {
+      } else if (req.session.dungeonProgress.code == 1 && req.session.dungeonProgress.phase == 3 && !char.dungeonInfos.rewardMevious) {
         isFinished = true;
+        char.dungeonInfos.rewardMevious = true;
         if (!char.dungeonInfos.clearMevious) {
           char.dungeonInfos.clearMevious = true;
           char.statPoint += 5;
@@ -1230,8 +1201,9 @@ async function procNextPhaseDungeon(req, res) {
         }
         char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '메비우스 섬멸 공훈 카드', rank : 8, resultType : 90001});
         reward += '메비우스 섬멸 공훈 카드 1개를 획득했습니다.';  
-      } else if (req.session.dungeonProgress.code == 2 && req.session.dungeonProgress.phase == 2) {
+      } else if (req.session.dungeonProgress.code == 2 && req.session.dungeonProgress.phase == 2 && !char.dungeonInfos.rewardEmberCrypt) {
         isFinished = true;
+        char.dungeonInfos.rewardEmberCrypt = true;
         if (!char.dungeonInfos.clearEmberCrypt) {
           char.dungeonInfos.clearEmberCrypt = true;
           char.statPoint += 5;
@@ -1281,7 +1253,8 @@ async function procStopDungeon(req, res) {
       req.session.dungeonProgress.phase = req.session.dungeonProgress.phase + 1;
       
       var reward = '';
-      if (req.session.dungeonProgress.code == 2 && req.session.dungeonProgress.phase == 2) {
+      if (req.session.dungeonProgress.code == 2 && req.session.dungeonProgress.phase == 2 && !char.dungeonInfos.rewardEmberCrypt) {
+        char.dungeonInfos.rewardEmberCrypt = true;
         const curr = 2 + Math.floor(3 * Math.random());
         if (char.currencies.ember) {
           char.currencies.ember += curr;
@@ -1315,9 +1288,9 @@ async function procSortInventory(req, res) {
         return 1;
       } else {
         if (a.type <= 4) {
-          if (a.rank < b.rank) {
+          if (a.rank > b.rank) {
             return -1;
-          } else if (a.rank > b.rank) {
+          } else if (a.rank < b.rank) {
             return 1;
           } else if (a.rarity < b.rarity) {
             return -1;
@@ -1617,7 +1590,7 @@ async function procRankup (req, res) {
   if (char.level >= 20 && char.rank > 7) {
     char.level = 1;
     char.rank--;
-    char.reqExp += 20;
+    char.reqExp += 90;
     char.base.maxHp += 150;
     char.base.phyAtk += 10;
     char.base.magAtk += 10;
@@ -1626,6 +1599,20 @@ async function procRankup (req, res) {
   await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
   await client.query('insert into news(content, date) values ($1, $2)', 
       [char.name + getIga(char.nameType) + ' ' + char.rank + '급을 달성했습니다!', new Date()]);
+  client.release();
+  res.redirect('/');
+}
+
+async function procGetCard(req, res) {
+  const client = await pool.connect();
+  const sess = req.session; 
+  const charRow = await getCharacter(sess.userUid);
+  const char = JSON.parse(charRow.char_data);
+  if (char.resultGauge >= 100) {
+    char.resultGauge -= 100;
+    addResultCard(char);
+  } 
+  await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
   client.release();
   res.redirect('/');
 }
@@ -1692,7 +1679,9 @@ function addExp(chara, exp) {
     exp = chara.maxExp;
   }
   chara.exp += exp;
-  chara.maxExp -= exp;
+  if (char.rank > 8 || char.level > 10) {
+    chara.maxExp -= exp;
+  }
   while (chara.level < 50 && chara.exp >= chara.reqExp) {
     chara.exp -= chara.reqExp;
     chara.level++;
@@ -1764,6 +1753,18 @@ function makeDayStone(dayIn, rank, levelIn) {
   return item;
 }
 
+function addResultGauge(chara, rg) {
+  if (chara.resultMaxGauge >= 2000) {
+    rg *= 0.5;
+  }
+  chara.resultGauge += rg;
+  if (chara.resultGauge > 500) {
+    chara.resultMaxGauge -= (chara.resultGauge - 500);
+    chara.resultGauge = 500;
+  }
+  chara.resultMaxGauge += rg;
+}
+
 function addResultCard(chara) {
   var item = {};
   item.type = cons.ITEM_TYPE_RESULT_CARD;
@@ -1786,6 +1787,7 @@ function calcStats(chara) {
   for (var key in chara.base) {
     chara.stat[key] = chara.base[key];
   }
+  var sockets = [];
   for (var key in chara.items) {
     if (!chara.items[key]) {
       continue;
@@ -1793,7 +1795,33 @@ function calcStats(chara) {
     for (var keyItem in chara.items[key]['stat']) {
       chara.stat[keyItem] += chara.items[key]['stat'][keyItem];
     }
+    if (chara.items[key].socket) {
+      for (sock of chara.items[key].socket) {
+        sockets = sockets.concat(sock.effect.filter(x => (x.active === active)));
+      }
+    }
   }
+  var sval = [];
+  for (sock of sockets) {
+    if (sval.findIndex(x => x.code == sock.code) == -1) {
+      var nv = JSON.parse(JSON.stringify(sock));
+      nv.value = 0;
+      for (ns of socket.filter(x => x.code == sock.code)) {
+        nv.value += ns.value;
+      }
+      sval.push(nv);
+    }
+  }
+  for (val of sval) {
+    var stackMpl = val.buff ? (val.buff.stack ? val.buff.stack : 1) : 1;
+    if (val.code === cons.EFFECT_TYPE_STAT_ADD) {
+      chara.stat[val.key] += val.value * stackMpl;
+    } else if (val.code === cons.EFFECT_TYPE_STAT_PERCENTAGE) {
+      chara.stat[val.key] *= (1 + val.value * stackMpl);
+    }
+  }
+  
+  chara.stat.maxHp = Math.round(chara.stat.maxHp);
 }
 
 var printName = {};

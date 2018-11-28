@@ -299,6 +299,17 @@
           <td class="charViewContent"><%= char.expBoost ? 'Boost ' + char.expBoost : '' %></td>
         </tr>
         <tr>
+          <td class="charViewTitle">카드 게이지</td>
+          <td class="charViewContent"><%= char.resultGauge + '/500 (' + char.resultMaxGauge + ')' %></td>
+          <td class="charViewContent">
+          <% if (char.resultGauge >= 100) { %>
+            <form action="/getCard" method="post">
+              <button type="submit">카드 받기</button>
+            </form>
+          <% } %>
+          </td>
+        </tr>
+        <tr>
           <td class="charViewTitle">스탯 포인트</td>
           <td class="charViewContent"><%= char.statPoint %></td>
           <td class="charViewContent"></td>

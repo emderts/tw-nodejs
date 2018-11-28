@@ -80,17 +80,41 @@ function _doBattleEnd(flag) {
   retObj.winnerLeft = (charLeft.curHp > 0);
   retObj.winnerRight = (charRight.curHp > 0);
   retObj.turnCount = turnCount;
-  retObj.resultLeft = retObj.winnerLeft ? 2 : 1;
-  retObj.resultRight = retObj.winnerRight ? 2 : 1;
+  if (retObj.winnerLeft) {
+    if (charLeft.rank < charRight.rank) {
+      retObj.resultLeft = 25;
+    } else if (charLeft.rank == charRight.rank) {
+      retObj.resultLeft = 50;
+    } else {
+      retObj.resultLeft = 75;
+    }
+  } else {
+    if (charLeft.rank < charRight.rank) {
+      retObj.resultLeft = 20;
+    } else if (charLeft.rank == charRight.rank) {
+      retObj.resultLeft = 35;
+    } else {
+      retObj.resultLeft = 50;
+    }
+  }
+  if (retObj.winnerRight) {
+    if (charLeft.rank < charRight.rank) {
+      retObj.resultRight = 50;
+    } else if (charLeft.rank == charRight.rank) {
+      retObj.resultRight = 30;
+    } else {
+      retObj.resultRight = 10;
+    }
+  } else {
+    if (charLeft.rank < charRight.rank) {
+      retObj.resultRight = 35;
+    } else if (charLeft.rank == charRight.rank) {
+      retObj.resultRight = 20;
+    } else {
+      retObj.resultRight = 5;
+    }
+  }
   result += '<div class="resultWrap"><div class="resultCharInfo">';
-  if (charLeft.rank < charRight.rank) {
-    retObj.resultLeft -= (charRight.rank - charLeft.rank);
-    result += charLeft.name + '의 등급이 높아 리설트 카드 획득량이 ' + (charRight.rank - charLeft.rank) + ' 감소합니다.<br>';
-  }
-  if (charRight.rank < charLeft.rank) {
-    retObj.resultRight -= (charLeft.rank - charRight.rank);
-    result += charRight.name + '의 등급이 높아 리설트 카드 획득량이 ' + (charLeft.rank - charRight.rank) + ' 감소합니다.<br>';
-  }
   resolveEffects(charLeft, charRight, getBuffEffects(charLeft, cons.ACTIVE_TYPE_BATTLE_END), retObj, true);
   resolveEffects(charRight, charLeft, getBuffEffects(charRight, cons.ACTIVE_TYPE_BATTLE_END), retObj, false);
   if (retObj.resultLeft < 0) {
@@ -113,7 +137,7 @@ function _doBattleEnd(flag) {
     result += '<span class="colorRight">Defeat...</span><br>' + charLeft.name + '의 패배입니다..<br>';    
   }
   if (flag === undefined) {
-    result += '경험치를 ' + retObj.expLeft + ' 획득했습니다.<br>리설트 카드 ' + retObj.resultLeft + '장을 획득했습니다.';
+    result += '경험치를 ' + retObj.expLeft + ' 획득했습니다.<br>리설트 카드 게이지 ' + retObj.resultLeft + '%를 획득했습니다.';
   }
   result += '</div><div class="resultCharInfo">';
   var expRate = charRight.rank > charLeft.rank ? 0.9 : (charRight.rank < charLeft.rank ? 1 : 1.1);
@@ -125,7 +149,7 @@ function _doBattleEnd(flag) {
     result += '<span class="colorRight">Defeat...</span><br>' + charRight.name + '의 패배입니다..<br>';    
   }
   if (flag === undefined) {
-    result += '경험치를 ' + retObj.expRight + ' 획득했습니다.<br>리설트 카드 ' + retObj.resultRight + '장을 획득했습니다.';
+    result += '경험치를 ' + retObj.expRight + ' 획득했습니다.<br>리설트 카드 게이지 ' + retObj.resultRight + '%를 획득했습니다.';
   }
   result += '</div><br><div class="resultCharInfo">';
   result += '공격 성공 횟수 - ' + leftWin + ' : ' + rightWin;
@@ -556,7 +580,7 @@ function resolveEffects(winner, loser, effects, damage, skill) {
       }
 
       var recv = (eff.code === cons.EFFECT_TYPE_SELF_BUFF) ? winner : loser;
-      giveBuff(winner, recv, buffObj, true);
+      giveBuff(winner, recv, buffObj, true, eff.name);
 
     } else if (eff.code === cons.EFFECT_TYPE_SELF_SP || eff.code === cons.EFFECT_TYPE_SELF_HP || eff.code === cons.EFFECT_TYPE_OPP_SP || eff.code === cons.EFFECT_TYPE_OPP_HP) {
       var valueUsed = eff.isPercentMax ? eff.value * winner.stat.maxHp : eff.value;
@@ -1017,13 +1041,14 @@ function findBuffByIds(chara, ids) {
   return chara.buffs.filter(x => ids.includes(x.id));
 }
 
-function giveBuff(src, recv, buffObj, printFlag) {
+function giveBuff(src, recv, buffObj, printFlag, name) {
+  const srcText = name ? '[ ' + name + ' ] 효과로 ' : '';
   for (eff of findBuffByCode(recv, cons.EFFECT_TYPE_PREVENT_DEBUFF)) {
     if (eff.standard && ![0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].includes(buffObj.id)) {
       continue;
     }
     if (buffObj.isDebuff && buffObj.dispellable) {
-      result += ' [ ' + buffObj.name + ' ] 효과가 무효화되었다!<br>';
+      result += srcText + '[ ' + buffObj.name + ' ] 효과가 무효화되었다!<br>';
       resolveEffects(recv, src, getBuffEffects(recv, cons.ACTIVE_TYPE_PREVENT_DEBUFF), buffObj);
       resolveEffects(recv, src, getItemEffects(recv, cons.ACTIVE_TYPE_PREVENT_DEBUFF), buffObj);
       return;
@@ -1035,7 +1060,7 @@ function giveBuff(src, recv, buffObj, printFlag) {
   resolveEffects(recv, src, getItemEffects(recv, cons.ACTIVE_TYPE_RECEIVE_BUFF), buffObj);
   
   if (printFlag) {
-    result += recv.name + getUnnun(recv.nameType) + ' [ ' + buffObj.name + ' ] 효과를 받았습니다!<br>';
+    result += srcText + recv.name + getUnnun(recv.nameType) + ' [ ' + buffObj.name + ' ] 효과를 받았습니다!<br>';
   }
   
   for (var eff of buffObj.effect) {
@@ -1120,13 +1145,30 @@ function getItemEffects(chara, active) {
     active.k;
   }
   var rval = [];
+  var sockets = [];
   for (val in chara.items) {
     rval = rval.concat(chara.items[val].effect.filter(x => (x.active === active)));
     if (chara.items[val].socket) {
       for (sock of chara.items[val].socket) {
-        rval = rval.concat(sock.effect.filter(x => (x.active === active)));
+        sockets = sockets.concat(sock.effect.filter(x => (x.active === active)));
       }
     }
+  }
+  if (active == cons.ACTIVE_TYPE_CALC_STATS) {
+    var sval = [];
+    for (sock of sockets) {
+      if (sval.findIndex(x => x.code == sock.code) == -1) {
+        var nv = JSON.parse(JSON.stringify(sock));
+        nv.value = 0;
+        for (ns of socket.filter(x => x.code == sock.code)) {
+          nv.value += ns.value;
+        }
+        sval.push(nv);
+      }
+    }
+    rval.concat(sval);
+  } else {
+    rval.concat(sockets);
   }
   return rval;
 }

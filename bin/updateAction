@@ -8,31 +8,71 @@ const pool = new Pool({
 
 const day = new Date().getDay();
 const hour = new Date().getHours();
+const min = new Date().getMinutes();
 doWork();
 
 async function doWork() {
 try {
   const client = await pool.connect();
-  if ((day >= 1 && day <= 5) || hour % 6 !== 0) {
-    await client.query('update characters set actionPoint = actionPoint + 1 where actionPoint < 20');
-  } else {
-    await client.query('update characters set actionPoint = actionPoint + 3');
-    await client.query('update characters set actionPoint = 20 where actionPoint > 20');
-  }  
-  if (hour == 6) {
-    await client.query('update characters set actionPoint = actionPoint + 3');
-    await client.query('update characters set actionPoint = 20 where actionPoint > 20');
+  // 30분마다 기본 피로도
+  await client.query('update characters set actionPoint = actionPoint + 1 where actionPoint < 100');
+  
+    const resultx = await client.query('select * from characters');
+    for (val of resultx.rows) {
+      var charData = JSON.parse(val.char_data);
+      charData.dungeonInfos.runMevious = false;
+      charData.dungeonInfos.runEmberCrypt = false;
+      await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(charData), val.uid]);
+    } 
+  // 6시간마다 (과수원, 탄생일)
+  if (hour % 6 == 0 && minutes < 25) {
   
     const result = await client.query('select * from characters');
+    for (val of result.rows) {
+      var charData = JSON.parse(val.char_data);
+      charData.dungeonInfos.runBurningOrchard = false;
+      await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(charData), val.uid]);
+      if (charData.birth == day) {
+        await client.query('update characters set actionPoint = actionPoint + 4 where uid = $1', [val.uid]);
+      }
+    } 
+  }
+  // 주말 보너스
+  if ((day == 0 || day == 6) && hour % 6 == 0 && minutes < 25) {
+    await client.query('update characters set actionPoint = actionPoint + 12');
+    await client.query('update characters set actionPoint = 100 where actionPoint > 100');
+  }  
+  // 6시 처리 (보너스 피로도, 던전 보상, 주간 리셋, 퀘스트)
+  if (hour == 6 && minutes < 25) {
+    await client.query('update characters set actionPoint = actionPoint + 12');
+    await client.query('update characters set actionPoint = 100 where actionPoint > 100');
+  
+    const result = await client.query('select * from characters');
+    var minBattle = 999999;
+    var minBattleUid;
+    var minRate = 2;
+    var minRateUid;
     for (val of result.rows) {
       var charData = JSON.parse(val.char_data);
       if (day == 1) {
         delete charData.dayStoneBought;
         delete charData.actionBought;
       }
-      charData.maxExp = 4 * charData.reqExp;
-      charData.dungeonInfos.runMevious = false;
-      charData.dungeonInfos.runEmberCrypt = false;
+      if (val.uid != '02') {
+        if (charData.battleCnt < minBattle) {
+          minBattle = charData.battleCnt;
+          minBattleUid = val.uid;
+        }
+        if (charData.battleCnt && charData.winCnt / charData.battleCnt < minRate) {
+          minRate = charData.winCnt / charData.battleCnt;
+          minRateUid = val.uid;
+        }
+      }
+      charData.maxExp = 5 * charData.reqExp;
+      charData.maxResultGauge = 0;
+      charData.addExpCount = 3;
+      charData.dungeonInfos.rewardMevious = false;
+      charData.dungeonInfos.rewardEmberCrypt = false;
       charData.quest = {};
       var quests = [{code : 1, progress : 0, target : 3},
                     {code : 2, progress : 0, target : 5},
@@ -68,18 +108,25 @@ try {
       
       await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(charData), val.uid]);
     } 
-  }
-  if (hour % 6 == 0) {
-  
-    const result = await client.query('select * from characters');
-    for (val of result.rows) {
-      var charData = JSON.parse(val.char_data);
-      charData.dungeonInfos.runBurningOrchard = false;
-      await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(charData), val.uid]);
-      if (charData.birth == day) {
-        await client.query('update characters set actionPoint = actionPoint + 1 where actionPoint < 20 and uid = $1', [val.uid]);
+    const result2 = await client.query('select * from characters');
+    for (val of result2.rows) {
+      if (val.uid == minBattleUid) {
+        var charData = JSON.parse(val.char_data);
+        charData.expBoost = charData.expBoost ? charData.expBoost + 3 : 3;
+        charData.maxExp += charData.reqExp;
+        await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(charData), val.uid]);
+        await client.query('insert into news(content, date) values ($1, $2)', 
+          ['전투 횟수가 가장 적은 ' + char.name + '에게 경험치 보정이 주어졌습니다!', new Date()]);
       }
-    } 
+      if (minBattleUid != minRateUid && val.uid == minRateUid) {
+        var charData = JSON.parse(val.char_data);
+        charData.expBoost = charData.expBoost ? charData.expBoost + 3 : 3;
+        charData.maxExp += charData.reqExp;
+        await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(charData), val.uid]);
+        await client.query('insert into news(content, date) values ($1, $2)', 
+          ['승률이 가장 낮은 ' + char.name + '에게 경험치 보정이 주어졌습니다!', new Date()]);
+      }
+    }
   }
   client.release();  
   } catch (err) {

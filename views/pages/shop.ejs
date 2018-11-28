@@ -169,6 +169,12 @@
   </div>
   <div class="charItem">
     <form action="/useShop" method="post">
+      <button onclick="invClick(this, event)" type="button">최대 경험치 제한 확장 [10pt]</button>
+      <input type="hidden" name="option" value="8">
+    </form>
+  </div>
+  <div class="charItem">
+    <form action="/useShop" method="post">
       <button onclick="invClick(this, event)" type="button">추가 피로도 +2 [<%= actionBought ? 15 : 10 %>pt]</button>
       <input type="hidden" name="option" value="3">
     </form>
@@ -269,14 +275,14 @@
   </div>
   <div class="charItem">
     <form action="/useShop" method="post">
-      <button onclick="invClick(this, event)" type="button">잔불 : 백령의 조언 [5 잔불]</button>
+      <button onclick="invClick(this, event)" type="button">카사스의 피고리 [5 잔불]</button>
       <div class="itemTooltip"><%- makeTooltip(item.ember[0]) %></div> 
       <input type="hidden" name="option" value="90005">
     </form>
   </div>
   <div class="charItem">
     <form action="/useShop" method="post">
-      <button onclick="invClick(this, event)" type="button">잔불 : 암령의 광기 [15 잔불]</button>
+      <button onclick="invClick(this, event)" type="button">깊은 곳의 가호 [15 잔불]</button>
       <div class="itemTooltip"><%- makeTooltip(item.ember[1]) %></div> 
       <input type="hidden" name="option" value="90006">
     </form>
