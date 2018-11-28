@@ -1820,7 +1820,10 @@ function calcStats(chara) {
       chara.stat[val.key] *= (1 + val.value * stackMpl);
     }
   }
-  
+
+  for (var key in chara.stat) {
+    chara.stat[key] = Math.round(chara.stat[key] * 100) / 100;
+  }
   chara.stat.maxHp = Math.round(chara.stat.maxHp);
 }
 
