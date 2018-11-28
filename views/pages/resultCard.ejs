@@ -214,12 +214,12 @@
       <div class="itemTooltip"><%- makeTooltip(item) %></div>
     </span>
   </div>
-  <% if (nextInd != -1) { %>
+  <% if (nextIdx != -1) { %>
         <div class="backLink">
           <form action="/useItem" method="post">
             <button class="inventoryButton" onclick="invClick(this, event)" type="button">다음 리설트 카드
             </button>
-            <input type="hidden" name="itemNum" value="<%= nextInd %>">
+            <input type="hidden" name="itemNum" value="<%= nextIdx %>">
           </form>
         </div>
   <% } %>
