@@ -295,7 +295,7 @@
         </tr>
         <tr>
           <td class="charViewTitle">피로도</td>
-          <td class="charViewContent"><%= actionPoint %>/20</td>
+          <td class="charViewContent"><%= actionPoint %>/100</td>
           <td class="charViewContent"><%= char.expBoost ? 'Boost ' + char.expBoost : '' %></td>
         </tr>
         <tr>
@@ -337,7 +337,7 @@
           <td class="charViewTitle"><%= (printName[key] ? printName[key] : key) %></td>
           <td class="charViewContent">
             <% if (key === 'phyAtk' || key === 'magAtk') { %>
-              <%= val + char.stat[key + 'Min'] %>-<%= val + char.stat[key + 'Max'] %>
+              <%= (val + char.stat[key + 'Min']).toFixed(2) %>-<%= (val + char.stat[key + 'Max']).toFixed(2) %>
             <% } else { 
                  if (key == 'phyReduce' || key == 'magReduce' || key == 'crit' || key == 'critDmg' || key == 'crit' || key == 'hit' || key == 'evasion' || key == 'pierce') {
                    val = (val * 100).toFixed(2) + '%'; 
