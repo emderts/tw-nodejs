@@ -189,6 +189,16 @@
       }, 420 + 200 * <%= item.rarity * item.rarity %>);
       document.getElementById('audio').play();
     }
+    
+  function invClick(thisNode, event) {
+    if (thisNode.type !== 'submit') {
+      event.preventDefault();
+      for (item of document.getElementsByClassName('inventoryButton')) {
+        item.type = 'button';
+      }
+      thisNode.setAttribute('type', 'submit');
+    }
+  }
   </script>
   
   <% if (item.rarity >= 4) { %>
@@ -204,6 +214,15 @@
       <div class="itemTooltip"><%- makeTooltip(item) %></div>
     </span>
   </div>
+  <% if (nextInd != -1) { %>
+        <div class="backLink">
+          <form action="/useItem" method="post">
+            <button class="inventoryButton" onclick="invClick(this, event)" type="button">다음 리설트 카드
+            </button>
+            <input type="hidden" name="itemNum" value="<%= nextInd %>">
+          </form>
+        </div>
+  <% } %>
   <div class="backLink">
     <a href="/">돌아가기</a>
   </div>

@@ -52,6 +52,7 @@ const app = express()
 .post('/enterDungeon', procEnterDungeon)
 .get('/nextPhaseDungeon', procNextPhaseDungeon)
 .get('/stopDungeon', procStopDungeon)
+.get('/sortInventory', procSortInventory)
 .get('/quest', procQuest)
 .post('/submitQuest', procSubmitQuest)
 .post('/resetQuest', procResetQuest)
@@ -189,7 +190,10 @@ async function procInit2 () {
     const result = await client.query('select * from characters');
     for (val of result.rows) {
       var char = JSON.parse(val.char_data);
-      char.resetQuest = true;
+      if (uid == '09') {
+        char.dungeonInfos.runMevious = false;
+        char.dungeonInfos.runEmberCrypt = false;
+      }
       
       await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), val.uid]);
     } 
@@ -309,7 +313,8 @@ async function procUseItem (req, res) {
           calcStats(chara);
         } else if (tgtObj.type === cons.ITEM_TYPE_RESULT_CARD) {
           chara.inventory.splice(body.itemNum, 1);
-          var rand = Math.random();
+          const nextIdx = chara.inventory.findIndex(x => (x.type === cons.ITEM_TYPE_RESULT_CARD && x.resultType === tgtObj.resultType));
+          const rand = Math.random();
           var picked;
           if (chara.quest[10]) {
             chara.quest[10].progress += 1;
@@ -370,7 +375,6 @@ async function procUseItem (req, res) {
               picked = makeDayStone(null, tgtObj.rank);
               chara.inventory.push(picked);
             }
-            res.render('pages/resultCard', {item : picked});
           } else if (tgtObj.resultType < 90000) {
             if (rand < 0.605) {
               picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_UNCOMMON, tgtObj.resultType);
@@ -400,7 +404,6 @@ async function procUseItem (req, res) {
                 chara.quest[5].progress += 3;
               }
             } 
-            res.render('pages/resultCard', {item : picked});
           } else if (tgtObj.resultType == 90001) {
             if (rand < 0.193) {
               picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_COMMON_UNCOMMON);
@@ -463,7 +466,6 @@ async function procUseItem (req, res) {
               picked = makeDayStone(null, tgtObj.rank);
               chara.inventory.push(picked);           
             }
-            res.render('pages/resultCard', {item : picked});
           } else if (tgtObj.resultType == 90002) {
             var rand = Math.random();
             if (rand < 0.193) {
@@ -527,7 +529,6 @@ async function procUseItem (req, res) {
               picked = makeDayStone(null, tgtObj.rank);
               chara.inventory.push(picked);            
             }            
-            res.render('pages/resultCard', {item : picked});
           } else if (tgtObj.resultType == 90003) {
             var rand = Math.random();
             if (rand < 0.5) {
@@ -558,8 +559,8 @@ async function procUseItem (req, res) {
                 chara.quest[5].progress += 3;
               }
             } 
-            res.render('pages/resultCard', {item : picked});
           }
+          res.render('pages/resultCard', {item : picked, nextIdx : nextIdx});
         } else if (tgtObj.type === cons.ITEM_TYPE_DAYSTONE) {
           res.render('pages/selectItem', {title : '요일석 사용', inv : chara.inventory, mode : 1, usedItem : body.itemNum, uid : null});
         } else if (tgtObj.type === 90001) {
@@ -650,7 +651,7 @@ async function procBattleList(req, res) {
     for (val of result.rows) {
       var charData = JSON.parse(val.char_data);
       var obj = {};
-      obj.name = charData.name + ', ' + charData.title;
+      obj.name = charData.name + ', ' + charData.title + ' [' + charData.rank + '급]';
       obj.uid = val.uid;
       obj.battleCnt = charData.battleCnt;
       obj.winCnt = charData.winCnt;
@@ -1301,6 +1302,66 @@ async function procStopDungeon(req, res) {
   }
 }
 
+async function procSortInventory(req, res) {
+  try {
+    const sess = req.session; 
+    const client = await pool.connect();
+    const charRow = await getCharacter(sess.userUid);
+    const char = JSON.parse(charRow.char_data);
+    char.inventory.sort(function compare(a, b) {
+      if (a.type < b.type) {
+        return -1;
+      } else if (a.type > b.type) {
+        return 1;
+      } else {
+        if (a.type <= 4) {
+          if (a.rank < b.rank) {
+            return -1;
+          } else if (a.rank > b.rank) {
+            return 1;
+          } else if (a.rarity < b.rarity) {
+            return -1;
+          } else if (a.rarity > b.rarity) {
+            return 1;
+          } else if (a.name < b.name) {
+            return -1;
+          } else if (a.name > b.name) {
+            return 1;
+          } else {
+            return 0;
+          }
+        } else if (a.type === cons.ITEM_TYPE_RESULT_CARD) {
+          if (a.name < b.name) {
+            return -1;
+          } else if (a.name > b.name) {
+            return 1;
+          } else {
+            return 0;
+          }
+        } else if (a.type === cons.ITEM_TYPE_DAYSTONE) {
+          if (a.day < b.day) {
+            return -1;
+          } else if (a.day > b.day) {
+            return 1;
+          } else if (a.level < b.level) {
+            return -1;
+          } else if (a.level > b.level) {
+            return 1;
+          } else {
+            return 0;
+          }
+        }
+      }
+    });
+    await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
+    client.release();
+    res.redirect('/');
+  } catch (err) {
+    console.error(err);
+    res.send('내부 오류');
+  }
+}
+
 async function procQuest(req, res) {
   try {
     const sess = req.session; 
@@ -1579,7 +1640,7 @@ async function getNews (cnt) {
   try {
     var rval = [];
     const client = await pool.connect();
-    const result = await client.query('select * from news order by date desc fetch first 5 rows only', []);
+    const result = await client.query('select * from news order by date desc fetch first 10 rows only', []);
     for (const val of result.rows) {
       rval.push(val.content);
     }
