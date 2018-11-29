@@ -135,11 +135,10 @@ io.on('connection', (socket) => {
     } else {
       trades[room].rightSel = key;
     }
-    console.log(trades[room]);
     if (trades[room].leftSel !== undefined && trades[room].rightSel !== undefined) {
       if (trades[room].leftSel == trades[room].rightSel) {
-        trades[room].left.emit('manualAck', '');
-        trades[room].right.emit('manualAck', '');      
+        trades[room].left.emit('manualSelectAck', null);
+        trades[room].right.emit('manualSelectAck', null);      
       } else {
         const result = battlemodule2.procBattleTurn(trades[room].leftSel, trades[room].rightSel);
         trades[room].left.emit('manualSelectAck', result.result);

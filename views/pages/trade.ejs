@@ -9,7 +9,7 @@
     <style>
       body {font-family: "Nanum Gothic", sans-serif; }
       .turnWrap {text-align: center; }
-      .selectWrap {position: absolute; }
+      .selectWrap {position: relative; width: 700px; margin: 0 auto; }
       .charItem button {width: 200px; margin: 3px; background-color: #ffffea; }
       .charItem button:hover {background-color: #ffffcc; }
       .charItem { float: left; }
@@ -23,7 +23,7 @@
       .colorSp {color: blue; }
       .charInfoWrap {width: 70%; max-width: 510px; margin: 10px auto; overflow: hidden; }
       .charInfo {text-align: center; width: 49%; float: left; border-top: 1px solid black; }
-      .resultWrap {width: 70%; height: 900px; margin: 10px auto; overflow: scroll; }
+      .resultWrap {width: 70%; height: 700px; margin: 100px auto; overflow: scroll; }
       .backLink {text-align: center; width: 40%; margin: 10px auto; overflow: hidden; }
     </style>
     <script src="/socket.io/socket.io.js"></script>
@@ -59,10 +59,13 @@
     document.getElementById('selectBtn2').innerHTML = names[2];
   });
   socket.on('manualSelectAck', function(result) {
-    document.getElementById('result').innerHTML = result;
+    if (result) {
+      document.getElementById('result').innerHTML = result;
+    }
     document.getElementById('selectBtn0').removeAttribute('disabled');
     document.getElementById('selectBtn1').removeAttribute('disabled');
     document.getElementById('selectBtn2').removeAttribute('disabled');
+    document.getElementById('result').scrollTo(0, document.getElementById('result').scrollHeight);
   });
   
   function invClick(key) {
