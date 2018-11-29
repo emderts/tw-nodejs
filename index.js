@@ -1231,7 +1231,7 @@ async function procNextPhaseDungeon(req, res) {
       if (!re.winnerLeft) {
         isFinished = true;
         reward += '패배했습니다..';
-      } else if (req.session.dungeonProgress.code == 1 && req.session.dungeonProgress.phase == 3) {
+      } else if (req.session.dungeonProgress.code == 1 && req.session.dungeonProgress.phase >= 3) {
         isFinished = true;
         if (!char.dungeonInfos.rewardMevious) {
           char.dungeonInfos.rewardMevious = true;
@@ -1256,7 +1256,7 @@ async function procNextPhaseDungeon(req, res) {
           char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '메비우스 섬멸 공훈 카드', rank : 8, resultType : 90001});
           reward += '메비우스 섬멸 공훈 카드 1개를 획득했습니다.';
         }
-      } else if (req.session.dungeonProgress.code == 2 && req.session.dungeonProgress.phase == 2) {
+      } else if (req.session.dungeonProgress.code == 2 && req.session.dungeonProgress.phase >= 2) {
         isFinished = true;
         if (!char.dungeonInfos.rewardEmberCrypt) {
           char.dungeonInfos.rewardEmberCrypt = true;

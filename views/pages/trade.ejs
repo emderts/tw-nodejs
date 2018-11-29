@@ -8,8 +8,11 @@
     <link href="https://fonts.googleapis.com/css?family=Nanum+Gothic" rel="stylesheet">
     <style>
       body {font-family: "Nanum Gothic", sans-serif; }
-      .resultWrap {max-height: 90%; overflow: scroll; }
       .turnWrap {text-align: center; }
+      .selectWrap {position: absolute; }
+      .charItem button {width: 200px; margin: 3px; background-color: #ffffea; }
+      .charItem button:hover {background-color: #ffffcc; }
+      .charItem { float: left; }
       span.turnCount {font-size: 20px; font-weight: bold; }
       span.skillUseWinner {font-weight: bold; }
       .driveSkill {margin-top: 5px; font-weight: bold; }
@@ -20,7 +23,7 @@
       .colorSp {color: blue; }
       .charInfoWrap {width: 70%; max-width: 510px; margin: 10px auto; overflow: hidden; }
       .charInfo {text-align: center; width: 49%; float: left; border-top: 1px solid black; }
-      .resultWrap {width: 70%; max-width: 510px; margin: 10px auto; overflow: hidden; }
+      .resultWrap {width: 70%; height: 900px; margin: 10px auto; overflow: scroll; }
       .backLink {text-align: center; width: 40%; margin: 10px auto; overflow: hidden; }
     </style>
     <script src="/socket.io/socket.io.js"></script>

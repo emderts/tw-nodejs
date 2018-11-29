@@ -550,7 +550,9 @@ function resolveEffects(winner, loser, effects, damage, skill) {
     if (eff.code === cons.EFFECT_TYPE_SELF_BUFF || eff.code === cons.EFFECT_TYPE_OPP_BUFF) {
       if (eff.direct) {
         damage.dur *= eff.durMod;
-        giveBuff(winner, loser, damage, true);
+        if (damage.dur < 1) {
+          giveBuff(winner, loser, damage, true);
+        }
         continue;
       }
       var buffObj = buffMdl.getBuffData(eff);
