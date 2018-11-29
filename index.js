@@ -1044,6 +1044,9 @@ async function procDungeon(req, res) {
         if (row.open == 'O') {
           tgt.phase = row.phase;
           const curData = JSON.parse(row.monsters);
+          if (!curData[row.phase]) {
+            row.phase = 1;
+          }
           tgt.image = curData[row.phase].image;
           tgt.bossName = curData[row.phase].name;
           tgt.curHp = curData[row.phase].curHp ? curData[row.phase].curHp : curData[row.phase].stat.maxHp;
