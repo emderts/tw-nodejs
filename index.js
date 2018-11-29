@@ -216,12 +216,8 @@ async function procInit2 () {
   //      [JSON.stringify({1 : monster.rKines})]);
     for (val of result.rows) {
       var char = JSON.parse(val.char_data);
-      if (val.uid == '10') {
-        char.inventory.push({type : 90001, value : 18, name : '피로 회복제 R'});
-        char.inventory.push({type : 90002, value : 2, name : '경험의 책 II'});
-      }
-      if (val.uid == '11') {
-        char.inventory.push({type : 90002, value : 3, name : '경험의 책 III'});
+      if (val.uid == '09') {
+        char.skill = chara.nux.skill;
       }
       
       await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), val.uid]);
