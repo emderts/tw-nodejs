@@ -1137,19 +1137,19 @@ const item = require('./items');
   skillObj.nameType = cons.NAME_KOR_END_CONS;
   skillObj.type = cons.DAMAGE_TYPE_PHYSICAL;
   skillObj.damage = 0.5;
-  skillObj.effect = [{code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.15, buffCode : 6, buffDur : 2, critNot : true},
-                     {code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.15, buffCode : 7, buffDur : 2, critNot : true},
-                     {code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.15, buffCode : 8, buffDur : 2, critNot : true},
-                     {code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.15, buffCode : 9, buffDur : 2, critNot : true},
-                     {code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.15, buffCode : 10, buffDur : 2, critNot : true},
-                     {code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.15, buffCode : 11, buffDur : 2, critNot : true},
-                     {code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.25, buffCode : 6, buffDur : 2, onCrit : true},
-                     {code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.25, buffCode : 7, buffDur : 2, onCrit : true},
-                     {code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.25, buffCode : 8, buffDur : 2, onCrit : true},
-                     {code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.25, buffCode : 9, buffDur : 2, onCrit : true},
-                     {code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.25, buffCode : 10, buffDur : 2, onCrit : true},
-                     {code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.25, buffCode : 11, buffDur : 2, onCrit : true}];
-  skillObj.tooltip = '각각 15\% (치명타 시 25%) 확률로 적에게 2턴 간 [탈진], [침묵], [실명], [마비], [봉인], [혼란] 상태이상 부여';
+  skillObj.effect = [{code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.15, chanceAddKey : 'hit', buffCode : 6, buffDur : 2, critNot : true},
+                     {code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.15, chanceAddKey : 'hit', buffCode : 7, buffDur : 2, critNot : true},
+                     {code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.15, chanceAddKey : 'hit', buffCode : 8, buffDur : 2, critNot : true},
+                     {code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.15, chanceAddKey : 'hit', buffCode : 9, buffDur : 2, critNot : true},
+                     {code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.15, chanceAddKey : 'hit', buffCode : 10, buffDur : 2, critNot : true},
+                     {code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.15, chanceAddKey : 'hit', buffCode : 11, buffDur : 2, critNot : true},
+                     {code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.25, chanceAddKey : 'hit', buffCode : 6, buffDur : 2, onCrit : true},
+                     {code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.25, chanceAddKey : 'hit', buffCode : 7, buffDur : 2, onCrit : true},
+                     {code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.25, chanceAddKey : 'hit', buffCode : 8, buffDur : 2, onCrit : true},
+                     {code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.25, chanceAddKey : 'hit', buffCode : 9, buffDur : 2, onCrit : true},
+                     {code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.25, chanceAddKey : 'hit', buffCode : 10, buffDur : 2, onCrit : true},
+                     {code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.25, chanceAddKey : 'hit', buffCode : 11, buffDur : 2, onCrit : true}];
+  skillObj.tooltip = '(각각 15\ + 추가 명중)% (치명타 시 기본 25%) 확률로 적에게 2턴 간 [탈진], [침묵], [실명], [마비], [봉인], [혼란] 상태이상 부여';
   skillObj.flavor = '뒷세계에서 받은 기이한 물체, 테이저 건 같이 날아가서 붙이는데 이 때 감각 자체가 해킹이 돼서 오감의 활동을 불가능하게 만들어버린다.';
   charNux.skill.base.push(skillObj);
 
@@ -1164,27 +1164,13 @@ const item = require('./items');
   skillObj.cooldown = 0;
   skillObj.effect = [];
   effectObj = {};
-  effectObj.code = cons.EFFECT_TYPE_SELECTION;
-  effectObj.chance = 1;
-  effectObj.selectChances = [0.5, 1];
-  effectObj.options = [];
-  var optObj = {};
-  optObj.code = cons.EFFECT_TYPE_SELF_BUFF;
-  optObj.chance = 1;
-  optObj.buffCode = 201740;
-  optObj.buffDur = 1;
-  optObj.value = 55;
-  effectObj.options.push(optObj);
-  optObj = {};
-  optObj.code = cons.EFFECT_TYPE_SELF_BUFF;
-  optObj.chance = 1;
-  optObj.buffCode = 201741;
-  optObj.buffDur = 1;
-  optObj.value = 0;
-  effectObj.options.push(optObj);
+  effectObj.code = cons.EFFECT_TYPE_SELF_BUFF;
+  effectObj.buffCode = 201740;
+  effectObj.buffDur = 1;
+  effectObj.value = 40;
   skillObj.effect.push(effectObj);
-  skillObj.tooltip = '턴 시작 시 5\% 확률로 공격 시 SP를 55 회복하거나 SP재생/SP충전 1턴 간 0으로 고정';
-  skillObj.flavor = '';
+  skillObj.tooltip = '턴 시작 시 5\% 확률로 공격 시 SP를 40 회복하고 최대 생명력의 5%만큼 회복';
+  skillObj.flavor = '너무 피곤에 쩔어 있어서 에너지 드링크를 마셔 기운이 회복되었습니다!';
   charNux.skill.drive = skillObj;
 
   skillObj = {};
@@ -1195,12 +1181,22 @@ const item = require('./items');
   skillObj.cost = 200;
   skillObj.effect = [];
   effectObj = {};
+  effectObj.code = cons.EFFECT_TYPE_SET_ALL_BUFF_DURATION;
+  effectObj.anyDebuff = true;
+  effectObj.value = -1;
+  skillObj.effect.push(effectObj);
+  effectObj = {};
+  effectObj.code = cons.EFFECT_TYPE_SET_OPP_ALL_BUFF_DURATION;
+  effectObj.anyDebuff = true;
+  effectObj.value = 1;
+  skillObj.effect.push(effectObj);
+  effectObj = {};
   effectObj.code = cons.EFFECT_TYPE_OPP_BUFF;
   effectObj.chance = 1;
   effectObj.buffCode = 201742;
   effectObj.buffDur = 3;
   skillObj.effect.push(effectObj);
-  skillObj.tooltip = '적에게 3턴 간 [종말] 디버프 부여<br><br>[종말] : [탈진], 상성 패배 시 적 공격 계수 +30%, 종료 시 적에게 1턴 간 [만사 귀차니즘] 디버프 부여<br>[만사 귀차니즘] : [기절], 저항 -30%';
+  skillObj.tooltip = '자신의 모든 지속형 나쁜 상태이상의 지속 턴 1턴 감소, 상대의 모든 지속형 나쁜 상태이상의 지속 턴 1턴 증가, 그 다음 적에게 3턴 간 [종말] 디버프 부여<br><br>[종말] : [탈진], 상성 패배 시 적 공격 계수 +30%, 종료 시 적에게 1턴 간 [만사 귀차니즘] 디버프 부여<br>[만사 귀차니즘] : [기절], 저항 -30%';
   skillObj.flavor = '뒷세계에 연이 된 몇 명과 함께 만든 최악의 해킹시스템. 원래 만들 의향은 아니었지만 꽤 큰 돈을 받아서 조금 의욕은 있었지만 귀찮아서 대충 70% 정도 되는 양을 담당해서 만들었다. 30%는 아직 이해하는 중이라서 자신도 걸리면 조금 골치 아프다. 물론 못 풀지는 않기에 뒷세계 참여한 사람들은 눅스에게 이것을 잘 사용하지 않는다.';
   charNux.skill.special = skillObj;
 

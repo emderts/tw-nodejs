@@ -2461,6 +2461,13 @@ module.exports.getBuffData = function(eff) {
     effectObj.key = 'spCharge';
     effectObj.value = eff.value;
     retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_ATTACK;
+    effectObj.code = cons.EFFECT_TYPE_SELF_HP;
+    effectObj.isPercentStat = true;
+    effectObj.percentKey = 'maxHp';
+    effectObj.value = 0.05;
+    retObj.effect.push(effectObj);
     break;
   case 201741 : 
     retObj.name = '키보드 파괴';

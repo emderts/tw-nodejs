@@ -461,7 +461,11 @@ function resolveEffects(winner, loser, effects, damage, skill) {
   for (var eff of effects) {
     var chance = eff.chance ? eff.chance : 1;
     if (eff.chanceAddKey) {
-      chance += winner.stat[eff.chanceAddKey];
+      if (eff.chanceAddKey == 'hit') {
+        chance += winner.stat.hit > 1 ? (winner.stat.hit - 1) : 0;
+      } else {
+        chance += winner.stat[eff.chanceAddKey];
+      }
     }
     if (eff.chanceSubKeyOpp) {
       chance -= loser.stat[eff.chanceSubKeyOpp];
@@ -930,6 +934,18 @@ function resolveEffects(winner, loser, effects, damage, skill) {
         result += '[ ' + eff.name + ' ] 효과로 ' + printName[eff.key] + '가 ' + eff.value + '배 증가합니다!<br>';
       } else {
         continue;
+      }
+    } else if (eff.code === cons.EFFECT_TYPE_SET_ALL_BUFF_DURATION || eff.code === cons.EFFECT_TYPE_OPP_SET_ALL_BUFF_DURATION) {
+      const recv = (eff.code === cons.EFFECT_TYPE_SET_ALL_BUFF_DURATION) ? winner : loser;
+      const eText = eff.value > 0 ? '증가' : '감소';
+      for (buf of recv.buffs) {
+        if (eff.buffCode && eff.buffCode !== buf.id) {
+          continue;
+        } else if (eff.anyDebuff && (!buf.isDebuff || !buf.dispellable || !buf.durOff)) {
+          continue;
+        }
+        result += '[ ' + buf.name + ' ] 효과의 지속시간이 ' + (eff.value > 0 ? eff.value : 0-eff.value) + ' ' + eText + '합니다!<br>';
+        buf.dur += eff.value;
       }
     }
     
