@@ -15,6 +15,10 @@
     </style>
 </head>
 <body>
+<%
+  const names = {'03' : '줄리어스 엠더츠', '04' : '프사이', '05' : '에이카', '06' : '세리어스 플로에르시아',
+                 '07' : '에오헬름', '08' : '나백수', '09' : '이 눅스', '10' : '세컨드 로직', '11' : '마랑'};
+%>
   <div class="backLink">
     던전 입장
   </div>
@@ -25,14 +29,27 @@
       <input type="hidden" name="option" value="<%= dun.code %>">
     </form>
     <% if (dun.phase) { 
-      const hpPercent = Math.round((dun.curHp * 10000) / dun.maxHp) / 100; %>
+      const hpPercent = Math.round((dun.curHp * 10000) / dun.maxHp) / 100;
+  var leaderboard = [];
+  for (key in dun.battleRecord) { 
+    leaderboard.push({name : names[key], damage : dun.battleRecord[key]});
+  }
+  leaderboard.sort(function(a, b) {
+    if (a.damage > b.damage) {
+      return -1;
+    } else if (a.damage == b.damage) {
+      return 0;
+    } else {
+      return 1;
+    }
+  }); %>
       <div class="backLink">
         <%= dun.bossName %><br>
         <img src="<%= dun.image %>"><br>
         <%= dun.curHp %> / <%= dun.maxHp %> (<%= hpPercent %>%)
-         <br>피해량
-        <% for (key in dun.battleRecord) { %>
-           <br><%= key %> : <%= dun.battleRecord[key] %>
+         <br>현재 피해량
+        <% for (val of leaderboard) { %>
+           <br><%= val.name %> : <%= val.damage %>
         <% } %>
       </div>
     <% } %>
