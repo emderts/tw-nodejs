@@ -11,6 +11,7 @@ const pool = new Pool({
   ssl: true
 }); 
 const battlemodule = require('./battlemodule');
+const battlemodule2 = require('./battlemodule2');
 const chara = require('./chara');
 const cons = require('./constant');
 const item = require('./items');
@@ -66,8 +67,8 @@ const app = express()
 .post('/doRankup', procRankup)
 .post('/getCard', procGetCard)
 .get('/test', (req, res) => res.render('pages/battle', {result: battlemodule.doBattle(chara.julius, monster.mCrawler, 1).result}))
-.get('/test2', (req, res) => res.send(setCharacter('kemderts', 1, chara.kines)))
-.get('/test3', (req, res) => res.send(setCharacter('thelichking', 2, chara.lk)))
+.get('/test2', (req, res) => res.render('pages/trade', {room : '1', uid : '03'}))
+.get('/test3', (req, res) => res.render('pages/trade', {room : '1', uid : '04'}))
 .get('/test4', (req, res) => res.send(procInit2()))
 .get('/test5', (req, res) => res.render('pages/resultCard', {item : {name: 'test', rarity: Math.floor(Math.random() * 6)}}))
 .get('/test6', (req, res) => res.render('pages/index', {
@@ -111,18 +112,37 @@ io.on('connection', (socket) => {
     io.emit('chat message', socket.request.session.userName, msg);
   });
   
-  socket.on('tradeInit', function(mode, uid) {
-    console.log('tradeInit');
-    if (mode == 1) {
-      socket.broadcast.emit('tradeReq', uid, socket.request.session.charUid, socket.request.session.userName);
-      var tradeData = {};
-      tradeData.ouid = uid;
-      tradeData.socket = socket;
-      trades[socket.request.session.charUid] = tradeData;
-    } else if (mode == 2) {
-      var tradeData = trades[uid];
-      socket.emit('tradeAck', socket.request.session.charData.inventory);
-      tradeData.socket.emit('tradeAck', tradeData.socket.request.session.charData.inventory);
+  socket.on('manualInit', function(room, uid) {
+    console.log('manualInit');
+    if (!trades[room]) {
+      trades[room] = {left : socket, leftUid : uid};
+    } else {
+      trades[room].right = socket;
+      trades[room].rightUid = uid;
+      const result = battlemodule2.procBattleStart(chara.julius, chara.psi);
+      trades[room].left.emit('manualAck', result);
+      trades[room].right.emit('manualAck', result);
+    }
+  });
+  socket.on('manualSelect', function(room, uid, key) {
+    console.log('manualSelect');
+    if (trades[room].leftUid == uid) {
+      trades[room].leftSel = key;
+    } else {
+      trades[room].rightSel = key;
+    }
+    console.log(trades[room]);
+    if (trades[room].leftSel !== undefined && trades[room].rightSel !== undefined) {
+      if (trades[room].leftSel == trades[room].rightSel) {
+        trades[room].left.emit('manualAck', '');
+        trades[room].right.emit('manualAck', '');      
+      } else {
+        const result = battlemodule2.procBattleTurn(trades[room].leftSel, trades[room].rightSel);
+        trades[room].left.emit('manualSelectAck', result.result);
+        trades[room].right.emit('manualSelectAck', result.result);
+      }
+      delete trades[room].leftSel;
+      delete trades[room].rightSel;
     }
   });
   
@@ -1010,19 +1030,23 @@ async function procDungeon(req, res) {
     dungeonList.push({name : '메모리얼 게이트 - 메비우스 섬멸 [9급 20레벨 이상]', code : 1, active : !char.dungeonInfos.runMevious && (char.rank <= 8 || char.level >= 20)});
     dungeonList.push({name : '어나더 게이트 - 재의 묘소 [9급 20레벨 이상]', code : 2, active : !char.dungeonInfos.runEmberCrypt && (char.rank <= 8 || char.level >= 20)});
     dungeonList.push({name : '시즌 레이드 - 불타는 과수원 [7급 이상]', code : 3, active : false});
+    dungeonList.push({name : '필드 보스 - 고대 흑마법사 출현 [1 피로도]', code : 4, active : false});
     if (result && result.rows) {
       for (row of result.rows) {
         var tgt = dungeonList[row.rindex];
         if (row.rindex == 2 && row.phase <= 4) {
           tgt.active = row.open == 'O' && char.rank <= 7 && !char.dungeonInfos.runBurningOrchard;
-          if (row.open == 'O') {
-            tgt.phase = row.phase;
-            const curData = JSON.parse(row.monsters);
-            tgt.image = curData[row.phase].image;
-            tgt.bossName = curData[row.phase].name;
-            tgt.curHp = curData[row.phase].curHp ? curData[row.phase].curHp : curData[row.phase].stat.maxHp;
-            tgt.maxHp = curData[row.phase].stat.maxHp;
-          }
+        } else if (row.rindex == 3 && row.phase <= 1) {
+          tgt.active = row.open == 'O' && charRow.actionpoint > 0 && !char.dungeonInfos.runFieldBoss;
+        }
+        if (row.open == 'O') {
+          tgt.phase = row.phase;
+          const curData = JSON.parse(row.monsters);
+          tgt.image = curData[row.phase].image;
+          tgt.bossName = curData[row.phase].name;
+          tgt.curHp = curData[row.phase].curHp ? curData[row.phase].curHp : curData[row.phase].stat.maxHp;
+          tgt.maxHp = curData[row.phase].stat.maxHp;
+          tgt.battleRecord = curData[row.phase].battleRecord;
         }
       }
     }
@@ -1063,6 +1087,15 @@ async function procEnterDungeon(req, res) {
         enemy = curData[row.phase];
         hpBefore = enemy.curHp ? enemy.curHp : enemy.stat.maxHp;
       }
+    } else if (body.option == 4) {
+      const result = await client.query('select * from raids where rindex = 3');
+      const row = result.rows[0];
+      if (charRow.actionpoint > 0 && !char.dungeonInfos.runFieldBoss && (row.open == 'O')) {
+        curData = JSON.parse(row.monsters);
+        char.dungeonInfos.runFieldBoss = true;
+        enemy = curData[row.phase];
+        hpBefore = enemy.curHp ? enemy.curHp : enemy.stat.maxHp;
+      }
     }
     if (enemy) {
       if (body.option == 1 || body.option == 2) {
@@ -1088,32 +1121,43 @@ async function procEnterDungeon(req, res) {
         var isFinished = true;
         curData[row.phase] = re.leftInfo;
         curData[row.phase].battleRecord[charRow.uid] = curData[row.phase].battleRecord[charRow.uid] ? curData[row.phase].battleRecord[charRow.uid] + damageDealt : damageDealt;
-        var reward = damageDealt + ' 피해를 입혔습니다! (누적 피해 : ' + curData[row.phase].battleRecord[charRow.uid] + ')<br>'; 
-        const curr = 1 + Math.floor(3 * Math.random());
-        if (char.currencies.burntMark) {
-          char.currencies.burntMark += curr;
+        var reward = damageDealt + ' 피해를 입혔습니다! (누적 피해 : ' + curData[row.phase].battleRecord[charRow.uid] + ')<br>';
+        if (body.option == 3) {
+          const curr = 1 + Math.floor(3 * Math.random());
+          if (char.currencies.burntMark) {
+            char.currencies.burntMark += curr;
+          } else {
+            char.currencies.burntMark = curr;
+          }
+          reward += '불탄 증표 ' + curr + '개를 획득했습니다.<br>';
+          if (curData[row.phase].battleRecord[charRow.uid] >= re.leftInfo.stat.maxHp / 10) {
+            if (!char.dungeonInfos['rewardBurningOrchard' + row.phase]) {
+              char.dungeonInfos['rewardBurningOrchard' + row.phase] = true;
+              char.currencies.burntMark += 10;
+              char.statPoint += 5;
+              char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '불타는 영웅의 증명 카드', rank : 7, resultType : 90003});
+              reward += '누적 피해량 보상으로 불탄 징표 10개와 불타는 영웅의 증명 카드 1개를 획득했습니다.<br>';
+            }  
+          }
         } else {
-          char.currencies.burntMark = curr;
-        }
-        reward += '불탄 증표 ' + curr + '개를 획득했습니다.<br>';
-        if (curData[row.phase].battleRecord[charRow.uid] >= re.leftInfo.stat.maxHp / 10) {
-          if (!char.dungeonInfos['rewardBurningOrchard' + row.phase]) {
-            char.dungeonInfos['rewardBurningOrchard' + row.phase] = true;
-            char.currencies.burntMark += 10;
-            char.statPoint += 5;
-            char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '불타는 영웅의 증명 카드', rank : 7, resultType : 90003});
-            reward += '누적 피해량 보상으로 불탄 징표 10개와 불타는 영웅의 증명 카드 1개를 획득했습니다.<br>';
-          }  
+          await client.query('update characters set actionPoint = actionpoint - 1 where uid = $1', [sess.userUid]);
+          
         }
         if (!re.winnerLeft) {
-          char.currencies.burntMark += 20;
-          char.statPoint += 10;
-          char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '불타는 영웅의 증명 카드', rank : 7, resultType : 90003});
-          char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '불타는 영웅의 증명 카드', rank : 7, resultType : 90003});
-          char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '불타는 영웅의 증명 카드', rank : 7, resultType : 90003});
-          reward += re.leftInfo.name + getUlrul(re.leftInfo.nameType) + ' 처치했습니다!<br>불탄 징표 20개와 불타는 영웅의 증명 카드 3개, 스탯 포인트 10을 획득했습니다.<br>';
-          await client.query('insert into news(content, date) values ($1, $2)', 
-              [char.name + getIga(char.nameType) + ' 불타는 과수원에서 ' + re.leftInfo.name + getUlrul(re.leftInfo.nameType) + ' 처치했습니다!', new Date()]);
+          if (body.option == 3) {
+            char.currencies.burntMark += 20;
+            char.statPoint += 10;
+            char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '불타는 영웅의 증명 카드', rank : 7, resultType : 90003});
+            char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '불타는 영웅의 증명 카드', rank : 7, resultType : 90003});
+            char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '불타는 영웅의 증명 카드', rank : 7, resultType : 90003});
+            reward += re.leftInfo.name + getUlrul(re.leftInfo.nameType) + ' 처치했습니다!<br>불탄 징표 20개와 불타는 영웅의 증명 카드 3개, 스탯 포인트 10을 획득했습니다.<br>';
+            await client.query('insert into news(content, date) values ($1, $2)', 
+                [char.name + getIga(char.nameType) + ' 불타는 과수원에서 ' + re.leftInfo.name + getUlrul(re.leftInfo.nameType) + ' 처치했습니다!', new Date()]);
+          } else {
+            await client.query('insert into news(content, date) values ($1, $2)', 
+                [char.name + getIga(char.nameType) + ' ' + re.leftInfo.name + getUlrul(re.leftInfo.nameType) + ' 처치했습니다!', new Date()]);
+            
+          }
         } 
         await client.query('update raids set phase = $1, monsters = $2 where rindex = $3', [row.phase + (re.winnerLeft ? 0 : 1), JSON.stringify(curData), row.rindex]);
       }

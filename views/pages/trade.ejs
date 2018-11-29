@@ -4,217 +4,65 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>ThirdWorld - <%= title %></title>
+    <title>ThirdWorld - 수동전투 Proto</title>
     <link href="https://fonts.googleapis.com/css?family=Nanum+Gothic" rel="stylesheet">
     <style>
       body {font-family: "Nanum Gothic", sans-serif; }
-      div.inventoryWrap {float: left; width: 750px; max-width: 100%; }
-      .inventoryItem button {width: 150px; float: left; padding: 2px; }
-      .inventoryItem button:hover { }
-      .itemTooltip {font-family: "Nanum Gothic", sans-serif; visibility: hidden; width: 250px; background-color: black; color: #fff; text-align: center; font-size: 13.3333px; border-radius: 6px; padding: 5px 0; position: absolute; z-index: 1; }
-      .inventoryItem:hover .itemTooltip {visibility: visible; }
-      .tooltipFlavor {font-style: italic; }
-      .rarityUncommon {color: #4bacc6; }
-      .rarityRare {color: #8054a2; }
-      .rarityPremium {color: #00b050; }
-      .rarityUnique {color: #ff33cc; }
-      .rarityEpic {color: #f79646; }
-      .buttonUncommon {background-color: #4bacc6; }
-      .buttonRare {background-color: #8054a2; }
-      .buttonPremium {background-color: #00b050; }
-      .buttonUnique {background-color: #ff33cc; }
-      .buttonEpic {background-color: #f79646; }
+      .turnWrap {text-align: center; }
+      span.turnCount {font-size: 20px; font-weight: bold; }
+      span.skillUseWinner {font-weight: bold; }
+      .driveSkill {margin-top: 5px; font-weight: bold; }
+      .specialSkill {margin-top: 7px; font-weight: bold; }
+      .colorLeft {color: red; font-weight: bold; }
+      .colorRight {color: blue; font-weight: bold; }
+      .colorHp {color: green; }
+      .colorSp {color: blue; }
+      .charInfoWrap {width: 70%; max-width: 510px; margin: 10px auto; overflow: hidden; }
+      .charInfo {text-align: center; width: 49%; float: left; border-top: 1px solid black; }
+      .resultWrap {width: 70%; max-width: 510px; margin: 10px auto; overflow: hidden; }
       .backLink {text-align: center; width: 40%; margin: 10px auto; overflow: hidden; }
     </style>
     <script src="/socket.io/socket.io.js"></script>
-    <script>  
-  var socket = io();
-  socket.emit('tradeInit', '<%= mode %>', '<%= uid %>');
-  
-  socket.on('tradeAck', function(inventoryData) {
-    var inv = document.getElementById('inventoryElem');
-    for (const [key, val] of Object.entries(inventoryData)) {
-      var itemWrap = document.createElement('div');
-      itemWrap.innerHTML = '<div class="inventoryItem"><button class="' + getButtonText(val.rarity) + 
-                           '" type="submit" onclick="addItem(' + key + ')"> + val.name + '<div class="itemTooltip">' + makeTooltip(val) +
-                           '</div></button></div>';
-      inv.appendChild(itemWrap.firstChild);
-    }
-  });
-      
-  
-  
-  socket.emit('tradeRemoveItem', index);
-  socket.emit('tradeConfirm');
-  
-  socket.on('tradeDone', function() {
-    top.location.href = '/';
-  });
-  
-  function addItem(key) {
-  socket.emit('tradeAddItem', index);
-    var ul = document.getElementById('messages');
-    var li = document.createElement('li');
-    li.appendChild(document.createTextNode(userName + ' : ' + msg));
-    ul.appendChild(li);
-    ul.scrollTop = ul.scrollHeight;
-  }
-  
-  function addPerson(userName) {
-    var ul = document.getElementById('people');
-    while (ul.lastChild) {
-      ul.removeChild(ul.lastChild);
-    }
-    var li = document.createElement('li');
-    li.appendChild(document.createTextNode(userName));
-    ul.appendChild(li);
-  }
-      </script>
 </head>
 <body>
-<% 
-  var printName = {};
-  printName.maxHp = '생명력';
-  printName.hpRegen = 'HP재생';
-  printName.spRegen = 'SP재생';
-  printName.spCharge = 'SP충전';
-  printName.phyAtk = '물리공격력';
-  printName.magAtk = '마법공격력';
-  printName.crit = '치명';
-  printName.critDmg = '치명피해';
-  printName.phyReduce = '물리저항';
-  printName.magReduce = '마법저항';
-  printName.hit = '명중';
-  printName.evasion = '회피';
-  printName.dmgReduce = '피해감소';
-  printName.pierce = '관통';
-  printName[0] = '무기';
-  printName[1] = '갑옷';
-  printName[2] = '보조방어구';
-  printName[3] = '장신구';
-  printName[4] = '스킬 아티팩트';
   
-  function getRarityText(rarity) {
-    var text = '';
-    var cname = 'rarity';
-    switch (rarity) {
-    case 0:
-      text = '커먼';
-      cname += 'Common';
-      break;
-    case 1:
-      text = '언커먼';
-      cname += 'Uncommon';
-      break;
-    case 2:
-      text = '레어';
-      cname += 'Rare';
-      break;
-    case 3:
-      text = '프리미엄';
-      cname += 'Premium';
-      break;
-    case 4:
-      text = '유니크';
-      cname += 'Unique';
-      break;
-    case 5:
-      text = '에픽';
-      cname += 'Epic';
-      break;
-    }
-    return '<span class="' + cname + '">' + text + '</span>';
-  }
-  
-  function getButtonText(rarity) {
-    var cname = 'button';
-    switch (rarity) {
-    case 0:
-      cname += 'Common';
-      break;
-    case 1:
-      cname += 'Uncommon';
-      break;
-    case 2:
-      cname += 'Rare';
-      break;
-    case 3:
-      cname += 'Premium';
-      break;
-    case 4:
-      cname += 'Unique';
-      break;
-    case 5:
-      cname += 'Epic';
-      break;
-    }
-    return cname;
-  }
-  
-  function getStatList(val) {
-    return Object.entries(val.stat).map(arr => { 
-      if (arr[0] == 'phyAtkMin') {
-        return  '물리공격력 +' + arr[1] + '~' + val.stat.phyAtkMax;
-      } else if (arr[0] == 'magAtkMin') {
-        return  '마법공격력 +' + arr[1] + '~' + val.stat.magAtkMax;        
-      } else if (arr[0] == 'phyAtkMax' || arr[0] == 'magAtkMax') {
-        return '';
-      } else {
-        var sign = arr[1] > 0 ? '+' : '';
-        if (arr[0] == 'phyReduce' || arr[0] == 'magReduce' || arr[0] == 'crit' || arr[0] == 'critDmg' || arr[0] == 'crit' || arr[0] == 'hit' || arr[0] == 'evasion' || arr[0] == 'pierce') {
-          arr[1] = (arr[1] * 100).toFixed(2) + '%'; 
-        }
-        return printName[arr[0]] + ' ' + sign + arr[1];
-      }      
-    }).filter(x => x.length > 0).join(', ');
-  }
-  
-  function makeTooltip(item) {
-    var rtext = '';
-    rtext += item.name;
-    if (item.type < 10) {
-      rtext += '<br>' + item.rank + '급 ' + getRarityText(item.rarity) + ' ' + printName[item.type];
-      rtext += '<br>' + getStatList(item);
-      if (item.effectDesc && item.effectDesc.length > 0) {
-        rtext += ', ' + item.effectDesc;
-      }
-      if (item.socket) {
-        rtext += '<br><br>[' + item.socket.name + '] ' + getStatList(item.socket);
-      }
-      if (item.flavor && item.flavor.length > 0) {
-        rtext += '<br><br><span class="tooltipFlavor">' + item.flavor + '</span>';
-      }
-    }
-    return rtext;
-  }
-  
-  if (mode === 1 && inv && usedItem) { 
-    var used = inv[usedItem]; 
-    var description = used.name + '을 사용합니다.';
-    var formAction = '/enchantItem';
-    var minRank = used.level >= 3 ? 7 : (used.level === 2 ? 8 : 9); 
-    var tgtInv = inv.map(x => (x.rank <= minRank && x.type <= 3) ? x : {}); 
-    if (used.day === 1) {
-      tgtInv = tgtInv.map(x => (x.type === 0 || x.type === 3) ? x : {});
-    } else if (used.day === 5) {
-      tgtInv = tgtInv.map(x => (x.type >= 1) ? x : {});
-    }
-  } else if (mode === 2 && inv) { 
-    var description = '아이템을 해체합니다. (현재 가루 보유량 : ' + dust + ')';
-    var formAction = '/dismantleItem';
-    var tgtInv = inv.map(x => (x.type <= 3) ? x : {}); 
-  }
-  %>
-  <div>
-    <%= description %>
-    <% if (mode == 2 && dustVal) { %>
-      <br><%= dustVal %> 가루를 획득했습니다.
-    <% } %>
+  <div class="charItem">
+    <button id="selectBtn0" onclick="invClick(0)" type="button">가위</button>
   </div>
-  <div class="inventoryWrap" id="inventoryElem">
+  <div class="charItem">
+    <button id="selectBtn1" onclick="invClick(1)" type="button">바위</button>
   </div>
-  <div class="backLink">
-    <a href="/">돌아가기</a>
+  <div class="charItem">
+    <button id="selectBtn2" onclick="invClick(2)" type="button">보</button>
   </div>
+  <div id="result">
+  </div>
+    <script>  
+  var socket = io();
+  socket.emit('manualInit', '<%= room %>', '<%= uid %>');
+    document.getElementById('selectBtn0').setAttribute('disabled', true);
+    document.getElementById('selectBtn1').setAttribute('disabled', true);
+    document.getElementById('selectBtn2').setAttribute('disabled', true);
+  
+  socket.on('manualAck', function(result) {
+    document.getElementById('result').innerHTML = result;
+    document.getElementById('selectBtn0').removeAttribute('disabled');
+    document.getElementById('selectBtn1').removeAttribute('disabled');
+    document.getElementById('selectBtn2').removeAttribute('disabled');
+  });
+  socket.on('manualSelectAck', function(result) {
+    document.getElementById('result').innerHTML = result;
+    document.getElementById('selectBtn0').removeAttribute('disabled');
+    document.getElementById('selectBtn1').removeAttribute('disabled');
+    document.getElementById('selectBtn2').removeAttribute('disabled');
+  });
+  
+  function invClick(key) {
+    socket.emit('manualSelect', '<%= room %>', '<%= uid %>', key);
+    document.getElementById('selectBtn0').setAttribute('disabled', true);
+    document.getElementById('selectBtn1').setAttribute('disabled', true);
+    document.getElementById('selectBtn2').setAttribute('disabled', true);
+  }
+      </script>
 </body>
 </html>

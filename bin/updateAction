@@ -22,6 +22,7 @@ try {
       var charData = JSON.parse(val.char_data);
       charData.dungeonInfos.runMevious = false;
       charData.dungeonInfos.runEmberCrypt = false;
+      charData.dungeonInfos.runFieldBoss = false;
       await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(charData), val.uid]);
     } 
   // 6시간마다 (과수원, 탄생일)
@@ -69,7 +70,7 @@ try {
         }
       }
       charData.maxExp = 5 * charData.reqExp;
-      charData.maxResultGauge = 0;
+      charData.resultMaxGauge = 0;
       charData.addExpCount = 3;
       charData.dungeonInfos.rewardMevious = false;
       charData.dungeonInfos.rewardEmberCrypt = false;

@@ -30,6 +30,10 @@
         <%= dun.bossName %><br>
         <img src="<%= dun.image %>"><br>
         <%= dun.curHp %> / <%= dun.maxHp %> (<%= hpPercent %>%)
+         <br>피해량
+        <% for (key in dun.battleRecord) { %>
+           <br><%= key %> : <%= dun.battleRecord[key] %>
+        <% } %>
       </div>
     <% } %>
   </div>
