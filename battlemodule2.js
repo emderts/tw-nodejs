@@ -171,10 +171,11 @@ function _doBattleEnd(flag) {
 }
 
 function _doBattleTurn(left, right) {
+  if (!redecide) {
   turnCount++;
   result += '<br><div class="turnWrap"><span class="turnCount">' + turnCount + '턴</span><br>';
+  }
 
-  while (1) {
     // decide winner
     var winner = getRandom(0.5) ? charLeft : charRight;
     var loser = (winner === charLeft) ? charRight : charLeft;
@@ -269,10 +270,7 @@ function _doBattleTurn(left, right) {
         }
       }
     }
-    if (!redecide) {
-      break;
-    }
-  }
+    
   for (val of findBuffByCode(winner, 10006)) {
     if (!val.type || val.type === skillUsed.type) {
       resolveEffects(winner, loser, getBuffEffects(winner, cons.ACTIVE_TYPE_CANNOT_ATTACK), skillUsed);

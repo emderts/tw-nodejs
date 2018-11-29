@@ -8,6 +8,7 @@
     <link href="https://fonts.googleapis.com/css?family=Nanum+Gothic" rel="stylesheet">
     <style>
       body {font-family: "Nanum Gothic", sans-serif; }
+      .resultWrap {max-height: 90%; overflow: scroll; }
       .turnWrap {text-align: center; }
       span.turnCount {font-size: 20px; font-weight: bold; }
       span.skillUseWinner {font-weight: bold; }
@@ -25,7 +26,7 @@
     <script src="/socket.io/socket.io.js"></script>
 </head>
 <body>
-  
+  <div class="selectWrap">
   <div class="charItem">
     <button id="selectBtn0" onclick="invClick(0)" type="button">가위</button>
   </div>
@@ -35,7 +36,8 @@
   <div class="charItem">
     <button id="selectBtn2" onclick="invClick(2)" type="button">보</button>
   </div>
-  <div id="result">
+  </div>
+  <div id="result" class="resultWrap">
   </div>
     <script>  
   var socket = io();
@@ -44,11 +46,14 @@
     document.getElementById('selectBtn1').setAttribute('disabled', true);
     document.getElementById('selectBtn2').setAttribute('disabled', true);
   
-  socket.on('manualAck', function(result) {
+  socket.on('manualAck', function(result, names) {
     document.getElementById('result').innerHTML = result;
     document.getElementById('selectBtn0').removeAttribute('disabled');
     document.getElementById('selectBtn1').removeAttribute('disabled');
     document.getElementById('selectBtn2').removeAttribute('disabled');
+    document.getElementById('selectBtn0').innerHTML = names[0];
+    document.getElementById('selectBtn1').innerHTML = names[1];
+    document.getElementById('selectBtn2').innerHTML = names[2];
   });
   socket.on('manualSelectAck', function(result) {
     document.getElementById('result').innerHTML = result;

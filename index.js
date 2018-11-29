@@ -120,8 +120,12 @@ io.on('connection', (socket) => {
       trades[room].right = socket;
       trades[room].rightUid = uid;
       const result = battlemodule2.procBattleStart(chara.julius, chara.psi);
-      trades[room].left.emit('manualAck', result);
-      trades[room].right.emit('manualAck', result);
+      trades[room].left.emit('manualAck', result, getNames(chara.julius));
+      trades[room].right.emit('manualAck', result, getNames(chara.psi));
+      
+      function getNames(chara) {
+        return [chara.skill.base[0].name, chara.skill.base[1].name, chara.skill.base[2].name]
+      }
     }
   });
   socket.on('manualSelect', function(room, uid, key) {
@@ -209,10 +213,17 @@ async function procInit2 () {
   try {
     const client = await pool.connect();
     const result = await client.query('select * from characters');
-    const result2 = await client.query('insert into raids(rindex, open, phase, monsters) values (3, \'O\', 1, $1)', 
-        [JSON.stringify({1 : monster.rKines})]);
+  //  const result2 = await client.query('insert into raids(rindex, open, phase, monsters) values (3, \'O\', 1, $1)', 
+  //      [JSON.stringify({1 : monster.rKines})]);
     for (val of result.rows) {
       var char = JSON.parse(val.char_data);
+      if (val.uid == '10') {
+        char.inventory.push({type : 90001, value : 18, name : '피로 회복제 R'});
+        char.inventory.push({type : 90002, value : 2, name : '경험의 책 II'});
+      }
+      if (val.uid == '11') {
+        char.inventory.push({type : 90002, value : 3, name : '경험의 책 III'});
+      }
       
       await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), val.uid]);
     } 
@@ -529,6 +540,10 @@ async function procUseItem (req, res) {
         } else if (tgtObj.type === 90001) {
           chara.inventory.splice(body.itemNum, 1);
           await client.query('update characters set actionpoint = actionpoint + $1 where uid = $2', [tgtObj.value, result.rows[0].uid]);
+        } else if (tgtObj.type === 90002) {
+          chara.inventory.splice(body.itemNum, 1);
+          addExp(chara, chara.reqExp * tgtObj.value);
+          chara.maxExp += chara.reqExp * tgtObj.value;
         }
         await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(chara), result.rows[0].uid]);
       }
@@ -1721,7 +1736,7 @@ function addExp(chara, exp) {
     exp = chara.maxExp;
   }
   chara.exp += exp;
-  if (chara.rank > 8 || chara.level > 10) {
+  if (chara.rank >= 8 || chara.level > 10) {
     chara.maxExp -= exp;
   }
   while (chara.level < 50 && chara.exp >= chara.reqExp) {

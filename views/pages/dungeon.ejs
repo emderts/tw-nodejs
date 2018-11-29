@@ -11,7 +11,7 @@
       div {width: 450px; max-width: 100%; margin: 0 auto; }
       .charItem button {width: 450px; max-width: 100%; background-color: #ffffea; }
       .charItem button:hover {background-color: #ffffcc; }
-      .backLink {text-align: center; width: 40%; margin: 10px auto; overflow: hidden; }
+      .backLink {text-align: center; width: 60%; margin: 10px auto; overflow: hidden; }
     </style>
 </head>
 <body>
@@ -47,10 +47,11 @@
         <%= dun.bossName %><br>
         <img src="<%= dun.image %>"><br>
         <%= dun.curHp %> / <%= dun.maxHp %> (<%= hpPercent %>%)
-         <br>현재 피해량
+         <br><table><tr>현재 피해량</tr>
         <% for (val of leaderboard) { %>
-           <br><%= val.name %> : <%= val.damage %>
+           <tr><td><%= val.name %></td><td><%= val.damage %></td></tr>
         <% } %>
+        </table>
       </div>
     <% } %>
   </div>
