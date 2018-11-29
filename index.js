@@ -1039,7 +1039,7 @@ async function procDungeon(req, res) {
         if (row.rindex == 2 && row.phase <= 4) {
           tgt.active = row.open == 'O' && char.rank <= 7 && !char.dungeonInfos.runBurningOrchard;
         } else if (row.rindex == 3 && row.phase <= 1) {
-          tgt.active = row.open == 'O' && charRow.actionpoint > 0 && !char.dungeonInfos.runFieldBoss;
+          tgt.active = row.open == 'O' && !char.dungeonInfos.runFieldBoss;
         }
         if (row.open == 'O') {
           tgt.phase = row.phase;
