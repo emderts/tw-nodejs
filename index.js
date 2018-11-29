@@ -209,6 +209,8 @@ async function procInit2 () {
   try {
     const client = await pool.connect();
     const result = await client.query('select * from characters');
+    const result2 = await client.query('insert into raids(rindex, open, phase, monsters) values (3, \'O\', 1, $1)', 
+        [JSON.stringify({1 : monster.rKines})]);
     for (val of result.rows) {
       var char = JSON.parse(val.char_data);
       
