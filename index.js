@@ -1092,7 +1092,7 @@ async function procEnterDungeon(req, res) {
     } else if (body.option == 4) {
       const result = await client.query('select * from raids where rindex = 3');
       const row = result.rows[0];
-      if (charRow.actionpoint > 0 && !char.dungeonInfos.runFieldBoss && (row.open == 'O')) {
+      if (!char.dungeonInfos.runFieldBoss && (row.open == 'O')) {
         curData = JSON.parse(row.monsters);
         char.dungeonInfos.runFieldBoss = true;
         enemy = curData[row.phase];
@@ -1142,7 +1142,7 @@ async function procEnterDungeon(req, res) {
             }  
           }
         } else {
-          await client.query('update characters set actionPoint = actionpoint - 1 where uid = $1', [sess.userUid]);
+          //await client.query('update characters set actionPoint = actionpoint - 1 where uid = $1', [sess.userUid]);
           
         }
         if (!re.winnerLeft) {
