@@ -123,6 +123,12 @@ io.on('connection', (socket) => {
       trades[room].left.emit('manualAck', result, getNames(chara.julius));
       trades[room].right.emit('manualAck', result, getNames(chara.psi));
       
+      function makeSkillTooltip(skill) {
+        var rtext = '';
+        rtext += skill.tooltip + '<br><br><span class="tooltipFlavor">' + skill.flavor + '</span>';
+        return rtext;
+      }
+      
       function getNames(chara) {
         return [chara.skill.base[0].name, chara.skill.base[1].name, chara.skill.base[2].name]
       }
@@ -136,14 +142,9 @@ io.on('connection', (socket) => {
       trades[room].rightSel = key;
     }
     if (trades[room].leftSel !== undefined && trades[room].rightSel !== undefined) {
-      if (trades[room].leftSel == trades[room].rightSel) {
-        trades[room].left.emit('manualSelectAck', null);
-        trades[room].right.emit('manualSelectAck', null);      
-      } else {
-        const result = battlemodule2.procBattleTurn(trades[room].leftSel, trades[room].rightSel);
-        trades[room].left.emit('manualSelectAck', result.result);
-        trades[room].right.emit('manualSelectAck', result.result);
-      }
+      const result = battlemodule2.procBattleTurn(trades[room].leftSel, trades[room].rightSel);
+      trades[room].left.emit('manualSelectAck', result.result);
+      trades[room].right.emit('manualSelectAck', result.result);
       delete trades[room].leftSel;
       delete trades[room].rightSel;
     }
@@ -216,8 +217,8 @@ async function procInit2 () {
   //      [JSON.stringify({1 : monster.rKines})]);
     for (val of result.rows) {
       var char = JSON.parse(val.char_data);
-      if (val.uid == '09') {
-        char.skill = chara.nux.skill;
+      if (val.uid == '10') {
+        char.inventory.push({name : '경험의 책 II', type : 90002, value : 1.8});
       }
       
       await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), val.uid]);
@@ -537,8 +538,8 @@ async function procUseItem (req, res) {
           await client.query('update characters set actionpoint = actionpoint + $1 where uid = $2', [tgtObj.value, result.rows[0].uid]);
         } else if (tgtObj.type === 90002) {
           chara.inventory.splice(body.itemNum, 1);
-          addExp(chara, chara.reqExp * tgtObj.value);
           chara.maxExp += chara.reqExp * tgtObj.value;
+          addExp(chara, chara.reqExp * tgtObj.value);
         }
         await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(chara), result.rows[0].uid]);
       }

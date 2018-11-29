@@ -175,7 +175,13 @@ function _doBattleTurn(left, right) {
   turnCount++;
   result += '<br><div class="turnWrap"><span class="turnCount">' + turnCount + '턴</span><br>';
   }
-
+  redecide = false;
+    if (left == right) {
+      result += charLeft.name + '의 [ ' + charLeft.skill.base[left].name + ' ] vs ' + charRight.name + '의 [ ' + charRight.skill.base[right].name + ' ]</span><br>';
+      result += '비겼습니다!<br>';
+      redecide = true;
+      return;
+    }
     // decide winner
     var winner = getRandom(0.5) ? charLeft : charRight;
     var loser = (winner === charLeft) ? charRight : charLeft;
@@ -254,7 +260,6 @@ function _doBattleTurn(left, right) {
       result += charLeft.name + '의 [ ' + skillFailed.name + ' ] vs <span class="skillUseWinner">' + charRight.name + '의 [ ' + skillUsed.name + ' ]</span></span><br>';
     }
 
-    redecide = false;
     if (findBuffByCode(loser, 10004).length == 0 && findBuffByCode(loser, 10005).length == 0) {
       if (!redecide && skillFailed.effect[0] && skillFailed.effect[0].code === cons.EFFECT_TYPE_SKILL_RESELECT && getRandom(skillFailed.effect[0].chance)) {
         result += '[ ' + skillFailed.name + ' ] 효과로 스킬이 재선택됩니다!<br>';

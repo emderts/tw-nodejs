@@ -9,10 +9,11 @@
     <style>
       body {font-family: "Nanum Gothic", sans-serif; }
       .turnWrap {text-align: center; }
-      .selectWrap {position: relative; width: 700px; margin: 0 auto; }
-      .charItem button {width: 200px; margin: 3px; background-color: #ffffea; }
+      .selectWrap {position: fixed; width: 700px; max-width: 95%; top: 85%; left: 50%; transform: translateX(-50%); }
+      .enemyWrap {position: fixed; width: 700px; max-width: 95%; top: 5%; left: 50%; transform: translateX(-50%); }
+      .charItem button {width: 200px; background-color: #ffffea; max-width: 100%; height: 55px; }
       .charItem button:hover {background-color: #ffffcc; }
-      .charItem { float: left; }
+      .charItem { float: left; max-width: 33%; }
       span.turnCount {font-size: 20px; font-weight: bold; }
       span.skillUseWinner {font-weight: bold; }
       .driveSkill {margin-top: 5px; font-weight: bold; }
@@ -23,21 +24,32 @@
       .colorSp {color: blue; }
       .charInfoWrap {width: 70%; max-width: 510px; margin: 10px auto; overflow: hidden; }
       .charInfo {text-align: center; width: 49%; float: left; border-top: 1px solid black; }
-      .resultWrap {width: 70%; height: 700px; margin: 100px auto; overflow: scroll; }
+      .resultWrap {width: 90%; margin: 100px auto; }
       .backLink {text-align: center; width: 40%; margin: 10px auto; overflow: hidden; }
     </style>
     <script src="/socket.io/socket.io.js"></script>
 </head>
 <body>
+  <div class="enemyWrap">
+  <div class="charItem">
+    <button id="enemyBtn0" disabled type="button">[가위]<br></button>
+  </div>
+  <div class="charItem">
+    <button id="enemyBtn1" disabled type="button">[바위]<br></button>
+  </div>
+  <div class="charItem">
+    <button id="enemyBtn2" disabled type="button">[보]<br></button>
+  </div>
+  </div>
   <div class="selectWrap">
   <div class="charItem">
-    <button id="selectBtn0" onclick="invClick(0)" type="button">가위</button>
+    <button id="selectBtn0" onclick="invClick(0)" type="button">[가위]<br></button>
   </div>
   <div class="charItem">
-    <button id="selectBtn1" onclick="invClick(1)" type="button">바위</button>
+    <button id="selectBtn1" onclick="invClick(1)" type="button">[바위]<br></button>
   </div>
   <div class="charItem">
-    <button id="selectBtn2" onclick="invClick(2)" type="button">보</button>
+    <button id="selectBtn2" onclick="invClick(2)" type="button">[보]<br></button>
   </div>
   </div>
   <div id="result" class="resultWrap">
@@ -54,14 +66,12 @@
     document.getElementById('selectBtn0').removeAttribute('disabled');
     document.getElementById('selectBtn1').removeAttribute('disabled');
     document.getElementById('selectBtn2').removeAttribute('disabled');
-    document.getElementById('selectBtn0').innerHTML = names[0];
-    document.getElementById('selectBtn1').innerHTML = names[1];
-    document.getElementById('selectBtn2').innerHTML = names[2];
+    document.getElementById('selectBtn0').innerHTML += names[0];
+    document.getElementById('selectBtn1').innerHTML += names[1];
+    document.getElementById('selectBtn2').innerHTML += names[2];
   });
   socket.on('manualSelectAck', function(result) {
-    if (result) {
-      document.getElementById('result').innerHTML = result;
-    }
+    document.getElementById('result').innerHTML = result;
     document.getElementById('selectBtn0').removeAttribute('disabled');
     document.getElementById('selectBtn1').removeAttribute('disabled');
     document.getElementById('selectBtn2').removeAttribute('disabled');
