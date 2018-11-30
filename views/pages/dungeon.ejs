@@ -47,7 +47,9 @@
         <%= dun.bossName %><br>
         <img src="<%= dun.image %>"><br>
          <br><table><tr>현재 피해량</tr>
+         <% if (rank != -1) { %>
            <tr><td><%= rank+1 %>위</td><td><%= leaderboard[rank].damage %></td></tr>
+         <% } %>
           </table>
       </div>
     <% } %>
