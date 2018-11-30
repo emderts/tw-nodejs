@@ -1079,7 +1079,7 @@ async function procDungeon(req, res) {
         }
       }
     }
-    res.render('pages/dungeon', {dungeonList : dungeonList});
+    res.render('pages/dungeon', {dungeonList : dungeonList, nameIn : char.name});
     client.release();
   } catch (err) {
     console.error(err);
