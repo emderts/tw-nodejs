@@ -280,7 +280,7 @@ async function procInit2 () {
     } */
     for (val of result.rows) {
       var char = JSON.parse(val.char_data);
-      if (char.uid == '05') {
+      if (val.uid == '05') {
         for (key in char.inventory) {
           console.log(char.inventory[key]);
           if (!char.inventory[key]) {
