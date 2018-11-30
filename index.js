@@ -69,7 +69,7 @@ const app = express()
 .get('/test', (req, res) => res.render('pages/battle', {result: battlemodule.doBattle(chara.nux, chara.psi, 1).result}))
 .get('/test2', (req, res) => res.render('pages/trade', {room : '1', uid : '03'}))
 .get('/test3', (req, res) => res.render('pages/trade', {room : '1', uid : '04'}))
-.get('/test4', (req, res) => res.send(procInit2()))
+.get('/test4', (req, res) => res.send(procInit()))
 .get('/test5', (req, res) => res.render('pages/resultCard', {item : {name: 'test', rarity: Math.floor(Math.random() * 6)}}))
 .get('/test6', (req, res) => res.render('pages/index', {
   user: {name: 'kk'},
@@ -124,13 +124,13 @@ io.on('connection', (socket) => {
       trades[room].right.emit('manualAck', result, getNames(chara.psi));
       
       function makeSkillTooltip(skill) {
-        var rtext = '';
-        rtext += skill.tooltip + '<br><br><span class="tooltipFlavor">' + skill.flavor + '</span>';
+        var rtext = '<div class="itemTooltip">;
+        rtext += skill.tooltip + '<br><br><span class="tooltipFlavor">' + skill.flavor + '</span></div>';
         return rtext;
       }
       
       function getNames(chara) {
-        return [chara.skill.base[0].name, chara.skill.base[1].name, chara.skill.base[2].name]
+        return [chara.skill.base[0].name + makeSkillTooltip(chara.skill.base[0]), chara.skill.base[1].name + makeSkillTooltip(chara.skill.base[1]), chara.skill.base[2].name + makeSkillTooltip(chara.skill.base[2])];
       }
     }
   });
@@ -191,7 +191,25 @@ function procFullTest() {
 }
 
 async function procInit () {
-  //await setCharacter('thelichking', 1, chara.lk);
+  chara.dekaitz.maxExp += chara.dekaitz.reqExp * 20;
+  addExp(chara.dekaitz, chara.dekaitz.reqExp * 20);
+  chara.dekaitz.level = 1;
+  chara.dekaitz.rank--;
+  chara.dekaitz.reqExp += 90;
+  chara.dekaitz.base.maxHp += 150;
+  chara.dekaitz.base.phyAtk += 10;
+  chara.dekaitz.base.magAtk += 10;
+  calcStats(chara.dekaitz);
+  chara.dekaitz.maxExp += chara.dekaitz.reqExp * 20;
+  addExp(chara.dekaitz, chara.dekaitz.reqExp * 20);
+  chara.dekaitz.level = 1;
+  chara.dekaitz.rank--;
+  chara.dekaitz.reqExp += 90;
+  chara.dekaitz.base.maxHp += 150;
+  chara.dekaitz.base.phyAtk += 10;
+  chara.dekaitz.base.magAtk += 10;
+  calcStats(chara.dekaitz);
+  await setCharacter('guest', 12, chara.dekaitz);
   //await setCharacter('kemderts', 2, chara.kines);
   /*await setCharacter('bemderts', 3, chara.julius);
   await setCharacter('renia1369', 4, chara.psi);
@@ -277,18 +295,27 @@ async function procInit2 () {
 }
 
 async function procIndex (req, res) {
-  const sess = req.session; 
-  const char = await getCharacter(sess.userUid);
-  const news = await getNews(5);
-  if (!sess.userUid) {
-    res.render('pages/login');
-  } else {
-    res.render('pages/index', {
-      user: {name: sess.userName, uid : sess.userUid},
-      char: char.char_data ? JSON.parse(char.char_data) : undefined,
-      actionPoint : char.actionPoint,
-      news : news
-    });
+  try {
+    const sess = req.session; 
+    const client = await pool.connect();
+    const char = await getCharacter(sess.userUid);
+    const mark = char.lastBattleTime > char.lastLogin;
+    char.lastLogin = new Date();
+    const news = await getNews(5);
+    if (!sess.userUid) {
+      res.render('pages/login');
+    } else {
+      await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), val.uid]);
+      res.render('pages/index', {
+        user: {name: sess.userName, uid : sess.userUid},
+        char: char.char_data ? JSON.parse(char.char_data) : undefined,
+        actionPoint : char.actionPoint,
+        news : news,
+        mark : mark
+      });
+    }
+  } catch (err) {
+    console.log(err);
   }
 }
 
@@ -754,6 +781,7 @@ async function procBattle(req, res) {
       left.battleRecord[body.charUid] = left.battleRecord[body.charUid] ? left.battleRecord[body.charUid] + 1 : 1;
       right.battleCnt++;
       right.battleRecord[cuid] = right.battleRecord[cuid] ? right.battleRecord[cuid] + 1 : 1;
+      right.lastBattleTime = new Date();
       if (left.quest[2]) {
         if (!left.quest[2].data) {
           left.quest[2].data = [];
@@ -1794,7 +1822,7 @@ async function getCharacter (id) {
 async function setCharacter (id, uid, data) {
   try {
     const client = await pool.connect();
-    const result = await client.query('insert into characters(uid, char_data, actionpoint) values ($1, $2, 10)', [uid, data]);
+    const result = await client.query('insert into characters(uid, char_data, actionpoint) values ($1, $2, 40)', [uid, data]);
     const result2 = await client.query('update users set uid = $1 where id = $2', [uid, id]);
 
     client.release();
