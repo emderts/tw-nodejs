@@ -303,13 +303,15 @@ async function procIndex (req, res) {
     if (!sess.userUid) {
       res.render('pages/login');
     } else {
+      if (charRow.char_data) {
       const char = JSON.parse(charRow.char_data);
       const mark = char.lastBattleTime > char.lastLogin;
       char.lastLogin = new Date();
       await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), sess.userUid]);
+      }
       res.render('pages/index', {
         user: {name: sess.userName, uid : sess.userUid},
-        char: char.char_data ? JSON.parse(char.char_data) : undefined,
+        char: charRow.char_data ? char : undefined,
         actionPoint : char.actionPoint,
         news : news,
         mark : mark
