@@ -124,7 +124,7 @@ io.on('connection', (socket) => {
       trades[room].right.emit('manualAck', result, getNames(chara.psi));
       
       function makeSkillTooltip(skill) {
-        var rtext = '<div class="itemTooltip">;
+        var rtext = '<div class="itemTooltip">';
         rtext += skill.tooltip + '<br><br><span class="tooltipFlavor">' + skill.flavor + '</span></div>';
         return rtext;
       }
