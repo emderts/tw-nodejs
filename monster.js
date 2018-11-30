@@ -264,7 +264,7 @@ const item = require('./items');
                 {code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 20104, buffDur : 5, value : 0.4}],
       tooltip : '자신과 적에게 5턴간 [지옥불길] 버프 부여<br><br>[지옥불길] : 마법 0.4 피해'};
   charLeft.skill.special = skillObj;
-  module.exports.rKines = charLeft;
+  module.exports.rKines1 = charLeft;
   
   charLeft = {name : '인페르날 무리', nameType : cons.NAME_KOR_NO_END_CONS, title : '고대 흑마법사', rank : 7, level : 20, 
       stat : {maxHp : 12000, phyAtk : 80, magAtk : 80}};
