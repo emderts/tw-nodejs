@@ -318,8 +318,9 @@ async function procIndex (req, res) {
         //mark : mark
       });
     }
+    client.release();
   } catch (err) {
-    console.log(err);
+    console.error(err);
   }
 }
 
