@@ -303,9 +303,10 @@ async function procIndex (req, res) {
     if (!sess.userUid) {
       res.render('pages/login');
     } else {
+      var mark;
       if (charRow.char_data) {
       const char = JSON.parse(charRow.char_data);
-      const mark = char.lastBattleTime > char.lastLogin;
+      mark = char.lastBattleTime > char.lastLogin;
       char.lastLogin = new Date();
       await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), sess.userUid]);
       }
