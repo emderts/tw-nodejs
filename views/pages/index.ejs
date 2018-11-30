@@ -543,7 +543,8 @@
   </div>
     
     <div class="inventoryWrap" id="inventory">
-      <% for (const [key, val] of Object.entries(char.inventory)) { %>
+      <% for (const [key, val] of Object.entries(char.inventory)) { 
+        if (val) { %>
         <div class="inventoryItem">
           <form action="/useItem" method="post">
             <button class="<%= getButtonText(val.rarity) %> inventoryButton" onclick="invClick(this, event)" type="button"><%= val.name %>
@@ -552,7 +553,8 @@
             <input type="hidden" name="itemNum" value="<%= key %>">
           </form>
         </div>
-      <% } %>
+      <% }
+      } %>
     </div>
   
   <div>
