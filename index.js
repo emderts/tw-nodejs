@@ -263,7 +263,7 @@ async function procInit2 () {
     for (val of result.rows) {
       var char = JSON.parse(val.char_data);
       if (char.uid == '04') {
-        char.inventory.pop();
+        //char.inventory.pop();
         
       }
       
