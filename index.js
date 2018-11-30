@@ -299,13 +299,13 @@ async function procIndex (req, res) {
     const sess = req.session; 
     const client = await pool.connect();
     const charRow = await getCharacter(sess.userUid);
-    const char = JSON.parse(charRow.char_data);
-    const mark = char.lastBattleTime > char.lastLogin;
-    char.lastLogin = new Date();
     const news = await getNews(5);
     if (!sess.userUid) {
       res.render('pages/login');
     } else {
+      const char = JSON.parse(charRow.char_data);
+      const mark = char.lastBattleTime > char.lastLogin;
+      char.lastLogin = new Date();
       await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), sess.userUid]);
       res.render('pages/index', {
         user: {name: sess.userName, uid : sess.userUid},
