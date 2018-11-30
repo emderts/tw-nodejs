@@ -213,11 +213,63 @@ async function procInit2 () {
   try {
     const client = await pool.connect();
     const result = await client.query('select * from characters');
-    await client.query('delete from raids');
-    const result2 = await client.query('insert into raids(rindex, open, phase, monsters) values (3, \'O\', 1, $1)', 
-        [JSON.stringify({1 : monster.rKines1, 2: monster.rInfernal, 3: monster.rKines2})]);
+    const result2 = await client.query('select * from raids');
+    var leaderboard = [];
+    var reward;
+    const names = {'03' : '줄리어스 엠더츠', '04' : '프사이', '05' : '에이카', '06' : '세리어스 플로에르시아',
+        '07' : '에오헬름', '08' : '나백수', '09' : '이 눅스', '10' : '세컨드 로직', '11' : '마랑'};
+    for (val of result2.rows) {
+      var char = JSON.parse(val.monsters);
+      var record = {};
+      for (key in char[1].battleRecord) { 
+        if (record[key]) {
+          record[key] += char[1].battleRecord[key];
+        } else {
+          record[key] = char[1].battleRecord[key];
+        }
+      }
+      for (key in char[2].battleRecord) { 
+        if (record[key]) {
+          record[key] += char[2].battleRecord[key];
+        } else {
+          record[key] = char[2].battleRecord[key];
+        }
+      }
+      for (key in char[3].battleRecord) { 
+        if (record[key]) {
+          record[key] += char[3].battleRecord[key];
+        } else {
+          record[key] = char[3].battleRecord[key];
+        }
+      }
+      for (key in record) { 
+        leaderboard.push({name : names[key], damage : record[key], key : key});
+      }
+      leaderboard.sort(function(a, b) {
+        if (a.damage > b.damage) {
+          return -1;
+        } else if (a.damage == b.damage) {
+          return 0;
+        } else {
+          return 1;
+        }
+      }); 
+      reward = '<table>';
+      for (key in leaderboard) {
+        reward += '<tr><td>' + (key + 1) + '</td><td>' + leaderboard[key].name + '</td><td>' + char[1].battleRecord[leaderboard[key].key] + '</td><td>' + char[2].battleRecord[leaderboard[key].key] + '</td><td>' + char[3].battleRecord[leaderboard[key].key] + '</td><td>' + leaderboard[key].damage + '</td></tr>';
+      }
+      reward += '</table>';
+      
+      await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), val.uid]);
+    } 
     for (val of result.rows) {
       var char = JSON.parse(val.char_data);
+      if (char.name == leaderboard[0].name) {
+        await client.query('insert into news(content, date) values ($1, $2)', 
+            [char.name + getIga(char.nameType) + ' 누적 피해 보상을 받았습니다!<div class="itemTooltip">' + reward + '</div>', new Date()]);
+        char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '고대 흑마법사의 선물', rank : 8, resultType : 90004});
+        
+      }
       
       await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), val.uid]);
     } 
@@ -978,7 +1030,7 @@ async function procUseShop (req, res) {
         res.send('프리미엄 포인트가 부족합니다.');
       } else {
         char.premiumPoint -= cost;
-        action += 2;
+        action += 8;
         char.actionBought = true;
         if (char.quest[8]) {
           char.quest[8].progress += 1;
@@ -1448,7 +1500,7 @@ async function procSubmitQuest (req, res) {
           addResultCard(char);
         }
       } else if (tgt.rewardType == 2) {
-        await client.query('update characters set actionpoint = actionpoint + $1 where uid = $2', [2 + 1 * tgt.rewardAmt, charRow.uid]);
+        await client.query('update characters set actionpoint = actionpoint + $1 where uid = $2', [8 + 1 * tgt.rewardAmt, charRow.uid]);
       } else if (tgt.rewardType == 3) {
         addSpecialResultCard(char, 4);
         if (tgt.rewardAmt == 1) {
@@ -1477,9 +1529,9 @@ async function procResetQuest (req, res) {
     const char = JSON.parse(charRow.char_data);
     if (char.resetQuest) {
       char.resetQuest = false;
-      var quests = [{code : 1, progress : 0, target : 3},
+      var quests = [{code : 1, progress : 0, target : 5},
                     {code : 2, progress : 0, target : 5},
-                    {code : 3, progress : 0, target : 5},
+                    {code : 3, progress : 0, target : 10},
                     {code : 4, progress : 0, target : 5},
                     {code : 5, progress : 0, target : 3},
                     {code : 6, progress : 0, target : 8},

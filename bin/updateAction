@@ -75,9 +75,9 @@ try {
       charData.dungeonInfos.rewardMevious = false;
       charData.dungeonInfos.rewardEmberCrypt = false;
       charData.quest = {};
-      var quests = [{code : 1, progress : 0, target : 3},
+      var quests = [{code : 1, progress : 0, target : 5},
                     {code : 2, progress : 0, target : 5},
-                    {code : 3, progress : 0, target : 5},
+                    {code : 3, progress : 0, target : 10},
                     {code : 4, progress : 0, target : 5},
                     {code : 5, progress : 0, target : 3},
                     {code : 6, progress : 0, target : 8},
@@ -117,7 +117,7 @@ try {
         charData.maxExp += charData.reqExp;
         await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(charData), val.uid]);
         await client.query('insert into news(content, date) values ($1, $2)', 
-          ['전투 횟수가 가장 적은 ' + char.name + '에게 경험치 보정이 주어졌습니다!', new Date()]);
+          ['전투 횟수가 가장 적은 ' + charData.name + '에게 경험치 보정이 주어졌습니다!', new Date()]);
       }
       if (minBattleUid != minRateUid && val.uid == minRateUid) {
         var charData = JSON.parse(val.char_data);
@@ -125,7 +125,7 @@ try {
         charData.maxExp += charData.reqExp;
         await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(charData), val.uid]);
         await client.query('insert into news(content, date) values ($1, $2)', 
-          ['승률이 가장 낮은 ' + char.name + '에게 경험치 보정이 주어졌습니다!', new Date()]);
+          ['승률이 가장 낮은 ' + charData.name + '에게 경험치 보정이 주어졌습니다!', new Date()]);
       }
     }
   }
