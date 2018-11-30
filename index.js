@@ -526,7 +526,8 @@ async function procUseItem (req, res) {
               if (chara.quest[5]) {
                 chara.quest[5].progress += 3;
               }
-            } else if (tgtObj.resultType == 90004) {
+            }
+          } else if (tgtObj.resultType == 90004) {
             if (rand < 0.95) {
               picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_UNIQUE, tgtObj.resultType);
               chara.inventory.push(picked);
@@ -542,7 +543,6 @@ async function procUseItem (req, res) {
                 chara.quest[5].progress += 3;
               }
             } 
-          }
           res.render('pages/resultCard', {item : picked, nextIdx : nextIdx});
         } else if (tgtObj.type === cons.ITEM_TYPE_DAYSTONE) {
           res.render('pages/selectItem', {title : '요일석 사용', inv : chara.inventory, mode : 1, usedItem : body.itemNum, uid : null});
