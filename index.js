@@ -543,6 +543,7 @@ async function procUseItem (req, res) {
                 chara.quest[5].progress += 3;
               }
             } 
+          }
           res.render('pages/resultCard', {item : picked, nextIdx : nextIdx});
         } else if (tgtObj.type === cons.ITEM_TYPE_DAYSTONE) {
           res.render('pages/selectItem', {title : '요일석 사용', inv : chara.inventory, mode : 1, usedItem : body.itemNum, uid : null});
