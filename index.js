@@ -120,8 +120,8 @@ io.on('connection', (socket) => {
       trades[room].right = socket;
       trades[room].rightUid = uid;
       const result = battlemodule2.procBattleStart(chara.julius, chara.psi);
-      trades[room].left.emit('manualAck', result, getNames(chara.julius));
-      trades[room].right.emit('manualAck', result, getNames(chara.psi));
+      trades[room].left.emit('manualAck', result, getNames(chara.julius), getNames(chara.psi));
+      trades[room].right.emit('manualAck', result, getNames(chara.psi), getNames(chara.julius));
       
       function makeSkillTooltip(skill) {
         var rtext = '<div class="itemTooltip">';
