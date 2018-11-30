@@ -69,7 +69,7 @@ const app = express()
 .get('/test', (req, res) => res.render('pages/battle', {result: battlemodule.doBattle(chara.nux, chara.psi, 1).result}))
 .get('/test2', (req, res) => res.render('pages/trade', {room : '1', uid : '03'}))
 .get('/test3', (req, res) => res.render('pages/trade', {room : '1', uid : '04'}))
-.get('/test4', (req, res) => res.send(procInit()))
+.get('/test4', (req, res) => res.send(procInit2()))
 .get('/test5', (req, res) => res.render('pages/resultCard', {item : {name: 'test', rarity: Math.floor(Math.random() * 6)}}))
 .get('/test6', (req, res) => res.render('pages/index', {
   user: {name: 'kk'},
@@ -280,8 +280,8 @@ async function procInit2 () {
     } */
     for (val of result.rows) {
       var char = JSON.parse(val.char_data);
-      if (char.uid == '04') {
-        //char.inventory.pop();
+      if (char.uid == '05') {
+        char.inventory = char.inventory.filter(x => x != null);
         
       }
       
