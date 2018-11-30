@@ -228,10 +228,11 @@ const item = require('./items');
   module.exports.oLegor = charLeft;
   
   charLeft = {name : '카이네스 엠더츠', nameType : cons.NAME_KOR_NO_END_CONS, title : '고대 흑마법사', rank : 7, level : 20, 
-      stat : {maxHp : 42000, phyAtk : 125, magAtk : 100}};
+      stat : {maxHp : 14500, phyAtk : 100, magAtk : 85}};
   _initChar(charLeft);
   
   charLeft.items = {weapon : item.list[355], armor : item.list[296], subarmor : item.list[241], trinket : item.list[335]};
+  charLeft.boss = true;
 
   charLeft.skill = {};
   charLeft.skill.base = [];
@@ -264,6 +265,68 @@ const item = require('./items');
       tooltip : '자신과 적에게 5턴간 [지옥불길] 버프 부여<br><br>[지옥불길] : 마법 0.4 피해'};
   charLeft.skill.special = skillObj;
   module.exports.rKines = charLeft;
+  
+  charLeft = {name : '인페르날 무리', nameType : cons.NAME_KOR_NO_END_CONS, title : '고대 흑마법사', rank : 7, level : 20, 
+      stat : {maxHp : 12000, phyAtk : 80, magAtk : 80}};
+  _initChar(charLeft);
+  
+  charLeft.items = {weapon : item.list[351], armor : item.list[294], subarmor : item.list[305], trinket : item.list[333]};
+  charLeft.boss = true;
+
+  charLeft.skill = {
+      base : [
+              {code : 90036, name : '돌진', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1.2, 
+                effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 6, buffDur : 2}]},
+              {code : 90037, name : '일반 공격', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 0.7, 
+                effect : [{code : cons.EFFECT_TYPE_SELF_HP, value : 0.6, isPercentDamage : true}]},
+              {code : 90038, name : '면역의 일격', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 1.2, 
+                effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 7, buffDur : 2}]}
+             ],
+             special : {code : 20105, name : '지옥불길', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 90, 
+      effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 20103, buffDur : 5, value : 0.4},
+                {code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 20104, buffDur : 5, value : 0.4}],
+      tooltip : '자신과 적에게 5턴간 [지옥불길] 버프 부여<br><br>[지옥불길] : 마법 0.4 피해'}
+  };
+  module.exports.rInfernal = charLeft;
+  
+  charLeft = {name : '카이네스 엠더츠', nameType : cons.NAME_KOR_NO_END_CONS, title : '고대 흑마법사', rank : 7, level : 20, 
+      stat : {maxHp : 15000, phyAtk : 100, magAtk : 100}};
+  _initChar(charLeft);
+  
+  charLeft.items = {weapon : item.list[355], armor : item.list[296], subarmor : item.list[241], trinket : item.list[335]};
+  charLeft.boss = true;
+
+  charLeft.skill = {};
+  charLeft.skill.base = [];
+
+  var skillObj = {code : 20101, name : '혼돈의 화살', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 1.2,
+      effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 20101, buffDur : 2, value : 0.6}],
+      tooltip : '100\% 확률로 자신에게 2턴간 [혼돈의 힘] 버프 부여<br><br>[혼돈의 힘] : 혼돈의 화살 공격력 +0.6'};
+  charLeft.skill.base.push(skillObj);
+
+  skillObj = {code : 20102, name : '파괴의 저주', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 0.7, 
+      effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, chance : 1, buffCode : 20102, buffDur : 3, value : 0.2}],
+      tooltip : '50\% 확률로 적에게 3턴간 [파괴됨] 버프 부여<br><br>[파괴됨] : 마법 0.1 피해'};
+  charLeft.skill.base.push(skillObj);
+
+  skillObj = {code : 20103, name : '망각의 계약', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 1.1, 
+      effect : [{code : cons.EFFECT_TYPE_SELF_SP, chance : 0.5, value : 25}],
+      tooltip : '30\% 확률로 자신의 SP 15 회복'};
+  charLeft.skill.base.push(skillObj);
+
+  skillObj = {code : 20104, name : '생명력 전환', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_DRIVE, 
+      active : cons.ACTIVE_TYPE_ATTACK, cost : 0, chance : 0.5, 
+      effect : [{code : cons.EFFECT_TYPE_SELF_SP, value : 25},
+                {code : cons.EFFECT_TYPE_SELF_HP, value : -20}],
+      tooltip : '공격 성공 시 50\% 확률로 자신의 HP를 20 잃고 SP 25 회복'};
+  charLeft.skill.drive = skillObj;
+
+  skillObj = {code : 20105, name : '지옥불길', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 90, 
+      effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 20103, buffDur : 5, value : 0.6},
+                {code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 20104, buffDur : 5, value : 0.6}],
+      tooltip : '자신과 적에게 5턴간 [지옥불길] 버프 부여<br><br>[지옥불길] : 마법 0.4 피해'};
+  charLeft.skill.special = skillObj;
+  module.exports.rKines2 = charLeft;
   
   function _initChar(char) {
     char.stat.spCharge = 5;

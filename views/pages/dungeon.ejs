@@ -29,7 +29,6 @@
       <input type="hidden" name="option" value="<%= dun.code %>">
     </form>
     <% if (dun.phase) { 
-      const hpPercent = Math.round((dun.curHp * 10000) / dun.maxHp) / 100;
   var leaderboard = [];
   for (key in dun.battleRecord) { 
     leaderboard.push({name : names[key], damage : dun.battleRecord[key]});
@@ -42,16 +41,14 @@
     } else {
       return 1;
     }
-  }); %>
+  }); 
+  const rank = leaderboard.findIndex(x => x.name == nameIn); %>
       <div class="backLink">
         <%= dun.bossName %><br>
         <img src="<%= dun.image %>"><br>
-        <%= dun.curHp %> / <%= dun.maxHp %> (<%= hpPercent %>%)
          <br><table><tr>현재 피해량</tr>
-        <% for (val of leaderboard) { %>
-           <tr><td><%= val.name %></td><td><%= val.damage %></td></tr>
-        <% } %>
-        </table>
+           <tr><td><%= rank+1 %>위</td><td><%= leaderboard[rank].damage %></td></tr>
+          </table>
       </div>
     <% } %>
   </div>
