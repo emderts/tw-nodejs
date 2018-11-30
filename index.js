@@ -281,7 +281,12 @@ async function procInit2 () {
     for (val of result.rows) {
       var char = JSON.parse(val.char_data);
       if (char.uid == '05') {
-        char.inventory = char.inventory.filter(x => x != null);
+        for (key in char.inventory) {
+          console.log(char.inventory[key]);
+          if (!char.inventory[key]) {
+            char.inventory.splice(key, 1);
+          }
+        }
         
       }
       
