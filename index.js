@@ -298,7 +298,8 @@ async function procIndex (req, res) {
   try {
     const sess = req.session; 
     const client = await pool.connect();
-    const char = await getCharacter(sess.userUid);
+    const charRow = await getCharacter(sess.userUid);
+    const char = JSON.parse(charRow.char_data);
     const mark = char.lastBattleTime > char.lastLogin;
     char.lastLogin = new Date();
     const news = await getNews(5);
