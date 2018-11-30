@@ -311,7 +311,7 @@ async function procIndex (req, res) {
       }
       res.render('pages/index', {
         user: {name: sess.userName, uid : sess.userUid},
-        char: charRow.char_data ? char : undefined,
+        char: charRow.char_data ? JSON.parse(charRow.char_data) : undefined,
         actionPoint : char.actionPoint,
         news : news,
         mark : mark
