@@ -213,13 +213,11 @@ async function procInit2 () {
   try {
     const client = await pool.connect();
     const result = await client.query('select * from characters');
-  //  const result2 = await client.query('insert into raids(rindex, open, phase, monsters) values (3, \'O\', 1, $1)', 
-  //      [JSON.stringify({1 : monster.rKines})]);
+    await client.query('delete from raids');
+    const result2 = await client.query('insert into raids(rindex, open, phase, monsters) values (3, \'O\', 1, $1)', 
+        [JSON.stringify({1 : monster.rKines1, 2: monster.rInfernal, 3: monster.rKines2})]);
     for (val of result.rows) {
       var char = JSON.parse(val.char_data);
-      if (val.uid == '10') {
-        char.inventory.push({name : '경험의 책 II', type : 90002, value : 1.8});
-      }
       
       await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), val.uid]);
     } 
@@ -521,6 +519,21 @@ async function procUseItem (req, res) {
             } else if (rand < 0.98) {
               chara.currencies.burntMark += 5;
               picked = {name : '불탄 증표 5개' , rarity : cons.ITEM_RARITY_COMMON};
+            } else {
+              picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_EPIC, tgtObj.resultType);
+              chara.inventory.push(picked);
+              await addItemNews(client, chara, tgtObj, picked);
+              if (chara.quest[5]) {
+                chara.quest[5].progress += 3;
+              }
+            } else if (tgtObj.resultType == 90004) {
+            if (rand < 0.95) {
+              picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_UNIQUE, tgtObj.resultType);
+              chara.inventory.push(picked);
+              await addItemNews(client, chara, tgtObj, picked);
+              if (chara.quest[5]) {
+                chara.quest[5].progress += 3;
+              }
             } else {
               picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_EPIC, tgtObj.resultType);
               chara.inventory.push(picked);
@@ -1043,25 +1056,25 @@ async function procDungeon(req, res) {
     dungeonList.push({name : '메모리얼 게이트 - 메비우스 섬멸 [9급 20레벨 이상]', code : 1, active : !char.dungeonInfos.runMevious && (char.rank <= 8 || char.level >= 20)});
     dungeonList.push({name : '어나더 게이트 - 재의 묘소 [9급 20레벨 이상]', code : 2, active : !char.dungeonInfos.runEmberCrypt && (char.rank <= 8 || char.level >= 20)});
     dungeonList.push({name : '시즌 레이드 - 불타는 과수원 [7급 이상]', code : 3, active : false});
-    dungeonList.push({name : '필드 보스 - 고대 흑마법사 출현 [1 피로도]', code : 4, active : false});
+    dungeonList.push({name : '필드 보스 - 고대 흑마법사 출현', code : 4, active : false});
     if (result && result.rows) {
       for (row of result.rows) {
         var tgt = dungeonList[row.rindex];
         if (row.rindex == 2 && row.phase <= 4) {
           tgt.active = row.open == 'O' && char.rank <= 7 && !char.dungeonInfos.runBurningOrchard;
-        } else if (row.rindex == 3 && row.phase <= 1) {
+        } else if (row.rindex == 3 && row.phase <= 3) {
           tgt.active = row.open == 'O' && !char.dungeonInfos.runFieldBoss;
         }
         if (row.open == 'O') {
           tgt.phase = row.phase;
           const curData = JSON.parse(row.monsters);
           if (!curData[row.phase]) {
-            row.phase = 1;
+            row.phase -= 1;
           }
           tgt.image = curData[row.phase].image;
           tgt.bossName = curData[row.phase].name;
-          tgt.curHp = curData[row.phase].curHp ? curData[row.phase].curHp : curData[row.phase].stat.maxHp;
-          tgt.maxHp = curData[row.phase].stat.maxHp;
+          //tgt.curHp = curData[row.phase].curHp ? curData[row.phase].curHp : curData[row.phase].stat.maxHp;
+          //tgt.maxHp = curData[row.phase].stat.maxHp;
           tgt.battleRecord = curData[row.phase].battleRecord;
         }
       }
@@ -1137,6 +1150,7 @@ async function procEnterDungeon(req, res) {
         var isFinished = true;
         curData[row.phase] = re.leftInfo;
         curData[row.phase].battleRecord[charRow.uid] = curData[row.phase].battleRecord[charRow.uid] ? curData[row.phase].battleRecord[charRow.uid] + damageDealt : damageDealt;
+        curData[row.phase].winRecord[charRow.uid] = curData[row.phase].winRecord[charRow.uid] ? curData[row.phase].winRecord[charRow.uid] + 1 : 1;
         var reward = damageDealt + ' 피해를 입혔습니다! (누적 피해 : ' + curData[row.phase].battleRecord[charRow.uid] + ')<br>';
         if (body.option == 3) {
           const curr = 1 + Math.floor(3 * Math.random());
@@ -1156,7 +1170,13 @@ async function procEnterDungeon(req, res) {
             }  
           }
         } else {
-          //await client.query('update characters set actionPoint = actionpoint - 1 where uid = $1', [sess.userUid]);
+          if (curData[row.phase].battleRecord[charRow.uid] >= re.leftInfo.stat.maxHp / 4) {
+            if (!char.dungeonInfos['rewardFieldBoss' + row.phase]) {
+              char.dungeonInfos['rewardFieldBoss' + row.phase] = true;
+              char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '고대 장비 카드', rank : 8, resultType : 4});
+              reward += '누적 피해량 보상으로 고대 장비 카드 1개를 획득했습니다.<br>';
+            }  
+          }
           
         }
         if (!re.winnerLeft) {
@@ -1170,8 +1190,15 @@ async function procEnterDungeon(req, res) {
             await client.query('insert into news(content, date) values ($1, $2)', 
                 [char.name + getIga(char.nameType) + ' 불타는 과수원에서 ' + re.leftInfo.name + getUlrul(re.leftInfo.nameType) + ' 처치했습니다!', new Date()]);
           } else {
+            if (row.phase <= 2) {
+              char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '고대 장비 카드', rank : 8, resultType : 4});
+              reward += '페이즈 종료 보상으로 고대 장비 카드 1개를 획득했습니다.<br>';
+            } else {
+              char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '고대 흑마법사의 선물', rank : 8, resultType : 90004});
+              reward += re.leftInfo.name + getUlrul(re.leftInfo.nameType) + ' 처치했습니다!<br>고대 흑마법사의 선물 1개를 획득했습니다.<br>';
             await client.query('insert into news(content, date) values ($1, $2)', 
                 [char.name + getIga(char.nameType) + ' ' + re.leftInfo.name + getUlrul(re.leftInfo.nameType) + ' 처치했습니다!', new Date()]);
+            }
             
           }
         } 
