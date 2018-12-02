@@ -1729,13 +1729,13 @@ module.exports.getBuffData = function(eff) {
     effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
     effectObj.code = cons.EFFECT_TYPE_STAT_ADD;
     effectObj.key = 'phyReduce';
-    effectObj.value = -0.15;
+    effectObj.value = -0.2;
     retObj.effect.push(effectObj);
     effectObj = {};
     effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
     effectObj.code = cons.EFFECT_TYPE_STAT_ADD;
     effectObj.key = 'magReduce';
-    effectObj.value = -0.15;
+    effectObj.value = -0.2;
     retObj.effect.push(effectObj);
     break;
   case 20172 : 
@@ -1994,7 +1994,6 @@ module.exports.getBuffData = function(eff) {
   case 201714 : 
     retObj.name = '중단점_';
     retObj.nameType = cons.NAME_KOR_END_CONS;
-    retObj.durOff = null;
     retObj.isDebuff = false;
     break;
   case 201715 : 

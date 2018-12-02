@@ -283,11 +283,15 @@ async function procInit2 () {
     } */
     for (val of result.rows) {
       var char = JSON.parse(val.char_data);
-      if (val.uid == '05') {
+      if (val.uid == '03') {
+        char.skill = chara.julius.skill;
       }
-      char.dayStoneBought = 1;
-      char.actionAccel = false;
-      char.recentRecord = [];
+      if (val.uid == '06') {
+        char.skill = chara.seriers.skill;
+      }
+      if (val.uid == '08') {
+        char.skill = chara.bks.skill;
+      }
       
       await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), val.uid]);
     } 
@@ -743,7 +747,11 @@ async function procBattleList(req, res) {
       obj.recentBattleCnt = charData.recentRecord.length;
       obj.recentWinCnt = charData.recentRecord.filter(x => x).length;
       obj.recentWinRate = Math.round((obj.recentBattleCnt ? obj.recentWinCnt / obj.recentBattleCnt : 0) * 10000) / 100;
-      rval.push(obj);
+      if (Math.random() < 0.5) {
+        rval.push(obj);
+      } else {
+        rval.unshift(obj);
+      }
     } 
     res.render('pages/battleList', {list: rval, title: '전투 신청', formAction: '/doBattle'});
     client.release();
