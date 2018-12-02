@@ -1505,6 +1505,7 @@ async function procSortInventory(req, res) {
     const client = await pool.connect();
     const charRow = await getCharacter(sess.userUid);
     const char = JSON.parse(charRow.char_data);
+    char.inventory = char.inventory.filter(x => x != null);
     char.inventory.sort(function compare(a, b) {
       if (a.type < b.type) {
         return -1;
