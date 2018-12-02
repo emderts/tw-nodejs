@@ -182,7 +182,7 @@
   } else if (mode === 3 && inv) { 
     var description = name + '에게 아이템을 줍니다.';
     var formAction = '/giveItem';
-    var tgtInv = inv.map(x => (x.type <= 3 || x.type == 90001) ? x : {}); 
+    var tgtInv = inv.map(x => (x.type <= 3 || x.type == 999 || x.type == 90001) ? x : {}); 
   } else if (mode === 4 && inv) { 
     var description = '요일석을 합성합니다!';
     var formAction = '/addCube';

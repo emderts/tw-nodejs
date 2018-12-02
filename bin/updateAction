@@ -33,19 +33,20 @@ try {
       var charData = JSON.parse(val.char_data);
       charData.dungeonInfos.runBurningOrchard = false;
       await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(charData), val.uid]);
+        await client.query('update characters set actionPoint = actionPoint + 2 where uid = $1', [val.uid]);
       if (charData.birth == day) {
-        await client.query('update characters set actionPoint = actionPoint + 4 where uid = $1', [val.uid]);
+        await client.query('update characters set actionPoint = actionPoint + 3 where uid = $1', [val.uid]);
       }
     } 
   }
   // 주말 보너스
   if ((day == 0 || day == 6) && hour % 6 == 0 && min < 25) {
-    await client.query('update characters set actionPoint = actionPoint + 8');
+    await client.query('update characters set actionPoint = actionPoint + 3');
     await client.query('update characters set actionPoint = 100 where actionPoint > 100');
   }  
   // 6시 처리 (보너스 피로도, 던전 보상, 주간 리셋, 퀘스트)
   if (hour == 6 && min < 25) {
-    await client.query('update characters set actionPoint = actionPoint + 12');
+    await client.query('update characters set actionPoint = actionPoint + 3');
     await client.query('update characters set actionPoint = 100 where actionPoint > 100');
   
     const result = await client.query('select * from characters');
@@ -56,10 +57,10 @@ try {
     for (val of result.rows) {
       var charData = JSON.parse(val.char_data);
       if (day == 1) {
-        delete charData.dayStoneBought;
+        charData.dayStoneBought = 0;
         delete charData.actionBought;
       }
-      if (val.uid != '02') {
+      if (val.uid != '02' && val.uid != '12') {
         if (charData.battleCnt < minBattle) {
           minBattle = charData.battleCnt;
           minBattleUid = val.uid;
@@ -74,6 +75,9 @@ try {
       charData.addExpCount = 3;
       charData.dungeonInfos.rewardMevious = false;
       charData.dungeonInfos.rewardEmberCrypt = false;
+      charData.dungeonInfos.resetMevious = false;
+      charData.dungeonInfos.resetEmberCrypt = false;
+      charData.resetGauge = false;
       charData.quest = {};
       var quests = [{code : 1, progress : 0, target : 5},
                     {code : 2, progress : 0, target : 5},

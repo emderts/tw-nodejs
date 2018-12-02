@@ -21,6 +21,7 @@ const sessionMiddleware = session({
   resave: true,
   saveUninitialized: true
 });;
+const favicon = require('serve-favicon');
 
 const app = express()
 .use(express.static(path.join(__dirname, 'public')))
@@ -28,6 +29,7 @@ const app = express()
 .use(bodyParser.urlencoded({extended: false}))
 .set('views', path.join(__dirname, 'views'))
 .set('view engine', 'ejs')
+.use(favicon(path.join(__dirname, 'public', 'favicon.ico')))
 .get('/', procIndex)
 .get('/login', (req, res) => res.render('pages/login'))
 .post('/login', procLogin)
@@ -66,6 +68,7 @@ const app = express()
 .post('/useStatPoint', procUseStatPoint)
 .post('/doRankup', procRankup)
 .post('/getCard', procGetCard)
+.post('/actionAccel', procActionAccel)
 .get('/test', (req, res) => res.render('pages/battle', {result: battlemodule.doBattle(chara.nux, chara.psi, 1).result}))
 .get('/test2', (req, res) => res.render('pages/trade', {room : '1', uid : '03'}))
 .get('/test3', (req, res) => res.render('pages/trade', {room : '1', uid : '04'}))
@@ -281,14 +284,10 @@ async function procInit2 () {
     for (val of result.rows) {
       var char = JSON.parse(val.char_data);
       if (val.uid == '05') {
-        for (key in char.inventory) {
-          console.log(char.inventory[key]);
-          if (!char.inventory[key]) {
-            char.inventory.splice(key, 1);
-          }
-        }
-        
       }
+      char.dayStoneBought = 1;
+      char.actionAccel = false;
+      char.recentRecord = [];
       
       await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), val.uid]);
     } 
@@ -740,6 +739,10 @@ async function procBattleList(req, res) {
       charData.winRecord = charData.winRecord ? charData.winRecord : {};
       obj.vsBattleCnt = charData.battleRecord[cuid] ? charData.battleRecord[cuid] : 0;
       obj.vsWinCnt = charData.winRecord[cuid] ? charData.winRecord[cuid] : 0;
+      obj.vsWinRate = Math.round((obj.vsBattleCnt ? obj.vsWinCnt / obj.vsBattleCnt : 0) * 10000) / 100;
+      obj.recentBattleCnt = charData.recentRecord.length;
+      obj.recentWinCnt = charData.recentRecord.filter(x => x).length;
+      obj.recentWinRate = Math.round((obj.recentBattleCnt ? obj.recentWinCnt / obj.recentBattleCnt : 0) * 10000) / 100;
       rval.push(obj);
     } 
     res.render('pages/battleList', {list: rval, title: '전투 신청', formAction: '/doBattle'});
@@ -763,7 +766,7 @@ async function procBattle(req, res) {
         left = JSON.parse(val.char_data);
         cuid = val.uid;
         cap = val.actionpoint;
-        if (cap <= 0) {
+        if (cap <= 0 || (left.actionAccel && cap <= 1)) {
           client.release();
           res.redirect('/');
           return;
@@ -778,11 +781,15 @@ async function procBattle(req, res) {
         left.expBoost--;
         left.maxExp += re.expLeft;
       }
+      if (left.actionAccel) {
+        re.expLeft *= 2;
+        re.resultLeft *= 2;
+      }
       addExp(left, re.expLeft);
       addExp(right, re.expRight);
       addResultGauge(left, re.resultLeft);
       addResultGauge(right, re.resultRight);
-      left.lastBattle = body.charUid;
+      left.lastBattle = body.charUid; 
       left.battleRecord = left.battleRecord ? left.battleRecord : {};
       left.winRecord = left.winRecord ? left.winRecord : {};
       right.battleRecord = right.battleRecord ? right.battleRecord : {};
@@ -816,6 +823,8 @@ async function procBattle(req, res) {
       if (re.winnerLeft) {
         left.winCnt++;
         left.winRecord[body.charUid] = left.winRecord[body.charUid] ? left.winRecord[body.charUid] + 1 : 1;
+        left.recentRecord.push(true);
+        right.recentRecord.push(false);
         if (left.quest[1]) {
           left.quest[1].progress += 1;
         }
@@ -823,11 +832,19 @@ async function procBattle(req, res) {
       if (re.winnerRight) {
         right.winCnt++;
         right.winRecord[cuid] = right.winRecord[cuid] ? right.winRecord[cuid] + 1 : 1;
+        right.recentRecord.push(true);
+        left.recentRecord.push(false);
         if (right.quest[1]) {
           right.quest[1].progress += 1;
         }
       }
-      await client.query('update characters set char_data = $1, actionPoint = $2 where uid = $3', [JSON.stringify(left), cap-1,  cuid]);
+      if (left.recentRecord.length > 50) {
+        left.recentRecord.shift();
+      }
+      if (right.recentRecord.length > 50) {
+        right.recentRecord.shift();
+      }
+      await client.query('update characters set char_data = $1, actionPoint = $2 where uid = $3', [JSON.stringify(left), left.actionAccel ? cap-2 : cap-1,  cuid]);
       await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(right), body.charUid]);
       var winner = re.winnerLeft ? left.name + ' 승리!' : (re.winnerRight ? right.name + ' 승리!' : '');
       var battleTitle = '[ ' + left.name + ' ] vs [ ' + right.name + ' ] - ' + winner;
@@ -953,7 +970,7 @@ async function procGive(req, res) {
     const charRow2 = result.rows[0];
     const charTgt = JSON.parse(charRow2.char_data);
     var tgt = char.inventory[body.itemNum];
-    if (tgt.type <= 3) {
+    if (tgt.type <= 3 || tgt.type == 999 || tgt.type == 90001) {
       char.inventory.splice(body.itemNum, 1);
       charTgt.inventory.push(tgt);
     }
@@ -1020,14 +1037,14 @@ async function procUseShop (req, res) {
     const char = JSON.parse(charRow.char_data);
     var action = charRow.actionPoint;
     if (body.option == 1) {
-      var cost = char.dayStoneBought ? 10 : 5;
+      var cost = char.dayStoneBought ? 5 + char.dayStoneBought : 5;
       if (char.premiumPoint < cost) {
         res.send('프리미엄 포인트가 부족합니다.');
       } else {
         char.premiumPoint -= cost;
         var picked = makeDayStone(Math.floor(Math.random() * 7));
         char.inventory.push(picked);
-        char.dayStoneBought = true;
+        char.dayStoneBought = char.dayStoneBought ? (char.dayStoneBought < 5 ? 1 + char.dayStoneBought : 5) : 1;
         if (char.quest[8]) {
           char.quest[8].progress += 1;
         }
@@ -1039,8 +1056,7 @@ async function procUseShop (req, res) {
         res.send('이미 부스트를 구매했습니다.');
       } else {
         char.premiumPoint -= 10;
-        char.expBoost = 5;
-        char.maxExp += char.reqExp;
+        char.expBoost = 15;
         if (char.quest[8]) {
           char.quest[8].progress += 1;
         }
@@ -1064,8 +1080,49 @@ async function procUseShop (req, res) {
         res.send('프리미엄 포인트가 부족합니다.');
       } else {
         char.premiumPoint -= cost;
-        action += 8;
+        action += 10;
         char.actionBought = true;
+        if (char.quest[8]) {
+          char.quest[8].progress += 1;
+        }
+      }
+    } else if (body.option == 9) {
+      if (char.premiumPoint < 10) {
+        res.send('프리미엄 포인트가 부족합니다.');
+      } else if (char.dungeonInfos.resetMevious) {
+        res.send('오늘 최대치를 구매했습니다.');
+      } else {
+        char.premiumPoint -= 10;
+        char.dungeonInfos.runMevious = false;
+        char.dungeonInfos.rewardMevious = false;
+        char.dungeonInfos.resetMevious = true;
+        if (char.quest[8]) {
+          char.quest[8].progress += 1;
+        }
+      }
+    } else if (body.option == 10) {
+      if (char.premiumPoint < 10) {
+        res.send('프리미엄 포인트가 부족합니다.');
+      } else if (char.dungeonInfos.resetEmberCrypt) {
+        res.send('오늘 최대치를 구매했습니다.');
+      } else {
+        char.premiumPoint -= 10;
+        char.dungeonInfos.runEmberCrypt = false;
+        char.dungeonInfos.rewardEmberCrypt = false;
+        char.dungeonInfos.resetEmberCrypt = true;
+        if (char.quest[8]) {
+          char.quest[8].progress += 1;
+        }
+      }
+    } else if (body.option == 11) {
+      if (char.premiumPoint < 15) {
+        res.send('프리미엄 포인트가 부족합니다.');
+      } else if (char.resetGauge) {
+        res.send('오늘 최대치를 구매했습니다.');
+      } else {
+        char.premiumPoint -= 15;
+        char.resultMaxGauge = 0;
+        char.resetGauge = true;
         if (char.quest[8]) {
           char.quest[8].progress += 1;
         }
@@ -1779,6 +1836,17 @@ async function procGetCard(req, res) {
     char.resultGauge -= 100;
     addResultCard(char);
   } 
+  await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
+  client.release();
+  res.redirect('/');
+}
+
+async function procActionAccel(req, res) {
+  const client = await pool.connect();
+  const sess = req.session; 
+  const charRow = await getCharacter(sess.userUid);
+  const char = JSON.parse(charRow.char_data);
+  char.actionAccel = !char.actionAccel;
   await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
   client.release();
   res.redirect('/');

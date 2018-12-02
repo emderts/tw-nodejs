@@ -286,7 +286,7 @@
         </tr>
         <tr>
           <td class="charViewTitle"><%= char.rank %>급 <%= char.level %>레벨</td>
-          <td class="charViewContent"><%= char.exp + '/' + char.reqExp + ' (' + char.maxExp + ')' %></td>
+          <td class="charViewContent"><%= char.exp + '/' + char.reqExp + ' (' + char.maxExp + ')' + (char.expBoost ? ' / Boost ' + char.expBoost : '')  %></td>
           <td class="charViewContent">
           <% if (char.level >= 20 && char.rank > 7) { %>
             <form action="/doRankup" method="post">
@@ -298,7 +298,11 @@
         <tr>
           <td class="charViewTitle">피로도</td>
           <td class="charViewContent"><%= actionPoint %>/100</td>
-          <td class="charViewContent"><%= char.expBoost ? 'Boost ' + char.expBoost : '' %></td>
+          <td class="charViewContent">
+          <form action="/actionAccel" method="post">
+            <button type="submit">가속 <%= char.actionAccel ? '끄기' : '켜기' %></button>
+          </form>
+          </td>
         </tr>
         <tr>
           <td class="charViewTitle">카드 게이지</td>
