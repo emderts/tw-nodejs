@@ -127,8 +127,8 @@ function _doBattleEnd(flag) {
   if (retObj.resultRight < 0) {
     retObj.resultRight = 0;
   }
-  
-  var expTurn = turnCount < 200 ? turnCount : 200;
+
+  var expTurn = turnCount < 200 ? (turnCount > 20 ? turnCount : 20) : 200;
   var expRate = charLeft.rank > charRight.rank ? 0.9 : (charLeft.rank < charRight.rank ? 1.1 : 1);
   if (charLeft.expBoost && charLeft.expBoost > 0) {
     expRate += 0.15;
