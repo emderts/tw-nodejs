@@ -332,7 +332,7 @@
         </tr>
         <tr>
           <td class="charViewTitle">전적</td>
-          <td class="charViewContent"><%= char.battleCnt %>전 <%= char.winCnt %>승</td>
+          <td class="charViewContent"><%= char.battleCnt %>전 <%= char.winCnt %>승 [최근 <%= char.recentRecord.filter(x => x).length %>승]</td>
           <td class="charViewContent"></td>
         </tr>
       <% for ([key, val] of Object.entries(char.stat)) {  

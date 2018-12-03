@@ -131,7 +131,7 @@ function _doBattleEnd(flag) {
     retObj.resultRight = 0;
   }
   
-  var expTurn = turnCount < 200 ? turnCount : 200;
+  var expTurn = turnCount < 200 ? (turnCount > 20 ? turnCount : 20) : 200;
   var expRate = charLeft.rank > charRight.rank ? 0.9 : (charLeft.rank < charRight.rank ? 1.1 : 1);
   if (charLeft.expBoost && charLeft.expBoost > 0) {
     expRate += 0.15;
@@ -825,7 +825,7 @@ function resolveEffects(winner, loser, effects, damage, skill) {
       resolveEffects(winner, loser, skill.effect, damage);
     } else if (eff.code === cons.EFFECT_TYPE_CONVERT_ITEM) {
       if (eff.randomItem) {
-        var tgtList = item.list.filter(x => x.rank === eff.randomItem);
+        var tgtList = item.list.filter(x => x.rank === eff.randomItem && x.type < 4);
         var picked = JSON.parse(JSON.stringify(tgtList[Math.floor(Math.random() * tgtList.length)]));
       } else {
         var picked = JSON.parse(JSON.stringify(tgtList[eff.value]));
@@ -1444,6 +1444,11 @@ function printChar(chara, name, flag) {
         resultStr += ' (' + val.dur + '턴 남음)';
       }
       resultStr += '<br>';
+    }
+    for (key in chara.items) {
+      if (chara.items[key].itemValue > 0) {
+        resultStr += chara.items[key].name + ' [' + chara.items[key].itemValue + ']<br>';
+      }
     }
     resultStr += '</div>';
   }

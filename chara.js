@@ -69,29 +69,36 @@ const item = require('./items');
   charRight.skill.base = [];
   charRight.items = {};
   itemObj = {};
-  itemObj.name = '서리한';
+  itemObj.name = '+4 서리한';
   itemObj.nameType = cons.NAME_KOR_END_CONS;
   itemObj.type = cons.ITEM_TYPE_WEAPON;
-  itemObj.rank = 7;
+  itemObj.rank = 6;
   itemObj.rarity = cons.ITEM_RARITY_EPIC;
   itemObj.stat = {};
-  itemObj.stat.phyAtk = 32;
+  itemObj.stat.phyAtk = 55;
   itemObj.stat.magAtk = 30;
-  itemObj.stat.spRegen = 10;
+  itemObj.stat.spRegen = 15;
   itemObj.effect = [];
   charRight.items.weapon = itemObj;
-  charRight.items.armor = item.list[375];
+  charRight.items.armor = { id : 375, name : '죽음군주의 형상', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_ARMOR, flavor : '', rank : 6, rarity : cons.ITEM_RARITY_EPIC, stat : { phyReduce : 0.08, magReduce : 0.08, maxHp : 573 }, 
+      effectDesc : '전투 시작 및 드라이브 스킬 사용 시마다 자신에게 [혈기의 형상], [냉기의 형상], [부정의 형상] 버프 중 하나 부여 (이전 버프 교체) 및 [형상 강화] 버프 부여 (최대 5중첩)<br><br>[혈기의 형상] : HP재생 +4<br><br>[냉기의 형상] : 상대 피해감소 -4<br><br>[부정의 형상] : SP충전 +5, SP재생 +2<br><br>[형상 강화] : 물리/마법저항 +1%', 
+      effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_BATTLE_START, buffCode : [10059, 10060, 10061], buffDur : null, multiple : true}] };
   itemObj = {};
-  itemObj.name = '서리 끼인 영혼의 망토';
+  itemObj.name = '서리로 얼어붙은 영혼의 망토';
   itemObj.nameType = cons.NAME_KOR_NO_END_CONS;
   itemObj.type = cons.ITEM_TYPE_SUBARMOR;
-  itemObj.rank = 7;
+  itemObj.rank = 6;
   itemObj.rarity = cons.ITEM_RARITY_EPIC;
   itemObj.stat = {};
-  itemObj.stat.crit = 0.5;
+  itemObj.stat.crit = 0.65;
   itemObj.effect = [];
   charRight.items.subarmor = itemObj;
-  charRight.items.trinket = item.list[410];
+  charRight.items.trinket = { id : 410, name : '타로 카드 : 죽음', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '수레바퀴가 그려진 타로카드이다. 이상하게도 어느 쪽으로 돌려 보아도 뒤집혀 있는 수레바퀴 모양으로 보인다.', rank : 6, rarity : cons.ITEM_RARITY_EPIC, stat : {  }, 
+    effectDesc : '턴 종료 시 자신의 생명력이 0% 이하라면, 패배하는 대신 자신에게 [역방향 수레바퀴] 버프 부여 후 자신과 적의 생명력을 모두 회복 (전투당 1회 제한)<br><br>[역방향 수레바퀴] : 물리공격력+25, 마법공격력+25, 회피+8%, 명중+8%, 전투 종료 시 리설트 카드 -1', 
+    effect : [{code : cons.EFFECT_TYPE_MULTIPLE, active : cons.ACTIVE_TYPE_TURN_END, chance : 0.3, chkHp : 0.01, removeEffect : true,
+      target : [{code : cons.EFFECT_TYPE_SELF_HP, value : 1, isPercentStat : true, percentKey : 'maxHp'},
+                {code : cons.EFFECT_TYPE_OPP_HP, value : 1, isPercentOppStat : true, percentKey : 'maxHp'},
+                {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 10067, buffDur : null}]}] };
 
   var skillObj = {};
   skillObj.code = 20091;
@@ -1358,6 +1365,7 @@ const item = require('./items');
   charMarang.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '흔들리는 달빛의 보조방어구 카드', rank : 9, resultType : 2});
   charMarang.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '흔들리는 달빛의 장신구 카드', rank : 9, resultType : 3});
   charMarang.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '흔들리는 달빛의 장신구 카드', rank : 9, resultType : 3});
+  charNux.items.weapon = item.list[370];
   
   function _initChar(char) {
     char.stat = {};

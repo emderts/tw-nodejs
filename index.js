@@ -71,7 +71,7 @@ const app = express()
 .post('/actionAccel', procActionAccel)
 .get('/test', (req, res) => res.render('pages/battle', {result: battlemodule.doBattle(chara.nux, chara.psi, 1).result}))
 .get('/test2', (req, res) => res.render('pages/trade', {room : '1', uid : '03'}))
-.get('/test3', (req, res) => res.render('pages/trade', {room : '1', uid : '04'}))
+.get('/test3', (req, res) => res.render('pages/trade', {room : '1', uid : '06'}))
 .get('/test4', (req, res) => res.send(procInit2()))
 .get('/test5', (req, res) => res.render('pages/resultCard', {item : {name: 'test', rarity: Math.floor(Math.random() * 6)}}))
 .get('/test6', (req, res) => res.render('pages/index', {
@@ -122,9 +122,9 @@ io.on('connection', (socket) => {
     } else {
       trades[room].right = socket;
       trades[room].rightUid = uid;
-      const result = battlemodule2.procBattleStart(chara.julius, chara.psi);
-      trades[room].left.emit('manualAck', result, getNames(chara.julius), getNames(chara.psi));
-      trades[room].right.emit('manualAck', result, getNames(chara.psi), getNames(chara.julius));
+      const result = battlemodule2.procBattleStart(chara.julius, chara.seriers);
+      trades[room].left.emit('manualAck', result, getNames(chara.julius), getNames(chara.seriers));
+      trades[room].right.emit('manualAck', result, getNames(chara.seriers), getNames(chara.julius));
       
       function makeSkillTooltip(skill) {
         var rtext = '<div class="itemTooltip">';
@@ -283,14 +283,9 @@ async function procInit2 () {
     } */
     for (val of result.rows) {
       var char = JSON.parse(val.char_data);
-      if (val.uid == '03') {
-        char.skill = chara.julius.skill;
-      }
-      if (val.uid == '06') {
-        char.skill = chara.seriers.skill;
-      }
-      if (val.uid == '08') {
-        char.skill = chara.bks.skill;
+      if (val.uid == '02') {
+        char.items = chara.lk.items;
+        char.rank = 7;
       }
       
       await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), val.uid]);
@@ -728,7 +723,7 @@ async function procBattleList(req, res) {
     const result = await client.query('select * from characters where uid <> $1 order by uid', [cuid]);
     var rval = [];
     for (val of result.rows) {
-      if (char.lastBattle == val.uid) {
+      if (char.lastBattle == val.uid || val.uid == '12') {
         continue;
       }
       var charData = JSON.parse(val.char_data);
@@ -792,6 +787,8 @@ async function procBattle(req, res) {
       if (left.actionAccel) {
         re.expLeft *= 2;
         re.resultLeft *= 2;
+        re.expRight *= 2;
+        re.resultRight *= 2;
       }
       addExp(left, re.expLeft);
       addExp(right, re.expRight);

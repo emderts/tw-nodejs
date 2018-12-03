@@ -178,7 +178,7 @@
   } else if (mode === 2 && inv) { 
     var description = '아이템을 해체합니다. (현재 가루 보유량 : ' + dust + ')';
     var formAction = '/dismantleItem';
-    var tgtInv = inv.map(x => (x.type <= 3) ? x : {}); 
+    var tgtInv = inv.map(x => (x.type <= 4) ? x : {}); 
   } else if (mode === 3 && inv) { 
     var description = name + '에게 아이템을 줍니다.';
     var formAction = '/giveItem';
