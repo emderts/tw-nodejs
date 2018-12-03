@@ -53,6 +53,12 @@ try {
       charData.dungeonInfos.runBurningOrchard = false;
       await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(charData), val.uid]);
     } 
+    const resultx = await client.query('select * from raids where rindex = 2');
+    for (val of resultx.rows) {
+      var charData = JSON.parse(val.monsters);
+      charData[val.phase].curHp += charData[val.phase].stat.maxHp / 20;
+      await client.query('update characters set monsters = $1 where rindex = 2', [JSON.stringify(charData)]);
+    } 
   }
   
   // 6시간마다 (탄생일)
