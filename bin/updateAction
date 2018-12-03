@@ -56,7 +56,7 @@ try {
     const resultm = await client.query('select * from raids where rindex = 2');
     for (val of resultm.rows) {
       var charData = JSON.parse(val.monsters);
-      charData[val.phase].curHp += charData[val.phase].stat.maxHp / 20;
+      charData[val.phase].curHp += Math.round(charData[val.phase].stat.maxHp / 20);
       await client.query('update raids set monsters = $1 where rindex = 2', [JSON.stringify(charData)]);
     } 
   }

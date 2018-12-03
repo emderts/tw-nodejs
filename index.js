@@ -1265,7 +1265,7 @@ async function procEnterDungeon(req, res) {
         enemy = rand < 0.5 ? monster.eBroken : monster.eCrossbow;
       }
     } else if (body.option == 3) {
-      if (!char.dungeonInfos.runBurningOrchard && (char.rank <= 7 && char.level >= 10 && row.open == 'O')) {
+      if (!char.dungeonInfos.runBurningOrchard && (row.open == 'O')) {
         char.dungeonInfos.runBurningOrchard = true;
         enemy = monster.oFlame;
         if (charRow.actionPoint <= 0) {
