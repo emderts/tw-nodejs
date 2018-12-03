@@ -1218,7 +1218,7 @@ async function procDungeon(req, res) {
       for (row of result.rows) {
         var tgt = dungeonList[row.rindex];
         if (row.rindex == 2 && row.phase <= 4) {
-          tgt.active = row.open == 'O' && char.rank <= 7 && char.level >= 10 && !char.dungeonInfos.runBurningOrchard;
+          tgt.active = row.open == 'O' && !char.dungeonInfos.runBurningOrchard;
         } else if (row.rindex == 3 && row.phase <= 3) {
           tgt.active = row.open == 'O' && !char.dungeonInfos.runFieldBoss;
         }
