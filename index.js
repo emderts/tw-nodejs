@@ -1297,7 +1297,9 @@ async function procEnterDungeon(req, res) {
           isFinished = true;
           reward += '패배했습니다..';
         }
-        await client.query('update characters set actionPoint = $1 where uid = $2', [charRow.actionPoint - 1, charRow.uid]);
+        if (body.option == 3) {
+          await client.query('update characters set actionPoint = $1 where uid = $2', [charRow.actionPoint - 1, charRow.uid]);
+        }
         req.session.dungeonProgress = {code : body.option, phase : 1, resultList : resultList, charData : re.leftInfo};
       } else {
         var re = battlemodule.doBattle(JSON.parse(JSON.stringify(enemy)), JSON.parse(JSON.stringify(char)), 1);
@@ -1406,7 +1408,7 @@ async function procNextPhaseDungeon(req, res) {
           char.currencies.burntMark = curr;
         }
         reward += '불탄 증표 ' + curr + '개를 획득했습니다.<br>';
-        if (curData[row.phase].battleRecord[charRow.uid] >= re.leftInfo.stat.maxHp / 10) {
+        if (curData[row.phase].battleRecord[charRow.uid] >= re.rightInfo.stat.maxHp / 10) {
           if (!char.dungeonInfos['rewardBurningOrchard' + row.phase]) {
             char.dungeonInfos['rewardBurningOrchard' + row.phase] = true;
             char.currencies.burntMark += 10;
