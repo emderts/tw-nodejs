@@ -5,7 +5,7 @@ const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: true
 }); 
-const monster = require('./monster');
+const monster = require('../monster');
 
 const day = new Date().getDay();
 const hour = new Date().getHours();
