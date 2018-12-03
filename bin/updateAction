@@ -5,6 +5,7 @@ const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: true
 }); 
+const monster = require('./monster');
 
 const day = new Date().getDay();
 const hour = new Date().getHours();
@@ -14,8 +15,26 @@ doWork();
 async function doWork() {
 try {
   const client = await pool.connect();
-  // 30분마다 기본 피로도
+  // 30분마다 (기본 피로도, 필드보스, 던전)
   await client.query('update characters set actionPoint = actionPoint + 1 where actionPoint < 100');
+  
+  const resultg = await client.query('select * from global');
+  for (val of resultg.rows) {
+    var glb = JSON.parse(val.globals);
+    if (!glb.fieldBossSummoned && glb.actionUsed >= 200) {
+      await client.query('insert into news(content, date) values ($1, $2)', 
+        ['고대 흑마법사의 기운이 느껴집니다..', new Date()]);
+      glb.fieldBossSummoned = true;
+    }
+    if (glb.fieldBossSummoned && !glb.fieldBossSpawned) {
+      await client.query('insert into news(content, date) values ($1, $2)', 
+        ['고대 흑마법사가 나타났습니다!', new Date()]);
+      await client.query('insert into raids(rindex, open, phase, monsters) values (3, \'O\', 1, $1)', 
+        [JSON.stringify({1 : monster.rKines1, 2 : monster.rInfernal, 3 : monster.rKines2})]);
+      glb.fieldBossSpawned = true;
+    }
+  }
+  await client.query('update global set globals = $1', [JSON.stringify(glb)]);
   
     const resultx = await client.query('select * from characters');
     for (val of resultx.rows) {
@@ -25,25 +44,36 @@ try {
       charData.dungeonInfos.runFieldBoss = false;
       await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(charData), val.uid]);
     } 
-  // 6시간마다 (과수원, 탄생일)
-  if (hour % 6 == 0 && min < 25) {
   
+  // 1시간마다 (과수원)
+  if (min < 25) {  
     const result = await client.query('select * from characters');
     for (val of result.rows) {
       var charData = JSON.parse(val.char_data);
       charData.dungeonInfos.runBurningOrchard = false;
       await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(charData), val.uid]);
-        await client.query('update characters set actionPoint = actionPoint + 2 where uid = $1', [val.uid]);
+    } 
+  }
+  
+  // 6시간마다 (탄생일)
+  if (hour % 6 == 0 && min < 25) {  
+    const result = await client.query('select * from characters');
+    for (val of result.rows) {
+      var charData = JSON.parse(val.char_data);
+      await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(charData), val.uid]);
+      await client.query('update characters set actionPoint = actionPoint + 2 where uid = $1', [val.uid]);
       if (charData.birth == day) {
         await client.query('update characters set actionPoint = actionPoint + 3 where uid = $1', [val.uid]);
       }
     } 
   }
+  
   // 주말 보너스
   if ((day == 0 || day == 6) && hour % 6 == 0 && min < 25) {
     await client.query('update characters set actionPoint = actionPoint + 3');
     await client.query('update characters set actionPoint = 100 where actionPoint > 100');
   }  
+  
   // 6시 처리 (보너스 피로도, 던전 보상, 주간 리셋, 퀘스트)
   if (hour == 6 && min < 25) {
     await client.query('update characters set actionPoint = actionPoint + 3');
@@ -132,6 +162,16 @@ try {
           ['승률이 가장 낮은 ' + charData.name + '에게 경험치 보정이 주어졌습니다!', new Date()]);
       }
     }
+    const result3 = await client.query('select * from global');
+    for (val of result3.rows) {
+      var glb = JSON.parse(val.globals);
+      glb['actionUsed' + new Date()] = glb.actionUsed;
+      glb.actionUsed = 0;
+      glb.fieldBossSummoned = false;
+      glb.fieldBossSpawned = false;
+    }
+    await client.query('update global set globals = $1', [JSON.stringify(glb)]);
+    await client.query('delete from raids where rindex = 3');
   }
   client.release();  
   } catch (err) {

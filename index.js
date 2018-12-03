@@ -234,7 +234,8 @@ async function procInit2 () {
   try {
     const client = await pool.connect();
     const result = await client.query('select * from characters');
-    const result2 = await client.query('select * from raids');
+    const result2 = await client.query('insert into raids(rindex, open, phase, monsters) values (2, \'O\', 1, $1)', 
+        [JSON.stringify({1 : monster.oEleLord, 2 : monster.oStoneist, 3 : monster.oDeathKnight, 4 : monster.oLegor})]);
     var leaderboard = [];
     var reward;
     const names = {'03' : '줄리어스 엠더츠', '04' : '프사이', '05' : '에이카', '06' : '세리어스 플로에르시아',
@@ -284,8 +285,6 @@ async function procInit2 () {
     for (val of result.rows) {
       var char = JSON.parse(val.char_data);
       if (val.uid == '02') {
-        char.items = chara.lk.items;
-        char.rank = 7;
       }
       
       await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), val.uid]);
@@ -582,36 +581,42 @@ async function procUseItem (req, res) {
               chara.inventory.push(picked);
             } 
           } else if (tgtObj.resultType == 90003) {
-            if (rand < 0.5) {
+            if (rand < 0.405) {
               picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_UNCOMMON, tgtObj.resultType);
               chara.inventory.push(picked);
-            } else if (rand < 0.75) {
+            } else if (rand < 0.681) {
               picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_RARE, tgtObj.resultType);
               chara.inventory.push(picked);
               await addItemNews(client, chara, tgtObj, picked);
               if (chara.quest[5]) {
                 chara.quest[5].progress += 1;
               }
-            } else if (rand < 0.85) {
+            } else if (rand < 0.7365) {
               picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_UNIQUE, tgtObj.resultType);
               chara.inventory.push(picked);
               await addItemNews(client, chara, tgtObj, picked);
               if (chara.quest[5]) {
                 chara.quest[5].progress += 3;
               }
-            } else if (rand < 0.98) {
-              chara.currencies.burntMark += 5;
-              picked = {name : '불탄 증표 5개' , rarity : cons.ITEM_RARITY_COMMON};
-            } else {
-              picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_EPIC, tgtObj.resultType);
+            } else if (rand < 0.7895) {
+              picked = _getItem(tgtObj.rank - 1, cons.ITEM_RARITY_COMMON_UNCOMMON, tgtObj.resultType);
+              chara.inventory.push(picked);
+            } else if (rand < 0.8) {
+              picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_EPIC);
               chara.inventory.push(picked);
               await addItemNews(client, chara, tgtObj, picked);
               if (chara.quest[5]) {
                 chara.quest[5].progress += 3;
               }
+            } else if (rand < 0.95) {
+              chara.currencies.burntMark += 2;
+              picked = {name : '불탄 증표 2개', rarity : cons.ITEM_RARITY_COMMON};
+            } else {
+              chara.currencies.burntMark += 4;
+              picked = {name : '불탄 증표 4개', rarity : cons.ITEM_RARITY_COMMON};
             }
           } else if (tgtObj.resultType == 90004) {
-            if (rand < 0.95) {
+            if (rand < 0.96) {
               picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_UNIQUE, tgtObj.resultType);
               chara.inventory.push(picked);
               await addItemNews(client, chara, tgtObj, picked);
@@ -780,6 +785,7 @@ async function procBattle(req, res) {
     } 
     if (left && right && left.lastBattle != body.charUid) {
       var re = battlemodule.doBattle(JSON.parse(JSON.stringify(left)), JSON.parse(JSON.stringify(right)));
+      var globalObj = {actionUsed : {type : 'add', value : 1}};
       if (left.expBoost && left.expBoost > 0) {
         left.expBoost--;
         left.maxExp += re.expLeft;
@@ -789,6 +795,7 @@ async function procBattle(req, res) {
         re.resultLeft *= 2;
         re.expRight *= 2;
         re.resultRight *= 2;
+        globalObj.actionUsed.value += 1;
       }
       addExp(left, re.expLeft);
       addExp(right, re.expRight);
@@ -849,8 +856,9 @@ async function procBattle(req, res) {
       if (right.recentRecord.length > 50) {
         right.recentRecord.shift();
       }
-      await client.query('update characters set char_data = $1, actionPoint = $2 where uid = $3', [JSON.stringify(left), left.actionAccel ? cap-2 : cap-1,  cuid]);
+      await client.query('update characters set char_data = $1, actionPoint = $2 where uid = $3', [JSON.stringify(left), left.actionAccel ? cap-2 : cap-1, cuid]);
       await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(right), body.charUid]);
+      await setGlobals(globalObj);
       var winner = re.winnerLeft ? left.name + ' 승리!' : (re.winnerRight ? right.name + ' 승리!' : '');
       var battleTitle = '[ ' + left.name + ' ] vs [ ' + right.name + ' ] - ' + winner;
       await client.query('insert into results(title, result, date) values ($1, $2, $3)', [battleTitle, re.result, new Date()]);
@@ -1171,7 +1179,7 @@ async function procUseShop (req, res) {
         char.inventory.push(JSON.parse(JSON.stringify(item.list[416 + (body.option - 90005)])));
       }
     } else if (body.option >= 90009 && body.option < 90014) {
-      var cost = (body.option == 90009 || body.option == 90013) ? 5 : (body.option == 90010 ? 10 : (body.option == 90011 ? 30 : 60));
+      var cost = (body.option == 90009 || body.option == 90013) ? 5 : (body.option == 90010 ? 10 : (body.option == 90011 ? 20 : 60));
       if (char.currencies.burntMark < cost) {
         res.send('불탄 증표가 부족합니다.');
       } else {
@@ -1204,13 +1212,13 @@ async function procDungeon(req, res) {
     var dungeonList = [];
     dungeonList.push({name : '메모리얼 게이트 - 메비우스 섬멸 [9급 20레벨 이상]', code : 1, active : !char.dungeonInfos.runMevious && (char.rank <= 8 || char.level >= 20)});
     dungeonList.push({name : '어나더 게이트 - 재의 묘소 [9급 20레벨 이상]', code : 2, active : !char.dungeonInfos.runEmberCrypt && (char.rank <= 8 || char.level >= 20)});
-    dungeonList.push({name : '시즌 레이드 - 불타는 과수원 [7급 이상]', code : 3, active : false});
+    dungeonList.push({name : '시즌 레이드 - 불타는 과수원 [피로도 1 / 7급 10레벨 이상]', code : 3, active : false});
     dungeonList.push({name : '필드 보스 - 고대 흑마법사 출현', code : 4, active : false});
     if (result && result.rows) {
       for (row of result.rows) {
         var tgt = dungeonList[row.rindex];
         if (row.rindex == 2 && row.phase <= 4) {
-          tgt.active = row.open == 'O' && char.rank <= 7 && !char.dungeonInfos.runBurningOrchard;
+          tgt.active = row.open == 'O' && char.rank <= 7 && char.level >= 10 && !char.dungeonInfos.runBurningOrchard;
         } else if (row.rindex == 3 && row.phase <= 3) {
           tgt.active = row.open == 'O' && !char.dungeonInfos.runFieldBoss;
         }
@@ -1257,13 +1265,14 @@ async function procEnterDungeon(req, res) {
         enemy = rand < 0.5 ? monster.eBroken : monster.eCrossbow;
       }
     } else if (body.option == 3) {
-      const result = await client.query('select * from raids where rindex = 2');
-      const row = result.rows[0];
-      if (!char.dungeonInfos.runBurningOrchard && (char.rank <= 7 && row.open == 'O')) {
-        curData = JSON.parse(row.monsters);
+      if (!char.dungeonInfos.runBurningOrchard && (char.rank <= 7 && char.level >= 10 && row.open == 'O')) {
         char.dungeonInfos.runBurningOrchard = true;
-        enemy = curData[row.phase];
-        hpBefore = enemy.curHp ? enemy.curHp : enemy.stat.maxHp;
+        enemy = monster.oFlame;
+        if (charRow.actionPoint <= 0) {
+          client.release();
+          res.redirect('/');
+          return;
+        }
       }
     } else if (body.option == 4) {
       const result = await client.query('select * from raids where rindex = 3');
@@ -1276,7 +1285,7 @@ async function procEnterDungeon(req, res) {
       }
     }
     if (enemy) {
-      if (body.option == 1 || body.option == 2) {
+      if (body.option == 1 || body.option == 2 || body.option == 3) {
         var re = battlemodule.doBattle(JSON.parse(JSON.stringify(char)), JSON.parse(JSON.stringify(enemy)), 1);
         var resultList = [{phase : 1, monImage : enemy.image, monName : enemy.name, 
           result : re.winnerLeft ? '승리' : '패배', hpLeft : re.winnerLeft ? re.leftInfo.curHp : re.rightInfo.curHp}];
@@ -1288,6 +1297,7 @@ async function procEnterDungeon(req, res) {
           isFinished = true;
           reward += '패배했습니다..';
         }
+        await client.query('update characters set actionPoint = $1 where uid = $2', [charRow.actionPoint - 1, charRow.uid]);
         req.session.dungeonProgress = {code : body.option, phase : 1, resultList : resultList, charData : re.leftInfo};
       } else {
         var re = battlemodule.doBattle(JSON.parse(JSON.stringify(enemy)), JSON.parse(JSON.stringify(char)), 1);
@@ -1301,24 +1311,8 @@ async function procEnterDungeon(req, res) {
         curData[row.phase].battleRecord[charRow.uid] = curData[row.phase].battleRecord[charRow.uid] ? curData[row.phase].battleRecord[charRow.uid] + damageDealt : damageDealt;
         curData[row.phase].winRecord[charRow.uid] = curData[row.phase].winRecord[charRow.uid] ? curData[row.phase].winRecord[charRow.uid] + 1 : 1;
         var reward = damageDealt + ' 피해를 입혔습니다! (누적 피해 : ' + curData[row.phase].battleRecord[charRow.uid] + ')<br>';
-        if (body.option == 3) {
-          const curr = 1 + Math.floor(3 * Math.random());
-          if (char.currencies.burntMark) {
-            char.currencies.burntMark += curr;
-          } else {
-            char.currencies.burntMark = curr;
-          }
-          reward += '불탄 증표 ' + curr + '개를 획득했습니다.<br>';
-          if (curData[row.phase].battleRecord[charRow.uid] >= re.leftInfo.stat.maxHp / 10) {
-            if (!char.dungeonInfos['rewardBurningOrchard' + row.phase]) {
-              char.dungeonInfos['rewardBurningOrchard' + row.phase] = true;
-              char.currencies.burntMark += 10;
-              char.statPoint += 5;
-              char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '불타는 영웅의 증명 카드', rank : 7, resultType : 90003});
-              reward += '누적 피해량 보상으로 불탄 징표 10개와 불타는 영웅의 증명 카드 1개를 획득했습니다.<br>';
-            }  
-          }
-        } else {
+        
+        if (body.option == 4) {
           if (curData[row.phase].battleRecord[charRow.uid] >= re.leftInfo.stat.maxHp / 4) {
             if (!char.dungeonInfos['rewardFieldBoss' + row.phase]) {
               char.dungeonInfos['rewardFieldBoss' + row.phase] = true;
@@ -1329,26 +1323,16 @@ async function procEnterDungeon(req, res) {
           
         }
         if (!re.winnerLeft) {
-          if (body.option == 3) {
-            char.currencies.burntMark += 20;
-            char.statPoint += 10;
-            char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '불타는 영웅의 증명 카드', rank : 7, resultType : 90003});
-            char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '불타는 영웅의 증명 카드', rank : 7, resultType : 90003});
-            char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '불타는 영웅의 증명 카드', rank : 7, resultType : 90003});
-            reward += re.leftInfo.name + getUlrul(re.leftInfo.nameType) + ' 처치했습니다!<br>불탄 징표 20개와 불타는 영웅의 증명 카드 3개, 스탯 포인트 10을 획득했습니다.<br>';
-            await client.query('insert into news(content, date) values ($1, $2)', 
-                [char.name + getIga(char.nameType) + ' 불타는 과수원에서 ' + re.leftInfo.name + getUlrul(re.leftInfo.nameType) + ' 처치했습니다!', new Date()]);
-          } else {
+          if (body.option == 4) {
             if (row.phase <= 2) {
               char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '고대 장비 카드', rank : 8, resultType : 4});
               reward += '페이즈 종료 보상으로 고대 장비 카드 1개를 획득했습니다.<br>';
             } else {
-              char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '고대 흑마법사의 선물', rank : 8, resultType : 90004});
+              char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '고대 흑마법사의 선물', rank : 8 + Math.floor(Math.random() * 2), resultType : 90004});
               reward += re.leftInfo.name + getUlrul(re.leftInfo.nameType) + ' 처치했습니다!<br>고대 흑마법사의 선물 1개를 획득했습니다.<br>';
             await client.query('insert into news(content, date) values ($1, $2)', 
                 [char.name + getIga(char.nameType) + ' ' + re.leftInfo.name + getUlrul(re.leftInfo.nameType) + ' 처치했습니다!', new Date()]);
-            }
-            
+            }            
           }
         } 
         await client.query('update raids set phase = $1, monsters = $2 where rindex = $3', [row.phase + (re.winnerLeft ? 0 : 1), JSON.stringify(curData), row.rindex]);
@@ -1371,7 +1355,7 @@ async function procNextPhaseDungeon(req, res) {
     const sess = req.session; 
     const charRow = await getCharacter(sess.userUid);
     const char = JSON.parse(charRow.char_data);
-    var enemy;
+    var enemy, curData, hpBefore;
     // check entering cond
     const rand = Math.random();
     if (sess.dungeonProgress) {
@@ -1387,6 +1371,12 @@ async function procNextPhaseDungeon(req, res) {
         if (sess.dungeonProgress.phase == 1) {
           enemy = monster.eGunda;
         } 
+      } else if (sess.dungeonProgress.code == 3) {
+        const result = await client.query('select * from raids where rindex = 2');
+        const row = result.rows[0];
+        var curData = JSON.parse(row.monsters);
+        enemy = curData[row.phase];
+        hpBefore = enemy.curHp ? enemy.curHp : enemy.stat.maxHp;
       }
     }
     if (enemy) {
@@ -1400,7 +1390,41 @@ async function procNextPhaseDungeon(req, res) {
       
       var isFinished = false;
       var reward = '';
-      if (!re.winnerLeft) {
+      if (req.session.dungeonProgress.code == 3) {
+        const damageDealt = hpBefore - re.leftInfo.curHp;
+        re.rightInfo.buffs = [];
+        re.rightInfo.items = enemy.items;
+        isFinished = true;
+        curData[row.phase] = re.rightInfo;
+        curData[row.phase].battleRecord[charRow.uid] = curData[row.phase].battleRecord[charRow.uid] ? curData[row.phase].battleRecord[charRow.uid] + damageDealt : damageDealt;
+        curData[row.phase].winRecord[charRow.uid] = curData[row.phase].winRecord[charRow.uid] ? curData[row.phase].winRecord[charRow.uid] + 1 : 1;
+        var reward = damageDealt + ' 피해를 입혔습니다! (누적 피해 : ' + curData[row.phase].battleRecord[charRow.uid] + ')<br>';
+        const curr = 1 + Math.floor(3 * Math.random());
+        if (char.currencies.burntMark) {
+          char.currencies.burntMark += curr;
+        } else {
+          char.currencies.burntMark = curr;
+        }
+        reward += '불탄 증표 ' + curr + '개를 획득했습니다.<br>';
+        if (curData[row.phase].battleRecord[charRow.uid] >= re.leftInfo.stat.maxHp / 10) {
+          if (!char.dungeonInfos['rewardBurningOrchard' + row.phase]) {
+            char.dungeonInfos['rewardBurningOrchard' + row.phase] = true;
+            char.currencies.burntMark += 10;
+            char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '불타는 영웅의 증명 카드', rank : 7, resultType : 90003});
+            reward += '누적 피해량 보상으로 불탄 징표 10개와 불타는 영웅의 증명 카드 1개를 획득했습니다.<br>';
+          }  
+        }
+        if (!re.winnerRight) {
+          char.currencies.burntMark += 20;
+          char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '불타는 영웅의 증명 카드', rank : 7, resultType : 90003});
+          char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '불타는 영웅의 증명 카드', rank : 7, resultType : 90003});
+          char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '불타는 영웅의 증명 카드', rank : 7, resultType : 90003});
+          reward += re.rightInfo.name + getUlrul(re.rightInfo.nameType) + ' 처치했습니다!<br>불탄 징표 20개와 불타는 영웅의 증명 카드 3개를 획득했습니다.<br>';
+          await client.query('insert into news(content, date) values ($1, $2)', 
+              [char.name + getIga(char.nameType) + ' 불타는 과수원에서 ' + re.rightInfo.name + getUlrul(re.rightInfo.nameType) + ' 처치했습니다!', new Date()]);
+        }
+        await client.query('update raids set phase = $1, monsters = $2 where rindex = $3', [row.phase + (re.winnerRight ? 0 : 1), JSON.stringify(curData), row.rindex]);
+      } else if (!re.winnerLeft) {
         isFinished = true;
         reward += '패배했습니다..';
       } else if (req.session.dungeonProgress.code == 1 && req.session.dungeonProgress.phase >= 3) {
@@ -1900,6 +1924,32 @@ async function getCharacter (id) {
   } catch (err) {
     console.error(err);
     return {};
+  }   
+}
+
+async function setGlobals (setObj) {
+  try {
+    const client = await pool.connect();
+    const result = await client.query('select * from global');
+    if (result.rows.length > 0) {
+      var newObj = JSON.parse(result.rows[0].globals);
+      for (key in setObj) {
+        if (setObj[key].type == 'add') {
+          if (newObj[key]) {
+            newObj[key] += setObj[key].value;
+          } else {
+            newObj[key] = setObj[key].value;
+          }
+        }
+      }
+      await client.query('update global set globals = $1', [JSON.stringify(newObj)]);
+    }
+
+    client.release();
+    return;
+  } catch (err) {
+    console.error(err);
+    return;
   }   
 }
 

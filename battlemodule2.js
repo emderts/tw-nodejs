@@ -690,7 +690,7 @@ function resolveEffects(winner, loser, effects, damage, skill) {
       }
       
       if ((eff.percentKey == 'maxHp' || eff.percentKey == 'curHp') && target.boss) {
-        tempObj.damage *= 0.05;
+        tempObj.damage *= (1 - target.boss);
       }
       
       if (eff.buffTarget) {
@@ -1099,6 +1099,12 @@ function findBuffByIds(chara, ids) {
 
 function giveBuff(src, recv, buffObj, printFlag, name) {
   const srcText = name ? '[ ' + name + ' ] 효과로 ' : '';
+  if (recv.bossStatus && [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].includes(buffObj.id)) {
+    if (Math.random < recv.bossStatus) {
+      result += '보스 상태이상 저항으로 [ ' + buffObj.name + ' ] 효과가 무효화되었다!<br>';
+      return;
+    }
+  }
   for (eff of findBuffByCode(recv, cons.EFFECT_TYPE_PREVENT_DEBUFF)) {
     if (eff.standard && ![0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].includes(buffObj.id)) {
       continue;

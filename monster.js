@@ -117,13 +117,35 @@ const item = require('./items');
   };
   module.exports.eGunda = charLeft;
   
+  charLeft = {name : '결실을 사르는 업화', nameType : cons.NAME_KOR_END_CONS, title : '불타는 과수원', rank : 7, level : 50, 
+      stat : {maxHp : 400, phyAtk : 44, magAtk : 44}};
+  _initChar(charLeft);
+  
+  charLeft.items = {};
+
+  charLeft.skill = {
+      base : [
+              {code : 90021, name : '업화의 일격', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1.3, 
+                effect : [{code : cons.EFFECT_TYPE_SELF_HP, value : 0.5, isPercentDamage : true}]},
+              {code : 90022, name : '업화의 일격', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 0.8, 
+                effect : [{code : cons.EFFECT_TYPE_SELF_HP, value : 0.5, isPercentDamage : true}]},
+              {code : 90023, name : '업화의 일격', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 0.9, 
+                effect : [{code : cons.EFFECT_TYPE_SELF_HP, value : 0.5, isPercentDamage : true}]}
+             ],
+             special : {code : 90025, name : '거스르지 못한 업화', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 75, 
+               effect : [{code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_ABSOLUTE, value : 1, isPercentChar : true, percentKey : 'curHp'},
+                         {code : cons.EFFECT_TYPE_SELF_HIT, type : cons.DAMAGE_TYPE_ABSOLUTE, value : 1, isPercentChar : true, percentKey : 'curHp'}]}
+  };
+  module.exports.oFlame = charLeft;
+  
   charLeft = {name : '꺼져가는 불의 정령왕', nameType : cons.NAME_KOR_END_CONS, title : '불타는 과수원', rank : 7, level : 50, 
-      stat : {maxHp : 36500, phyAtk : 75, magAtk : 85}};
+      stat : {maxHp : 35000, phyAtk : 95, magAtk : 95}};
   _initChar(charLeft);
   
   charLeft.items = {weapon : item.list[342], armor : item.list[369], subarmor : item.list[376], trinket : item.list[395]};
   charLeft.image = 'https://i.imgur.com/nuGyBWu.png';
-  charLeft.boss = true;
+  charLeft.boss = 0.9;
+  charLeft.bossStatus = 0.2;
 
   charLeft.skill = {
       base : [
@@ -143,12 +165,13 @@ const item = require('./items');
   module.exports.oEleLord = charLeft;
   
   charLeft = {name : '타오르는 영석술사', nameType : cons.NAME_KOR_NO_END_CONS, title : '불타는 과수원', rank : 7, level : 50, 
-      stat : {maxHp : 37800, phyAtk : 65, magAtk : 95}};
+      stat : {maxHp : 37500, phyAtk : 100, magAtk : 100}};
   _initChar(charLeft);
   
   charLeft.items = {weapon : item.list[344], armor : item.list[372], subarmor : item.list[383], trinket : item.list[405]};
   charLeft.image = 'https://i.imgur.com/CvvNpto.png';
-  charLeft.boss = true;
+  charLeft.boss = 0.9;
+  charLeft.bossStatus = 0.2;
 
   charLeft.skill = {
       base : [
@@ -170,12 +193,13 @@ const item = require('./items');
   module.exports.oStoneist = charLeft;
   
   charLeft = {name : '불타버린 죽음의 기사', nameType : cons.NAME_KOR_NO_END_CONS, title : '불타는 과수원', rank : 7, level : 50, 
-      stat : {maxHp : 39100, phyAtk : 100, magAtk : 65}};
+      stat : {maxHp : 40000, phyAtk : 105, magAtk : 105}};
   _initChar(charLeft);
   
   charLeft.items = {weapon : item.list[350], armor : item.list[375], subarmor : item.list[376], trinket : item.list[397]};
   charLeft.image = 'https://i.imgur.com/9ciU9QK.png';
-  charLeft.boss = true;
+  charLeft.boss = 0.9;
+  charLeft.bossStatus = 0.2;
 
   charLeft.skill = {
       base : [
@@ -201,12 +225,13 @@ const item = require('./items');
   module.exports.oDeathKnight = charLeft;
   
   charLeft = {name : '거대개미 렉\'오르', nameType : cons.NAME_KOR_NO_END_CONS, title : '불타는 과수원', rank : 7, level : 55, 
-      stat : {maxHp : 42000, phyAtk : 100, magAtk : 100}};
+      stat : {maxHp : 80000, phyAtk : 115, magAtk : 115}};
   _initChar(charLeft);
   
   charLeft.items = {weapon : item.list[356], armor : item.list[373], subarmor : item.list[384], trinket : item.list[408]};
   charLeft.image = 'https://i.imgur.com/8EkPS8P.png';
-  charLeft.boss = true;
+  charLeft.boss = 0.95;
+  charLeft.bossStatus = 0.2;
 
   charLeft.skill = {
       base : [
@@ -232,7 +257,9 @@ const item = require('./items');
   _initChar(charLeft);
   
   charLeft.items = {weapon : item.list[355], armor : item.list[296], subarmor : item.list[241], trinket : item.list[335]};
-  charLeft.boss = true;
+  charLeft.image = 'https://i.imgur.com/IabA7Am.png';
+  charLeft.boss = 0.8;
+  charLeft.bossStatus = 0.1;
 
   charLeft.skill = {};
   charLeft.skill.base = [];
@@ -266,12 +293,14 @@ const item = require('./items');
   charLeft.skill.special = skillObj;
   module.exports.rKines1 = charLeft;
   
-  charLeft = {name : '인페르날 무리', nameType : cons.NAME_KOR_NO_END_CONS, title : '고대 흑마법사', rank : 7, level : 20, 
+  charLeft = {name : '지옥불정령 무리', nameType : cons.NAME_KOR_NO_END_CONS, title : '고대 흑마법사', rank : 7, level : 20, 
       stat : {maxHp : 12000, phyAtk : 80, magAtk : 80}};
   _initChar(charLeft);
   
   charLeft.items = {weapon : item.list[351], armor : item.list[294], subarmor : item.list[305], trinket : item.list[333]};
-  charLeft.boss = true;
+  charLeft.image = 'https://i.imgur.com/DySw4QI.png';
+  charLeft.boss = 0.8;
+  charLeft.bossStatus = 0.1;
 
   charLeft.skill = {
       base : [
@@ -289,12 +318,14 @@ const item = require('./items');
   };
   module.exports.rInfernal = charLeft;
   
-  charLeft = {name : '카이네스 엠더츠', nameType : cons.NAME_KOR_NO_END_CONS, title : '고대 흑마법사', rank : 7, level : 20, 
+  charLeft = {name : '카이네스 엠더츠 (2차)', nameType : cons.NAME_KOR_NO_END_CONS, title : '고대 흑마법사', rank : 7, level : 20, 
       stat : {maxHp : 15000, phyAtk : 100, magAtk : 100}};
   _initChar(charLeft);
   
   charLeft.items = {weapon : item.list[355], armor : item.list[296], subarmor : item.list[241], trinket : item.list[335]};
-  charLeft.boss = true;
+  charLeft.image = 'https://i.imgur.com/IabA7Am.png';
+  charLeft.boss = 0.8;
+  charLeft.bossStatus = 0.1;
 
   charLeft.skill = {};
   charLeft.skill.base = [];
