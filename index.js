@@ -1391,7 +1391,7 @@ async function procNextPhaseDungeon(req, res) {
       var isFinished = false;
       var reward = '';
       if (req.session.dungeonProgress.code == 3) {
-        const damageDealt = hpBefore - re.leftInfo.curHp;
+        const damageDealt = hpBefore - re.rightInfo.curHp;
         re.rightInfo.buffs = [];
         re.rightInfo.items = enemy.items;
         isFinished = true;
