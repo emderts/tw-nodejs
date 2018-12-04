@@ -1365,7 +1365,6 @@ const item = require('./items');
   charMarang.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '흔들리는 달빛의 보조방어구 카드', rank : 9, resultType : 2});
   charMarang.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '흔들리는 달빛의 장신구 카드', rank : 9, resultType : 3});
   charMarang.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '흔들리는 달빛의 장신구 카드', rank : 9, resultType : 3});
-  charNux.items.weapon = item.list[370];
   
   function _initChar(char) {
     char.stat = {};
