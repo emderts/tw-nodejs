@@ -1374,7 +1374,7 @@ async function procNextPhaseDungeon(req, res) {
           enemy = monster.eGunda;
         } 
       } else if (sess.dungeonProgress.code == 3) {
-        const result = await client.query('select * from raids where rindex = 3');
+        const result = await client.query('select * from raids where rindex = 2');
         const row = result.rows[0];
         var curData = JSON.parse(row.monsters);
         enemy = curData[row.phase];
