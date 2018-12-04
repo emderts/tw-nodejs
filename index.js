@@ -123,7 +123,7 @@ io.on('connection', (socket) => {
       trades[room].left = socket;
     } else if (trades[room].rightUid == uid) {
       trades[room].right = socket;
-    }
+    
       const result = battlemodule2.procBattleStart(chara.julius, chara.seriers);
       trades[room].left.emit('manualAck', result, getNames(chara.julius), getNames(chara.seriers));
       trades[room].right.emit('manualAck', result, getNames(chara.seriers), getNames(chara.julius));
