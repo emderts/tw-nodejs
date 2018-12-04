@@ -118,10 +118,12 @@ io.on('connection', (socket) => {
   socket.on('manualInit', function(room, uid) {
     console.log('manualInit');
     if (!trades[room]) {
-      trades[room] = {left : socket, leftUid : uid};
-    } else {
+      return;
+    } else if (trades[room].leftUid == uid) {
+      trades[room].left = socket;
+    } else if (trades[room].rightUid == uid) {
       trades[room].right = socket;
-      trades[room].rightUid = uid;
+    }
       const result = battlemodule2.procBattleStart(chara.julius, chara.seriers);
       trades[room].left.emit('manualAck', result, getNames(chara.julius), getNames(chara.seriers));
       trades[room].right.emit('manualAck', result, getNames(chara.seriers), getNames(chara.julius));
@@ -234,13 +236,12 @@ async function procInit2 () {
   try {
     const client = await pool.connect();
     const result = await client.query('select * from characters');
-    const result2 = await client.query('insert into raids(rindex, open, phase, monsters) values (2, \'O\', 1, $1)', 
-        [JSON.stringify({1 : monster.oEleLord, 2 : monster.oStoneist, 3 : monster.oDeathKnight, 4 : monster.oLegor})]);
+    const result2 = await client.query('select * from raids');
     var leaderboard = [];
     var reward;
     const names = {'03' : '줄리어스 엠더츠', '04' : '프사이', '05' : '에이카', '06' : '세리어스 플로에르시아',
         '07' : '에오헬름', '08' : '나백수', '09' : '이 눅스', '10' : '세컨드 로직', '11' : '마랑'};
-    /*for (val of result2.rows) {
+    for (val of result2.rows) {
       var char = JSON.parse(val.monsters);
       var record = {};
       for (key in char[1].battleRecord) { 
@@ -281,14 +282,22 @@ async function procInit2 () {
         reward += '<tr><td>' + (key + 1) + '</td><td>' + leaderboard[key].name + '</td><td>' + char[1].battleRecord[leaderboard[key].key] + '</td><td>' + char[2].battleRecord[leaderboard[key].key] + '</td><td>' + char[3].battleRecord[leaderboard[key].key] + '</td><td>' + leaderboard[key].damage + '</td></tr>';
       }
       reward += '</table>';
-    } */
+    } 
     for (val of result.rows) {
       var char = JSON.parse(val.char_data);
+      if (char.name == leaderboard[0].name) {
+        await client.query('insert into news(content, date) values ($1, $2)', 
+            [char.name + getIga(char.nameType) + ' 누적 피해 보상을 받았습니다!<div class="itemTooltip">' + reward + '</div>', new Date()]);
+        char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '고대 흑마법사의 선물', rank : 8 - Math.floor(Math.random() * 2), resultType : 90004});
+        
+      }
       if (val.uid == '02') {
       }
       
       await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), val.uid]);
     } 
+    await client.query('insert into raids(rindex, open, phase, monsters) values (2, \'O\', 1, $1)', 
+        [JSON.stringify({1 : monster.oEleLord, 2 : monster.oStoneist, 3 : monster.oDeathKnight, 4 : monster.oLegor})]);
     client.release();
   } catch (err) {
     console.error(err);
@@ -1330,7 +1339,7 @@ async function procEnterDungeon(req, res) {
               char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '고대 장비 카드', rank : 8, resultType : 4});
               reward += '페이즈 종료 보상으로 고대 장비 카드 1개를 획득했습니다.<br>';
             } else {
-              char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '고대 흑마법사의 선물', rank : 8 + Math.floor(Math.random() * 2), resultType : 90004});
+              char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '고대 흑마법사의 선물', rank : 8 - Math.floor(Math.random() * 2), resultType : 90004});
               reward += re.leftInfo.name + getUlrul(re.leftInfo.nameType) + ' 처치했습니다!<br>고대 흑마법사의 선물 1개를 획득했습니다.<br>';
             await client.query('insert into news(content, date) values ($1, $2)', 
                 [char.name + getIga(char.nameType) + ' ' + re.leftInfo.name + getUlrul(re.leftInfo.nameType) + ' 처치했습니다!', new Date()]);
@@ -1373,7 +1382,7 @@ async function procNextPhaseDungeon(req, res) {
         if (sess.dungeonProgress.phase == 1) {
           enemy = monster.eGunda;
         } 
-      } else if (sess.dungeonProgress.code == 3) {
+      } else if (sess.dungeonProgress.code == 3 && req.session.dungeonProgress.phase == 2) {
         const result = await client.query('select * from raids where rindex = 2');
         const row = result.rows[0];
         var curData = JSON.parse(row.monsters);
@@ -1392,7 +1401,7 @@ async function procNextPhaseDungeon(req, res) {
       
       var isFinished = false;
       var reward = '';
-      if (req.session.dungeonProgress.code == 3) {
+      if (req.session.dungeonProgress.code == 3 && req.session.dungeonProgress.phase == 2) {
         const damageDealt = hpBefore - re.rightInfo.curHp;
         re.rightInfo.buffs = [];
         re.rightInfo.items = enemy.items;
@@ -1425,7 +1434,7 @@ async function procNextPhaseDungeon(req, res) {
           await client.query('insert into news(content, date) values ($1, $2)', 
               [char.name + getIga(char.nameType) + ' 불타는 과수원에서 ' + re.rightInfo.name + getUlrul(re.rightInfo.nameType) + ' 처치했습니다!', new Date()]);
         }
-        await client.query('update raids set phase = $1, monsters = $2 where rindex = $3', [row.phase + (re.winnerRight ? 0 : 1), JSON.stringify(curData), row.rindex]);
+        await client.query('update raids set phase = $1, monsters = $2 where rindex = $3', [row.phase + (re.winnerRight ? 0 : 1), JSON.stringify(curData), 2]);
       } else if (!re.winnerLeft) {
         isFinished = true;
         reward += '패배했습니다..';
