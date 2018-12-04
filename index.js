@@ -32,6 +32,7 @@ const app = express()
 .use(favicon(path.join(__dirname, 'public', 'favicon.ico')))
 .get('/', procIndex)
 .get('/login', (req, res) => res.render('pages/login'))
+.get('/event', procEvent)
 .post('/login', procLogin)
 .get('/join', (req, res) => res.render('pages/join'))
 .post('/join', procJoin)
@@ -123,10 +124,17 @@ io.on('connection', (socket) => {
       trades[room].left = socket;
     } else if (trades[room].rightUid == uid) {
       trades[room].right = socket;
+    } else {
+      trades[room].obv.push(socket);
+    }
     
-      const result = battlemodule2.procBattleStart(chara.julius, chara.seriers);
-      trades[room].left.emit('manualAck', result, getNames(chara.julius), getNames(chara.seriers));
-      trades[room].right.emit('manualAck', result, getNames(chara.seriers), getNames(chara.julius));
+    if (trades[room].left && trades[room].right) {
+      const result = battlemodule2.procBattleStart(chara[trades[room].leftChr], chara[trades[room].rightChr]);
+      trades[room].left.emit('manualAck', result, getNames(chara[trades[room].leftChr]), getNames(chara[trades[room].rightChr]));
+      trades[room].right.emit('manualAck', result, getNames(chara[trades[room].rightChr]), getNames(chara[trades[room].leftChr]));
+      for (sock of trades[room].obv) {
+        sock.emit('manualAck', result, getNames(chara[trades[room].leftChr]), getNames(chara[trades[room].rightChr]));        
+      }
       
       function makeSkillTooltip(skill) {
         var rtext = '<div class="itemTooltip">';
@@ -143,16 +151,27 @@ io.on('connection', (socket) => {
     console.log('manualSelect');
     if (trades[room].leftUid == uid) {
       trades[room].leftSel = key;
-    } else {
+    } else if (trades[room].rightUid == uid) {
       trades[room].rightSel = key;
     }
     if (trades[room].leftSel !== undefined && trades[room].rightSel !== undefined) {
       const result = battlemodule2.procBattleTurn(trades[room].leftSel, trades[room].rightSel);
       trades[room].left.emit('manualSelectAck', result.result);
       trades[room].right.emit('manualSelectAck', result.result);
+      for (sock of trades[room].obv) {
+        sock.emit('manualSelectAck', result.result);     
+      }
       delete trades[room].leftSel;
       delete trades[room].rightSel;
     }
+  });
+  socket.on('manualAdmin', function(room, luid, ruid, lc, rc) {
+    trades[room] = {};
+    trades[room].obv = [];
+    trades[room].leftUid = luid;
+    trades[room].rightUid = ruid;
+    trades[room].leftChr = lc;
+    trades[room].rightChr = rc;
   });
   
   socket.on('disconnect', function() {
@@ -329,6 +348,20 @@ async function procIndex (req, res) {
         //mark : mark
       });
     }
+    client.release();
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+async function procEvent(req, res) {
+  try {
+    const sess = req.session; 
+    const client = await pool.connect();
+    res.render('pages/trade', {
+      room: trades.length,
+      uid: sess.userUid
+    });
     client.release();
   } catch (err) {
     console.error(err);
