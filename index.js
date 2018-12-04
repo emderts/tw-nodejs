@@ -1265,7 +1265,7 @@ async function procEnterDungeon(req, res) {
         enemy = rand < 0.5 ? monster.eBroken : monster.eCrossbow;
       }
     } else if (body.option == 3) {
-      if (!char.dungeonInfos.runBurningOrchard && (row.open == 'O')) {
+      if (!char.dungeonInfos.runBurningOrchard) {
         char.dungeonInfos.runBurningOrchard = true;
         enemy = monster.oFlame;
         if (charRow.actionPoint <= 0) {
@@ -1337,7 +1337,7 @@ async function procEnterDungeon(req, res) {
             }            
           }
         } 
-        await client.query('update raids set phase = $1, monsters = $2 where rindex = $3', [row.phase + (re.winnerLeft ? 0 : 1), JSON.stringify(curData), row.rindex]);
+        await client.query('update raids set phase = $1, monsters = $2 where rindex = 3', [row.phase + (re.winnerLeft ? 0 : 1), JSON.stringify(curData)]);
       }
       await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
       res.render('pages/dungeonResult', {result: re.result, resultList: resultList, isFinished : isFinished, reward : reward, stop : (body.option == 2)});
@@ -1374,7 +1374,7 @@ async function procNextPhaseDungeon(req, res) {
           enemy = monster.eGunda;
         } 
       } else if (sess.dungeonProgress.code == 3) {
-        const result = await client.query('select * from raids where rindex = 2');
+        const result = await client.query('select * from raids where rindex = 3');
         const row = result.rows[0];
         var curData = JSON.parse(row.monsters);
         enemy = curData[row.phase];

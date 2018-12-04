@@ -21,17 +21,17 @@ try {
   const resultg = await client.query('select * from global');
   for (val of resultg.rows) {
     var glb = JSON.parse(val.globals);
-    if (!glb.fieldBossSummoned && glb.actionUsed >= 200) {
-      await client.query('insert into news(content, date) values ($1, $2)', 
-        ['고대 흑마법사의 기운이 느껴집니다..', new Date()]);
-      glb.fieldBossSummoned = true;
-    }
     if (glb.fieldBossSummoned && !glb.fieldBossSpawned) {
       await client.query('insert into news(content, date) values ($1, $2)', 
         ['고대 흑마법사가 나타났습니다!', new Date()]);
       await client.query('insert into raids(rindex, open, phase, monsters) values (3, \'O\', 1, $1)', 
         [JSON.stringify({1 : monster.rKines1, 2 : monster.rInfernal, 3 : monster.rKines2})]);
       glb.fieldBossSpawned = true;
+    }
+    if (!glb.fieldBossSummoned && glb.actionUsed >= 200) {
+      await client.query('insert into news(content, date) values ($1, $2)', 
+        ['고대 흑마법사의 기운이 느껴집니다..', new Date()]);
+      glb.fieldBossSummoned = true;
     }
   }
   await client.query('update global set globals = $1', [JSON.stringify(glb)]);
@@ -56,7 +56,7 @@ try {
     const resultm = await client.query('select * from raids where rindex = 2');
     for (val of resultm.rows) {
       var charData = JSON.parse(val.monsters);
-      charData[val.phase].curHp += Math.round(charData[val.phase].stat.maxHp / 20);
+      charData[val.phase].curHp += 1500;
       await client.query('update raids set monsters = $1 where rindex = 2', [JSON.stringify(charData)]);
     } 
   }
