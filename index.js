@@ -117,7 +117,7 @@ io.on('connection', (socket) => {
   });
   
   socket.on('manualInit', function(room, uid) {
-    console.log('manualInit');
+    console.log('manualInit' + room + '/' + uid);
     if (!trades[room]) {
       return;
     } else if (trades[room].leftUid == uid) {
@@ -166,12 +166,12 @@ io.on('connection', (socket) => {
     }
   });
   socket.on('manualAdmin', function(room, luid, ruid, lc, rc) {
-    trades[room] = {};
-    trades[room].obv = [];
-    trades[room].leftUid = luid;
-    trades[room].rightUid = ruid;
-    trades[room].leftChr = lc;
-    trades[room].rightChr = rc;
+    trades[1] = {};
+    trades[1].obv = [];
+    trades[1].leftUid = luid;
+    trades[1].rightUid = ruid;
+    trades[1].leftChr = lc;
+    trades[1].rightChr = rc;
   });
   
   socket.on('disconnect', function() {
@@ -359,7 +359,7 @@ async function procEvent(req, res) {
     const sess = req.session; 
     const client = await pool.connect();
     res.render('pages/trade', {
-      room: trades.length,
+      room: 1,
       uid: sess.userUid
     });
     client.release();
