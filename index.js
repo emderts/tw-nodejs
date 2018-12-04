@@ -126,6 +126,7 @@ io.on('connection', (socket) => {
       trades[room].right = socket;
     } else {
       trades[room].obv.push(socket);
+      return;
     }
     
     if (trades[room].left && trades[room].right) {
