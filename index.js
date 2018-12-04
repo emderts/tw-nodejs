@@ -261,7 +261,7 @@ async function procInit2 () {
     var reward;
     const names = {'03' : '줄리어스 엠더츠', '04' : '프사이', '05' : '에이카', '06' : '세리어스 플로에르시아',
         '07' : '에오헬름', '08' : '나백수', '09' : '이 눅스', '10' : '세컨드 로직', '11' : '마랑'};
-    for (val of result2.rows) {
+    /*for (val of result2.rows) {
       var char = JSON.parse(val.monsters);
       var record = {};
       for (key in char[1].battleRecord) { 
@@ -302,21 +302,21 @@ async function procInit2 () {
         reward += '<tr><td>' + (key + 1) + '</td><td>' + leaderboard[key].name + '</td><td>' + char[1].battleRecord[leaderboard[key].key] + '</td><td>' + char[2].battleRecord[leaderboard[key].key] + '</td><td>' + char[3].battleRecord[leaderboard[key].key] + '</td><td>' + leaderboard[key].damage + '</td></tr>';
       }
       reward += '</table>';
-    } 
-    for (val of result.rows) {
-      var char = JSON.parse(val.char_data);
       if (char.name == leaderboard[0].name) {
         await client.query('insert into news(content, date) values ($1, $2)', 
             [char.name + getIga(char.nameType) + ' 누적 피해 보상을 받았습니다!<div class="itemTooltip">' + reward + '</div>', new Date()]);
         char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '고대 흑마법사의 선물', rank : 8 - Math.floor(Math.random() * 2), resultType : 90004});
         
       }
+    } */
+    for (val of result.rows) {
+      var char = JSON.parse(val.char_data);
       if (val.uid == '02') {
       }
       
       await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), val.uid]);
     } 
-    await client.query('insert into raids(rindex, open, phase, monsters) values (2, \'O\', 1, $1)', 
+    await client.query('insert into raids(rindex, open, phase, monsters) values (4, \'k\', 1, $1)', 
         [JSON.stringify({1 : monster.oEleLord, 2 : monster.oStoneist, 3 : monster.oDeathKnight, 4 : monster.oLegor})]);
     client.release();
   } catch (err) {
@@ -1400,7 +1400,7 @@ async function procNextPhaseDungeon(req, res) {
     const sess = req.session; 
     const charRow = await getCharacter(sess.userUid);
     const char = JSON.parse(charRow.char_data);
-    var enemy, curData, hpBefore;
+    var enemy, curData, hpBefore, row;
     // check entering cond
     const rand = Math.random();
     if (sess.dungeonProgress) {
@@ -1418,8 +1418,8 @@ async function procNextPhaseDungeon(req, res) {
         } 
       } else if (sess.dungeonProgress.code == 3 && req.session.dungeonProgress.phase == 1) {
         const result = await client.query('select * from raids where rindex = 2');
-        const row = result.rows[0];
-        var curData = JSON.parse(row.monsters);
+        row = result.rows[0];
+        curData = JSON.parse(row.monsters);
         enemy = curData[row.phase];
         hpBefore = enemy.curHp ? enemy.curHp : enemy.stat.maxHp;
       }
