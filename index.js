@@ -1382,7 +1382,7 @@ async function procNextPhaseDungeon(req, res) {
         if (sess.dungeonProgress.phase == 1) {
           enemy = monster.eGunda;
         } 
-      } else if (sess.dungeonProgress.code == 3 && req.session.dungeonProgress.phase == 2) {
+      } else if (sess.dungeonProgress.code == 3 && req.session.dungeonProgress.phase == 1) {
         const result = await client.query('select * from raids where rindex = 2');
         const row = result.rows[0];
         var curData = JSON.parse(row.monsters);
