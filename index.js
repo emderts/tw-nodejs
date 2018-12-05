@@ -311,13 +311,15 @@ async function procInit2 () {
     } */
     for (val of result.rows) {
       var char = JSON.parse(val.char_data);
-      if (val.uid == '02') {
+      if (val.uid == '07') {
+        char.inventory.push({name : '결투자의 일등 보상', rarity : 3, type : cons.ITEM_TYPE_RESULT_CARD, resultType : 90005})
+      }
+      if (val.uid == '10') {
+        char.inventory.push({name : '결투자의 이등 보상', rarity : 3, type : cons.ITEM_TYPE_RESULT_CARD, resultType : 90004})
       }
       
       await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), val.uid]);
     } 
-    await client.query('insert into raids(rindex, open, phase, monsters) values (4, \'k\', 1, $1)', 
-        [JSON.stringify({1 : monster.oEleLord, 2 : monster.oStoneist, 3 : monster.oDeathKnight, 4 : monster.oLegor})]);
     client.release();
   } catch (err) {
     console.error(err);
@@ -660,6 +662,22 @@ async function procUseItem (req, res) {
             }
           } else if (tgtObj.resultType == 90004) {
             if (rand < 0.96) {
+              picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_UNIQUE, tgtObj.resultType);
+              chara.inventory.push(picked);
+              await addItemNews(client, chara, tgtObj, picked);
+              if (chara.quest[5]) {
+                chara.quest[5].progress += 3;
+              }
+            } else {
+              picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_EPIC, tgtObj.resultType);
+              chara.inventory.push(picked);
+              await addItemNews(client, chara, tgtObj, picked);
+              if (chara.quest[5]) {
+                chara.quest[5].progress += 3;
+              }
+            } 
+          } else if (tgtObj.resultType == 90005) {
+            if (rand < 0) {
               picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_UNIQUE, tgtObj.resultType);
               chara.inventory.push(picked);
               await addItemNews(client, chara, tgtObj, picked);
@@ -1294,7 +1312,7 @@ async function procEnterDungeon(req, res) {
     const client = await pool.connect();
     const charRow = await getCharacter(sess.userUid);
     const char = JSON.parse(charRow.char_data);
-    var enemy, curData, hpBefore;
+    var enemy, curData, hpBefore, row;
     // check entering cond
     const rand = Math.random();
     if (body.option == 1) {
@@ -1319,7 +1337,7 @@ async function procEnterDungeon(req, res) {
       }
     } else if (body.option == 4) {
       const result = await client.query('select * from raids where rindex = 3');
-      const row = result.rows[0];
+      row = result.rows[0];
       if (!char.dungeonInfos.runFieldBoss && (row.open == 'O')) {
         curData = JSON.parse(row.monsters);
         char.dungeonInfos.runFieldBoss = true;
