@@ -308,19 +308,15 @@ async function procInit2 () {
       for (key in leaderboard) {
         reward += '<tr><td>' + (Number(key) + 1) + '</td>';
         reward += '<td>' + leaderboard[key].name + '</td>';
-        reward += '<td>' + char[1].battleRecord[leaderboard[key].key] ? char[1].battleRecord[leaderboard[key].key] : 0;
-        reward += ' / ' + char[1].winRecord[leaderboard[key].key] ? char[1].winRecord[leaderboard[key].key] : 0 + '</td>';
-        reward += '<td>' + char[2].battleRecord[leaderboard[key].key] ? char[2].battleRecord[leaderboard[key].key] : 0;
-        reward += ' / ' + char[2].winRecord[leaderboard[key].key] ? char[2].winRecord[leaderboard[key].key] : 0 + '</td>';
-        reward += '<td>' + char[3].battleRecord[leaderboard[key].key] ? char[3].battleRecord[leaderboard[key].key] : 0;
-        reward += ' / ' + char[3].winRecord[leaderboard[key].key] ? char[3].winRecord[leaderboard[key].key] : 0 + '</td>';
-        reward += '<td>' + char[4].battleRecord[leaderboard[key].key] ? char[4].battleRecord[leaderboard[key].key] : 0;
-        reward += ' / ' + char[4].winRecord[leaderboard[key].key] ? char[4].winRecord[leaderboard[key].key] : 0 + '</td>';
+        reward += '<td>' + (char[1].battleRecord[leaderboard[key].key] ? char[1].battleRecord[leaderboard[key].key] : 0) + ' / ' + (char[1].winRecord[leaderboard[key].key] ? char[1].winRecord[leaderboard[key].key] : 0) + '</td>';
+        reward += '<td>' + (char[2].battleRecord[leaderboard[key].key] ? char[2].battleRecord[leaderboard[key].key] : 0) + ' / ' + (char[2].winRecord[leaderboard[key].key] ? char[2].winRecord[leaderboard[key].key] : 0) + '</td>';
+        reward += '<td>' + (char[3].battleRecord[leaderboard[key].key] ? char[3].battleRecord[leaderboard[key].key] : 0) + ' / ' + (char[3].winRecord[leaderboard[key].key] ? char[3].winRecord[leaderboard[key].key] : 0) + '</td>';
+        reward += '<td>' + (char[4].battleRecord[leaderboard[key].key] ? char[4].battleRecord[leaderboard[key].key] : 0) + ' / ' + (char[4].winRecord[leaderboard[key].key] ? char[4].winRecord[leaderboard[key].key] : 0) + '</td>';
         reward += '<td>' + leaderboard[key].damage + '</td></tr>';
       }
       reward += '</table>';
         await client.query('insert into news(content, date) values ($1, $2)', 
-            ['ThirdWorld 2018 - 프리시즌이 끝났습니다. 성원에 감사드립니다! 경험치가 LOCK되었습니다.<div class="itemTooltip longWidth">' + reward + '</div>', new Date()]);
+            ['시즌 레이드 미터기입니다.<div class="itemTooltip longWidth">' + reward + '</div>', new Date()]);
         
     } 
     for (val of result.rows) {

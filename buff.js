@@ -1948,10 +1948,10 @@ module.exports.getBuffData = function(eff) {
     effectObj = {};
     effectObj.code = 10005;
     effectObj.buff = retObj;
+    retObj.effect.push(effectObj);
     effectObj = {};
     effectObj.active = cons.ACTIVE_TYPE_SLEEP;
     effectObj.turnReduce = 1;
-    retObj.effect.push(effectObj);
     retObj.effect.push(effectObj);
     break;
   case 201712 : 
