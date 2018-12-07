@@ -261,7 +261,7 @@ async function procInit2 () {
     var reward;
     const names = {'03' : '줄리어스 엠더츠', '04' : '프사이', '05' : '에이카', '06' : '세리어스 플로에르시아',
         '07' : '에오헬름', '08' : '나백수', '09' : '이 눅스', '10' : '세컨드 로직', '11' : '마랑'};
-    for (val of result2.rows) {
+    for (val of result2.rows) {/*
       var char = JSON.parse(val.monsters);
       var record = {};
       for (key in char[1].battleRecord) { 
@@ -316,13 +316,14 @@ async function procInit2 () {
       }
       reward += '</table>';
         await client.query('insert into news(content, date) values ($1, $2)', 
-            ['시즌 레이드 미터기입니다.<div class="itemTooltip longWidth">' + reward + '</div>', new Date()]);
+            ['시즌 레이드 미터기입니다.<div class="itemTooltip longWidth">' + reward + '</div>', new Date()]);*/
         
     } 
     for (val of result.rows) {
       var char = JSON.parse(val.char_data);
       if (val.uid == '07') {
       }
+      console.log(char.name + ' : ' + (((char.base.maxHp - 700) / 8) + ((char.base.phyAtk - 40) / 1.25) + ((char.base.magAtk - 40) / 1.25) + char.statPoint));
       
       await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), val.uid]);
     } 
