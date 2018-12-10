@@ -68,31 +68,13 @@ const item = require('./items');
   charRight.skill = {};
   charRight.skill.base = [];
   charRight.items = {};
-  itemObj = {};
-  itemObj.name = '+4 서리한';
-  itemObj.nameType = cons.NAME_KOR_END_CONS;
-  itemObj.type = cons.ITEM_TYPE_WEAPON;
-  itemObj.rank = 6;
-  itemObj.rarity = cons.ITEM_RARITY_EPIC;
-  itemObj.stat = {};
-  itemObj.stat.phyAtk = 55;
-  itemObj.stat.magAtk = 30;
-  itemObj.stat.spRegen = 15;
-  itemObj.effect = [];
-  charRight.items.weapon = itemObj;
+  charRight.items.weapon = {name : '+4 서리한', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_WEAPON, rank : 6, rarity : cons.ITEM_RARITY_EPIC,
+      stat : {phyAtk : 55, magAtk : 30, spRegen : 15}, effect : []};
   charRight.items.armor = { id : 375, name : '죽음군주의 형상', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_ARMOR, flavor : '', rank : 6, rarity : cons.ITEM_RARITY_EPIC, stat : { phyReduce : 0.08, magReduce : 0.08, maxHp : 573 }, 
       effectDesc : '전투 시작 및 드라이브 스킬 사용 시마다 자신에게 [혈기의 형상], [냉기의 형상], [부정의 형상] 버프 중 하나 부여 (이전 버프 교체) 및 [형상 강화] 버프 부여 (최대 5중첩)<br><br>[혈기의 형상] : HP재생 +4<br><br>[냉기의 형상] : 상대 피해감소 -4<br><br>[부정의 형상] : SP충전 +5, SP재생 +2<br><br>[형상 강화] : 물리/마법저항 +1%', 
       effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_BATTLE_START, buffCode : [10059, 10060, 10061], buffDur : null, multiple : true}] };
-  itemObj = {};
-  itemObj.name = '서리로 얼어붙은 영혼의 망토';
-  itemObj.nameType = cons.NAME_KOR_NO_END_CONS;
-  itemObj.type = cons.ITEM_TYPE_SUBARMOR;
-  itemObj.rank = 6;
-  itemObj.rarity = cons.ITEM_RARITY_EPIC;
-  itemObj.stat = {};
-  itemObj.stat.crit = 0.65;
-  itemObj.effect = [];
-  charRight.items.subarmor = itemObj;
+  charRight.items.subarmor = {name : '서리로 얼어붙은 영혼의 망토', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR,
+      rank : 6, rarity : cons.ITEM_RARITY_EPIC, stat : {crit : 0.65}, effect : []};
   charRight.items.trinket = { id : 410, name : '타로 카드 : 죽음', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '수레바퀴가 그려진 타로카드이다. 이상하게도 어느 쪽으로 돌려 보아도 뒤집혀 있는 수레바퀴 모양으로 보인다.', rank : 6, rarity : cons.ITEM_RARITY_EPIC, stat : {  }, 
     effectDesc : '턴 종료 시 자신의 생명력이 0% 이하라면, 패배하는 대신 자신에게 [역방향 수레바퀴] 버프 부여 후 자신과 적의 생명력을 모두 회복 (전투당 1회 제한)<br><br>[역방향 수레바퀴] : 물리공격력+25, 마법공격력+25, 회피+8%, 명중+8%, 전투 종료 시 리설트 카드 -1', 
     effect : [{code : cons.EFFECT_TYPE_MULTIPLE, active : cons.ACTIVE_TYPE_TURN_END, chance : 0.3, chkHp : 0.01, removeEffect : true,
@@ -100,94 +82,28 @@ const item = require('./items');
                 {code : cons.EFFECT_TYPE_OPP_HP, value : 1, isPercentOppStat : true, percentKey : 'maxHp'},
                 {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 10067, buffDur : null}]}] };
 
-  var skillObj = {};
-  skillObj.code = 20091;
-  skillObj.name = '죽음의 고리';
-  skillObj.nameType = cons.NAME_KOR_NO_END_CONS;
-  skillObj.type = cons.DAMAGE_TYPE_PHYSICAL;
-  skillObj.damage = 1.3;
-  skillObj.effect = [];
-  var effectObj = {};
-  effectObj.code = cons.EFFECT_TYPE_SELF_HP;
-  effectObj.chance = 1;
-  effectObj.value = 15;
-  skillObj.effect.push(effectObj);
-  skillObj.tooltip = '100\% 확률로 자신의 HP 15 회복';
+  var skillObj = {code : 20091, name : '죽음의 고리', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1.3,
+      effect : [{code : cons.EFFECT_TYPE_SELF_HP, value : 15}], tooltip : '100\% 확률로 자신의 HP 15 회복'};
   charRight.skill.base.push(skillObj);
 
-  skillObj = {};
-  skillObj.code = 20092;
-  skillObj.name = '울부짖는 한파';
-  skillObj.nameType = cons.NAME_KOR_NO_END_CONS;
-  skillObj.type = cons.DAMAGE_TYPE_PHYSICAL;
-  skillObj.damage = 0.5;
-  skillObj.effect = [];
-  effectObj = {};
-  effectObj.code = cons.EFFECT_TYPE_OPP_BUFF;
-  effectObj.chance = 1;
-  effectObj.buffCode = 4;
-  effectObj.buffDur = 1;
-  skillObj.effect.push(effectObj);
-  skillObj.tooltip = '100\% 확률로 상대에게 [기절] 상태이상 부여';
+  skillObj = {code : 20092, name : '울부짖는 한파', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 0.5,
+    effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 4, buffDur : 1}], tooltip : '100\% 확률로 상대에게 [기절] 상태이상 부여'};
   charRight.skill.base.push(skillObj);
 
-  skillObj = {};
-  skillObj.code = 20093;
-  skillObj.name = '서리 폭풍우';
-  skillObj.nameType = cons.NAME_KOR_NO_END_CONS;
-  skillObj.type = cons.DAMAGE_TYPE_PHYSICAL;
-  skillObj.damage = 1.2;
-  skillObj.effect = [];
-  effectObj = {};
-  effectObj.code = cons.EFFECT_TYPE_SELF_BUFF;
-  effectObj.chance = 1;
-  effectObj.buffCode = 20091;
-  effectObj.buffDur = 3;
-  effectObj.value = 4;
-  skillObj.effect.push(effectObj);
-  skillObj.tooltip = '100\% 확률로 자신에게 3턴간 [서리 폭풍우] 버프 부여<br><br>[서리 폭풍우] : HP 재생 +4';
+  skillObj = {code : 20093, name : '서리 폭풍우', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1.2,
+    effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 20091, buffDur : 3, value : 4}], tooltip : '100\% 확률로 자신에게 3턴간 [서리 폭풍우] 버프 부여<br><br>[서리 폭풍우] : HP 재생 +4'};
   charRight.skill.base.push(skillObj);
 
-  skillObj = {};
-  skillObj.code = 20094;
-  skillObj.name = '서리한이 굶주렸다';
-  skillObj.nameType = cons.NAME_KOR_NO_END_CONS;
-  skillObj.type = cons.SKILL_TYPE_DRIVE;
-  skillObj.active = cons.ACTIVE_TYPE_ATTACK;
-  skillObj.cost = 5;
-  skillObj.chance = 0.25;
-  skillObj.effect = [];
-  effectObj = {};
-  effectObj.code = cons.EFFECT_TYPE_ADD_HIT;
-  effectObj.chance = 1;
-  effectObj.type = cons.DAMAGE_TYPE_PHYSICAL;
-  effectObj.value = 0.4;
-  skillObj.effect.push(effectObj);
-  effectObj = {};
-  effectObj.code = cons.EFFECT_TYPE_SELF_BUFF;
-  effectObj.chance = 1;
-  effectObj.buffCode = 20093;
-  effectObj.buffDur = null;
-  effectObj.value = 1;
-  skillObj.effect.push(effectObj);
-  skillObj.tooltip = '공격 성공 시 25\% 확률로 물리 0.4 피해를 주고 자신에게 [서리한 포식] 버프 부여<br><br>[서리한 포식] : SP 재생 +1';
+  skillObj = {code : 20094, name : '서리한이 굶주렸다', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.SKILL_TYPE_DRIVE,
+    active : cons.ACTIVE_TYPE_ATTACK, cost : 5, chance : 0.25,
+    effect : [{code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL, value : 0.4},
+              {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 20093, buffDur : null, value : 1}],
+    tooltip : '공격 성공 시 25\% 확률로 물리 0.4 피해를 주고 자신에게 [서리한 포식] 버프 부여<br><br>[서리한 포식] : SP 재생 +1'};
   charRight.skill.drive = skillObj;
 
-  skillObj = {};
-  skillObj.code = 20095;
-  skillObj.name = '사자의 군대';
-  skillObj.nameType = cons.NAME_KOR_NO_END_CONS;
-  skillObj.type = cons.SKILL_TYPE_SPECIAL;
-  skillObj.cost = 120;
-  skillObj.effect = [];
-  effectObj = {};
-  effectObj.code = cons.EFFECT_TYPE_SELF_BUFF;
-  effectObj.chance = 1;
-  effectObj.buffCode = 20092;
-  effectObj.buffDur = 8;
-  effectObj.value = 0.02;
-  skillObj.effect.push(effectObj);
-  skillObj.tooltip = '자신에게 8턴간 8스택의 [사자의 군대] 버프 부여<br><br>[사자의 군대] : 적에게 물리 0.02 피해';
+  skillObj = {code : 20095, name : '사자의 군대', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 120,
+    effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 20092, buffDur : 8, value : 0.02}],
+    tooltip : '자신에게 8턴간 8스택의 [사자의 군대] 버프 부여<br><br>[사자의 군대] : 적에게 물리 0.02 피해'};
   charRight.skill.special = skillObj;
 
 
@@ -1356,6 +1272,95 @@ const item = require('./items');
       flavor : '서리를 결정화하여 상대를 얼려버리고, 냉혹한 불길로 적을 베어낸다.'};
   charMarang.skill.special = skillObj;
 
+
+  var charGaius = {};
+  _initChar(charGaius);
+  
+  charGaius.name = '가이우스 엠더츠';
+  charGaius.nameType = cons.NAME_KOR_NO_END_CONS;
+  charGaius.title = '조화의 대드루이드';
+  
+  charGaius.skill = {};
+  charGaius.skill.base = [];
+
+  var skillObj = {code : 201751, name : '별빛쇄도', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 0.1, 
+      effect : [{code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL, value : 0.1},
+                {code : cons.EFFECT_TYPE_RESOLVE_SKILL, randomSkill : true}],
+      tooltip : '물리 0.1 추가 피해, 이 기술을 포함해 자신의 일반 스킬 중 하나 추가 발동',
+      flavor : '별의 힘을 집중시켜 응집된 공격을 시도한다. 주위의 힘을 뒤틀어 행동을 더 할 수 있게 한다.'};  
+  charGaius.skill.base.push(skillObj);
+
+  skillObj = {code : 201752, name : '천벌', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1, 
+      effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.5, buffCode : 201758, buffDur : 1}],
+      tooltip : '50% 확률로 적에게 1턴 간 [태양 접촉] 디버프 부여<br><br>[태양 접촉] : [달빛 접촉]이 존재하면 소거되고 마법 0.6 피해 및 1턴 간 [실명]',
+      flavor : '태양의 힘을 빌려 적에게 따가운 천벌을 내린다.'};  
+  charGaius.skill.base.push(skillObj);
+
+  skillObj = {code : 201753, name : '달빛 섬광', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 1,
+      effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.5, buffCode : 201759, buffDur : 1}],
+      tooltip : '50% 확률로 적에게 1턴 간 [달빛 접촉] 디버프 부여<br><br>[달빛 접촉] : [태양 접촉]이 존재하면 소거되고 물리 0.6 피해 및 1턴 간 [마비]',
+      flavor : ''};  
+  charGaius.skill.base.push(skillObj);
+
+  skillObj = {code : 201754, name : '일월식', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_DRIVE, 
+      active : null, cost : 8, chance : 1,
+      effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201760, buffDur : null}],
+      tooltip : '[태양 접촉]이나 [달빛 접촉]이 갱신될 시 50% 확률로 자신에게 [일월식] 버프 부여<br><br>[일월식] : 공격 시 50% 확률로 무작위 일반 스킬을 추가 시전 후 소거',
+      flavor : ''};
+  charGaius.skill.drive = skillObj;
+
+  skillObj = {code : 201755, name : '천공의 정렬', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 120, 
+      effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201761, buffDur : 3}],
+      tooltip : '다음 3턴간 승패 무관하게 별빛쇄도를 추가로 시전한다. 그 동안 접촉이 소거될 시 적 생명력 3%만큼 절대 피해. 회피가 0으로 고정된다.',
+      flavor : ''};
+  charGaius.skill.special = skillObj;
+
+
+  var charLunisha = {};
+  _initChar(charLunisha);
+  
+  charLunisha.name = '루니샤';
+  charLunisha.nameType = cons.NAME_KOR_NO_END_CONS;
+  charLunisha.title = '방랑기사';
+  
+  charLunisha.skill = {};
+  charLunisha.skill.base = [];
+
+  var skillObj = {code : 201756, name : '방패 밀쳐내기', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 0.8, 
+      effect : [{code : cons.EFFECT_TYPE_OPP_SP, value : 1, isPercentStat : true, percentKey : 'phyReduce'},
+                {code : cons.EFFECT_TYPE_OPP_SP, value : 1, isPercentStat : true, percentKey : 'magReduce'}],
+      tooltip : '루니샤의 현재 (물리저항+마법저항)만큼 상대의 SP 감소',
+      flavor : '거대한 방패로 적을 크게 밀쳐내거나, 부드럽고 날렵한 검무를 구사합니다.'};  
+  charLunisha.skill.base.push(skillObj);
+
+  skillObj = {code : 201757, name : '막고 찌르기', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1.2, 
+      effect : [{code : cons.EFFECT_TYPE_SELF_HP, value : 0.3, isPercentDamage : true, chkLoseLast : true}],
+      tooltip : '전 턴에 상성 패배했다면, 상대에게 입힌 대미지의 30%만큼 생명력 회복',
+      flavor : '방어 후 연계 동작으로 자신의 피해를 최소화시키거나, 강력한 횡베기로 적을 두동강냅니다.'};  
+  charLunisha.skill.base.push(skillObj);
+
+  skillObj = {code : 201758, name : '간섭', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 1,
+      effect : [{code : cons.EFFECT_TYPE_MULTIPLE, chance : 0.33,
+                 target : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201762, buffDur : null, stack : 1},
+                           {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201763, buffDur : 3}]}],
+      tooltip : '33% 확률로 [오버 클락] 스택을 생성하며, 자신에게 3턴 간 [상쇄장] 버프 부여<br><br>[상쇄장] : 물리/마법저항 2배',
+      flavor : '어머니의 권한을 일부분 빌려옵니다. 특수한 힘으로 적의 공격을 상쇄시키거나, 신체의 성능을 일시적으로 증폭시킵니다.'};  
+  charLunisha.skill.base.push(skillObj);
+
+  skillObj = {code : 201759, name : '수비진', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_DRIVE, 
+      active : cons.ACTIVE_TYPE_TURN_START, cost : 0, chance : 1,
+      effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201764, buffDur : null}],
+      tooltip : '전투 시작 시 수비진으로 시작, 각 진형에 따라 공격 스킬이 변경된다. 참격진으로 토글 시 4턴 간 [가시의 상] 버프 부여. 수비진으로 토글 시 4턴 간 [강철의 상] 버프 부여. 토글할 때마다 [오버 클락] 스택 2개 생성<br><br>[가시의 상] : 루니샤의 현재 (물리저항+마법저항)*0.7 만큼 치명 증가<br>[강철의 상] : 루니샤의 현재 (물리저항+마법저항)*1.5 만큼 피해감소 증가',
+      flavor : '상황에 따라 전투 자세를 변경합니다.'};
+  charLunisha.skill.drive = skillObj;
+
+  skillObj = {code : 201760, name : '오가스 프로토콜', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 170, 
+      effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201766, buffDur : 1},
+                {code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 201767, buffDur : 1}],
+      tooltip : '잃은 체력의 [오버 클락]% 만큼의 체력을 즉시 회복한다. 다음 턴 공격 스킬의 계수가 ([오버 클락]*0.1)만큼 증가하고, 다음 턴 상성에서 무조건 승리하며, 2배의 피해를 입힌다. 그 후 소지한 [오버 클락] 스택의 절반을 잃는다. 만약 루니샤가 수비진 상태라면 [오버 클락] 스택을 잃지 않는다. 루니샤는 그 다음 턴부터 2턴 간 [혼란] 상태이상에 빠진다.',
+      flavor : ''};
+  charLunisha.skill.special = skillObj;
+
   charDekais.items = {weapon : item.list[11], armor : item.list[125], subarmor : item.list[169], trinket : item.list[253]};
   charMarang.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '흔들리는 달빛의 무기 카드', rank : 9, resultType : 0});
   charMarang.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '흔들리는 달빛의 무기 카드', rank : 9, resultType : 0});
@@ -1411,6 +1416,7 @@ const item = require('./items');
     char.quest = {};
     char.stoneCube = [];
     char.birth = null;
+    char.recentRecord = [];
   }
 
   module.exports.kines = charLeft;
@@ -1425,3 +1431,5 @@ const item = require('./items');
   module.exports.dekaitz = charDekais;
   module.exports.lozic = charLozic;
   module.exports.marang = charMarang;
+  module.exports.gaius = charGaius;
+  module.exports.lunisha = charLunisha;

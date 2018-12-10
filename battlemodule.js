@@ -544,6 +544,9 @@ function resolveEffects(winner, loser, effects, damage, skill) {
     if (eff.chkSkillCode && skill.code !== eff.chkSkillCode) {
       continue;
     }
+    if (eff.chkBuffCode && damage.id !== eff.chkBuffCode) {
+      continue;
+    }
     const isLeft = (winner == charLeft);
     if (eff.chkLessAttack && ((isLeft && leftWin >= rightWin) || (!isLeft && leftWin <= rightWin))) {
       continue;
@@ -728,6 +731,12 @@ function resolveEffects(winner, loser, effects, damage, skill) {
           if (eff.stack) {
             val.stack += eff.stack;
             if (val.stack == 0) {
+              removeBuff(val);
+            }
+          }
+          if (eff.stackMultiply) {
+            val.stack = Math.round(val.stack * eff.value);
+            if (val.stack <= 0) {
               removeBuff(val);
             }
           }
@@ -1227,6 +1236,10 @@ function calcStats(chara, opp) {
 
   for (val of getBuffEffects(chara, cons.ACTIVE_TYPE_CALC_STATS)) {
     var stackMpl = val.buff ? (val.buff.stack ? val.buff.stack : 1) : 1;
+    if (val.isPercentStat) {
+      stackMpl *= chara.stat[val.percentKey];
+    }
+    
     if (val.code === cons.EFFECT_TYPE_STAT_ADD) {
       chara.stat[val.key] += val.value * stackMpl;
     } else if (val.code === cons.EFFECT_TYPE_SET_SKILL) {
