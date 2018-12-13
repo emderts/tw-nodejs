@@ -203,7 +203,7 @@ function procFullTest() {
         continue;
       }
       for (var i=0; i<100; i++) {
-        var ret = battlemodule.doBattle(JSON.parse(JSON.stringify(left)), JSON.parse(JSON.stringify(right)));
+        var ret = (new battlemodule.bmodule()).doBattle(JSON.parse(JSON.stringify(left)), JSON.parse(JSON.stringify(right)));
         testResults[ind][indr] += (ret.winnerLeft ? 1 : 0);
         testTurns[ind][indr] += ret.turnCount;
       }
@@ -851,7 +851,7 @@ async function procBattle(req, res) {
       }
     } 
     if (left && right && left.lastBattle != body.charUid) {
-      var re = battlemodule.doBattle(JSON.parse(JSON.stringify(left)), JSON.parse(JSON.stringify(right)));
+      var re = (new battlemodule.bmodule()).doBattle(JSON.parse(JSON.stringify(left)), JSON.parse(JSON.stringify(right)));
       var globalObj = {actionUsed : {type : 'add', value : 1}};
       if (left.expBoost && left.expBoost > 0) {
         left.expBoost--;
@@ -1353,7 +1353,7 @@ async function procEnterDungeon(req, res) {
     }
     if (enemy) {
       if (body.option == 1 || body.option == 2 || body.option == 3) {
-        var re = battlemodule.doBattle(JSON.parse(JSON.stringify(char)), JSON.parse(JSON.stringify(enemy)), 1);
+        var re = (new battlemodule.bmodule()).doBattle(JSON.parse(JSON.stringify(char)), JSON.parse(JSON.stringify(enemy)), 1);
         var resultList = [{phase : 1, monImage : enemy.image, monName : enemy.name, 
           result : re.winnerLeft ? '승리' : '패배', hpLeft : re.winnerLeft ? re.leftInfo.curHp : re.rightInfo.curHp}];
         re.leftInfo.buffs = [];
@@ -1369,7 +1369,7 @@ async function procEnterDungeon(req, res) {
         }
         req.session.dungeonProgress = {code : body.option, phase : 1, resultList : resultList, charData : re.leftInfo};
       } else {
-        var re = battlemodule.doBattle(JSON.parse(JSON.stringify(enemy)), JSON.parse(JSON.stringify(char)), 1);
+        var re = (new battlemodule.bmodule()).doBattle(JSON.parse(JSON.stringify(enemy)), JSON.parse(JSON.stringify(char)), 1);
         var resultList = [{phase : 1, monImage : enemy.image, monName : enemy.name, 
           result : re.winnerRight ? '승리' : '패배', hpLeft : re.leftInfo.curHp}];
         const damageDealt = hpBefore - re.leftInfo.curHp;
@@ -1449,7 +1449,7 @@ async function procNextPhaseDungeon(req, res) {
       }
     }
     if (enemy) {
-      var re = battlemodule.doBattle(JSON.parse(JSON.stringify(req.session.dungeonProgress.charData)), JSON.parse(JSON.stringify(enemy)), 1);
+      var re = (new battlemodule.bmodule()).doBattle(JSON.parse(JSON.stringify(req.session.dungeonProgress.charData)), JSON.parse(JSON.stringify(enemy)), 1);
       req.session.dungeonProgress.resultList.push({phase : req.session.dungeonProgress.phase + 1, monImage : enemy.image, monName : enemy.name, 
         result : re.winnerLeft ? '승리' : '패배', hpLeft : re.winnerLeft ? re.leftInfo.curHp : re.rightInfo.curHp});
       re.leftInfo.buffs = [];
