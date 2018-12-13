@@ -1497,20 +1497,7 @@ function calcStats(chara, opp) {
     
     if (val.code === cons.EFFECT_TYPE_STAT_ADD) {
       chara.stat[val.key] += val.value * stackMpl;
-    } else if (val.code === cons.EFFECT_TYPE_SET_SKILL) {
-      if (val.key === 'base') {
-        var valueSel = val.randomValue ? Math.floor(Math.random() * 3) : val.value;
-        chara.skill.base[valueSel] = val.target;
-      } else if (val.key) {
-        chara.skill[val.key] = val.target;
-      }
-    } else if (val.code === cons.EFFECT_TYPE_ADD_SKILL_VALUE) {
-      if (val.type == 'base' && val.effIndex !== undefined) {
-        chara.skill.base[val.skillKey].effect[val.effIndex][val.key] += val.value * stackMpl;
-      } else {
-        chara.skill[val.type][val.key] += val.value * stackMpl;
-      }
-    }
+    } 
   }
   for (val of getBuffEffects(opp, cons.ACTIVE_TYPE_OPP_CALC_STATS)) {
     var stackMpl = val.buff ? (val.buff.stack ? val.buff.stack : 1) : 1;
@@ -1564,6 +1551,28 @@ function calcStats(chara, opp) {
       chara.stat[val.key] *= (1 + val.value * stackMpl);
     } else if (val.code === cons.EFFECT_TYPE_SP_COST_PERCENTAGE) {
       chara.skill[val.key].cost *= (1 + val.value * stackMpl);
+    }
+  }
+
+  for (val of getBuffEffects(chara, cons.ACTIVE_TYPE_CALC_STATS)) {
+    var stackMpl = val.buff ? (val.buff.stack ? val.buff.stack : 1) : 1;
+    if (val.isPercentStat) {
+      stackMpl *= chara.stat[val.percentKey];
+    }
+    
+    if (val.code === cons.EFFECT_TYPE_SET_SKILL) {
+      if (val.key === 'base') {
+        var valueSel = val.randomValue ? Math.floor(Math.random() * 3) : val.value;
+        chara.skill.base[valueSel] = val.target;
+      } else if (val.key) {
+        chara.skill[val.key] = val.target;
+      }
+    } else if (val.code === cons.EFFECT_TYPE_ADD_SKILL_VALUE) {
+      if (val.type == 'base' && val.effIndex !== undefined) {
+        chara.skill.base[val.skillKey].effect[val.effIndex][val.key] += val.value * stackMpl;
+      } else {
+        chara.skill[val.type][val.key] += val.value * stackMpl;
+      }
     }
   }
   
