@@ -2805,9 +2805,10 @@ module.exports.getBuffData = function(eff) {
     retObj.name = '태양 접촉';
     retObj.nameType = cons.NAME_KOR_END_CONS;
     retObj.stackType = 1;
+    retObj.durOff = cons.DURATION_TYPE_TURN_END;
     effectObj = {};
     effectObj.active = cons.ACTIVE_TYPE_RECEIVE_BUFF;
-    effectObj.code = cons.EFFECT_TYPE_RESOLVE_DRIVE;
+    effectObj.code = cons.EFFECT_TYPE_OPP_RESOLVE_DRIVE;
     effectObj.chance = 0.5;
     effectObj.chkBuffCode = 201758;
     retObj.effect.push(effectObj);
@@ -2841,9 +2842,10 @@ module.exports.getBuffData = function(eff) {
     retObj.name = '달빛 접촉';
     retObj.nameType = cons.NAME_KOR_END_CONS;
     retObj.stackType = 1;
+    retObj.durOff = cons.DURATION_TYPE_TURN_END;
     effectObj = {};
     effectObj.active = cons.ACTIVE_TYPE_RECEIVE_BUFF;
-    effectObj.code = cons.EFFECT_TYPE_RESOLVE_DRIVE;
+    effectObj.code = cons.EFFECT_TYPE_OPP_RESOLVE_DRIVE;
     effectObj.chance = 0.5;
     effectObj.chkBuffCode = 201759;
     retObj.effect.push(effectObj);
@@ -2908,6 +2910,7 @@ module.exports.getBuffData = function(eff) {
     retObj.name = '오버 클락';
     retObj.nameType = cons.NAME_KOR_END_CONS;
     retObj.stackType = 4;
+    retObj.stack = 1;
     retObj.durOff = null;
     retObj.isDebuff = false;
     effectObj = {};
@@ -2968,7 +2971,8 @@ module.exports.getBuffData = function(eff) {
     effectObj.key = 'drive';
     effectObj.target = {code : 201765, name : '참격진', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_DRIVE, 
         active : cons.ACTIVE_TYPE_ATTACK, cost : 8, chance : 0.15,
-        effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201762, buffDur : null, stack : 2},
+        effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201762, buffDur : null, stack : 1},
+                  {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201762, buffDur : null, stack : 1},
                   {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201769, buffDur : 4}]};
     retObj.effect.push(effectObj);
     effectObj = {};
@@ -2977,6 +2981,7 @@ module.exports.getBuffData = function(eff) {
     effectObj.buffCode = 201765;
     effectObj.buffDur = null;
     effectObj.removeBuff = true;
+    effectObj.chkTurn = 2;
     retObj.effect.push(effectObj);
     break;
   case 201765 : 
@@ -3008,9 +3013,8 @@ module.exports.getBuffData = function(eff) {
     effectObj.key = 'base';
     effectObj.value = 2;
     effectObj.target = {code : 201763, name : '과부하', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 1, 
-        effect : [{code : cons.EFFECT_TYPE_MULTIPLE, chance : 0.33,
-          target : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201762, buffDur : null, stack : 1},
-                    {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201768, buffDur : 3}]}]};
+        effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201762, buffDur : null, stack : 1},
+                  {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201768, chance : 0.33, buffDur : 3}]};
     retObj.effect.push(effectObj);
     effectObj = {};
     effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
@@ -3018,7 +3022,8 @@ module.exports.getBuffData = function(eff) {
     effectObj.key = 'drive';
     effectObj.target = {code : 201764, name : '수비진', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_DRIVE, 
         active : cons.ACTIVE_TYPE_TAKE_HIT, cost : 8, chance : 0.15,
-        effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201762, buffDur : null, stack : 2},
+        effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201762, buffDur : null, stack : 1},
+                  {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201762, buffDur : null, stack : 1},
                   {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201770, buffDur : 4}]};
     retObj.effect.push(effectObj);
     effectObj = {};
@@ -3029,7 +3034,7 @@ module.exports.getBuffData = function(eff) {
     effectObj.removeBuff = true;
     retObj.effect.push(effectObj);
     effectObj = {};
-    effectObj.active = cons.ACTIVE_TYPE_SKILL_WIN;
+    effectObj.active = cons.ACTIVE_TYPE_TURN_END;
     effectObj.code = cons.EFFECT_TYPE_SELF_BUFF;
     effectObj.buffCode = 201771;
     effectObj.buffDur = 1;
@@ -3041,10 +3046,12 @@ module.exports.getBuffData = function(eff) {
     retObj.nameType = cons.NAME_KOR_END_CONS;
     retObj.stackType = 1;
     retObj.isDebuff = false;
+    retObj.durOff = cons.DURATION_TYPE_TURN_END;
     effectObj = {};
     effectObj.active = cons.ACTIVE_TYPE_CALC_DAMAGE;
     effectObj.code = cons.EFFECT_TYPE_MULTIPLY_DAMAGE;
     effectObj.value = 2;
+    effectObj.anySkill = true;
     retObj.effect.push(effectObj);
     effectObj = {};
     effectObj.active = cons.ACTIVE_TYPE_DURATION_END;
@@ -3137,8 +3144,8 @@ module.exports.getBuffData = function(eff) {
     effectObj.key = 'base';
     effectObj.value = 0;
     effectObj.target = {code : 201761, name : '연', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 0.45, 
-        effect : [{code : cons.EFFECT_TYPE_RESOLVE_SKILL, value : 0},
-                  {code : cons.EFFECT_TYPE_RESOLVE_SKILL, value : 0}]};
+        effect : [{code : cons.EFFECT_TYPE_RESOLVE_SKILL, value : 0, noEffect : true},
+                  {code : cons.EFFECT_TYPE_RESOLVE_SKILL, value : 0, noEffect : true}]};
     retObj.effect.push(effectObj);
     break;
   case 90001 : 

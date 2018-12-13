@@ -70,10 +70,10 @@ const app = express()
 .post('/doRankup', procRankup)
 .post('/getCard', procGetCard)
 .post('/actionAccel', procActionAccel)
-.get('/test', (req, res) => res.render('pages/battle', {result: battlemodule.doBattle(chara.gaius, chara.lunisha, 1).result}))
+.get('/test', (req, res) => res.render('pages/battle', {result: (new battlemodule.bmodule()).doBattle(chara.gaius, chara.lunisha, 1).result}))
 .get('/test2', (req, res) => res.render('pages/trade', {room : '1', uid : '03'}))
 .get('/test3', (req, res) => res.render('pages/trade', {room : '1', uid : '06'}))
-.get('/test4', (req, res) => res.send(procInit2()))
+.get('/test4', (req, res) => res.send(console.log(battlemodule)))
 .get('/test5', (req, res) => res.render('pages/resultCard', {item : {name: 'test', rarity: Math.floor(Math.random() * 6)}}))
 .get('/test6', (req, res) => res.render('pages/index', {
   user: {name: 'kk'},
@@ -323,7 +323,6 @@ async function procInit2 () {
       var char = JSON.parse(val.char_data);
       if (val.uid == '07') {
       }
-      console.log(char.name + ' : ' + (((char.base.maxHp - 700) / 8) + ((char.base.phyAtk - 40) / 1.25) + ((char.base.magAtk - 40) / 1.25) + char.statPoint));
       
       await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), val.uid]);
     } 
@@ -481,21 +480,21 @@ async function procUseItem (req, res) {
             if (rand < 0.236) {
               picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_COMMON_UNCOMMON);
               chara.inventory.push(picked);
-            } else if (rand < 0.286) {
+            } else if (rand < 0.486/*286*/) {
               picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_RARE);
               chara.inventory.push(picked);
               await addItemNews(client, chara, tgtObj, picked);
               if (chara.quest[5]) {
                 chara.quest[5].progress += 1;
               }
-            } else if (rand < 0.2985) {
+            } else if (rand < 0.56/*2985*/) {
               picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_UNIQUE);
               chara.inventory.push(picked);
               await addItemNews(client, chara, tgtObj, picked);
               if (chara.quest[5]) {
                 chara.quest[5].progress += 3;
               }
-            } else if (rand < 0.3) {
+            } else if (rand < 0.58/*3*/) {
               picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_EPIC);
               chara.inventory.push(picked);
               await addItemNews(client, chara, tgtObj, picked);
@@ -537,21 +536,21 @@ async function procUseItem (req, res) {
             if (rand < 0.605) {
               picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_UNCOMMON, tgtObj.resultType);
               chara.inventory.push(picked);
-            } else if (rand < 0.881) {
+            } else if (rand < 0.7/*881*/) {
               picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_RARE, tgtObj.resultType);
               chara.inventory.push(picked);
               await addItemNews(client, chara, tgtObj, picked);
               if (chara.quest[5]) {
                 chara.quest[5].progress += 1;
               }
-            } else if (rand < 0.9365) {
+            } else if (rand < 0.895/*9365*/) {
               picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_UNIQUE, tgtObj.resultType);
               chara.inventory.push(picked);
               await addItemNews(client, chara, tgtObj, picked);
               if (chara.quest[5]) {
                 chara.quest[5].progress += 3;
               }
-            } else if (rand < 0.9895) {
+            } else if (rand < 0.895/*9895*/) {
               picked = _getItem(tgtObj.rank - 1, cons.ITEM_RARITY_COMMON_UNCOMMON, tgtObj.resultType);
               chara.inventory.push(picked);
             } else {

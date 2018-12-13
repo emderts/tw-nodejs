@@ -1291,13 +1291,13 @@ const item = require('./items');
   charGaius.skill.base.push(skillObj);
 
   skillObj = {code : 201752, name : '천벌', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1, 
-      effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.5, buffCode : 201758, buffDur : 1}],
+      effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.5, buffCode : 201758, buffDur : 2}],
       tooltip : '50% 확률로 적에게 1턴 간 [태양 접촉] 디버프 부여<br><br>[태양 접촉] : [달빛 접촉]이 존재하면 소거되고 마법 0.6 피해 및 1턴 간 [실명]',
       flavor : '태양의 힘을 빌려 적에게 따가운 천벌을 내린다.'};  
   charGaius.skill.base.push(skillObj);
 
   skillObj = {code : 201753, name : '달빛 섬광', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 1,
-      effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.5, buffCode : 201759, buffDur : 1}],
+      effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.5, buffCode : 201759, buffDur : 2}],
       tooltip : '50% 확률로 적에게 1턴 간 [달빛 접촉] 디버프 부여<br><br>[달빛 접촉] : [태양 접촉]이 존재하면 소거되고 물리 0.6 피해 및 1턴 간 [마비]',
       flavor : ''};  
   charGaius.skill.base.push(skillObj);
@@ -1327,8 +1327,8 @@ const item = require('./items');
   charLunisha.skill.base = [];
 
   var skillObj = {code : 201756, name : '방패 밀쳐내기', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 0.8, 
-      effect : [{code : cons.EFFECT_TYPE_OPP_SP, value : 1, isPercentStat : true, percentKey : 'phyReduce'},
-                {code : cons.EFFECT_TYPE_OPP_SP, value : 1, isPercentStat : true, percentKey : 'magReduce'}],
+      effect : [{code : cons.EFFECT_TYPE_OPP_SP, value : -100, isPercentStat : true, percentKey : 'phyReduce'},
+                {code : cons.EFFECT_TYPE_OPP_SP, value : -100, isPercentStat : true, percentKey : 'magReduce'}],
       tooltip : '루니샤의 현재 (물리저항+마법저항)만큼 상대의 SP 감소',
       flavor : '거대한 방패로 적을 크게 밀쳐내거나, 부드럽고 날렵한 검무를 구사합니다.'};  
   charLunisha.skill.base.push(skillObj);
@@ -1340,10 +1340,9 @@ const item = require('./items');
   charLunisha.skill.base.push(skillObj);
 
   skillObj = {code : 201758, name : '간섭', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 1,
-      effect : [{code : cons.EFFECT_TYPE_MULTIPLE, chance : 0.33,
-                 target : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201762, buffDur : null, stack : 1},
-                           {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201763, buffDur : 3}]}],
-      tooltip : '33% 확률로 [오버 클락] 스택을 생성하며, 자신에게 3턴 간 [상쇄장] 버프 부여<br><br>[상쇄장] : 물리/마법저항 2배',
+      effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201762, buffDur : null, stack : 1},
+                {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201763, chance : 0.33, buffDur : 3}],
+      tooltip : '[오버 클락] 스택을 생성하며, 33% 확률로 자신에게 3턴 간 [상쇄장] 버프 부여<br><br>[상쇄장] : 물리/마법저항 2배',
       flavor : '어머니의 권한을 일부분 빌려옵니다. 특수한 힘으로 적의 공격을 상쇄시키거나, 신체의 성능을 일시적으로 증폭시킵니다.'};  
   charLunisha.skill.base.push(skillObj);
 
@@ -1354,12 +1353,57 @@ const item = require('./items');
       flavor : '상황에 따라 전투 자세를 변경합니다.'};
   charLunisha.skill.drive = skillObj;
 
-  skillObj = {code : 201760, name : '오가스 프로토콜', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 170, 
-      effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201766, buffDur : 1},
+  skillObj = {code : 201760, name : '오가스 프로토콜', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 120, 
+      effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201766, buffDur : 2},
                 {code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 201767, buffDur : 1}],
       tooltip : '잃은 체력의 [오버 클락]% 만큼의 체력을 즉시 회복한다. 다음 턴 공격 스킬의 계수가 ([오버 클락]*0.1)만큼 증가하고, 다음 턴 상성에서 무조건 승리하며, 2배의 피해를 입힌다. 그 후 소지한 [오버 클락] 스택의 절반을 잃는다. 만약 루니샤가 수비진 상태라면 [오버 클락] 스택을 잃지 않는다. 루니샤는 그 다음 턴부터 2턴 간 [혼란] 상태이상에 빠진다.',
-      flavor : ''};
+      flavor : '어머니가 주신 힘을 모두 개방하여 짧은 시간 동안 손상된 신체를 복구하고 적의 모든 행동을 예측해냅니다. 다만 루니샤의 자아가 불안정해질 수 있습니다.'};
   charLunisha.skill.special = skillObj;
+
+
+  var charGabi = {};
+  _initChar(charGabi);
+  
+  charGabi.name = '가비류이';
+  charGabi.nameType = cons.NAME_KOR_NO_END_CONS;
+  charGabi.title = '이세계 고등학생';
+  
+  charGabi.skill = {};
+  charGabi.skill.base = [];
+
+  var skillObj = {code : 201766, name : '깎아 올리는 재능', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1.2, 
+      effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201772, buffDur : null, setStack : 0.03, isPercentDamage : true, chkNot : [201775]},
+                {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201773, buffDur : null, setStack : 0.05, isPercentDamage : true, chk : [201775]}],
+      tooltip : '피해량의 3%만큼 [재능] 스택을 부여한다. [반복 숙달] 효과 : 기본 효과 대신, 피해량의 5%만큼 [연마된 재능] 스택을 부여한다.<br><br>[재능] : 물리/마법 최대 공격력 +1<br>[연마된 재능] : 물리/마법 공격력 +1',
+      flavor : '가난으로부터 탈출하기 위한 끝없는 노력은 이세계에서 능력으로 보상받는다.'};  
+  charGabi.skill.base.push(skillObj);
+
+  skillObj = {code : 201767, name : '이세계 지식 설파', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 0.9, 
+      effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 201774, buffDur : 2, setStack : 0.12, isPercentDamage : true, chkNot : [201775]},
+                {code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 201774, buffDur : 2, setStack : 0.2, isPercentDamage : true, chk : [201775]}],
+      tooltip : '피해량의 12%만큼 상대에게 2턴 간 [이고깽] 스택을 부여한다. [반복 숙달] 효과 : 피해량의 20%만큼으로 강화된다.<br><br>[이고깽] : 물리/마법 공격력 -1',
+      flavor : '보았느냐! 이것이 현대인의 저력이다! / 오이오이, 굉장하잖아!'};  
+  charGabi.skill.base.push(skillObj);
+
+  skillObj = {code : 201768, name : '포탈 브레이슬릿', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 0.9,
+      effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201776, buffDur : 1, chk : [201775]}],
+      tooltip : '자신과 상대에게 부여된 [재능], [연마된 재능], [이고깽] 스택만큼 치명피해가 증가한다. [반복 숙달] 효과 : 해당 턴 동안 물리 및 마법 저항+95%',
+      flavor : '자유자재로 공간전이를 할 수 있는 사기 팔찌를 다뤄, 이세계 고등학생다운 틈을 노린다.'};  
+  charGabi.skill.base.push(skillObj);
+
+  skillObj = {code : 201769, name : '반복 숙달', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_DRIVE, 
+      active : cons.ACTIVE_TYPE_SKILL_WIN, cost : 10, chance : 1, chkSameAttack : true,
+      effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201775, buffDur : 1}],
+      tooltip : '지난 턴에 사용했던 스킬을 이번 턴에도 사용하여 공격 시, 스킬의 피해량이 10% 상승하고 각 스킬별 특수 효과가 강화된다.',
+      flavor : '어렸을 때부터 해 오던 불법 아르바이트 경험의 산실. 반복할수록, 숙달된다.'};
+  charGabi.skill.drive = skillObj;
+
+  skillObj = {code : 201770, name : '비급 - 급여 통장', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 160, 
+      effect : [{code : cons.EFFECT_TYPE_SELF_HP, value : 0.025, isPercentStat : true, percentKey : 'maxHp'},
+                {code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 201767, buffDur : 1}],
+      tooltip : '최대 생명력의 (공격횟수*2.5)%만큼 생명력을 회복하고(최대 35%), 자신에게 부여된 나쁜 상태이상을 2종 해제한다. 다음 1회의 일반 스킬에 <반복 숙달> 효과를 적용한다.',
+      flavor : '고된 노동에 대한 보상은 죽어가는 이세계 고등학생도 살리는 법이다.'};
+  charGabi.skill.special = skillObj;
 
   charDekais.items = {weapon : item.list[11], armor : item.list[125], subarmor : item.list[169], trinket : item.list[253]};
   charMarang.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '흔들리는 달빛의 무기 카드', rank : 9, resultType : 0});
