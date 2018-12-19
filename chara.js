@@ -1582,4 +1582,4 @@ const item = require('./items');
   module.exports.gabi = charGabi;
   module.exports.illun = charIllun;
   module.exports.kasien = charKasien;
-  module.exports.ruisun = charRuisun;
+  //module.exports.ruisun = charRuisun;
