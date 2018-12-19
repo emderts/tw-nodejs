@@ -76,6 +76,7 @@ Battlemodule.prototype._doBattleStart = function (flag) {
   this.leftWin = 0;
   this.rightWin = 0;
   this.timeCrash = 0;
+  this.cooldowns = [];
 
   _initChar(this.charLeft, flag);
   _initChar(this.charRight, flag);
@@ -153,9 +154,9 @@ Battlemodule.prototype._doBattleEnd = function(flag) {
   }
 
   var expTurn = this.turnCount < 200 ? (this.turnCount > 20 ? this.turnCount : 20) : 200;
-  var expRate = this.charLeft.rank > this.charRight.rank ? 0.9 : (this.charLeft.rank < this.charRight.rank ? 1.1 : 1);
+  var expRate = this.charLeft.rank > this.charRight.rank ? 1.2 : (this.charLeft.rank < this.charRight.rank ? 0.9 : 1);
   if (this.charLeft.expBoost && this.charLeft.expBoost > 0) {
-    expRate += 0.15;
+    expRate += 0.3;
   }
   if (retObj.winnerLeft) {    
     retObj.expLeft = Math.round((30 + 0.35 * expTurn * expRate) * 0.75);
@@ -168,7 +169,7 @@ Battlemodule.prototype._doBattleEnd = function(flag) {
     this.result += '경험치를 ' + retObj.expLeft + ' 획득했습니다.<br>리설트 카드 게이지 ' + retObj.resultLeft + '%를 획득했습니다.';
   }
   this.result += '</div><div class="resultCharInfo">';
-  var expRate = this.charRight.rank > this.charLeft.rank ? 0.9 : (this.charRight.rank < this.charLeft.rank ? 1 : 1.1);
+  var expRate = this.charRight.rank > this.charLeft.rank ? 1.2 : (this.charRight.rank < this.charLeft.rank ? 0.9 : 1);
   if (retObj.winnerRight) {
     retObj.expRight = Math.round((30 + 0.35 * expTurn * expRate) * 0.25);
     this.result += '<span class="colorLeft">Victory!</span><br>' + this.charRight.name + '의 승리입니다!<br>';
@@ -314,9 +315,15 @@ Battlemodule.prototype._doBattleTurnManual = function(left, right) {
   this.resolveEffects(loser, winner, getBuffEffects(loser, cons.ACTIVE_TYPE_SKILL_LOSE), skillUsed);
   this.resolveEffects(loser, winner, getItemEffects(loser, cons.ACTIVE_TYPE_SKILL_LOSE), skillUsed);
 
+  if (checkDrive(winner, cons.ACTIVE_TYPE_SKILL_WIN, skillNum)) {
+    this.resolveDrive(winner, loser, null);
+  }
   if (checkDrive(loser, cons.ACTIVE_TYPE_SKILL_LOSE)) {
     this.resolveDrive(loser, winner, null);
   }
+  
+  winner.lastSkill = skillNum;
+  loser.lastSkill = null;
   
   if (winner == this.charLeft) {
     this.leftWin++;
@@ -501,10 +508,15 @@ Battlemodule.prototype._doBattleTurn = function() {
   this.resolveEffects(loser, winner, getBuffEffects(loser, cons.ACTIVE_TYPE_SKILL_LOSE), skillUsed);
   this.resolveEffects(loser, winner, getItemEffects(loser, cons.ACTIVE_TYPE_SKILL_LOSE), skillUsed);
 
+  if (checkDrive(winner, cons.ACTIVE_TYPE_SKILL_WIN, skillNum)) {
+    this.resolveDrive(winner, loser, null);
+  }
   if (checkDrive(loser, cons.ACTIVE_TYPE_SKILL_LOSE)) {
     this.resolveDrive(loser, winner, null);
   }
   
+  winner.lastSkill = skillNum;
+  loser.lastSkill = null;
   if (winner == this.charLeft) {
     this.leftWin++;
   } else {
@@ -538,11 +550,13 @@ Battlemodule.prototype._doBattleTurn = function() {
 
     this.resolveEffects(winner, loser, getBuffEffects(winner, cons.ACTIVE_TYPE_ATTACK), damage, skillUsed);
     this.resolveEffects(winner, loser, getItemEffects(winner, cons.ACTIVE_TYPE_ATTACK), damage, skillUsed);
-    this.resolveEffects(loser, winner, getBuffEffects(loser, cons.ACTIVE_TYPE_TAKE_HIT), damage);
-    this.resolveEffects(loser, winner, getItemEffects(loser, cons.ACTIVE_TYPE_TAKE_HIT), damage);
+    this.resolveEffects(loser, winner, getBuffEffects(loser, cons.ACTIVE_TYPE_TAKE_HIT), damage, skillUsed);
+    this.resolveEffects(loser, winner, getItemEffects(loser, cons.ACTIVE_TYPE_TAKE_HIT), damage, skillUsed);
     this.resolveEffects(winner, loser, skillUsed.effect, damage);
     this.resolveEffects(winner, loser, getBuffEffects(winner, cons.ACTIVE_TYPE_AFTER_SKILL), damage, skillUsed);
     this.resolveEffects(winner, loser, getItemEffects(winner, cons.ACTIVE_TYPE_AFTER_SKILL), damage, skillUsed);
+    this.resolveEffects(loser, winner, getBuffEffects(loser, cons.ACTIVE_TYPE_AFTER_SKILL_LOSE), damage, skillUsed);
+    this.resolveEffects(loser, winner, getItemEffects(loser, cons.ACTIVE_TYPE_AFTER_SKILL_LOSE), damage, skillUsed);
     if (checkDrive(winner, cons.ACTIVE_TYPE_ATTACK)) {
       this.resolveDrive(winner, loser, damage);
     }
@@ -685,6 +699,13 @@ Battlemodule.prototype.dealDamage = function(src, dst, damage) {
   var damageShield = Math.round(damage.value / (1- damage.reduce));
   var shielded = false;
   for (val of getBuffEffects(dst, cons.ACTIVE_TYPE_DEAL_DAMAGE_RECEIVE)) {
+    if (val.code === cons.EFFECT_TYPE_REDUCE_SHIELD_DAMAGE) {
+      damageShield *= (1 - val.value * dst.stat[val.key]);
+    }
+  }
+  damageShield = Math.round(damageShield);
+  
+  for (val of getBuffEffects(dst, cons.ACTIVE_TYPE_DEAL_DAMAGE_RECEIVE)) {
     if (val.code === cons.EFFECT_TYPE_SHIELD) {
       if (val.value > damageShield) {
         val.value -= damageShield;
@@ -707,6 +728,7 @@ Battlemodule.prototype.dealDamage = function(src, dst, damage) {
 
 Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage, skill) {
   for (var eff of effects) {
+    var stackMpl = eff.noStack ? 1 : (eff.buff ? (eff.buff.stack ? eff.buff.stack : 1) : 1);
     var chance = eff.chance ? eff.chance : 1;
     if (eff.chanceAddKey) {
       if (eff.chanceAddKey == 'hit') {
@@ -718,8 +740,14 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
     if (eff.chanceSubKeyOpp) {
       chance -= loser.stat[eff.chanceSubKeyOpp];
     }
+    if (eff.chanceStack) {
+      chance *= stackMpl;
+    }
     if (eff.cooldown && eff.cooldown > 0) {
       eff.cooldown--;
+      continue;
+    }
+    if (eff.turnCooldown && eff.turnCooldown > 0) {
       continue;
     }
     if (!getRandom(chance)) {
@@ -804,7 +832,6 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
     if (eff.chkLoseLast && winner.winLast) {
       continue;
     }
-    var stackMpl = eff.noStack ? 1 : (eff.buff ? (eff.buff.stack ? eff.buff.stack : 1) : 1);
     if (eff.code === cons.EFFECT_TYPE_SELF_BUFF || eff.code === cons.EFFECT_TYPE_OPP_BUFF) {
       if (eff.direct) {
         damage.dur *= eff.durMod;
@@ -837,8 +864,17 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
         buffObj.effect[0].value *= findBuffByIds(winner, eff.buffTarget).length;
       } else if (buffObj.id === 201757) {
         buffObj.effect[0].value *= winner.lastDamage;
+      } else if (buffObj.id === 201781) {
+        buffObj.effect[0].value = Math.round(buffObj.effect[0].value * winner.stat.maxHp * stackMpl);
       }
 
+      if (eff.setStack) {        
+        var valueUsed = eff.setStack;
+        if (eff.isPercentDamage) {
+          valueUsed *= damage.value;
+        }
+        buffObj.stack = Math.round(valueUsed);
+      }
       var recv = (eff.code === cons.EFFECT_TYPE_SELF_BUFF) ? winner : loser;
       this.giveBuff(winner, recv, buffObj, true, eff.name);
 
@@ -864,6 +900,13 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
         valueUsed *= skill[eff.percentKey];
       } else if (eff.isPercentHpLost) {
         valueUsed *= (winner.stat.maxHp - winner.curHp);
+      } else if (eff.isPercentBuffValue) {
+        valueUsed *= damage.effect[0].value;
+      }
+      if (eff.addAttackCount) {
+        const atkCnt = (isLeft ? this.leftWin : this.rightWin);
+        valueUsed *= (atkCnt - (this.atkCntBefore ? this.atkCntBefore : 0));
+        this.atkCntBefore = atkCnt;
       }
       valueUsed = Math.round(valueUsed * stackMpl);
       var target = 'SP';
@@ -900,9 +943,13 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
       } else if (eff.isPercentDamage) {
         tempObj.damage *= damage.value;
       } else if (eff.isPercentOpp) {
-        tempObj.damage *= loser[eff.percentKey];
+        tempObj.damage *= target[eff.percentKey];
       } else if (eff.isPercentOppStat) {
         tempObj.damage *= target.stat[eff.percentKey];
+      } else if (eff.isPercentShield) {
+        tempObj.damage *= getShieldValue(source);
+      } else if (eff.overPercentShield) {
+        tempObj.damage = getShieldValue(source) - tempObj.damage * target.curHp;
       }
       
       if ((eff.percentKey == 'maxHp' || eff.percentKey == 'curHp') && target.boss) {
@@ -1027,6 +1074,7 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
           winner = this.charRight;          
           loser = this.charLeft;
         }
+        this.resolveEffects(winner, loser, eff.winEffect);
       }
       
       break;
@@ -1125,8 +1173,15 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
     } else if (eff.code === cons.EFFECT_TYPE_REMOVE_BUFF || eff.code === cons.EFFECT_TYPE_OPP_REMOVE_BUFF) {
       var buffTarget = eff.standard ? [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12] : eff.buffTarget;
       const recv = (eff.code === cons.EFFECT_TYPE_REMOVE_BUFF) ? winner : loser;
+      var limit = eff.limit;
       for (buff of recv.buffs) {
-        if (eff.all || buffTarget.includes(buff.id)) {
+        if (limit == 0) {
+          break;
+        }
+        if (limit) {
+          limit--;
+        }
+        if (eff.all || (eff.anyDebuff && (buff.isDebuff && buff.dispellable && buff.durOff)) || (buffTarget && buffTarget.includes(buff.id))) {
           removeBuff(buff);
           this.result += '[ ' + buff.name + ' ] 효과가 제거됩니다!<br>';
         }
@@ -1194,10 +1249,15 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
       } else {
         continue;
       }
-    } else if (eff.code === cons.EFFECT_TYPE_MULTIPLY_DAMAGE_OBJECT) {
+    } else if (eff.code === cons.EFFECT_TYPE_MULTIPLY_DAMAGE_OBJECT || eff.code === cons.EFFECT_TYPE_ADD_DAMAGE_OBJECT) {
       if (eff.skillCode && eff.skillCode === skill.code) {
-        damage[eff.key] *= eff.value;
-        this.result += '[ ' + eff.name + ' ] 효과로 ' + printName[eff.key] + '가 ' + eff.value + '배 증가합니다!<br>';
+        if (eff.code === cons.EFFECT_TYPE_MULTIPLY_DAMAGE_OBJECT) {
+          damage[eff.key] *= (eff.value * stackMpl);
+          this.result += '[ ' + eff.name + ' ] 효과로 ' + printName[eff.key] + '가 ' + (eff.value * stackMpl) + '배 증가합니다!<br>';
+        } else {
+          damage[eff.key] += (eff.value * stackMpl);
+          this.result += '[ ' + eff.name + ' ] 효과로 ' + printName[eff.key] + '가 ' + (eff.value * stackMpl) + ' 증가합니다!<br>';
+        }
       } else {
         continue;
       }
@@ -1218,6 +1278,10 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
     if (eff.setCooldown) {
       eff.cooldown = eff.setCooldown;
     }
+    if (eff.setTurnCooldown) {
+      eff.turnCooldown = eff.setTurnCooldown;
+      this.cooldowns.push(eff);
+    }
     if (eff.turnReduce) {
       eff.buff.dur -= eff.turnReduce;
     }
@@ -1232,6 +1296,9 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
     }
     if (eff.removeBuff) {
       removeBuff(eff.buff);
+    }
+    if (eff.printText) {
+      this.result += eff.printText + '<br>';
     }
 
     if (eff.breakResolution) {
@@ -1253,6 +1320,10 @@ Battlemodule.prototype.resolveTurnBegin = function(winner, loser) {
   this.resolveTurnBeginChar(loser, winner);
   calcStats(winner, loser);
   calcStats(loser, winner);
+  for (eff of this.cooldowns) {
+    eff.turnCooldown--;
+  }
+  this.cooldowns = this.cooldowns.filter(x => (x.turnCooldown > 0));
 }
 
 Battlemodule.prototype.resolveTurnBeginChar = function(chara, opp) {
@@ -1270,10 +1341,10 @@ Battlemodule.prototype.resolveTurnBeginChar = function(chara, opp) {
 }
 
 Battlemodule.prototype.resolveTurnEnd = function(winner, loser) {
-  if (checkDrive(winner, cons.ACTIVE_TYPE_TURN_END)) {
+  if (checkDrive(winner, cons.ACTIVE_TYPE_TURN_END, loser)) {
     this.resolveDrive(winner, loser);
   }
-  if (checkDrive(loser, cons.ACTIVE_TYPE_TURN_END)) {
+  if (checkDrive(loser, cons.ACTIVE_TYPE_TURN_END, winner)) {
     this.resolveDrive(loser, winner);
   }
   calcStats(winner, loser);
@@ -1370,9 +1441,15 @@ Battlemodule.prototype.giveBuff = function(src, recv, buffObj, printFlag, name) 
       if (buffObj.effect[0].value) {
         buffChk.effect[0].value = buffObj.effect[0].value;
       }
+      if (buffChk.stack) {
+        buffChk.stack = buffObj.stack;
+      }
     } else if (buffObj.stackType === 2) {
       if (buffChk.maxStack && buffChk.maxStack <= buffChk.stack) {
         return;
+      }
+      if (buffChk.dur) {
+        buffChk.dur = buffObj.dur;        
       }
       if (buffChk.stack) {
         buffChk.stack += 1;
@@ -1399,8 +1476,11 @@ function removeBuff(buff) {
   buff.effect = [];
 }
 
-function checkDrive(chara, active) {
+function checkDrive(chara, active, arg) {
   if (!chara.skill.drive) {
+    return false;
+  }
+  if (chara.skill.drive.active !== active) {
     return false;
   }
   if (chara.skill.drive.chk && findBuffByIds(chara, chara.skill.drive.chk).length == 0) {
@@ -1412,13 +1492,22 @@ function checkDrive(chara, active) {
   if (chara.skill.drive.chkHp && chara.curHp > (chara.stat.maxHp * chara.skill.drive.chkHp)) {
     return false;
   }
+  if (chara.skill.drive.chkSameAttack && chara.lastSkill !== arg) {
+    return false;
+  }
+  if (chara.skill.drive.chkShieldCurHp && arg.curHp * chara.skill.drive.chkShieldCurHp > getShieldValue(chara)) {
+    return false;
+  }
+  if (chara.skill.drive.chkWinLast && !chara.winLast) {
+    return false;
+  }
   if (chara.skillOri.drive.cooldown && chara.skillOri.drive.cooldown > 0) {
     return false;
   }
   if (chara.skill.drive.fireOnce) {
     chara.skillOri.drive.active = null;
   }
-  return chara.skill.drive.active === active && getRandom(chara.skill.drive.chance) && chara.curSp >= chara.skill.drive.cost && findBuffByCode(chara, 10010).length == 0;
+  return getRandom(chara.skill.drive.chance) && chara.curSp >= chara.skill.drive.cost && findBuffByCode(chara, 10010).length == 0;
 }
 
 Battlemodule.prototype.resolveDrive = function(chara, opp, damage) {
@@ -1525,6 +1614,9 @@ function calcStats(chara, opp) {
       continue;
     }
     if (val.chkTitle && opp.title !== val.chkTitle) {
+      continue;
+    }
+    if (val.chkHp && chara.curHp > (chara.stat.maxHp * val.chkHp)) {
       continue;
     }
     if (val.code === cons.EFFECT_TYPE_STAT_ADD) {

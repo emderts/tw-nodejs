@@ -107,6 +107,7 @@ try {
         }
       }
       charData.maxExp = 5 * charData.reqExp;
+      charData.matchCount = 10;
       charData.resultMaxGauge = 0;
       charData.addExpCount = 3;
       charData.dungeonInfos.rewardMevious = false;

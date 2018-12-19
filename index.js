@@ -41,6 +41,7 @@ const app = express()
 .post('/unequipItem', procUnequip)
 .post('/enchantItem', procEnchantItem)
 .get('/battleList', procBattleList)
+.get('/doBattle', procBattle)
 .post('/doBattle', procBattle)
 .get('/battleLogs', procBattleLogList)
 .post('/battleLog', procBattleLog)
@@ -70,10 +71,10 @@ const app = express()
 .post('/doRankup', procRankup)
 .post('/getCard', procGetCard)
 .post('/actionAccel', procActionAccel)
-.get('/test', (req, res) => res.render('pages/battle', {result: (new battlemodule.bmodule()).doBattle(chara.gaius, chara.lunisha, 1).result}))
+.get('/test', (req, res) => res.render('pages/battle', {result: (new battlemodule.bmodule()).doBattle(chara.illun, chara.julius, 1).result}))
 .get('/test2', (req, res) => res.render('pages/trade', {room : '1', uid : '03'}))
 .get('/test3', (req, res) => res.render('pages/trade', {room : '1', uid : '06'}))
-.get('/test4', (req, res) => res.send(console.log(battlemodule)))
+.get('/test4', (req, res) => res.send(procInit2()))
 .get('/test5', (req, res) => res.render('pages/resultCard', {item : {name: 'test', rarity: Math.floor(Math.random() * 6)}}))
 .get('/test6', (req, res) => res.render('pages/index', {
   user: {name: 'kk'},
@@ -321,6 +322,8 @@ async function procInit2 () {
     } 
     for (val of result.rows) {
       var char = JSON.parse(val.char_data);
+      char.matchCount = 10;
+      char.winChain = 0;
       if (val.uid == '07') {
       }
       
@@ -437,7 +440,7 @@ function _getItem(rank, rarity, type) {
     var tgtList = item.list.filter(x => x.rank === usedRank && x.rarity === rarity && x.type <= 3);    
   }
   if (type <= 3) {
-    tgtList = tgtList.filter(x => x.type === type)
+    tgtList = tgtList.filter(x => x.type === type);
   }
   return JSON.parse(JSON.stringify(tgtList[Math.floor(Math.random() * tgtList.length)]));  
 }
@@ -483,7 +486,6 @@ async function procUseItem (req, res) {
             } else if (rand < 0.486/*286*/) {
               picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_RARE);
               chara.inventory.push(picked);
-              await addItemNews(client, chara, tgtObj, picked);
               if (chara.quest[5]) {
                 chara.quest[5].progress += 1;
               }
@@ -508,21 +510,21 @@ async function procUseItem (req, res) {
               chara.premiumPoint += 2;
               picked = {name : '프리미엄 포인트 2점' , rarity : cons.ITEM_RARITY_RARE};
             } else if (rand < 0.79) {
-              const dustValue = 7 * Math.pow(2, 9 - tgtObj.rank);
+              const dustValue = 12 * Math.pow(2, 9 - tgtObj.rank);
               chara.dust += dustValue;
               picked = {name : dustValue + ' 가루' , rarity : cons.ITEM_RARITY_COMMON};
               if (chara.quest[4]) {
                 chara.quest[4].progress += 1;
               }
             } else if (rand < 0.88) {
-              const dustValue = 13 * Math.pow(2, 9 - tgtObj.rank);
+              const dustValue = 36 * Math.pow(2, 9 - tgtObj.rank);
               chara.dust += dustValue;
               picked = {name : dustValue + ' 가루' , rarity : cons.ITEM_RARITY_UNCOMMON};
               if (chara.quest[4]) {
                 chara.quest[4].progress += 1;
               }
             } else if (rand < 0.9) {
-              const dustValue = 50 * Math.pow(2, 9 - tgtObj.rank);
+              const dustValue = 100 * Math.pow(2, 9 - tgtObj.rank);
               chara.dust += dustValue;
               picked = {name : dustValue + ' 가루' , rarity : cons.ITEM_RARITY_RARE};
               if (chara.quest[4]) {
@@ -532,14 +534,13 @@ async function procUseItem (req, res) {
               picked = makeDayStone(null, tgtObj.rank);
               chara.inventory.push(picked);
             }
-          } else if (tgtObj.resultType < 90000) {
+          } else if (tgtObj.resultType <= 4) {
             if (rand < 0.605) {
               picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_UNCOMMON, tgtObj.resultType);
               chara.inventory.push(picked);
             } else if (rand < 0.7/*881*/) {
               picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_RARE, tgtObj.resultType);
               chara.inventory.push(picked);
-              await addItemNews(client, chara, tgtObj, picked);
               if (chara.quest[5]) {
                 chara.quest[5].progress += 1;
               }
@@ -568,7 +569,6 @@ async function procUseItem (req, res) {
             } else if (rand < 0.681) {
               picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_RARE);
               chara.inventory.push(picked);
-              await addItemNews(client, chara, tgtObj, picked);
               if (chara.quest[5]) {
                 chara.quest[5].progress += 1;
               }
@@ -603,7 +603,6 @@ async function procUseItem (req, res) {
             } else if (rand < 0.681) {
               picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_RARE);
               chara.inventory.push(picked);
-              await addItemNews(client, chara, tgtObj, picked);
               if (chara.quest[5]) {
                 chara.quest[5].progress += 1;
               }
@@ -638,7 +637,6 @@ async function procUseItem (req, res) {
             } else if (rand < 0.681) {
               picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_RARE, tgtObj.resultType);
               chara.inventory.push(picked);
-              await addItemNews(client, chara, tgtObj, picked);
               if (chara.quest[5]) {
                 chara.quest[5].progress += 1;
               }
@@ -666,7 +664,29 @@ async function procUseItem (req, res) {
               chara.currencies.burntMark += 4;
               picked = {name : '불탄 증표 4개', rarity : cons.ITEM_RARITY_COMMON};
             }
-          } else if (tgtObj.resultType == 90004) {
+          } else if (tgtObj.resultType == 5) {
+            if (rand < 0.97) {
+              picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_RARE, tgtObj.resultType);
+              chara.inventory.push(picked);
+              if (chara.quest[5]) {
+                chara.quest[5].progress += 1;
+              }
+            } else if (rand < 0.99) {
+              picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_UNIQUE, tgtObj.resultType);
+              chara.inventory.push(picked);
+              await addItemNews(client, chara, tgtObj, picked);
+              if (chara.quest[5]) {
+                chara.quest[5].progress += 3;
+              }
+            } else {
+              picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_EPIC, tgtObj.resultType);
+              chara.inventory.push(picked);
+              await addItemNews(client, chara, tgtObj, picked);
+              if (chara.quest[5]) {
+                chara.quest[5].progress += 3;
+              }
+            } 
+          } else if (tgtObj.resultType == 6) {
             if (rand < 0.96) {
               picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_UNIQUE, tgtObj.resultType);
               chara.inventory.push(picked);
@@ -834,6 +854,13 @@ async function procBattle(req, res) {
     const client = await pool.connect();
     const resultUser = await client.query('select * from users where id = $1', [req.session.userUid]);
     const result = await client.query('select * from characters');
+    var randBattle = false;
+    
+    if (!body.charUid) {
+      body.charUid = ('0' + (3 + Math.floor(Math.random() * 9))).slice(-2);
+      randBattle = true;
+    } 
+    
     var left, right;
     var cuid, cap;
     for (val of result.rows) {
@@ -850,9 +877,12 @@ async function procBattle(req, res) {
         right = JSON.parse(val.char_data);
       }
     } 
-    if (left && right && left.lastBattle != body.charUid) {
+    if (left && right && (randBattle || left.lastBattle != body.charUid) && (randBattle || left.matchCount > 0)) {
       var re = (new battlemodule.bmodule()).doBattle(JSON.parse(JSON.stringify(left)), JSON.parse(JSON.stringify(right)));
       var globalObj = {actionUsed : {type : 'add', value : 1}};
+      if (!randBattle) {
+        left.matchCount--;
+      }
       if (left.expBoost && left.expBoost > 0) {
         left.expBoost--;
         left.maxExp += re.expLeft;
@@ -904,6 +934,18 @@ async function procBattle(req, res) {
         left.winRecord[body.charUid] = left.winRecord[body.charUid] ? left.winRecord[body.charUid] + 1 : 1;
         left.recentRecord.push(true);
         right.recentRecord.push(false);
+        left.winChain++;
+        if (left.winChain % 3 == 0) {
+          await client.query('insert into news(content, date) values ($1, $2)', 
+              [left.name + getIga(left.nameType) + ' ' + left.winChain + '연승중입니다!', new Date()]);
+          left.premiumPoint += left.winChain / 3;          
+        }
+        if (right.winChain >= 3) {
+          await client.query('insert into news(content, date) values ($1, $2)', 
+              [left.name + getIga(left.nameType) + ' ' + right.name + '의' + right.winChain + '연승을 차단했습니다!', new Date()]);
+          left.premiumPoint += right.winChain / 3;          
+        }
+        right.winChain = 0;
         if (left.quest[1]) {
           left.quest[1].progress += 1;
         }
@@ -913,6 +955,18 @@ async function procBattle(req, res) {
         right.winRecord[cuid] = right.winRecord[cuid] ? right.winRecord[cuid] + 1 : 1;
         right.recentRecord.push(true);
         left.recentRecord.push(false);
+        right.winChain++;
+        if (right.winChain % 3 == 0) {
+          await client.query('insert into news(content, date) values ($1, $2)', 
+              [right.name + getIga(right.nameType) + ' ' + right.winChain + '연승중입니다!', new Date()]);
+          right.premiumPoint += right.winChain / 3;          
+        }
+        if (left.winChain >= 3) {
+          await client.query('insert into news(content, date) values ($1, $2)', 
+              [right.name + getIga(right.nameType) + ' ' + left.name + '의' + left.winChain + '연승을 차단했습니다!', new Date()]);
+          right.premiumPoint += left.winChain / 3;          
+        }
+        left.winChain = 0;
         if (right.quest[1]) {
           right.quest[1].progress += 1;
         }
@@ -1218,7 +1272,7 @@ async function procUseShop (req, res) {
         }
       }
     } else if (body.option >= 102 && body.option < 90000) {
-      var cost = body.option >= 106 ? 100 : 140;
+      var cost = body.option >= 106 ? (body.option == 106 ? 100 : (body.option == 107 ? 300 : 800)) : 120;
       cost *= Math.pow(2, 9 - char.rank);
       if (char.dust < cost) {
         res.send('가루가 부족합니다.');
@@ -1635,13 +1689,13 @@ async function procSortInventory(req, res) {
             return 0;
           }
         } else if (a.type === cons.ITEM_TYPE_DAYSTONE) {
-          if (a.day < b.day) {
-            return -1;
-          } else if (a.day > b.day) {
-            return 1;
-          } else if (a.level < b.level) {
+          if (a.level < b.level) {
             return -1;
           } else if (a.level > b.level) {
+            return 1;
+          } else if (a.day < b.day) {
+            return -1;
+          } else if (a.day > b.day) {
             return 1;
           } else {
             return 0;
@@ -2051,8 +2105,8 @@ function addExp(chara, exp) {
 }
 
 const dayStoneData = [
-                      [[[15, 35], [20, 60], [25, 90], [30, 120], [40, 150]]], 
-                      [[[5, 25], [10, 40], [15, 60], [20, 85], [30, 110]]], 
+                      [[[15, 45], [20, 70], [25, 100], [30, 140], [40, 180]]], 
+                      [[[5, 15], [10, 25], [15, 45], [20, 70], [30, 95]]], 
                       [[[10, 35], [15, 50], [20, 70], [25, 100], [35, 140]]], 
                       [[[10, 35], [15, 50], [20, 70], [25, 100], [35, 140]]], 
                       [[[10, 30], [15, 45], [20, 65], [25, 90], [30, 120]]], 
@@ -2134,7 +2188,7 @@ function addResultCard(chara) {
   chara.inventory.push(item);
 }
 
-const typePrefix = ['무기', '방어구', '보조방어구', '장신구', '장비'];
+const typePrefix = ['무기', '방어구', '보조방어구', '장신구', '장비', '레어 장비', '유니크 장비'];
 function addSpecialResultCard(chara, type) {
   var item = {};
   item.type = cons.ITEM_TYPE_RESULT_CARD;
