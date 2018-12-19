@@ -324,7 +324,8 @@ async function procInit2 () {
       var char = JSON.parse(val.char_data);
       char.matchCount = 10;
       char.winChain = 0;
-      if (val.uid == '07') {
+      if (val.uid == '03') {
+        char.skill = chara.julius.skill;
       }
       
       await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), val.uid]);
