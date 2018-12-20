@@ -1447,7 +1447,7 @@ const item = require('./items');
   charIllun.skill.base.push(skillObj);
 
   skillObj = {code : 201774, name : '방전', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_DRIVE, 
-      active : cons.ACTIVE_TYPE_TURN_END, cost : 5, chance : 1, chkShieldCurHp : 0.3,
+      active : cons.ACTIVE_TYPE_TURN_END, cost : 5, chance : 1, chkShieldCurHp : 0.3, setCooldown : 2,
       effect : [{code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_MAGICAL_FIXED, value : 0.3, overPercentShield : true},
                 {code : cons.EFFECT_TYPE_SELF_HIT, type : cons.DAMAGE_TYPE_ABSOLUTE, value : 0.3, isPercentShield : true}],
       tooltip : '보호막 수치가 적 현재 생명력의 30%를 초과하였을 때 보호막 초과분만큼 마법 피해를 입히고 보호막의 30%를 잃음',
@@ -1480,7 +1480,7 @@ const item = require('./items');
   skillObj = {code : 201777, name : '약점 포착', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 1, 
       effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201783, buffDur : 2}],
       tooltip : '자신에게 1턴 간 [약점 포착] 버프 부여<br><br>[약점 포착] : 자신 스킬의 피해량 25% 증폭',
-      flavor : '적의 약점에 표식을 남깁니다'};  
+      flavor : '적의 약점에 표식을 남깁니다.'};  
   charKasien.skill.base.push(skillObj);
 
   skillObj = {code : 201778, name : '뽑아 찢기', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 0.6,
@@ -1505,6 +1505,122 @@ const item = require('./items');
       flavor : ''};
   charKasien.skill.special = skillObj;
 
+
+  var charRuisun = {};
+  _initChar(charRuisun);
+  
+  charRuisun.name = '뤼순 창';
+  charRuisun.nameType = cons.NAME_KOR_END_CONS;
+  charRuisun.title = '위대한 장군';
+  
+  charRuisun.skill = {};
+  charRuisun.skill.base = [];
+
+  var skillObj = {code : 201781, name : '쇠뇌대 훈련', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 1.2, 
+      calcEffect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201791, buffDur : null, setStack : 1, isPercentDamage : true},
+                    {code : cons.EFFECT_TYPE_MULTIPLY_DAMAGE, value : 0, all : true}],
+      effect : [],
+      tooltip : '피해를 주는 대신 피해량만큼 자신에게 [쇠뇌대] 중첩 부여<br><br>[쇠뇌대] : [철갑군], [기마대]가 없을 때 피격 시 피해량만큼 중첩 소거',
+      flavor : '쇠뇌와 연노로 무장한 쇠뇌대를 모집하여 훈련합니다. 강한 공격력을 지닙니다.'};  
+  charRuisun.skill.base.push(skillObj);
+
+  skillObj = {code : 201782, name : '기마대 훈련', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1, 
+      calcEffect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201788, buffDur : null, setStack : 1, isPercentDamage : true},
+                    {code : cons.EFFECT_TYPE_MULTIPLY_DAMAGE, value : 0, all : true}],
+      effect : [],
+      tooltip : '피해를 주는 대신 피해량만큼 자신에게 [기마대] 중첩 부여<br><br>[기마대] : [철갑군]이 없을 때 피격 시 피해량의 50%만큼 중첩 소거',
+      flavor : '월도와 장검으로 무장한 기마대를 훈련합니다. 빠른 기동력으로 적을 혼란에 빠트립니다.'};  
+  charRuisun.skill.base.push(skillObj);
+
+  skillObj = {code : 201783, name : '철갑군 훈련', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 0.8,
+      calcEffect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201789, buffDur : null, setStack : 1, isPercentDamage : true},
+                    {code : cons.EFFECT_TYPE_MULTIPLY_DAMAGE, value : 0, all : true}],
+      effect : [],
+      tooltip : '피해를 주는 대신 피해량만큼 자신에게 [철갑군] 중첩 부여<br><br>[철갑군] : 물리/마법저항 +0.2%p, 피격 시 피해량의 20%만큼 중첩 소거',
+      flavor : '철갑과 큰 방패로 무장한 철갑군을 훈련합니다. 단단한 진형을 통해 아군을 지킵니다.'};  
+  charRuisun.skill.base.push(skillObj);
+
+  skillObj = {code : 201784, name : '징병 공고', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.SKILL_TYPE_DRIVE,
+      active : cons.ACTIVE_TYPE_TURN_START, cost : 5, chance : 0.1, chanceModFunc : 0,
+      effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : [201791, 201788, 201789], buffDur : null, multiple : true, setStack : 100}],
+      tooltip : '턴 시작 시 10% 확률 ((상대의 현재생명력% - 자신의 현재생명력%)%만큼 증가)로 자신에게 [쇠뇌대], [기마대], [철갑군] 중 하나를 100중첩 부여',
+      flavor : '열세를 메꾸기 위해 더 많은 병사를 징집합니다.'};
+  charRuisun.skill.drive = skillObj;
+
+  skillObj = {code : 201785, name : '총공격 명령', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 30, 
+      effect : [{code : cons.EFFECT_TYPE_SELECTION, selectChances : [0.33, 0.5, 1], chkAll : [201791, 201788, 201789],
+        options : [{code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 1, buffDur : 1},
+                   {code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 11, buffDur : 2},
+                   {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201790, buffDur : 3}]},
+                {code : cons.EFFECT_TYPE_SELECTION, selectChances : [0.5, 1], chkAll : [201791, 201788], chkNot : [201789],
+        options : [{code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 1, buffDur : 1},
+                   {code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 11, buffDur : 2}]},
+                {code : cons.EFFECT_TYPE_SELECTION, selectChances : [0.5, 1], chkAll : [201791, 201789], chkNot : [201788],
+        options : [{code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 1, buffDur : 1},
+                   {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201790, buffDur : 3}]},
+                {code : cons.EFFECT_TYPE_SELECTION, selectChances : [0.5, 1], chkAll : [201788, 201789], chkNot : [201791],
+        options : [{code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 11, buffDur : 2},
+                   {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201790, buffDur : 3}]},
+                {code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 1, buffDur : 1, chk : [201791], chkNot : [201788, 201789]},
+                {code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 11, buffDur : 2, chk : [201788], chkNot : [201791, 201789]},
+                {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201790, buffDur : 3, chk : [201789], chkNot : [201791, 201788]}],
+      tooltip : '[쇠뇌대] 중첩 * 1.2 마법 고정 피해, [기마대] 중첩 * 0.8 고정 물리 피해, [철갑군] 중첩 * 0.2 고정 물리 피해를 줍니다. ([쇠뇌대] 존재 시 적 1턴 간 [화상], [기마대] 존재 시 적 2턴 간 [혼란], [철갑군] 존재 시 자신 3턴 간 물리/마법저항 +10%p) 효과 중 하나를 적용합니다.',
+      flavor : '뤼순이 병사들에게 총공격 명령을 내립니다.'};
+  charRuisun.skill.special = skillObj;
+
+
+  var charJay = {};
+  _initChar(charJay);
+  
+  charJay.name = '제이';
+  charJay.nameType = cons.NAME_KOR_NO_END_CONS;
+  charJay.title = '건블레이드의 연주가';
+  
+  charJay.skill = {};
+  charJay.skill.base = [];
+
+  var skillObj = {code : 201786, name : '블레이드 악센트', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1.2, 
+      calcEffect : [{code : cons.EFFECT_TYPE_MULTIPLY_DAMAGE_OBJECT, key : 'critDmg', value : 1.2}],
+      effect : [{code : cons.EFFECT_TYPE_SELF_SP, value : 0.3, isPercentSkill : true, skillKey : 'special', percentKey : 'cost', onCrit : true}],
+      tooltip : '이 스킬의 치명 피해는 1.2배 상승한다. 치명타 시 스페셜 스킬이 요구하는 SP의 30%를 회복한다.',
+      flavor : '기습적으로 힘을 주어 상대를 향해 칼날을 내민다.'};  
+  charJay.skill.base.push(skillObj);
+
+  skillObj = {code : 201787, name : '데스퍼레이트 론도', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 1.2, 
+      effect : [{code : cons.EFFECT_TYPE_MULTIPLE, chance : 0.25, loop : true,
+        target : [{code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL, value : 0.3},
+                  {code : cons.EFFECT_TYPE_SELF_SP, value : 0.2, isPercentSkill : true, skillKey : 'special', percentKey : 'cost'}]}],
+      tooltip : '25% 확률로 물리 0.3 추가 피해 및 스페셜 스킬이 요구하는 SP의 20%를 회복, 특수효과 발동 시 특수효과를 다시 발동할 수 있다.',
+      flavor : '건블레이드 사격을 가하며 여흥이 끝날 때까지 되풀이한다.'};  
+  charJay.skill.base.push(skillObj);
+
+  skillObj = {code : 201788, name : '메소드 연주', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 0.6,
+      calcEffect : [{code : cons.EFFECT_TYPE_SELF_SP, value : 0.2, isPercentSkill : true, skillKey : 'special', percentKey : 'cost', chk : [201792]}],
+      effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201792, buffDur : null}],
+      tooltip : '현재 자신이 보유한 버프에 따라 다음 1회의 공격까지 추가 능력치를 부여한다. 추가 능력치가 부여된 상태에서 이 스킬을 재사용 시, 스페셜 스킬이 요구하는 SP의 20%를 회복한다.<br>[선셋 라이더] : 자신의 캐릭터 컬러가 황금색으로 변경. 순수 물리,마법공격력 +35%<br>[로드 오브 레인저] : 치명+10%, [앙상블]*5% 만큼 스킬 피해량 증가<br>[블러디 카니발] : HP재생 2배, [앙상블]*5% 만큼 흡혈<br>[티켓 투 헤븐] : SP재생 2배, [앙상블]*5% 만큼 치명피해 증가<br>[마지막 호흡] : 치명+10%, 명중+60%',
+      flavor : '악상에 심취하는 방법론.'};  
+  charJay.skill.base.push(skillObj);
+
+  skillObj = {code : 201789, name : '완벽한 앙상블', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_DRIVE,
+      active : cons.ACTIVE_TYPE_TURN_END, cost : 10, chance : 1, checkFunc : 1,
+      effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201793, buffDur : null},
+                {code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 10, buffDur : 2}],
+      tooltip : '턴 종료 시 자신과 상대의 공격횟수가 동일하고, [앙상블] 중첩이 12 미만이면 자신에게 [앙상블] 1중첩을 부여하고 적에게 2턴 간 [봉인] 상태이상을 부여한다.',
+      flavor : '연주가와 관객의 완벽한 호응이 이루어지는 순간.'};
+  charJay.skill.drive = skillObj;
+
+  skillObj = {code : 201790, name : '막간 - 건블레이드의 연주가', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 5, 
+      effect : [{code : cons.EFFECT_TYPE_SELF_HP, value : 0.01, isPercentStat : true, percentKey : 'maxHp'},
+                {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201794, buffDur : null, chkNot : [2017100]},
+                {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201795, buffDur : null, chkAll : [2017100], chkNot : [2017101]},
+                {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201796, buffDur : null, chkAll : [2017100, 2017101], chkNot : [2017102]},
+                {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201797, buffDur : null, chkAll : [2017100, 2017101, 2017102], chkNot : [2017103]},
+                {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201798, buffDur : null, chkAll : [2017100, 2017101, 2017102, 2017103], chkNot : [2017104]},
+                {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201799, buffDur : null, chkAll : [2017100, 2017101, 2017102, 2017103, 2017104], chkNot : [2017105]}],
+      tooltip : '최대 생명력의 1%를 회복하고, 순서대로 스페셜 스킬을 전환한다. [도입 - 선셋 라이더] [상승 - 로드 오브 레인저] [절정 - 블러디 카니발] [반전 - 티켓 투 헤븐] [파국 - 마지막 호흡]',
+      flavor : '건블레이드의 움직임으로 연주를 시작한다.'};
+  charJay.skill.special = skillObj;
+
   charDekais.items = {weapon : item.list[11], armor : item.list[125], subarmor : item.list[169], trinket : item.list[253]};
   charMarang.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '흔들리는 달빛의 무기 카드', rank : 9, resultType : 0});
   charMarang.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '흔들리는 달빛의 무기 카드', rank : 9, resultType : 0});
@@ -1517,12 +1633,12 @@ const item = require('./items');
   
   function _initChar(char) {
     char.stat = {};
-    char.stat.maxHp = 400;
+    char.stat.maxHp = 908;
     char.stat.spCharge = 5;
     char.stat.hpRegen = 0;
     char.stat.spRegen = 5;
-    char.stat.phyAtk = 20;
-    char.stat.magAtk = 20;
+    char.stat.phyAtk = 71.25;
+    char.stat.magAtk = 71.25;
     char.stat.crit = 0.05;
     char.stat.critDmg = 1.5;
     char.stat.phyReduce = 0;
@@ -1538,8 +1654,10 @@ const item = require('./items');
     char.base = JSON.parse(JSON.stringify(char.stat));
     char.inventory = [];
     char.items = {};
-    char.items.weapon = item.list[0];
-    char.items.armor = item.list[114];
+    char.items.weapon = item.list[11];//[0];
+    char.items.armor = item.list[143];//[114];
+    char.items.subarmor = item.list[169];
+    char.items.trinket = item.list[244];
     char.rank = 9;
     char.level = 1;
     char.exp = 0;
@@ -1582,4 +1700,5 @@ const item = require('./items');
   module.exports.gabi = charGabi;
   module.exports.illun = charIllun;
   module.exports.kasien = charKasien;
-  //module.exports.ruisun = charRuisun;
+  module.exports.ruisun = charRuisun;
+  module.exports.jay = charJay;

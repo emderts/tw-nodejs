@@ -804,7 +804,7 @@ itemList[388] = { id : 388, name : '마석방패', nameType : cons.NAME_KOR_NO_E
     effectDesc : '요일석 강화 슬롯 +1', effect : [], maxSocket : 2 };
 itemList[389] = { id : 389, name : '충만한 충전의 장화', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '강습 기수들이 사용했다는 장화. 특수한 기력을 빠르게 채워 주는 힘이 있다.', rank : 7, rarity : cons.ITEM_RARITY_UNIQUE, stat : { maxHp : 84, spCharge : 3, evasion : 0.05 }, 
     effectDesc : '드라이브 스킬 사용 시 소모 SP만큼 SP 회복', 
-    effect : [{code : cons.EFFECT_TYPE_SELF_SP, active : cons.ACTIVE_TYPE_USE_DRIVE, value : 1, isPercentSkill : true, percentKey : 'cost'}] };
+    effect : [{code : cons.EFFECT_TYPE_SELF_SP, active : cons.ACTIVE_TYPE_USE_DRIVE, value : 1, isPercentSkillUsed : true, percentKey : 'cost'}] };
 itemList[390] = { id : 390, name : '겜블 머신 777', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '인생은 한 방이다.', rank : 7, rarity : cons.ITEM_RARITY_EPIC, stat : { maxHp : 84, hit : 0.075, crit : 0.07 }, 
     effectDesc : '공격 성공 시 0.1% 확률로 적에게 777 절대 피해, 2.1% 확률로 적에게 77 절대 피해', 
     effect : [{code : cons.EFFECT_TYPE_ADD_HIT, active : cons.ACTIVE_TYPE_ATTACK, chance : 0.001, type : cons.DAMAGE_TYPE_ABSOLUTE, value : 777},

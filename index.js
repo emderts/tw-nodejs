@@ -40,6 +40,7 @@ const app = express()
 .post('/useItem', procUseItem)
 .post('/unequipItem', procUnequip)
 .post('/enchantItem', procEnchantItem)
+.get('/doTest', procTrain)
 .get('/battleList', procBattleList)
 .get('/doBattle', procBattle)
 .post('/doBattle', procBattle)
@@ -71,10 +72,10 @@ const app = express()
 .post('/doRankup', procRankup)
 .post('/getCard', procGetCard)
 .post('/actionAccel', procActionAccel)
-.get('/test', (req, res) => res.render('pages/battle', {result: (new battlemodule.bmodule()).doBattle(chara.illun, chara.julius, 1).result}))
+.get('/test', (req, res) => res.render('pages/battle', {result: (new battlemodule.bmodule()).doBattle(JSON.parse(JSON.stringify(chara.jay)), JSON.parse(JSON.stringify(chara.illun)), 1).result}))
 .get('/test2', (req, res) => res.render('pages/trade', {room : '1', uid : '03'}))
 .get('/test3', (req, res) => res.render('pages/trade', {room : '1', uid : '06'}))
-.get('/test4', (req, res) => res.send(procInit2()))
+.get('/test4', (req, res) => res.send(procFullTest()))
 .get('/test5', (req, res) => res.render('pages/resultCard', {item : {name: 'test', rarity: Math.floor(Math.random() * 6)}}))
 .get('/test6', (req, res) => res.render('pages/index', {
   user: {name: 'kk'},
@@ -192,13 +193,14 @@ io.on('connection', (socket) => {
 });
 
 function procFullTest() {
-  var testChars = [chara.julius, chara.seriers, chara.aeika, chara.psi, chara.aeohelm, chara.nux, chara.dekaitz];
+  var testChars = [chara.gaius, chara.lunisha, chara.ruisun, chara.seriers, chara.illun, chara.bks, chara.nux, chara.kasien, chara.marang, chara.gabi, chara.jay];
   var testResults = [];
   var testTurns = [];
   var resultStr = '';
   for ([ind, left] of testChars.entries()) {
-    testResults.push([0, 0, 0, 0, 0, 0, 0]);
-    testTurns.push([0, 0, 0, 0, 0, 0, 0]);
+    testResults.push([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+    testTurns.push([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+    var wins = 0;
     for ([indr, right] of testChars.entries()) {
       if (left == right) {
         continue;
@@ -208,9 +210,11 @@ function procFullTest() {
         testResults[ind][indr] += (ret.winnerLeft ? 1 : 0);
         testTurns[ind][indr] += ret.turnCount;
       }
+      console.log(resultStr);
       resultStr += left.name + ' vs ' + right.name + ' : ' + testResults[ind][indr] + ', ' + testTurns[ind][indr] + '<br>';
+      wins += testResults[ind][indr];
     }
-    resultStr += '<br>';
+    resultStr += '총 승리 : ' + wins + '<br>';
   }
 
   return resultStr;
@@ -805,6 +809,20 @@ async function procEnchantItem (req, res) {
   }
 }
 
+async function procTrain(req, res) {
+  try {
+    const sess = req.session; 
+    const charRow = await getCharacter(sess.userUid);
+    const char = JSON.parse(charRow.char_data);
+    
+    var re = (new battlemodule.bmodule()).doBattle(JSON.parse(JSON.stringify(char)), JSON.parse(JSON.stringify(monster.xTrain)));
+    res.render('pages/battle', {result: re.result});
+  } catch (err) {
+    console.error(err);
+    res.send('내부 오류');
+  }
+}
+
 async function procBattleList(req, res) {
   try {
     const client = await pool.connect();
@@ -937,14 +955,18 @@ async function procBattle(req, res) {
         right.recentRecord.push(false);
         left.winChain++;
         if (left.winChain % 3 == 0) {
-          await client.query('insert into news(content, date) values ($1, $2)', 
-              [left.name + getIga(left.nameType) + ' ' + left.winChain + '연승중입니다!', new Date()]);
+          if (left.winChain > 5) {
+            await client.query('insert into news(content, date) values ($1, $2)', 
+                [left.name + getIga(left.nameType) + ' ' + left.winChain + '연승 중입니다!', new Date()]);
+          }
           left.premiumPoint += left.winChain / 3;          
         }
         if (right.winChain >= 3) {
-          await client.query('insert into news(content, date) values ($1, $2)', 
-              [left.name + getIga(left.nameType) + ' ' + right.name + '의' + right.winChain + '연승을 차단했습니다!', new Date()]);
-          left.premiumPoint += right.winChain / 3;          
+          if (right.winChain >= 5) {
+            await client.query('insert into news(content, date) values ($1, $2)', 
+                [left.name + getIga(left.nameType) + ' ' + right.name + '의 ' + right.winChain + '연승을 차단했습니다!', new Date()]);
+          }
+          left.premiumPoint += Math.floor(right.winChain / 3);          
         }
         right.winChain = 0;
         if (left.quest[1]) {
@@ -958,14 +980,18 @@ async function procBattle(req, res) {
         left.recentRecord.push(false);
         right.winChain++;
         if (right.winChain % 3 == 0) {
-          await client.query('insert into news(content, date) values ($1, $2)', 
-              [right.name + getIga(right.nameType) + ' ' + right.winChain + '연승중입니다!', new Date()]);
+          if (right.winChain > 5) {
+            await client.query('insert into news(content, date) values ($1, $2)', 
+                [right.name + getIga(right.nameType) + ' ' + right.winChain + '연승중입니다!', new Date()]);
+          }
           right.premiumPoint += right.winChain / 3;          
         }
         if (left.winChain >= 3) {
-          await client.query('insert into news(content, date) values ($1, $2)', 
-              [right.name + getIga(right.nameType) + ' ' + left.name + '의' + left.winChain + '연승을 차단했습니다!', new Date()]);
-          right.premiumPoint += left.winChain / 3;          
+          if (left.winChain >= 5) {
+            await client.query('insert into news(content, date) values ($1, $2)', 
+                [right.name + getIga(right.nameType) + ' ' + left.name + '의' + left.winChain + '연승을 차단했습니다!', new Date()]);
+          }
+          right.premiumPoint += Math.floor(left.winChain / 3);            
         }
         left.winChain = 0;
         if (right.quest[1]) {

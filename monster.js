@@ -1,6 +1,6 @@
 const cons = require('./constant');
 const item = require('./items');
-
+  
   var charLeft = {name : '메비우스 크로울러 무리', nameType : cons.NAME_KOR_NO_END_CONS, title : '메비우스', rank : 8, level : 20, 
       stat : {maxHp : 700, phyAtk : 48, magAtk : 40, hit : 1.1}};
   _initChar(charLeft);
@@ -358,6 +358,21 @@ const item = require('./items');
       tooltip : '자신과 적에게 5턴간 [지옥불길] 버프 부여<br><br>[지옥불길] : 마법 0.4 피해'};
   charLeft.skill.special = skillObj;
   module.exports.rKines2 = charLeft;
+
+  charLeft = {name : '허수아비', nameType : cons.NAME_KOR_END_CONS, title : '메비우스', rank : 8, level : 20, 
+      stat : {maxHp : 2000, phyAtk : 40, magAtk : 40}};
+  _initChar(charLeft);
+  
+  charLeft.items = {};
+
+  charLeft.skill = {
+      base : [
+              {code : 90001, name : '물리 공격', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1.0, effect : []}, 
+              {code : 90002, name : '물리 공격', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1.0, effect : []}, 
+              {code : 90003, name : '마법 공격', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 1.0, effect : []}
+             ],
+  };
+  module.exports.xTrain = charLeft;
   
   function _initChar(char) {
     char.stat.spCharge = 5;

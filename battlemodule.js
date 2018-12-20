@@ -78,6 +78,18 @@ Battlemodule.prototype._doBattleStart = function (flag) {
   this.timeCrash = 0;
   this.cooldowns = [];
 
+  this.modFunc = [];
+  this.modFunc[0] = function (chara, opp, chance) {
+    var tmp = opp.curHp / opp.stat.maxHp - chara.curHp / chara.stat.maxHp; 
+    console.log(tmp);
+    tmp = tmp > 0 ? tmp : 0;
+    return chance + tmp;
+  }
+  this.modFunc[1] = function (chara, opp, data) {
+    var ens = findBuffByIds(chara, [201793]);
+    return (ens.length == 0 || ens[0].stack < 12) && (data.leftWin == data.rightWin);
+  }
+
   _initChar(this.charLeft, flag);
   _initChar(this.charRight, flag);
 
@@ -315,10 +327,10 @@ Battlemodule.prototype._doBattleTurnManual = function(left, right) {
   this.resolveEffects(loser, winner, getBuffEffects(loser, cons.ACTIVE_TYPE_SKILL_LOSE), skillUsed);
   this.resolveEffects(loser, winner, getItemEffects(loser, cons.ACTIVE_TYPE_SKILL_LOSE), skillUsed);
 
-  if (checkDrive(winner, cons.ACTIVE_TYPE_SKILL_WIN, skillNum)) {
+  if (this.checkDrive(winner, cons.ACTIVE_TYPE_SKILL_WIN, skillNum)) {
     this.resolveDrive(winner, loser, null);
   }
-  if (checkDrive(loser, cons.ACTIVE_TYPE_SKILL_LOSE)) {
+  if (this.checkDrive(loser, cons.ACTIVE_TYPE_SKILL_LOSE)) {
     this.resolveDrive(loser, winner, null);
   }
   
@@ -352,7 +364,7 @@ Battlemodule.prototype._doBattleTurnManual = function(left, right) {
     }
     this.result += '</span><br>';
 
-    if (checkDrive(loser, cons.ACTIVE_TYPE_TAKE_HIT)) {
+    if (this.checkDrive(loser, cons.ACTIVE_TYPE_TAKE_HIT)) {
       this.resolveDrive(loser, winner, damage);
     }
 
@@ -363,7 +375,7 @@ Battlemodule.prototype._doBattleTurnManual = function(left, right) {
     this.resolveEffects(winner, loser, skillUsed.effect, damage);
     this.resolveEffects(winner, loser, getBuffEffects(winner, cons.ACTIVE_TYPE_AFTER_SKILL), damage, skillUsed);
     this.resolveEffects(winner, loser, getItemEffects(winner, cons.ACTIVE_TYPE_AFTER_SKILL), damage, skillUsed);
-    if (checkDrive(winner, cons.ACTIVE_TYPE_ATTACK)) {
+    if (this.checkDrive(winner, cons.ACTIVE_TYPE_ATTACK)) {
       this.resolveDrive(winner, loser, damage);
     }
     
@@ -508,10 +520,10 @@ Battlemodule.prototype._doBattleTurn = function() {
   this.resolveEffects(loser, winner, getBuffEffects(loser, cons.ACTIVE_TYPE_SKILL_LOSE), skillUsed);
   this.resolveEffects(loser, winner, getItemEffects(loser, cons.ACTIVE_TYPE_SKILL_LOSE), skillUsed);
 
-  if (checkDrive(winner, cons.ACTIVE_TYPE_SKILL_WIN, skillNum)) {
+  if (this.checkDrive(winner, cons.ACTIVE_TYPE_SKILL_WIN, skillNum)) {
     this.resolveDrive(winner, loser, null);
   }
-  if (checkDrive(loser, cons.ACTIVE_TYPE_SKILL_LOSE)) {
+  if (this.checkDrive(loser, cons.ACTIVE_TYPE_SKILL_LOSE)) {
     this.resolveDrive(loser, winner, null);
   }
   
@@ -544,7 +556,7 @@ Battlemodule.prototype._doBattleTurn = function() {
     }
     this.result += '</span><br>';
 
-    if (checkDrive(loser, cons.ACTIVE_TYPE_TAKE_HIT)) {
+    if (this.checkDrive(loser, cons.ACTIVE_TYPE_TAKE_HIT)) {
       this.resolveDrive(loser, winner, damage);
     }
 
@@ -557,7 +569,7 @@ Battlemodule.prototype._doBattleTurn = function() {
     this.resolveEffects(winner, loser, getItemEffects(winner, cons.ACTIVE_TYPE_AFTER_SKILL), damage, skillUsed);
     this.resolveEffects(loser, winner, getBuffEffects(loser, cons.ACTIVE_TYPE_AFTER_SKILL_LOSE), damage, skillUsed);
     this.resolveEffects(loser, winner, getItemEffects(loser, cons.ACTIVE_TYPE_AFTER_SKILL_LOSE), damage, skillUsed);
-    if (checkDrive(winner, cons.ACTIVE_TYPE_ATTACK)) {
+    if (this.checkDrive(winner, cons.ACTIVE_TYPE_ATTACK)) {
       this.resolveDrive(winner, loser, damage);
     }
     
@@ -723,12 +735,47 @@ Battlemodule.prototype.dealDamage = function(src, dst, damage) {
   }
   var damageDealt = shielded ? damageShield : damage.value;
   dst.lastDamage = damageDealt;
+  
+  var ruiDamage = damageDealt;
+  var ruiBuff = findBuffByIds(dst, [201789]);
+  if (ruiBuff.length > 0) {
+    if (ruiBuff[0].stack * 5 >= ruiDamage) {
+      ruiBuff[0].stack -= Math.floor(ruiDamage / 5);
+      ruiDamage = 0;
+    } else {
+      ruiDamage -= ruiBuff[0].stack * 5;
+      removeBuff(ruiBuff[0]);
+    }
+  }
+  ruiBuff = findBuffByIds(dst, [201788]);
+  if (ruiBuff.length > 0) {
+    if (ruiBuff[0].stack * 2 >= ruiDamage) {
+      ruiBuff[0].stack -= Math.floor(ruiDamage / 2);
+      ruiDamage = 0;
+    } else {
+      ruiDamage -= ruiBuff[0].stack * 2;
+      removeBuff(ruiBuff[0]);
+    }
+  }
+  ruiBuff = findBuffByIds(dst, [201791]);
+  if (ruiBuff.length > 0) {
+    if (ruiBuff[0].stack >= ruiDamage) {
+      ruiBuff[0].stack -= ruiDamage;
+      ruiDamage = 0;
+    } else {
+      ruiDamage -= ruiBuff[0].stack;
+      removeBuff(ruiBuff[0]);
+    }
+  }
   dst.curHp -= damageDealt;
 }
 
 Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage, skill) {
   for (var eff of effects) {
     var stackMpl = eff.noStack ? 1 : (eff.buff ? (eff.buff.stack ? eff.buff.stack : 1) : 1);
+    if (stackMpl > eff.maxApply) {
+      stackMpl = eff.maxApply;
+    }
     var chance = eff.chance ? eff.chance : 1;
     if (eff.chanceAddKey) {
       if (eff.chanceAddKey == 'hit') {
@@ -896,12 +943,14 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
         valueUsed *= loser[eff.percentKey];
       } else if (eff.isPercentOppStat) {
         valueUsed *= loser.stat[eff.percentKey];
-      } else if (eff.isPercentSkill) {
+      } else if (eff.isPercentSkillUsed) {
         valueUsed *= skill[eff.percentKey];
       } else if (eff.isPercentHpLost) {
         valueUsed *= (winner.stat.maxHp - winner.curHp);
       } else if (eff.isPercentBuffValue) {
         valueUsed *= damage.effect[0].value;
+      } else if (eff.isPercentSkill) {
+        valueUsed *= winner.skill[eff.skillKey][eff.percentKey];
       }
       if (eff.addAttackCount) {
         const atkCnt = (isLeft ? this.leftWin : this.rightWin);
@@ -1124,8 +1173,12 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
         damage.skillRat *= eff.value;
         this.result += '공격력이 ' + Math.round((eff.value - 1) * 100) + '\% 올랐습니다!<br>';
       } else if (eff.anySkill && skill.code) {
-        damage.skillRat *= eff.value;
-        this.result += '[ ' + eff.name + ' ] 효과로 공격력이 ' + Math.round((eff.value - 1) * 100) + '\% 올랐습니다!<br>';
+        var valueUsed = eff.value;
+        if (eff.stackable) {
+          valueUsed = (1 + (eff.value * stackMpl));          
+        }
+        damage.skillRat *= valueUsed;
+        this.result += '[ ' + eff.name + ' ] 효과로 공격력이 ' + Math.round((valueUsed - 1) * 100) + '\% 올랐습니다!<br>';
       } else if (eff.noSkill && skill.code === undefined) {
         damage.skillRat *= eff.value;
         this.result += '[ ' + eff.name + ' ] 효과로 공격력이 ' + Math.round((eff.value - 1) * 100) + '\% 올랐습니다!<br>';    
@@ -1275,6 +1328,7 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
       }
     }
     
+    
     if (eff.setCooldown) {
       eff.cooldown = eff.setCooldown;
     }
@@ -1301,6 +1355,9 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
       this.result += eff.printText + '<br>';
     }
 
+    if (eff.loop) {
+      this.resolveEffects(winner, loser, [eff], damage, skill);
+    }
     if (eff.breakResolution) {
       break;
     }
@@ -1310,10 +1367,10 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
 Battlemodule.prototype.resolveTurnBegin = function(winner, loser) {
   this.resolveEffects(winner, loser, getItemEffects(winner, cons.ACTIVE_TYPE_TURN_START), null);
   this.resolveEffects(loser, winner, getItemEffects(loser, cons.ACTIVE_TYPE_TURN_START), null);
-  if (checkDrive(winner, cons.ACTIVE_TYPE_TURN_START)) {
+  if (this.checkDrive(winner, cons.ACTIVE_TYPE_TURN_START, loser)) {
     this.resolveDrive(winner, loser);
   }
-  if (checkDrive(loser, cons.ACTIVE_TYPE_TURN_START)) {
+  if (this.checkDrive(loser, cons.ACTIVE_TYPE_TURN_START, winner)) {
     this.resolveDrive(loser, winner);
   }
   this.resolveTurnBeginChar(winner, loser);
@@ -1341,10 +1398,10 @@ Battlemodule.prototype.resolveTurnBeginChar = function(chara, opp) {
 }
 
 Battlemodule.prototype.resolveTurnEnd = function(winner, loser) {
-  if (checkDrive(winner, cons.ACTIVE_TYPE_TURN_END, loser)) {
+  if (this.checkDrive(winner, cons.ACTIVE_TYPE_TURN_END, loser)) {
     this.resolveDrive(winner, loser);
   }
-  if (checkDrive(loser, cons.ACTIVE_TYPE_TURN_END, winner)) {
+  if (this.checkDrive(loser, cons.ACTIVE_TYPE_TURN_END, winner)) {
     this.resolveDrive(loser, winner);
   }
   calcStats(winner, loser);
@@ -1465,7 +1522,7 @@ Battlemodule.prototype.giveBuff = function(src, recv, buffObj, printFlag, name) 
     recv.buffs.push(buffObj);
   }       
   
-  if (checkDrive(recv, cons.ACTIVE_TYPE_RECEIVE_BUFF)) {
+  if (this.checkDrive(recv, cons.ACTIVE_TYPE_RECEIVE_BUFF)) {
     this.resolveDrive(recv, src, buffObj);
   }
 }
@@ -1476,7 +1533,7 @@ function removeBuff(buff) {
   buff.effect = [];
 }
 
-function checkDrive(chara, active, arg) {
+Battlemodule.prototype.checkDrive = function(chara, active, arg) {
   if (!chara.skill.drive) {
     return false;
   }
@@ -1504,10 +1561,19 @@ function checkDrive(chara, active, arg) {
   if (chara.skillOri.drive.cooldown && chara.skillOri.drive.cooldown > 0) {
     return false;
   }
+  if (chara.skill.drive.checkFunc) {
+    if (!this.modFunc[chara.skill.drive.checkFunc](chara, arg, this)) {
+      return false;
+    }
+  }
   if (chara.skill.drive.fireOnce) {
     chara.skillOri.drive.active = null;
   }
-  return getRandom(chara.skill.drive.chance) && chara.curSp >= chara.skill.drive.cost && findBuffByCode(chara, 10010).length == 0;
+  var chanceUsed = chara.skill.drive.chance;
+  if (chara.skill.drive.chanceModFunc) {
+    chanceUsed = this.modFunc[chara.skill.drive.chanceModFunc](chara, arg, chanceUsed);
+  }
+  return getRandom(chanceUsed) && chara.curSp >= chara.skill.drive.cost && findBuffByCode(chara, 10010).length == 0;
 }
 
 Battlemodule.prototype.resolveDrive = function(chara, opp, damage) {
@@ -1576,16 +1642,29 @@ function calcStats(chara, opp) {
       chara.stat[keyItem] += chara.items[key]['stat'][keyItem];
     }
   }
+  chara.name = chara.nameOri;
   chara.skill = JSON.parse(JSON.stringify(chara.skillOri));
 
   for (val of getBuffEffects(chara, cons.ACTIVE_TYPE_CALC_STATS)) {
     var stackMpl = val.buff ? (val.buff.stack ? val.buff.stack : 1) : 1;
+    if (stackMpl > val.maxApply) {
+      stackMpl = val.maxApply;
+    }
     if (val.isPercentStat) {
       stackMpl *= chara.stat[val.percentKey];
     }
     
+    if (val.chk && findBuffByIds(chara, val.chk).length === 0) {
+      continue;
+    }
+    if (val.chkAll && findBuffByIds(chara, val.chkAll).length < val.chkAll.length) {
+      continue;
+    }
+    
     if (val.code === cons.EFFECT_TYPE_STAT_ADD) {
       chara.stat[val.key] += val.value * stackMpl;
+    } else if (val.code === cons.EFFECT_TYPE_SET_NAME) {
+      chara.name = val.value;
     } 
   }
   for (val of getBuffEffects(opp, cons.ACTIVE_TYPE_OPP_CALC_STATS)) {
@@ -1627,6 +1706,10 @@ function calcStats(chara, opp) {
   // multiplication must be last (x0 case)
   for (val of getBuffEffects(chara, cons.ACTIVE_TYPE_CALC_STATS)) {
     var stackMpl = val.buff ? (val.buff.stack ? val.buff.stack : 1) : 1;
+    if (val.chk && findBuffByIds(chara, val.chk).length === 0) {
+      continue;
+    }
+    
     if (val.code === cons.EFFECT_TYPE_STAT_MULTIPLY) {
       chara.stat[val.key] *= Math.pow(val.value, stackMpl);
     } else if (val.code === cons.EFFECT_TYPE_STAT_PERCENTAGE) {
@@ -1671,6 +1754,7 @@ function calcStats(chara, opp) {
   chara.stat.maxHp = Math.round(chara.stat.maxHp);
   chara.stat.hpRegen = Math.round(10 * chara.stat.hpRegen) / 10;
   chara.stat.spRegen = Math.round(10 * chara.stat.spRegen) / 10;
+  chara.skill.special.cost = Math.round(10 * chara.skill.special.cost) / 10;
 }
 
 Battlemodule.prototype._isBattleFinished = function() {
@@ -1704,6 +1788,7 @@ function _initChar(char, flag) {
   }
   char.curSp = char.curSp ? char.curSp : 0;
   char.buffs = [];
+  char.nameOri = char.name;
   char.skillOri = JSON.parse(JSON.stringify(char.skill));
   char.lastDamage = 0;
   if (char.items.weapon) {

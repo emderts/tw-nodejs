@@ -3383,7 +3383,7 @@ module.exports.getBuffData = function(eff) {
     retObj.effect.push(effectObj);
     break;
   case 201781 : 
-    retObj.name = '충전 보호막';
+    retObj.name = '전자기 보호막';
     retObj.nameType = cons.NAME_KOR_END_CONS;
     retObj.stackType = 3;
     retObj.isDebuff = false;
@@ -3530,6 +3530,334 @@ module.exports.getBuffData = function(eff) {
     effectObj.code = cons.EFFECT_TYPE_ADD_DAMAGE;
     effectObj.anySkill = true;
     effectObj.value = 0.2;
+    retObj.effect.push(effectObj);
+    break;
+  case 201788 : 
+    retObj.name = '기마대';
+    retObj.nameType = cons.NAME_KOR_NO_END_CONS;
+    retObj.stackType = 4;
+    retObj.durOff = null;
+    retObj.isDebuff = false;
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_USE_SPECIAL;
+    effectObj.code = cons.EFFECT_TYPE_ADD_HIT;
+    effectObj.type = cons.DAMAGE_TYPE_PHYSICAL_FIXED;
+    //effectObj.chkSkillCode = 201778;
+    effectObj.value = 0.8;
+    retObj.effect.push(effectObj);
+    break;
+  case 201789 : 
+    retObj.name = '철갑군';
+    retObj.nameType = cons.NAME_KOR_END_CONS;
+    retObj.stackType = 4;
+    retObj.durOff = null;
+    retObj.isDebuff = false;
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_STAT_ADD;
+    effectObj.key = 'phyReduce';
+    effectObj.value = 0.002;
+    effectObj.maxApply = 100;
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_STAT_ADD;
+    effectObj.key = 'magReduce';
+    effectObj.value = 0.002;
+    effectObj.maxApply = 100;
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_USE_SPECIAL;
+    effectObj.code = cons.EFFECT_TYPE_ADD_HIT;
+    effectObj.type = cons.DAMAGE_TYPE_PHYSICAL_FIXED;
+    //effectObj.chkSkillCode = 201778;
+    effectObj.value = 0.2;
+    retObj.effect.push(effectObj);
+    break;
+  case 201790 : 
+    retObj.name = '방진';
+    retObj.nameType = cons.NAME_KOR_END_CONS;
+    retObj.stackType = 1;
+    retObj.isDebuff = false;
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_STAT_ADD;
+    effectObj.key = 'phyReduce';
+    effectObj.value = 0.1;
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_STAT_ADD;
+    effectObj.key = 'magReduce';
+    effectObj.value = 0.1;
+    retObj.effect.push(effectObj);
+    break;
+  case 201791 : 
+    retObj.name = '쇠뇌대';
+    retObj.nameType = cons.NAME_KOR_NO_END_CONS;
+    retObj.stackType = 4;
+    retObj.durOff = null;
+    retObj.isDebuff = false;
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_USE_SPECIAL;
+    effectObj.code = cons.EFFECT_TYPE_ADD_HIT;
+    effectObj.type = cons.DAMAGE_TYPE_MAGICAL_FIXED;
+    //effectObj.chkSkillCode = 201778;
+    effectObj.value = 1.2;
+    retObj.effect.push(effectObj);
+    break;
+  case 201792 : 
+    retObj.name = '메소드 연주';
+    retObj.nameType = cons.NAME_KOR_NO_END_CONS;
+    retObj.stackType = 1;
+    retObj.isDebuff = false;
+    retObj.durOff = null;
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_ATTACK;
+    effectObj.removeBuff = true;
+    retObj.effect.push(effectObj);
+    break;
+  case 201793 : 
+    retObj.name = '앙상블';
+    retObj.nameType = cons.NAME_KOR_END_CONS;
+    retObj.stackType = 2;
+    retObj.stack = 1;
+    retObj.isDebuff = false;
+    retObj.durOff = null;
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_DAMAGE;
+    effectObj.code = cons.EFFECT_TYPE_MULTIPLY_DAMAGE;
+    effectObj.value = 0.05;
+    effectObj.anySkill = true;
+    effectObj.stackable = true;
+    effectObj.chkAll = [201792, 2017101];
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_ATTACK;
+    effectObj.code = cons.EFFECT_TYPE_SELF_HP;
+    effectObj.value = 0.05;
+    effectObj.isPercentDamage = true;
+    effectObj.chkAll = [201792, 2017102];
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_STAT_ADD;
+    effectObj.key = 'critDmg';
+    effectObj.value = 0.05;
+    effectObj.chkAll = [201792, 2017103];
+    retObj.effect.push(effectObj);
+    break;
+  case 201794 : 
+    retObj.name = '도입 - 선셋 라이더';
+    retObj.nameType = cons.NAME_KOR_NO_END_CONS;
+    retObj.stackType = 1;
+    retObj.dispellable = false;
+    retObj.isDebuff = false;
+    retObj.durOff = null;
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_SET_SKILL;
+    effectObj.key = 'special';
+    effectObj.target = {code : 201791, name : '도입 - 선셋 라이더', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 80, 
+        effect : [{code : cons.EFFECT_TYPE_SELF_HP, value : 0.2, isPercentHpLost : true},
+                  {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 2017100, buffDur : null}]};
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_BEFORE_USE_SPECIAL;
+    effectObj.removeBuff = true;
+    retObj.effect.push(effectObj);
+    break;
+  case 201795 : 
+    retObj.name = '상승 - 로드 오브 레인저';
+    retObj.nameType = cons.NAME_KOR_NO_END_CONS;
+    retObj.stackType = 1;
+    retObj.dispellable = false;
+    retObj.isDebuff = false;
+    retObj.durOff = null;
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_SET_SKILL;
+    effectObj.key = 'special';
+    effectObj.target = {code : 201792, name : '상승 - 로드 오브 레인저', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 100, 
+        effect : [{code : cons.EFFECT_TYPE_SELF_HP, value : 0.25, isPercentHpLost : true},
+                  {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 2017101, buffDur : null}]};
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_BEFORE_USE_SPECIAL;
+    effectObj.removeBuff = true;
+    retObj.effect.push(effectObj);
+    break;
+  case 201796 : 
+    retObj.name = '절정 - 블러디 카니발';
+    retObj.nameType = cons.NAME_KOR_END_CONS;
+    retObj.stackType = 1;
+    retObj.dispellable = false;
+    retObj.isDebuff = false;
+    retObj.durOff = null;
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_SET_SKILL;
+    effectObj.key = 'special';
+    effectObj.target = {code : 201793, name : '절정 - 블러디 카니발', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 120, 
+        effect : [{code : cons.EFFECT_TYPE_SELF_HP, value : 0.3, isPercentHpLost : true},
+                  {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 2017102, buffDur : null}]};
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_BEFORE_USE_SPECIAL;
+    effectObj.removeBuff = true;
+    retObj.effect.push(effectObj);
+    break;
+  case 201797 : 
+    retObj.name = '반전 - 티켓 투 헤븐';
+    retObj.nameType = cons.NAME_KOR_END_CONS;
+    retObj.stackType = 1;
+    retObj.dispellable = false;
+    retObj.isDebuff = false;
+    retObj.durOff = null;
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_SET_SKILL;
+    effectObj.key = 'special';
+    effectObj.target = {code : 201794, name : '반전 - 티켓 투 헤븐', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 140, 
+        effect : [{code : cons.EFFECT_TYPE_SELF_HP, value : 0.35, isPercentHpLost : true},
+                  {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 2017103, buffDur : null}]};
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_BEFORE_USE_SPECIAL;
+    effectObj.removeBuff = true;
+    retObj.effect.push(effectObj);
+    break;
+  case 201798 : 
+    retObj.name = '파국 - 마지막 호흡';
+    retObj.nameType = cons.NAME_KOR_END_CONS;
+    retObj.stackType = 1;
+    retObj.dispellable = false;
+    retObj.isDebuff = false;
+    retObj.durOff = null;
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_SET_SKILL;
+    effectObj.key = 'special';
+    effectObj.target = {code : 201795, name : '파국 - 마지막 호흡', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 160, 
+        effect : [{code : cons.EFFECT_TYPE_SELF_HP, value : 0.4, isPercentHpLost : true},
+                  {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201799, buffDur : null},
+                  {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 2017104, buffDur : null}]};
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_BEFORE_USE_SPECIAL;
+    effectObj.removeBuff = true;
+    retObj.effect.push(effectObj);
+    break;
+  case 201799 : 
+    retObj.name = '앙코르';
+    retObj.nameType = cons.NAME_KOR_NO_END_CONS;
+    retObj.stackType = 1;
+    retObj.dispellable = false;
+    retObj.isDebuff = false;
+    retObj.durOff = null;
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_SET_SKILL;
+    effectObj.key = 'special';
+    effectObj.target = {code : 201796, name : '앙코르', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 40, 
+        effect : [{code : cons.EFFECT_TYPE_SELECTION, selectChances : [0.5, 1],
+          options : [{code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL, value : 1},
+                     {code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_MAGICAL, value : 1}]}]};
+    retObj.effect.push(effectObj);
+    break;
+  case 2017100 : 
+    retObj.name = '선셋 라이더';
+    retObj.nameType = cons.NAME_KOR_NO_END_CONS;
+    retObj.stackType = 1;
+    retObj.dispellable = false;
+    retObj.isDebuff = false;
+    retObj.durOff = null;
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_SET_NAME;
+    effectObj.value = '<span class="colorGold">제이</span>';
+    effectObj.chk = [201792];
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_STAT_PERCENTAGE;
+    effectObj.key = 'phyAtk';
+    effectObj.value = 0.35;
+    effectObj.chk = [201792];
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_STAT_PERCENTAGE;
+    effectObj.key = 'magAtk';
+    effectObj.value = 0.35;
+    effectObj.chk = [201792];
+    retObj.effect.push(effectObj);
+    break;
+  case 2017101 : 
+    retObj.name = '로드 오브 레인저';
+    retObj.nameType = cons.NAME_KOR_NO_END_CONS;
+    retObj.stackType = 1;
+    retObj.dispellable = false;
+    retObj.isDebuff = false;
+    retObj.durOff = null;
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_STAT_ADD;
+    effectObj.key = 'crit';
+    effectObj.value = 0.1;
+    effectObj.chk = [201792];
+    retObj.effect.push(effectObj);
+    break;
+  case 2017102 : 
+    retObj.name = '블러디 카니발';
+    retObj.nameType = cons.NAME_KOR_END_CONS;
+    retObj.stackType = 1;
+    retObj.dispellable = false;
+    retObj.isDebuff = false;
+    retObj.durOff = null;
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_STAT_MULTIPLY;
+    effectObj.key = 'hpRegen';
+    effectObj.value = 2;
+    effectObj.chk = [201792];
+    retObj.effect.push(effectObj);
+    break;
+  case 2017103 : 
+    retObj.name = '티켓 투 헤븐';
+    retObj.nameType = cons.NAME_KOR_END_CONS;
+    retObj.stackType = 1;
+    retObj.dispellable = false;
+    retObj.isDebuff = false;
+    retObj.durOff = null;
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_STAT_MULTIPLY;
+    effectObj.key = 'spRegen';
+    effectObj.value = 2;
+    effectObj.chk = [201792];
+    retObj.effect.push(effectObj);
+    break;
+  case 2017104 : 
+    retObj.name = '마지막 호흡';
+    retObj.nameType = cons.NAME_KOR_END_CONS;
+    retObj.stackType = 1;
+    retObj.dispellable = false;
+    retObj.isDebuff = false;
+    retObj.durOff = null;
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_STAT_ADD;
+    effectObj.key = 'crit';
+    effectObj.value = 0.1;
+    effectObj.chk = [201792];
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_STAT_ADD;
+    effectObj.key = 'hit';
+    effectObj.value = 0.6;
+    effectObj.chk = [201792];
     retObj.effect.push(effectObj);
     break;
   case 90001 : 
