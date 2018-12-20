@@ -1754,7 +1754,9 @@ function calcStats(chara, opp) {
   chara.stat.maxHp = Math.round(chara.stat.maxHp);
   chara.stat.hpRegen = Math.round(10 * chara.stat.hpRegen) / 10;
   chara.stat.spRegen = Math.round(10 * chara.stat.spRegen) / 10;
-  chara.skill.special.cost = Math.round(10 * chara.skill.special.cost) / 10;
+  if (chara.skill.special) {
+    chara.skill.special.cost = Math.round(10 * chara.skill.special.cost) / 10;
+  }
 }
 
 Battlemodule.prototype._isBattleFinished = function() {
