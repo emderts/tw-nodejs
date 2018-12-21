@@ -2797,13 +2797,19 @@ module.exports.getBuffData = function(eff) {
     effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
     effectObj.code = cons.EFFECT_TYPE_STAT_ADD;
     effectObj.key = 'phyReduce';
-    effectObj.value = 0.05;
+    effectObj.value = 0.075;
     retObj.effect.push(effectObj);
     effectObj = {};
     effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
     effectObj.code = cons.EFFECT_TYPE_STAT_ADD;
     effectObj.key = 'hit';
     effectObj.value = 0.05;
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_STAT_ADD;
+    effectObj.key = 'crit';
+    effectObj.value = 0.025;
     retObj.effect.push(effectObj);
     effectObj = {};
     effectObj.active = cons.ACTIVE_TYPE_USE_SPECIAL;
@@ -2828,13 +2834,19 @@ module.exports.getBuffData = function(eff) {
     effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
     effectObj.code = cons.EFFECT_TYPE_STAT_ADD;
     effectObj.key = 'magReduce';
-    effectObj.value = 0.05;
+    effectObj.value = 0.075;
     retObj.effect.push(effectObj);
     effectObj = {};
     effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
     effectObj.code = cons.EFFECT_TYPE_STAT_ADD;
     effectObj.key = 'hit';
     effectObj.value = 0.05;
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_STAT_ADD;
+    effectObj.key = 'crit';
+    effectObj.value = 0.025;
     retObj.effect.push(effectObj);
     break;
   case 201757 : 
@@ -3325,7 +3337,7 @@ module.exports.getBuffData = function(eff) {
     effectObj = {};
     effectObj.active = cons.ACTIVE_TYPE_USE_SPECIAL;
     effectObj.code = cons.EFFECT_TYPE_SELF_BUFF;
-    effectObj.buffCode = 201781;
+    effectObj.buffCode = 2017105;
     effectObj.buffDur = null;
     effectObj.value = 0.08;
     effectObj.removeBuff = true;
@@ -3342,6 +3354,20 @@ module.exports.getBuffData = function(eff) {
     effectObj.value = 0.25;
     effectObj.isPercentBuffValue = true;
     effectObj.chkBuffCode = 201781;
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_RECEIVE_BUFF;
+    effectObj.code = cons.EFFECT_TYPE_SELF_HP;
+    effectObj.value = 0.25;
+    effectObj.isPercentBuffValue = true;
+    effectObj.chkBuffCode = 2017105;
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_RECEIVE_BUFF;
+    effectObj.code = cons.EFFECT_TYPE_SELF_HP;
+    effectObj.value = 0.25;
+    effectObj.isPercentBuffValue = true;
+    effectObj.chkBuffCode = 2017106;
     retObj.effect.push(effectObj);
     break;
   case 201779 : 
@@ -3383,6 +3409,30 @@ module.exports.getBuffData = function(eff) {
     retObj.effect.push(effectObj);
     break;
   case 201781 : 
+    retObj.name = '전자기 보호막';
+    retObj.nameType = cons.NAME_KOR_END_CONS;
+    retObj.stackType = 3;
+    retObj.isDebuff = false;
+    retObj.durOff = null;
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_DEAL_DAMAGE_RECEIVE;
+    effectObj.code = cons.EFFECT_TYPE_SHIELD;
+    effectObj.value = eff.value;
+    retObj.effect.push(effectObj);
+    break;
+  case 2017105 : 
+    retObj.name = '전자기 보호막';
+    retObj.nameType = cons.NAME_KOR_END_CONS;
+    retObj.stackType = 3;
+    retObj.isDebuff = false;
+    retObj.durOff = null;
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_DEAL_DAMAGE_RECEIVE;
+    effectObj.code = cons.EFFECT_TYPE_SHIELD;
+    effectObj.value = eff.value;
+    retObj.effect.push(effectObj);
+    break;
+  case 2017106 : 
     retObj.name = '전자기 보호막';
     retObj.nameType = cons.NAME_KOR_END_CONS;
     retObj.stackType = 3;
@@ -3436,7 +3486,7 @@ module.exports.getBuffData = function(eff) {
     effectObj = {};
     effectObj.active = cons.ACTIVE_TYPE_CALC_DAMAGE;
     effectObj.code = cons.EFFECT_TYPE_MULTIPLY_DAMAGE;
-    effectObj.value = 1.25;
+    effectObj.value = 1.3;
     effectObj.anySkill = true;
     retObj.effect.push(effectObj);
     break;
@@ -3646,6 +3696,18 @@ module.exports.getBuffData = function(eff) {
     effectObj.value = 0.05;
     effectObj.chkAll = [201792, 2017103];
     retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_STAT_ADD;
+    effectObj.key = 'crit';
+    effectObj.value = 0.02;
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_STAT_ADD;
+    effectObj.key = 'spRegen';
+    effectObj.value = 1;
+    retObj.effect.push(effectObj);
     break;
   case 201794 : 
     retObj.name = '도입 - 선셋 라이더';
@@ -3658,7 +3720,7 @@ module.exports.getBuffData = function(eff) {
     effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
     effectObj.code = cons.EFFECT_TYPE_SET_SKILL;
     effectObj.key = 'special';
-    effectObj.target = {code : 201791, name : '도입 - 선셋 라이더', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 80, 
+    effectObj.target = {code : 201791, name : '도입 - 선셋 라이더', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 35, 
         effect : [{code : cons.EFFECT_TYPE_SELF_HP, value : 0.2, isPercentHpLost : true},
                   {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 2017100, buffDur : null}]};
     retObj.effect.push(effectObj);
@@ -3678,7 +3740,7 @@ module.exports.getBuffData = function(eff) {
     effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
     effectObj.code = cons.EFFECT_TYPE_SET_SKILL;
     effectObj.key = 'special';
-    effectObj.target = {code : 201792, name : '상승 - 로드 오브 레인저', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 100, 
+    effectObj.target = {code : 201792, name : '상승 - 로드 오브 레인저', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 50, 
         effect : [{code : cons.EFFECT_TYPE_SELF_HP, value : 0.25, isPercentHpLost : true},
                   {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 2017101, buffDur : null}]};
     retObj.effect.push(effectObj);
@@ -3698,7 +3760,7 @@ module.exports.getBuffData = function(eff) {
     effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
     effectObj.code = cons.EFFECT_TYPE_SET_SKILL;
     effectObj.key = 'special';
-    effectObj.target = {code : 201793, name : '절정 - 블러디 카니발', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 120, 
+    effectObj.target = {code : 201793, name : '절정 - 블러디 카니발', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 65, 
         effect : [{code : cons.EFFECT_TYPE_SELF_HP, value : 0.3, isPercentHpLost : true},
                   {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 2017102, buffDur : null}]};
     retObj.effect.push(effectObj);
@@ -3718,7 +3780,7 @@ module.exports.getBuffData = function(eff) {
     effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
     effectObj.code = cons.EFFECT_TYPE_SET_SKILL;
     effectObj.key = 'special';
-    effectObj.target = {code : 201794, name : '반전 - 티켓 투 헤븐', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 140, 
+    effectObj.target = {code : 201794, name : '반전 - 티켓 투 헤븐', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 90, 
         effect : [{code : cons.EFFECT_TYPE_SELF_HP, value : 0.35, isPercentHpLost : true},
                   {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 2017103, buffDur : null}]};
     retObj.effect.push(effectObj);
@@ -3738,7 +3800,7 @@ module.exports.getBuffData = function(eff) {
     effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
     effectObj.code = cons.EFFECT_TYPE_SET_SKILL;
     effectObj.key = 'special';
-    effectObj.target = {code : 201795, name : '파국 - 마지막 호흡', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 160, 
+    effectObj.target = {code : 201795, name : '파국 - 마지막 호흡', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 105, 
         effect : [{code : cons.EFFECT_TYPE_SELF_HP, value : 0.4, isPercentHpLost : true},
                   {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201799, buffDur : null},
                   {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 2017104, buffDur : null}]};
@@ -3759,7 +3821,7 @@ module.exports.getBuffData = function(eff) {
     effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
     effectObj.code = cons.EFFECT_TYPE_SET_SKILL;
     effectObj.key = 'special';
-    effectObj.target = {code : 201796, name : '앙코르', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 40, 
+    effectObj.target = {code : 201796, name : '앙코르', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 35, 
         effect : [{code : cons.EFFECT_TYPE_SELECTION, selectChances : [0.5, 1],
           options : [{code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL, value : 1},
                      {code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_MAGICAL, value : 1}]}]};

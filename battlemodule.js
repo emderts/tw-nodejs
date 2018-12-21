@@ -89,6 +89,10 @@ Battlemodule.prototype._doBattleStart = function (flag) {
     var ens = findBuffByIds(chara, [201793]);
     return (ens.length == 0 || ens[0].stack < 12) && (data.leftWin == data.rightWin);
   }
+  this.modFunc[2] = function (chara, opp, data) {
+    var ens = getShieldValue(chara);
+    return (opp.curHp * 0.3 <= ens) && (opp.stat.maxHp * 0.05 <= ens);
+  }
 
   _initChar(this.charLeft, flag);
   _initChar(this.charRight, flag);
@@ -913,12 +917,21 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
         buffObj.effect[0].value *= winner.lastDamage;
       } else if (buffObj.id === 201781) {
         buffObj.effect[0].value = Math.round(buffObj.effect[0].value * winner.stat.maxHp * stackMpl);
+      } else if (buffObj.id === 2017105) {
+        buffObj.effect[0].value = Math.round(buffObj.effect[0].value * (winner.stat.maxHp - winner.curHp) * stackMpl);
+      } else if (buffObj.id === 2017106) {
+        buffObj.effect[0].value = Math.round(buffObj.effect[0].value * damage.value * stackMpl);
       }
 
       if (eff.setStack) {        
         var valueUsed = eff.setStack;
         if (eff.isPercentDamage) {
           valueUsed *= damage.value;
+        } else if (eff.addDamage) {
+          var tempObj = {};
+          tempObj.damage = eff.value * stackMpl;
+          tempObj.type = eff.type;
+          var damageAdd = this.calcDamage(winner, loser, tempObj);
         }
         buffObj.stack = Math.round(valueUsed);
       }
@@ -1550,9 +1563,6 @@ Battlemodule.prototype.checkDrive = function(chara, active, arg) {
     return false;
   }
   if (chara.skill.drive.chkSameAttack && chara.lastSkill !== arg) {
-    return false;
-  }
-  if (chara.skill.drive.chkShieldCurHp && arg.curHp * chara.skill.drive.chkShieldCurHp > getShieldValue(chara)) {
     return false;
   }
   if (chara.skill.drive.chkWinLast && !chara.winLast) {

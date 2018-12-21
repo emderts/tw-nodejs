@@ -193,6 +193,8 @@ io.on('connection', (socket) => {
 });
 
 function procFullTest() {
+  try {
+    const client = await pool.connect();
   var testChars = [chara.gaius, chara.lunisha, chara.ruisun, chara.seriers, chara.illun, chara.bks, chara.nux, chara.kasien, chara.marang, chara.gabi, chara.jay];
   var testResults = [];
   var testTurns = [];
@@ -209,15 +211,23 @@ function procFullTest() {
         var ret = (new battlemodule.bmodule()).doBattle(JSON.parse(JSON.stringify(left)), JSON.parse(JSON.stringify(right)));
         testResults[ind][indr] += (ret.winnerLeft ? 1 : 0);
         testTurns[ind][indr] += ret.turnCount;
+        if (i == 0) {
+          var winner = ret.winnerLeft ? left.name + ' 승리!' : (ret.winnerRight ? right.name + ' 승리!' : '');
+          var battleTitle = '[ ' + left.name + ' ] vs [ ' + right.name + ' ] - ' + winner;
+          await client.query('insert into results(title, result, date) values ($1, $2, $3)', [battleTitle, ret.result, new Date()]);
+        }
       }
-      console.log(resultStr);
+      console.log(left.name + ' vs ' + right.name + ' : ' + testResults[ind][indr]);
       resultStr += left.name + ' vs ' + right.name + ' : ' + testResults[ind][indr] + ', ' + testTurns[ind][indr] + '<br>';
       wins += testResults[ind][indr];
     }
-    resultStr += '총 승리 : ' + wins + '<br>';
+    resultStr += '총 승리 : ' + wins + '<br><br>';
   }
-
+  client.release();
   return resultStr;
+  } catch (err) {
+    
+  }
 }
 
 async function procInit () {
@@ -815,7 +825,7 @@ async function procTrain(req, res) {
     const charRow = await getCharacter(sess.userUid);
     const char = JSON.parse(charRow.char_data);
     
-    var re = (new battlemodule.bmodule()).doBattle(JSON.parse(JSON.stringify(char)), JSON.parse(JSON.stringify(monster.xTrain)));
+    var re = (new battlemodule.bmodule()).doBattle(JSON.parse(JSON.stringify(char)), JSON.parse(JSON.stringify(monster.xTrain)), 1);
     res.render('pages/battle', {result: re.result});
   } catch (err) {
     console.error(err);
@@ -982,14 +992,14 @@ async function procBattle(req, res) {
         if (right.winChain % 3 == 0) {
           if (right.winChain > 5) {
             await client.query('insert into news(content, date) values ($1, $2)', 
-                [right.name + getIga(right.nameType) + ' ' + right.winChain + '연승중입니다!', new Date()]);
+                [right.name + getIga(right.nameType) + ' ' + right.winChain + '연승 중입니다!', new Date()]);
           }
           right.premiumPoint += right.winChain / 3;          
         }
         if (left.winChain >= 3) {
           if (left.winChain >= 5) {
             await client.query('insert into news(content, date) values ($1, $2)', 
-                [right.name + getIga(right.nameType) + ' ' + left.name + '의' + left.winChain + '연승을 차단했습니다!', new Date()]);
+                [right.name + getIga(right.nameType) + ' ' + left.name + '의 ' + left.winChain + '연승을 차단했습니다!', new Date()]);
           }
           right.premiumPoint += Math.floor(left.winChain / 3);            
         }
