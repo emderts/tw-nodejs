@@ -192,7 +192,7 @@ io.on('connection', (socket) => {
   });  
 });
 
-function procFullTest() {
+async function procFullTest() {
   try {
     const client = await pool.connect();
   var testChars = [chara.gaius, chara.lunisha, chara.ruisun, chara.seriers, chara.illun, chara.bks, chara.nux, chara.kasien, chara.marang, chara.gabi, chara.jay];
