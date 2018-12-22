@@ -492,7 +492,7 @@ async function procUseItem (req, res) {
         chara.quest[5].progress += 3;
       }
       if (!chara.achievement[26 - tgtObj.rank]) {
-        await giveAchievement(chara, 26 - tgtObj.rank);
+        await giveAchievement(req.session.userUid, chara, 26 - tgtObj.rank);
       }      
     }
     
@@ -513,6 +513,7 @@ async function procUseItem (req, res) {
     }
     
     if (result.rows.length > 0) {
+      
       const resultChar = await client.query('select char_data from characters where uid = $1', [result.rows[0].uid]);
       if (resultChar.rows.length > 0) {
         chara = JSON.parse(resultChar.rows[0].char_data);
@@ -977,22 +978,22 @@ async function procBattle(req, res) {
       async function _processWinner(winner, loser, uid) {
         winner.winCnt++;
         if (!winner.achievement[8] && winner.winCnt >= 100) {
-          await giveAchievement(winner, 8);
+          await giveAchievement(req.session.userUid, winner, 8);
         }
         if (!winner.achievement[9] && winner.winCnt >= 200) {
-          await giveAchievement(winner, 9);
+          await giveAchievement(req.session.userUid, winner, 9);
         }
         if (!winner.achievement[10] && winner.winCnt >= 500) {
-          await giveAchievement(winner, 10);
+          await giveAchievement(req.session.userUid, winner, 10);
         }
         if (!winner.achievement[11] && winner.winCnt >= 1000) {
-          await giveAchievement(winner, 11);
+          await giveAchievement(req.session.userUid, winner, 11);
         }
         if (!winner.achievement[12] && winner.winCnt >= 1500) {
-          await giveAchievement(winner, 12);
+          await giveAchievement(req.session.userUid, winner, 12);
         }
         if (!winner.achievement[13] && winner.winCnt >= 2000) {
-          await giveAchievement(winner, 13);
+          await giveAchievement(req.session.userUid, winner, 13);
         }
         
         winner.winRecord[uid] = winner.winRecord[uid] ? winner.winRecord[uid] + 1 : 1;
@@ -1015,16 +1016,16 @@ async function procBattle(req, res) {
         }
         loser.winChain = 0;
         if (!winner.achievement[14] && winner.winChain >= 6) {
-          await giveAchievement(winner, 14);
+          await giveAchievement(req.session.userUid, winner, 14);
         }
         if (!winner.achievement[15] && winner.winChain >= 9) {
-          await giveAchievement(winner, 15);
+          await giveAchievement(req.session.userUid, winner, 15);
         }
         if (!winner.achievement[16] && winner.winChain >= 15) {
-          await giveAchievement(winner, 16);
+          await giveAchievement(req.session.userUid, winner, 16);
         }
         if (!winner.achievement[33] && loser.title == '리치 왕') {
-          await giveAchievement(winner, 33);
+          await giveAchievement(req.session.userUid, winner, 33);
         }
         
         if (winner.quest[1]) {
@@ -2064,7 +2065,7 @@ async function procRankup (req, res) {
       [char.name + getIga(char.nameType) + ' ' + char.rank + '급을 달성했습니다!', new Date()]);
   
   if (!char.achievement[8 - char.rank]) {
-    await giveAchievement(char, 8 - char.rank);
+    await giveAchievement(req.session.userUid, char, 8 - char.rank);
   }
   client.release();
   res.redirect('/');
@@ -2135,21 +2136,21 @@ async function getPersonalNews (uid) {
   }   
 }
 
-async function giveAchievement (chara, idx) {
+async function giveAchievement (uid, chara, idx) {
   try {
     const client = await pool.connect();
-    const charRow = await getCharacter(req.session.userUid);
     const globals = await getGlobals();
+    const charRow = await getCharacter(uid);
     
     chara.achievement[idx] = new Date();
     chara.premiumPoint += 1;
     await client.query('insert into personal(uid, content, date) values ($1, $2, $3)', 
-        [charRow.uid, '[ ' + achData[idx].name + ' ] 업적을 달성했습니다!', new Date()]);
+        [charRow.uid, '[ ' + ach.achData[idx].name + ' ] 업적을 달성했습니다!', new Date()]);
     
     if (!globals.achievement[idx]) {
       await setGlobals({achievement : {type : 'achievement', idx : idx, holder : chara.name}});
       await client.query('insert into news(content, date) values ($1, $2)', 
-          [chara.name + getIga(chara.nameType) + ' [ ' + achData[idx].name + ' ] 업적을 달성했습니다!', new Date()]);
+          [chara.name + getIga(chara.nameType) + ' [ ' + ach.achData[idx].name + ' ] 업적을 달성했습니다!', new Date()]);
     }
     client.release();
     return;
