@@ -932,6 +932,7 @@ async function procBattle(req, res) {
       right.statistics.atkCnt += re.rightWin;
       
       function _doStatistics(chara, opp) {
+        console.log(chara);
         chara.statistics.damageDone += chara.damageDone;
         chara.statistics.damageTaken += chara.damageTaken;
         if (chara.statistics.maxDamageDone < chara.maxDamageDone) {
