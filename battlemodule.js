@@ -932,11 +932,13 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
         if (eff.isPercentDamage) {
           valueUsed *= damage.value;
         } else if (eff.addDamage) {
-          var tempObj = {};
-          tempObj.damage = eff.value * stackMpl;
-          tempObj.type = eff.type;
-          var damageAdd = this.calcDamage(winner, loser, tempObj);
-          valueUsed += damageAdd.value;
+          for (const neff of eff.addDamage) {
+            var tempObj = {};
+            tempObj.damage = neff.value * stackMpl;
+            tempObj.type = neff.type;
+            var damageAdd = this.calcDamage(winner, loser, tempObj);
+            valueUsed += damageAdd.value;
+          }
         }
         buffObj.stack = Math.round(valueUsed);
       }

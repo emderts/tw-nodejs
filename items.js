@@ -894,15 +894,15 @@ itemList[412] = { id : 412, name : '크로울러의 민첩한 눈', nameType : c
 itemList[413] = { id : 413, name : '헤드 헌터의 괴창', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_SKILL_ARTIFACT, flavor : '', rank : 8, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { crit : 0.02 }, 
     effectDesc : '', effect : [] };
 itemList[414] = { id : 414, name : '메비우스 소탕자', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SKILL_ARTIFACT, flavor : '', rank : 8, rarity : cons.ITEM_RARITY_RARE, stat : { }, 
-    effectDesc : '\'메비우스\' 몬스터를 상대로 피해량 6% 증가', 
-    effect : [{code : cons.EFFECT_TYPE_MULTIPLY_DAMAGE, active : cons.ACTIVE_TYPE_CALC_DAMAGE, value : 1.06, all : true, chkTitle : '메비우스'}] };
+    effectDesc : '\'메비우스\' 몬스터를 상대로 피해량 10% 증가', 
+    effect : [{code : cons.EFFECT_TYPE_MULTIPLY_DAMAGE, active : cons.ACTIVE_TYPE_CALC_DAMAGE, value : 1.1, all : true, chkTitle : '메비우스'}] };
 itemList[415] = { id : 415, name : '빅토리어스의 의지', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SKILL_ARTIFACT, flavor : '', rank : 8, rarity : cons.ITEM_RARITY_UNIQUE, stat : {  }, 
     effectDesc : '현재 생명력이 50% 이하라면 피격 피해량을 10% 경감', 
     effect : [{code : cons.EFFECT_TYPE_CANCEL_DAMAGE, active : cons.ACTIVE_TYPE_TAKE_HIT, value : 0.1, chkHp : 0.5}] };
 itemList[416] = { id : 416, name : '카사스의 피고리', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_SKILL_ARTIFACT, flavor : '', rank : 8, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { phyReduce : -0.02, magReduce : -0.02 }, 
     effectDesc : '재의 묘소 던전에서 회피 +20%', 
     effect : [{code : cons.EFFECT_TYPE_STAT_ADD, active : cons.ACTIVE_TYPE_CALC_STATS, key : 'evasion', value : 0.2, chkTitle : '재의 묘소'}] };
-itemList[417] = { id : 417, name : '깊은 곳의 가호', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SKILL_ARTIFACT, flavor : '', rank : 8, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { phyAtk : 7, magAtk : 7 }, 
+itemList[417] = { id : 417, name : '깊은 곳의 가호', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SKILL_ARTIFACT, flavor : '', rank : 8, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { phyAtk : 5, magAtk : 5 }, 
     effectDesc : '', effect : [] };
 itemList[418] = { id : 418, name : '잿더미 : 나선의 검', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_SKILL_ARTIFACT, flavor : '', rank : 8, rarity : cons.ITEM_RARITY_RARE, stat : { }, 
     effectDesc : '전투 시작 시 적에게 2턴 간 [봉인], 1턴 간 [마비] 상태이상 부여', 

@@ -233,6 +233,9 @@
     rtext += item.name;
     if (item.type < 10) {
       rtext += '<br>' + item.rank + '급 ' + getRarityText(item.rarity) + ' ' + printName[item.type];
+      if (item.tradeCnt !== undefined) {
+        rtext += '<br>거래횟수 : ' + item.tradeCnt;
+      }
       rtext += '<br>' + getStatList(item);
       if (item.effectDesc && item.effectDesc.length > 0) {
         rtext += ', ' + item.effectDesc;

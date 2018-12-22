@@ -338,9 +338,9 @@ async function procInit2 () {
     } 
     for (val of result.rows) {
       var char = JSON.parse(val.char_data);
-      char.statistics = {damageDone : 0, maxDamageDone : 0, damageTaken : 0, maxDamageTaken : 0, atkCnt : 0, 
-          lostLowerRank : 0, wonHigherRank : 0, apUsed : 0, rareAmt : 0, uniqueAmt : 0, epicAmt : 0, 
-          cardUsed : 0, dustAmt : 0, premiumAmt : 0, maxHpStat : 0, phyAtkStat : 0, magAtkStat : 0};
+      char.dungeonInfos.taurusReward = 3;
+      char.dungeonInfos.enterMevious = 3;
+      char.dungeonInfos.enterEmberCrypt = 3;
       if (val.uid == '03') {
       }
       
@@ -480,6 +480,7 @@ async function procUseItem (req, res) {
     
     function _processUnique(chara, tgtObj, picked) {
       chara.statistics.uniqueAmt += 1;
+      picked.tradeCnt = 1;
       if (chara.quest[5]) {
         chara.quest[5].progress += 3;
       }
@@ -487,6 +488,7 @@ async function procUseItem (req, res) {
     
     async function _processEpic(chara, tgtObj, picked) {
       chara.statistics.epicAmt += 1;
+      picked.tradeCnt = 1;
       if (chara.quest[5]) {
         chara.quest[5].progress += 3;
       }
@@ -547,18 +549,18 @@ async function procUseItem (req, res) {
               chara.inventory.push(picked);
             } else if (rand < 0.486/*286*/) {
               picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_RARE);
-              chara.inventory.push(picked);
               _processRare(chara, tgtObj, picked);
+              chara.inventory.push(picked);
             } else if (rand < 0.56/*2985*/) {
               picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_UNIQUE);
+              _processUnique(chara, tgtObj, picked);
               chara.inventory.push(picked);
               await addItemNews(client, chara, tgtObj, picked);
-              _processUnique(chara, tgtObj, picked);
             } else if (rand < 0.58/*3*/) {
               picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_EPIC);
+              await _processEpic(chara, tgtObj, picked);
               chara.inventory.push(picked);
               await addItemNews(client, chara, tgtObj, picked);
-              await _processEpic(chara, tgtObj, picked);
             } else if (rand < 0.62) {
               picked = _processPremiumPoint(chara, tgtObj, 1);
             } else if (rand < 0.65) {
@@ -579,21 +581,21 @@ async function procUseItem (req, res) {
               chara.inventory.push(picked);
             } else if (rand < 0.7/*881*/) {
               picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_RARE, tgtObj.resultType);
-              chara.inventory.push(picked);
               _processRare(chara, tgtObj, picked);
+              chara.inventory.push(picked);
             } else if (rand < 0.895/*9365*/) {
               picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_UNIQUE, tgtObj.resultType);
+              _processUnique(chara, tgtObj, picked);
               chara.inventory.push(picked);
               await addItemNews(client, chara, tgtObj, picked);
-              _processUnique(chara, tgtObj, picked);
             } else if (rand < 0.895/*9895*/) {
               picked = _getItem(tgtObj.rank - 1, cons.ITEM_RARITY_COMMON_UNCOMMON, tgtObj.resultType);
               chara.inventory.push(picked);
             } else {
               picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_EPIC, tgtObj.resultType);
+              await _processEpic(chara, tgtObj, picked);
               chara.inventory.push(picked);
               await addItemNews(client, chara, tgtObj, picked);
-              await _processEpic(chara, tgtObj, picked);
             } 
           } else if (tgtObj.resultType == 90001) {
             if (rand < 0.405) {
@@ -601,21 +603,21 @@ async function procUseItem (req, res) {
               chara.inventory.push(picked);
             } else if (rand < 0.681) {
               picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_RARE);
-              chara.inventory.push(picked);
               _processRare(chara, tgtObj, picked);
+              chara.inventory.push(picked);
             } else if (rand < 0.7365) {
               picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_UNIQUE);
+              _processUnique(chara, tgtObj, picked);
               chara.inventory.push(picked);
               await addItemNews(client, chara, tgtObj, picked);
-              _processUnique(chara, tgtObj, picked);
             } else if (rand < 0.7895) {
               picked = _getItem(tgtObj.rank - 1, cons.ITEM_RARITY_COMMON_UNCOMMON, tgtObj.resultType);
               chara.inventory.push(picked);
             } else if (rand < 0.8) {
               picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_EPIC);
+              await _processEpic(chara, tgtObj, picked);
               chara.inventory.push(picked);
               await addItemNews(client, chara, tgtObj, picked);
-              await _processEpic(chara, tgtObj, picked);
             } else if (rand < 0.95) {
               chara.currencies.mevious += 2;
               picked = {name : '메비우스 섬멸의 증표 2개' , rarity : cons.ITEM_RARITY_COMMON};
@@ -629,21 +631,21 @@ async function procUseItem (req, res) {
               chara.inventory.push(picked);
             } else if (rand < 0.681) {
               picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_RARE);
-              chara.inventory.push(picked);
               _processRare(chara, tgtObj, picked);
+              chara.inventory.push(picked);
             } else if (rand < 0.7365) {
               picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_UNIQUE);
+              _processUnique(chara, tgtObj, picked);
               chara.inventory.push(picked);
               await addItemNews(client, chara, tgtObj, picked);
-              _processUnique(chara, tgtObj, picked);
             } else if (rand < 0.7895) {
               picked = _getItem(tgtObj.rank - 1, cons.ITEM_RARITY_COMMON_UNCOMMON, tgtObj.resultType);
               chara.inventory.push(picked);
             } else if (rand < 0.8) {
               picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_EPIC);
+              await _processEpic(chara, tgtObj, picked);
               chara.inventory.push(picked);
               await addItemNews(client, chara, tgtObj, picked);
-              await _processEpic(chara, tgtObj, picked);
             } else if (rand < 0.95) {
               chara.currencies.ember += 2;
               picked = {name : '잔불 2개' , rarity : cons.ITEM_RARITY_COMMON};
@@ -657,21 +659,21 @@ async function procUseItem (req, res) {
               chara.inventory.push(picked);
             } else if (rand < 0.681) {
               picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_RARE, tgtObj.resultType);
-              chara.inventory.push(picked);
               _processRare(chara, tgtObj, picked);
+              chara.inventory.push(picked);
             } else if (rand < 0.7365) {
               picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_UNIQUE, tgtObj.resultType);
+              _processUnique(chara, tgtObj, picked);
               chara.inventory.push(picked);
               await addItemNews(client, chara, tgtObj, picked);
-              _processUnique(chara, tgtObj, picked);
             } else if (rand < 0.7895) {
               picked = _getItem(tgtObj.rank - 1, cons.ITEM_RARITY_COMMON_UNCOMMON, tgtObj.resultType);
               chara.inventory.push(picked);
             } else if (rand < 0.8) {
               picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_EPIC);
+              await _processEpic(chara, tgtObj, picked);
               chara.inventory.push(picked);
               await addItemNews(client, chara, tgtObj, picked);
-              await _processEpic(chara, tgtObj, picked);
             } else if (rand < 0.95) {
               chara.currencies.burntMark += 2;
               picked = {name : '불탄 증표 2개', rarity : cons.ITEM_RARITY_COMMON};
@@ -682,42 +684,42 @@ async function procUseItem (req, res) {
           } else if (tgtObj.resultType == 5) {
             if (rand < 0.97) {
               picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_RARE, tgtObj.resultType);
-              chara.inventory.push(picked);
               _processRare(chara, tgtObj, picked);
+              chara.inventory.push(picked);
             } else if (rand < 0.99) {
               picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_UNIQUE, tgtObj.resultType);
+              _processUnique(chara, tgtObj, picked);
               chara.inventory.push(picked);
               await addItemNews(client, chara, tgtObj, picked);
-              _processUnique(chara, tgtObj, picked);
             } else {
               picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_EPIC, tgtObj.resultType);
+              await _processEpic(chara, tgtObj, picked);
               chara.inventory.push(picked);
               await addItemNews(client, chara, tgtObj, picked);
-              await _processEpic(chara, tgtObj, picked);
             } 
           } else if (tgtObj.resultType == 6) {
             if (rand < 0.96) {
               picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_UNIQUE, tgtObj.resultType);
+              _processUnique(chara, tgtObj, picked);
               chara.inventory.push(picked);
               await addItemNews(client, chara, tgtObj, picked);
-              _processUnique(chara, tgtObj, picked);
             } else {
               picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_EPIC, tgtObj.resultType);
+              await _processEpic(chara, tgtObj, picked);
               chara.inventory.push(picked);
               await addItemNews(client, chara, tgtObj, picked);
-              await _processEpic(chara, tgtObj, picked);
             } 
           } else if (tgtObj.resultType == 90005) {
             if (rand < 0) {
               picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_UNIQUE, tgtObj.resultType);
+              _processUnique(chara, tgtObj, picked);
               chara.inventory.push(picked);
               await addItemNews(client, chara, tgtObj, picked);
-              _processUnique(chara, tgtObj, picked);
             } else {
               picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_EPIC, tgtObj.resultType);
+              await _processEpic(chara, tgtObj, picked);
               chara.inventory.push(picked);
               await addItemNews(client, chara, tgtObj, picked);
-              await _processEpic(chara, tgtObj, picked);
             } 
           }
           res.render('pages/resultCard', {item : picked, nextIdx : nextIdx});
@@ -1173,6 +1175,13 @@ async function procGive(req, res) {
     const charTgt = JSON.parse(charRow2.char_data);
     var tgt = char.inventory[body.itemNum];
     if (tgt.type <= 3 || tgt.type == 999 || tgt.type == 90001) {
+      if (tgt.tradeCnt !== undefined) {
+        if (tgt.tradeCnt <= 0) {
+          res.send('거래 횟수 초과입니다.');
+        } else {
+          tgt.tradeCnt--;
+        }        
+      }
       char.inventory.splice(body.itemNum, 1);
       charTgt.inventory.push(tgt);
     }
@@ -1403,8 +1412,8 @@ async function procDungeon(req, res) {
     const client = await pool.connect();
     const result = await client.query('select * from raids');
     var dungeonList = [];
-    dungeonList.push({name : '메모리얼 게이트 - 메비우스 섬멸 [9급 20레벨 이상]', code : 1, active : !char.dungeonInfos.runMevious && (char.rank <= 8 || char.level >= 20)});
-    dungeonList.push({name : '어나더 게이트 - 재의 묘소 [9급 20레벨 이상]', code : 2, active : !char.dungeonInfos.runEmberCrypt && (char.rank <= 8 || char.level >= 20)});
+    dungeonList.push({name : '메모리얼 게이트 - 메비우스 섬멸 [9급 20레벨 이상]', code : 1, remain : char.dungeonInfos.enterMevious, active : !char.dungeonInfos.runMevious && char.dungeonInfos.enterMevious > 0 && (char.rank <= 8 || char.level >= 20)});
+    dungeonList.push({name : '어나더 게이트 - 재의 묘소 [9급 20레벨 이상]', code : 2, remain : char.dungeonInfos.enterEmberCrypt, active : !char.dungeonInfos.runEmberCrypt && char.dungeonInfos.enterEmberCrypt > 0 && (char.rank <= 8 || char.level >= 20)});
     dungeonList.push({name : '시즌 레이드 - 불타는 과수원 [피로도 1 / 7급 10레벨 이상]', code : 3, active : false});
     dungeonList.push({name : '필드 보스 - 고대 흑마법사 출현', code : 4, active : false});
     if (result && result.rows) {
@@ -1448,13 +1457,15 @@ async function procEnterDungeon(req, res) {
     // check entering cond
     const rand = Math.random();
     if (body.option == 1) {
-      if (!char.dungeonInfos.runMevious && (char.rank <= 8 || char.level >= 20)) {
+      if (!char.dungeonInfos.runMevious && char.dungeonInfos.enterMevious > 0 && (char.rank <= 8 || char.level >= 20)) {
         char.dungeonInfos.runMevious = true;
+        char.dungeonInfos.enterMevious--;
         enemy = rand < 0.5 ? monster.mCrawler : monster.mHeadHunter;
       }
     } else if (body.option == 2) {
-      if (!char.dungeonInfos.runEmberCrypt && (char.rank <= 8 || char.level >= 20)) {
+      if (!char.dungeonInfos.runEmberCrypt && char.dungeonInfos.enterEmberCrypt > 0 && (char.rank <= 8 || char.level >= 20)) {
         char.dungeonInfos.runEmberCrypt = true;
+        char.dungeonInfos.enterEmberCrypt--;
         enemy = rand < 0.5 ? monster.eBroken : monster.eCrossbow;
       }
     } else if (body.option == 3) {
@@ -1494,6 +1505,9 @@ async function procEnterDungeon(req, res) {
           await client.query('update characters set actionPoint = $1 where uid = $2', [charRow.actionPoint - 1, charRow.uid]);
         }
         req.session.dungeonProgress = {code : body.option, phase : 1, resultList : resultList, charData : re.leftInfo};
+        if (body.option == 1) {
+          req.session.dungeonProgress.taurus = 0;
+        }
       } else {
         var re = (new battlemodule.bmodule()).doBattle(JSON.parse(JSON.stringify(enemy)), JSON.parse(JSON.stringify(char)), 1);
         var resultList = [{phase : 1, monImage : enemy.image, monName : enemy.name, 
@@ -1555,11 +1569,11 @@ async function procNextPhaseDungeon(req, res) {
     const rand = Math.random();
     if (sess.dungeonProgress) {
       if (sess.dungeonProgress.code == 1) {
-        sess.dungeonProgress.charData.curHp += (sess.dungeonProgress.charData.stat.maxHp - sess.dungeonProgress.charData.curHp) * 0.15;
-        if (sess.dungeonProgress.phase == 1) {
-          enemy = rand < 0.5 ? monster.mCrawler : monster.mHeadHunter;
-        } else {
-          enemy = rand < 0.15 ? monster.mTaurus : (rand < 0.575 ? monster.mCrawler : monster.mHeadHunter);
+        if (sess.dungeonProgress.phase < 10) {
+          sess.dungeonProgress.charData.curHp += (sess.dungeonProgress.charData.stat.maxHp - sess.dungeonProgress.charData.curHp) * 0.15;
+        }
+        if (sess.dungeonProgress.phase < 20) {
+          enemy = rand < 0.05 ? monster.mTaurus : (rand < 0.525 ? monster.mCrawler : monster.mHeadHunter);
         }
       } else if (sess.dungeonProgress.code == 2) {
         sess.dungeonProgress.charData.curHp = sess.dungeonProgress.charData.stat.maxHp;
@@ -1622,18 +1636,16 @@ async function procNextPhaseDungeon(req, res) {
       } else if (!re.winnerLeft) {
         isFinished = true;
         reward += '패배했습니다..';
-      } else if (req.session.dungeonProgress.code == 1 && req.session.dungeonProgress.phase >= 3) {
-        isFinished = true;
-        if (!char.dungeonInfos.rewardMevious) {
-          char.dungeonInfos.rewardMevious = true;
-          if (!char.dungeonInfos.clearMevious) {
-            char.dungeonInfos.clearMevious = true;
-            char.statPoint += 5;
-            reward += '첫 번째 [메모리얼 게이트 - 메비우스 섬멸] 클리어!<br>스탯 포인트 5를 획득했습니다.<br>';
-            await client.query('insert into news(content, date) values ($1, $2)', 
-                [char.name + getIga(char.nameType) + ' [메모리얼 게이트 - 메비우스 섬멸]을 돌파했습니다!', new Date()]);
+      } else if (req.session.dungeonProgress.code == 1 && req.session.dungeonProgress.phase % 2 == 0) {
+        if (req.session.dungeonProgress.phase >= 20) {
+          isFinished = true;
+          if (!char.achievement[29]) {
+            await giveAchievement(charRow.uid, char, 29);
           }
-          const curr = 3 + Math.floor(3 * Math.random());
+        }
+        if (!char.dungeonInfos['rewardMevious' + req.session.dungeonProgress.phase]) {
+          char.dungeonInfos['rewardMevious' + req.session.dungeonProgress.phase] = true;
+          const curr = 1;
           if (char.currencies.mevious) {
             char.currencies.mevious += curr;
           } else {
@@ -1641,9 +1653,27 @@ async function procNextPhaseDungeon(req, res) {
           }
           reward += '메비우스 섬멸의 증표 ' + curr + '개를 획득했습니다.<br>';
           if (enemy.name == '메비우스 타우러스') {
-            char.currencies.mevious += 5;
-            reward += '타우러스를 처치했으므로 메비우스 섬멸의 증표 5개를 추가로 획득했습니다.<br>';          
+            if (char.dungeonInfos.taurusReward > 0) {
+              char.dungeonInfos.taurusReward--;
+              char.currencies.mevious += 2;
+              reward += '타우러스를 처치했으므로 메비우스 섬멸의 증표 2개를 추가로 획득했습니다.<br>';  
+            }
+            req.session.dungeonProgress.taurus++;
+            if (!char.achievement[30] && req.session.dungeonProgress.taurus >= 5) {
+              await giveAchievement(charRow.uid, char, 30);
+            }
           }
+        }
+        if (!char.dungeonInfos.clearMevious && req.session.dungeonProgress.phase == 10) {
+          char.dungeonInfos.clearMevious = true;
+          char.statPoint += 5;
+          reward += '첫 번째 [메모리얼 게이트 - 메비우스 섬멸] 10층 돌파!<br>스탯 포인트 5를 획득했습니다.<br>';
+          await client.query('insert into news(content, date) values ($1, $2)', 
+              [char.name + getIga(char.nameType) + ' [메모리얼 게이트 - 메비우스 섬멸]을 돌파했습니다!', new Date()]);
+        }
+      } else if (req.session.dungeonProgress.code == 1 && req.session.dungeonProgress.phase == 5) {
+        if (!char.dungeonInfos.rewardMevious) {
+          char.dungeonInfos.rewardMevious = true;
           char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '메비우스 섬멸 공훈 카드', rank : 8, resultType : 90001});
           reward += '메비우스 섬멸 공훈 카드 1개를 획득했습니다.';
         }
@@ -1657,6 +1687,9 @@ async function procNextPhaseDungeon(req, res) {
             reward += '첫 번째 [어나더 게이트 - 재의 묘소] 클리어!<br>스탯 포인트 5를 획득했습니다.<br>';
             await client.query('insert into news(content, date) values ($1, $2)', 
                 [char.name + getIga(char.nameType) + ' [어나더 게이트 - 재의 묘소]를 돌파했습니다!', new Date()]);
+            if (!char.achievement[31]) {
+              await giveAchievement(charRow.uid, char, 31);
+            }
           }
           const curr = 3 + Math.floor(3 * Math.random());
           if (char.currencies.ember) {
@@ -1667,6 +1700,17 @@ async function procNextPhaseDungeon(req, res) {
           reward += '잔불 ' + curr + '개를 획득했습니다.<br>';
           char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '재의 묘소 리설트 카드', rank : 8, resultType : 90002});
           reward += '재의 묘소 리설트 카드 1개를 획득했습니다.';
+          
+          var awaken = false;
+          for (const buf of re.rightInfo.buffs) {
+            if (buf.id == 90002) {
+              awaken = true;
+              break;
+            }
+          }
+          if (!char.achievement[32] && !awaken) {
+            await giveAchievement(charRow.uid, char, 32);
+          }
         }
       }
       await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
@@ -2140,10 +2184,12 @@ async function giveAchievement (uid, chara, idx) {
     const client = await pool.connect();
     const globals = await getGlobals();
     
-    chara.achievement[idx] = new Date();
-    chara.premiumPoint += 1;
-    await client.query('insert into personal(uid, content, date) values ($1, $2, $3)', 
-        [uid, '[ ' + ach.achData[idx].name + ' ] 업적을 달성했습니다!', new Date()]);
+    if (!chara.achievement[idx]) {
+      chara.achievement[idx] = new Date();
+      chara.premiumPoint += 1;
+      await client.query('insert into personal(uid, content, date) values ($1, $2, $3)', 
+          [uid, '[ ' + ach.achData[idx].name + ' ] 업적을 달성했습니다!', new Date()]);
+    }
     
     if (!globals.achievement[idx]) {
       await setGlobals({achievement : {type : 'achievement', idx : idx, holder : chara.name}});
@@ -2466,6 +2512,9 @@ function makeTooltip(item) {
   rtext += item.name;
   if (item.type < 10) {
     rtext += '<br>' + item.rank + '급 ' + getRarityText(item.rarity) + ' ' + printName[item.type];
+    if (item.tradeCnt !== undefined) {
+      rtext += '<br>거래횟수 : ' + item.tradeCnt;
+    }
     rtext += '<br>' + getStatList(item);
     if (item.effectDesc && item.effectDesc.length > 0) {
       rtext += ', ' + item.effectDesc;

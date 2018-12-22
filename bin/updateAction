@@ -110,8 +110,20 @@ try {
       charData.matchCount = 10;
       charData.resultMaxGauge = 0;
       charData.addExpCount = 3;
-      charData.dungeonInfos.rewardMevious = false;
+      charData.dungeonInfos.rewardMevious2 = false;
+      charData.dungeonInfos.rewardMevious4 = false;
+      charData.dungeonInfos.rewardMevious6 = false;
+      charData.dungeonInfos.rewardMevious8 = false;
+      charData.dungeonInfos.rewardMevious10 = false;
+      charData.dungeonInfos.rewardMevious12 = false;
+      charData.dungeonInfos.rewardMevious14 = false;
+      charData.dungeonInfos.rewardMevious16 = false;
+      charData.dungeonInfos.rewardMevious18 = false;
+      charData.dungeonInfos.rewardMevious20 = false;
+      charData.dungeonInfos.enterMevious = 3;
+      charData.dungeonInfos.taurusReward = 3;
       charData.dungeonInfos.rewardEmberCrypt = false;
+      charData.dungeonInfos.enterEmberCrypt = 3;
       charData.dungeonInfos.resetMevious = false;
       charData.dungeonInfos.resetEmberCrypt = false;
       charData.resetGauge = false;
@@ -179,6 +191,7 @@ try {
     }
     await client.query('update global set globals = $1', [JSON.stringify(glb)]);
     await client.query('delete from raids where rindex = 3');
+    await client.query('delete from personal');
   }
   client.release();  
   } catch (err) {

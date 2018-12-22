@@ -1267,10 +1267,10 @@ const item = require('./items');
   charMarang.skill.base.push(skillObj);
 
   skillObj = {code : 201749, name : '마랑의 검은 코트', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.SKILL_TYPE_DRIVE, 
-      active : cons.ACTIVE_TYPE_RECEIVE_BUFF, cost : 5, chance : 1, setCooldown : 5, chk : [1, 12],
-      effect : [{code : cons.EFFECT_TYPE_REMOVE_BUFF, buffTarget : [1, 12]},
+      active : cons.ACTIVE_TYPE_RECEIVE_BUFF, cost : 5, chance : 1, setCooldown : 5, chk : [1, 4, 6, 12],
+      effect : [{code : cons.EFFECT_TYPE_REMOVE_BUFF, buffTarget : [1, 4, 6, 12]},
                 {code : cons.EFFECT_TYPE_SELF_HP, value : 0.05, isPercentStat : true, percentKey : 'maxHp'}],
-      tooltip : '자신에게 [화상] 또는 [빙결] 상태이상이 걸릴 경우, 해당 상태이상을 즉시 해제하고 최대 생명력의 5%만큼 회복 (쿨타임 5턴)',
+      tooltip : '자신에게 [화상], [기절], [탈진], [빙결] 상태이상이 걸릴 경우, 해당 상태이상을 즉시 해제하고 최대 생명력의 5%만큼 회복 (쿨타임 5턴)',
       flavor : '그녀가 두른 검은 늑대 코트는 불과 얼음의 시련을 극복할 수 있도록 돕는다.'};
   charMarang.skill.drive = skillObj;
 
@@ -1317,7 +1317,7 @@ const item = require('./items');
       flavor : ''};
   charGaius.skill.drive = skillObj;
 
-  skillObj = {code : 201755, name : '천공의 정렬', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 120, 
+  skillObj = {code : 201755, name : '천공의 정렬', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 130, 
       effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201761, buffDur : 3}],
       tooltip : '다음 3턴간 승패 무관하게 별빛쇄도를 추가로 시전한다. 그 동안 접촉이 소거될 시 적 생명력 3%만큼 절대 피해. 회피가 0으로 고정된다.',
       flavor : ''};
@@ -1456,7 +1456,7 @@ const item = require('./items');
       flavor : '보호막을 방전시켜 적에게 피해를 줍니다.'};
   charIllun.skill.drive = skillObj;
 
-  skillObj = {code : 201775, name : '급속 충전', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 125, 
+  skillObj = {code : 201775, name : '급속 충전', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 135, 
       effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201780, buffDur : 4}],
       tooltip : '자신에게 4턴 간 [과충전] 버프 부여 및 [충전 중] 중첩마다 잃은 생명력의 8%만큼 보호막을 얻고 중첩 모두 소거<br><br>[과충전] : 피해를 받을 시, 보호막의 10%를 잃고 그 절반만큼 상대에게 마법 고정 피해',
       flavor : '급격하게 보호막을 얻는 대신 과충전 상태가 됩니다.'};
@@ -1474,8 +1474,8 @@ const item = require('./items');
   charKasien.skill.base = [];
 
   var skillObj = {code : 201776, name : '꿰뚫는 창', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 0.6, 
-      effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 201782, buffDur : 4}],
-      tooltip : '적에게 4턴 간 [꿰뚫는 창] 디버프 1중첩 부여<br><br>[꿰뚫는 창] : 적 관통 +3%p, 디버프 재부여 시 턴 갱신 및 중첩 증가',
+      effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 201782, buffDur : 3}],
+      tooltip : '적에게 3턴 간 [꿰뚫는 창] 디버프 1중첩 부여<br><br>[꿰뚫는 창] : 적 관통 +1%p, 디버프 재부여 시 턴 갱신 및 중첩 증가',
       flavor : '적의 몸을 관통하는 창을 던집니다.'};  
   charKasien.skill.base.push(skillObj);
 
@@ -1544,10 +1544,9 @@ const item = require('./items');
 
   skillObj = {code : 201784, name : '징병 공고', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.SKILL_TYPE_DRIVE,
       active : cons.ACTIVE_TYPE_TURN_START, cost : 10, chance : 0.1, chanceModFunc : 0, setCooldown : 3,
-      effect : [{code : cons.EFFECT_TYPE_SELECTION, selectChances : [0.5, 1],
-        options : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : [201791, 201788, 201789], buffDur : null, multiple : true, setStack : 30, value : 1, type : cons.DAMAGE_TYPE_PHYSICAL, addDamage : true},
-                   {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : [201791, 201788, 201789], buffDur : null, multiple : true, setStack : 30, value : 1, type : cons.DAMAGE_TYPE_MAGICAL, addDamage : true}]}],
-      tooltip : '턴 시작 시 10% 확률 ((상대의 현재생명력% - 자신의 현재생명력%)%만큼 증가)로 자신에게 [쇠뇌대], [기마대], [철갑군] 중 하나를 (30 + 물리 또는 마법 1) 중첩 부여',
+      effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : [201791, 201788, 201789], buffDur : null, multiple : true, setStack : 35, 
+        addDamage : [{value : 0.6, type : cons.DAMAGE_TYPE_MAGICAL}, {value : 0.6, type : cons.DAMAGE_TYPE_PHYSICAL}]}],
+      tooltip : '턴 시작 시 10% 확률 ((상대의 현재생명력% - 자신의 현재생명력%)%만큼 증가)로 자신에게 [쇠뇌대], [기마대], [철갑군] 중 하나를 (35 + 물리 0.6 + 마법 0.6) 중첩 부여',
       flavor : '열세를 메꾸기 위해 더 많은 병사를 징집합니다.'};
   charRuisun.skill.drive = skillObj;
 
@@ -1677,7 +1676,7 @@ const item = require('./items');
     char.battleRecord = {};
     char.winRecord = {};
     char.dust = 0;
-    char.dungeonInfos = {};
+    char.dungeonInfos = {taurusReward : 3, enterMevious : 3, enterEmberCrypt : 3};
     char.currencies = {};
     char.quest = {};
     char.stoneCube = [];

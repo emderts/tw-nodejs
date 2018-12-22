@@ -49,7 +49,7 @@
     <% for ([key, val] of Object.entries(achData)) { %>
       <tr class="<%= charAch[key] ? 'earned' : '' %>">
         <td><%= key %></td>
-        <td><%- val.name + (val.hidden ? '' : ('<br>' + val.desc)) %></td>
+        <td><%= val.name %><br><%= (val.hidden ? (charAch[key] ? val.desc : '') : val.desc) %></td>
         <td><%= (globalAch[key] ? (globalAch[key].date + ' (' + globalAch[key].holder + ')') : '미달성') %> <br> <%= (charAch[key] ? charAch[key] : '미달성') %></td>
       </tr>
     <% } %>
