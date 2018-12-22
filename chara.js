@@ -1684,7 +1684,7 @@ const item = require('./items');
     char.birth = null;
     char.recentRecord = [];
     char.achievement = {};
-    char.statistics = {damageDone : 0, maxDamageDone : 0, damageTaken : 0, maxDamageTaken : 0, atkCnt : 0, 
+    char.statistics = {damageDone : 0, maxDamageDone : 0, maxDamageDoneTo : '', damageTaken : 0, maxDamageTaken : 0, maxDamageTakenFrom : '', atkCnt : 0, 
         lostLowerRank : 0, wonHigherRank : 0, apUsed : 0, rareAmt : 0, uniqueAmt : 0, epicAmt : 0, 
         cardUsed : 0, dustAmt : 0, premiumAmt : 0, maxHpStat : 0, phyAtkStat : 0, magAtkStat : 0};
     char.matchCount = 10;

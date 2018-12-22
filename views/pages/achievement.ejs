@@ -35,7 +35,7 @@
   </script>
 </head>
 <%
-  const printName = {damageDone : '총 입힌 피해', maxDamageDone : '최대 입힌 피해', damageTaken : '총 입은 피해', maxDamageTaken : '최대 입은 피해', atkCnt : '총 공격 횟수', 
+  const printName = {damageDone : '총 입힌 피해', maxDamageDone : '최대 입힌 피해', maxDamageDoneTo : '최대 입힌 피해 대상', damageTaken : '총 입은 피해', maxDamageTaken : '최대 입은 피해', maxDamageTakenFrom : '최대 입은 피해를 준 캐릭터', atkCnt : '총 공격 횟수', 
           lostLowerRank : '낮은 급수에 패배', wonHigherRank : '높은 급수에 승리', apUsed : '사용한 피로도', rareAmt : '레어 장비 획득', uniqueAmt : '유니크 장비 획득', epicAmt : '에픽 장비 획득', 
           cardUsed : '리설트 카드 개봉', dustAmt : '가루 획득', premiumAmt : '프리미엄 포인트 획득', maxHpStat : '생명력 스탯 포인트', phyAtkStat : '물리공격력 스탯 포인트', magAtkStat : '마법공격력 스탯 포인트'};
 %>
@@ -49,7 +49,7 @@
     <% for ([key, val] of Object.entries(achData)) { %>
       <tr class="<%= charAch[key] ? 'earned' : '' %>">
         <td><%= key %></td>
-        <td><%= val.name + (val.hidden ? '' : ('<br>' + val.desc)) %></td>
+        <td><%- val.name + (val.hidden ? '' : ('<br>' + val.desc)) %></td>
         <td><%= (globalAch[key] ? (globalAch[key].date + ' (' + globalAch[key].holder + ')') : '미달성') %> <br> <%= (charAch[key] ? charAch[key] : '미달성') %></td>
       </tr>
     <% } %>
