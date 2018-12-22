@@ -574,6 +574,18 @@
     </table>
   </div>
   
+  <div>
+    <table class="itemInfo">
+      <% for (const val of personalNews) { %>
+        <tr>
+          <td class="charViewContent">
+            <%- val %>
+          </td>
+        </tr>
+      <% } %>
+    </table>
+  </div>
+  
   <div class="chatWrap">
     <ul id="messages"></ul>
     <form action="" name="chatForm" onsubmit="return sendMessage();">
@@ -612,6 +624,9 @@
       </div>
       <div class="menuItem">
         <a href="/dismantlingYard">아이템 해체</a>
+      </div>
+      <div class="menuItem">
+        <a href="/viewAch">업적 보기</a>
       </div>
       <div class="menuItem">
         <a href="/quest">퀘스트</a>

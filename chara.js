@@ -154,9 +154,9 @@ const item = require('./items');
   effectObj.chance = 1;
   effectObj.buffCode = 20173;
   effectObj.buffDur = null;
-  effectObj.value = 0.8;
+  effectObj.value = 0.7;
   skillObj.effect.push(effectObj);
-  skillObj.tooltip = '100\% 확률로 자신에게 [흐름 관찰] 버프 부여<br><br>[흐름 관찰] : 준 피해의 80\%만큼의 보호막';
+  skillObj.tooltip = '100\% 확률로 자신에게 [흐름 관찰] 버프 부여<br><br>[흐름 관찰] : 준 피해의 70\%만큼의 보호막';
   skillObj.flavor = '현실계의 흐름을 보는 영매의 능력을 제3세계의 마법으로 구현했다. 현상의 흐름을 시각화하고 순환하여 적에게 정신적인 타격을 주고 스스로의 위상을 보호한다.';
   charSeriers.skill.base.push(skillObj);
 
@@ -1092,7 +1092,7 @@ const item = require('./items');
   skillObj.type = cons.SKILL_TYPE_DRIVE;
   skillObj.active = cons.ACTIVE_TYPE_TURN_START;
   skillObj.cost = 5;
-  skillObj.chance = 0.05;
+  skillObj.chance = 0.08;
   skillObj.cooldown = 0;
   skillObj.effect = [];
   effectObj = {};
@@ -1291,8 +1291,8 @@ const item = require('./items');
   charGaius.skill = {};
   charGaius.skill.base = [];
 
-  var skillObj = {code : 201751, name : '별빛쇄도', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 0.1, 
-      effect : [{code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL, value : 0.1},
+  var skillObj = {code : 201751, name : '별빛쇄도', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 0.2, 
+      effect : [{code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL, value : 0.2},
                 {code : cons.EFFECT_TYPE_RESOLVE_SKILL, randomSkill : true}],
       tooltip : '물리 0.1 추가 피해, 이 기술을 포함해 자신의 일반 스킬 중 하나 추가 발동',
       flavor : '별의 힘을 집중시켜 응집된 공격을 시도한다. 주위의 힘을 뒤틀어 행동을 더 할 수 있게 한다.'};  
@@ -1387,9 +1387,10 @@ const item = require('./items');
   charGabi.skill.base.push(skillObj);
 
   skillObj = {code : 201767, name : '이세계 지식 설파', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 0.9, 
-      effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 201774, buffDur : 2, setStack : 0.15, isPercentDamage : true, chkNot : [201775]},
-                {code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 201774, buffDur : 2, setStack : 0.25, isPercentDamage : true, chk : [201775]}],
-      tooltip : '피해량의 15%만큼 상대에게 2턴 간 [이고깽] 스택을 부여한다. [반복 숙달] 효과 : 피해량의 25%만큼으로 강화된다.<br><br>[이고깽] : 물리/마법 공격력 -1',
+      effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 201774, buffDur : 3, setStack : 0.15, isPercentDamage : true, chkNot : [201775]},
+                {code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 201774, buffDur : 3, setStack : 0.25, isPercentDamage : true, chk : [201775]},
+                {code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 10, buffDur : 1}],
+      tooltip : '피해량의 15%만큼 상대에게 3턴 간 [이고깽] 스택을 부여하고 1턴 간 [봉인] 상태이상을 부여한다. [반복 숙달] 효과 : 피해량의 25%만큼으로 강화된다.<br><br>[이고깽] : 물리/마법 공격력 -1',
       flavor : '보았느냐! 이것이 현대인의 저력이다! / 오이오이, 굉장하잖아!'};  
   charGabi.skill.base.push(skillObj);
 
@@ -1400,9 +1401,10 @@ const item = require('./items');
   charGabi.skill.base.push(skillObj);
 
   skillObj = {code : 201769, name : '반복 숙달', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_DRIVE, 
-      active : cons.ACTIVE_TYPE_SKILL_WIN, cost : 4, chance : 1, chkSameAttack : true,
-      effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201775, buffDur : null}],
-      tooltip : '지난 턴에 사용했던 스킬을 이번 턴에도 사용하여 공격 시, 스킬의 피해량이 10% 상승하고 각 스킬별 특수 효과가 강화된다.',
+      active : cons.ACTIVE_TYPE_SKILL_WIN, cost : 0, chance : 1, chkSameAttack : true,
+      effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201775, buffDur : null},
+                {code : cons.EFFECT_TYPE_SELF_SP, value : 5}],
+      tooltip : '지난 턴에 사용했던 스킬을 이번 턴에도 사용하여 공격 시, 스킬의 피해량이 12.5% 상승하고 SP 5를 회복하며 각 스킬 별 특수 효과가 강화된다.',
       flavor : '어렸을 때부터 해 오던 불법 아르바이트 경험의 산실. 반복할수록, 숙달된다.'};
   charGabi.skill.drive = skillObj;
 
@@ -1410,7 +1412,7 @@ const item = require('./items');
       effect : [{code : cons.EFFECT_TYPE_SELF_HP, value : 0.025, isPercentStat : true, percentKey : 'maxHp', addAttackCount : true},
                 {code : cons.EFFECT_TYPE_REMOVE_BUFF, anyDebuff : true, limit : 2},
                 {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201775, buffDur : null}],
-      tooltip : '최대 생명력의 (공격횟수*2.5)%만큼 생명력을 회복하고(최대 35%), 자신에게 부여된 나쁜 상태이상을 2종 해제한다. 다음 1회의 일반 스킬에 <반복 숙달> 효과를 적용한다.',
+      tooltip : '최대 생명력의 (공격횟수*3.5)%만큼 생명력을 회복하고(최대 35%), 자신에게 부여된 나쁜 상태이상을 2종 해제한다. 다음 1회의 일반 스킬에 <반복 숙달> 효과를 적용한다.',
       flavor : '고된 노동에 대한 보상은 죽어가는 이세계 고등학생도 살리는 법이다.'};
   charGabi.skill.special = skillObj;
 
@@ -1426,28 +1428,28 @@ const item = require('./items');
   charIllun.skill.base = [];
 
   var skillObj = {code : 201771, name : '충전', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1.4, 
-      effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201777, buffDur : null, setStack : 4},
+      effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201777, buffDur : null, setStack : 3},
                 {code : cons.EFFECT_TYPE_SELF_HIT, type : cons.DAMAGE_TYPE_ABSOLUTE, value : 0.15, isPercentChar : true, percentKey : 'curHp'}],
       tooltip : '현재 생명력의 15%만큼 피해를 입고, 자신에게 [충전 중] 3중첩 부여<br><br>[충전 중] : 턴 시작 시 최대 생명력의 5%만큼 보호막을 얻고 1중첩 소거',
       flavor : '지니가 보호막을 충전하기 시작합니다.'};  
   charIllun.skill.base.push(skillObj);
 
   skillObj = {code : 201772, name : '증폭', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 0.8, 
-      effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 2017106, buffDur : null, value : 0.8},
+      effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201777, buffDur : null, setStack : 1},
                 {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201778, buffDur : 3}],
-      tooltip : '자신에게 3턴 간 [증폭] 버프 부여 및 스킬 피해량의 80%만큼 보호막 부여<br><br>[증폭] : 보호막을 얻을 때마다 얻은 보호막의 25%만큼 생명력 회복',
+      tooltip : '자신에게 3턴 간 [증폭] 버프 부여 및 [충전 중] 1중첩 부여<br><br>[증폭] : 보호막을 얻을 때마다 얻은 보호막의 25%만큼 생명력 회복',
       flavor : '지니가 보호막을 증폭합니다.'};  
   charIllun.skill.base.push(skillObj);
 
   skillObj = {code : 201773, name : '과부하', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 0.8,
-      effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 2017106, buffDur : null, value : 0.8},
+      effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 2017106, buffDur : null, value : 0.3},
                 {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201779, buffDur : 3}],
-      tooltip : '자신에게 3턴 간 [과부하] 버프 부여 및 스킬 피해량의 80%만큼 보호막 부여<br><br>[과부하] : 보호막이 있을 때 피해를 받을 시 (물리저항+마법저항)만큼 피해 경감',
+      tooltip : '자신에게 3턴 간 [과부하] 버프 부여 및 (캐릭터의 물리+마법공격력)/30%만큼 보호막 부여<br><br>[과부하] : 보호막이 있을 때 피해를 받을 시 (물리저항+마법저항)만큼 피해 경감',
       flavor : '보호막을 과부하시켜 받는 피해를 줄입니다.'};  
   charIllun.skill.base.push(skillObj);
 
   skillObj = {code : 201774, name : '방전', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_DRIVE, 
-      active : cons.ACTIVE_TYPE_TURN_END, cost : 5, chance : 1, checkFunc : 2, setCooldown : 2,
+      active : cons.ACTIVE_TYPE_TURN_END, cost : 10, chance : 1, checkFunc : 2, setCooldown : 3,
       effect : [{code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_MAGICAL_FIXED, value : 0.3, overPercentShield : true},
                 {code : cons.EFFECT_TYPE_SELF_HIT, type : cons.DAMAGE_TYPE_ABSOLUTE, value : 0.3, isPercentShield : true}],
       tooltip : '보호막 수치가 적 현재 생명력의 30% 및 최대 생명력의 5%를 초과하였을 때 보호막 초과분만큼 마법 피해를 입히고 보호막의 30%를 잃음',
@@ -1455,8 +1457,7 @@ const item = require('./items');
   charIllun.skill.drive = skillObj;
 
   skillObj = {code : 201775, name : '급속 충전', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 125, 
-      effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201777, buffDur : null},
-                {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201780, buffDur : 4}],
+      effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201780, buffDur : 4}],
       tooltip : '자신에게 4턴 간 [과충전] 버프 부여 및 [충전 중] 중첩마다 잃은 생명력의 8%만큼 보호막을 얻고 중첩 모두 소거<br><br>[과충전] : 피해를 받을 시, 보호막의 10%를 잃고 그 절반만큼 상대에게 마법 고정 피해',
       flavor : '급격하게 보호막을 얻는 대신 과충전 상태가 됩니다.'};
   charIllun.skill.special = skillObj;
@@ -1473,8 +1474,8 @@ const item = require('./items');
   charKasien.skill.base = [];
 
   var skillObj = {code : 201776, name : '꿰뚫는 창', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 0.6, 
-      effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 201782, buffDur : 5}],
-      tooltip : '적에게 5턴 간 [꿰뚫는 창] 디버프 1중첩 부여<br><br>[꿰뚫는 창] : 적 관통 +3%p, 디버프 재부여 시 턴 갱신 및 중첩 증가',
+      effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 201782, buffDur : 4}],
+      tooltip : '적에게 4턴 간 [꿰뚫는 창] 디버프 1중첩 부여<br><br>[꿰뚫는 창] : 적 관통 +3%p, 디버프 재부여 시 턴 갱신 및 중첩 증가',
       flavor : '적의 몸을 관통하는 창을 던집니다.'};  
   charKasien.skill.base.push(skillObj);
 
@@ -1499,7 +1500,7 @@ const item = require('./items');
       flavor : ''};
   charKasien.skill.drive = skillObj;
 
-  skillObj = {code : 201780, name : 'QWEEE', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 70, 
+  skillObj = {code : 201780, name : 'QWEEE', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 85, 
       effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201785, buffDur : null},
                 {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201786, buffDur : 4}],
       tooltip : '자신에게 [하이퍼무브] 버프 부여 및 3턴 간 [QWEEE] 버프 부여<br><br>[하이퍼무브] : 공격 시 임의의 스킬 1회 추가 발동되며 [웜보콤보] 2중첩 부여<br>[QWEEE] : SP충전 +8',
@@ -1542,11 +1543,11 @@ const item = require('./items');
   charRuisun.skill.base.push(skillObj);
 
   skillObj = {code : 201784, name : '징병 공고', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.SKILL_TYPE_DRIVE,
-      active : cons.ACTIVE_TYPE_TURN_START, cost : 5, chance : 0.1, chanceModFunc : 0,
+      active : cons.ACTIVE_TYPE_TURN_START, cost : 10, chance : 0.1, chanceModFunc : 0, setCooldown : 3,
       effect : [{code : cons.EFFECT_TYPE_SELECTION, selectChances : [0.5, 1],
-        options : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : [201791, 201788, 201789], buffDur : null, multiple : true, setStack : 100, value : 1, type : cons.DAMAGE_TYPE_PHYSICAL, addDamage : true},
-                   {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : [201791, 201788, 201789], buffDur : null, multiple : true, setStack : 100, value : 1, type : cons.DAMAGE_TYPE_MAGICAL, addDamage : true}]}],
-      tooltip : '턴 시작 시 10% 확률 ((상대의 현재생명력% - 자신의 현재생명력%)%만큼 증가)로 자신에게 [쇠뇌대], [기마대], [철갑군] 중 하나를 (20 + 물리 또는 마법 1) 중첩 부여',
+        options : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : [201791, 201788, 201789], buffDur : null, multiple : true, setStack : 30, value : 1, type : cons.DAMAGE_TYPE_PHYSICAL, addDamage : true},
+                   {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : [201791, 201788, 201789], buffDur : null, multiple : true, setStack : 30, value : 1, type : cons.DAMAGE_TYPE_MAGICAL, addDamage : true}]}],
+      tooltip : '턴 시작 시 10% 확률 ((상대의 현재생명력% - 자신의 현재생명력%)%만큼 증가)로 자신에게 [쇠뇌대], [기마대], [철갑군] 중 하나를 (30 + 물리 또는 마법 1) 중첩 부여',
       flavor : '열세를 메꾸기 위해 더 많은 병사를 징집합니다.'};
   charRuisun.skill.drive = skillObj;
 
@@ -1659,7 +1660,7 @@ const item = require('./items');
     char.items = {};
     char.items.weapon = item.list[11];//[0];
     char.items.armor = item.list[143];//[114];
-    char.items.subarmor = item.list[169];
+    char.items.subarmor = item.list[187];
     char.items.trinket = item.list[244];
     char.rank = 9;
     char.level = 1;
@@ -1682,6 +1683,10 @@ const item = require('./items');
     char.stoneCube = [];
     char.birth = null;
     char.recentRecord = [];
+    char.achievement = {};
+    char.statistics = {damageDone : 0, maxDamageDone : 0, damageTaken : 0, maxDamageTaken : 0, atkCnt : 0, 
+        lostLowerRank : 0, wonHigherRank : 0, apUsed : 0, rareAmt : 0, uniqueAmt : 0, epicAmt : 0, 
+        cardUsed : 0, dustAmt : 0, premiumAmt : 0, maxHpStat : 0, phyAtkStat : 0, magAtkStat : 0};
     char.matchCount = 10;
     char.winChain = 0;
   }

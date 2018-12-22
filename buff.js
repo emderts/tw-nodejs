@@ -3056,6 +3056,7 @@ module.exports.getBuffData = function(eff) {
     effectObj.code = cons.EFFECT_TYPE_SET_SKILL;
     effectObj.key = 'base';
     effectObj.value = 0;
+    effectObj.chkNot = [201771];
     effectObj.target = {code : 201761, name : '연', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 0.8, 
         effect : []};
     retObj.effect.push(effectObj);
@@ -3097,7 +3098,7 @@ module.exports.getBuffData = function(eff) {
     effectObj.active = cons.ACTIVE_TYPE_TURN_END;
     effectObj.code = cons.EFFECT_TYPE_SELF_BUFF;
     effectObj.buffCode = 201771;
-    effectObj.buffDur = 1;
+    effectObj.buffDur = 2;
     effectObj.chance = 0.38;
     retObj.effect.push(effectObj);
     break;
@@ -3198,6 +3199,7 @@ module.exports.getBuffData = function(eff) {
     retObj.stackType = 1;
     retObj.dispellable = false;
     retObj.isDebuff = false;
+    retObj.durOff = cons.DURATION_TYPE_TURN_END;
     effectObj = {};
     effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
     effectObj.code = cons.EFFECT_TYPE_SET_SKILL;
@@ -3232,6 +3234,14 @@ module.exports.getBuffData = function(eff) {
     effectObj.skillCode = 201768;
     effectObj.key = 'critDmg';
     effectObj.value = 0.01;
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_USE_SPECIAL;
+    effectObj.code = cons.EFFECT_TYPE_SELF_BUFF;
+    effectObj.buffCode = 201773;
+    effectObj.buffDur = null;
+    effectObj.setStack = 1;
+    effectObj.removeBuff = true;
     retObj.effect.push(effectObj);
     break;
   case 201773 : 
@@ -3297,6 +3307,26 @@ module.exports.getBuffData = function(eff) {
     effectObj = {};
     effectObj.active = cons.ACTIVE_TYPE_MISS;
     effectObj.removeBuff = true;
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_DAMAGE;
+    effectObj.code = cons.EFFECT_TYPE_ADD_DAMAGE_OBJECT;
+    effectObj.skillCode = 201768;
+    effectObj.key = 'crit';
+    effectObj.value = 0.5;
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_DAMAGE;
+    effectObj.code = cons.EFFECT_TYPE_ADD_DAMAGE_OBJECT;
+    effectObj.skillCode = 201768;
+    effectObj.key = 'hit';
+    effectObj.value = 0.5;
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_DAMAGE;
+    effectObj.code = cons.EFFECT_TYPE_MULTIPLY_DAMAGE;
+    effectObj.value = 1.125;
+    effectObj.anySkill = true;
     retObj.effect.push(effectObj);
     break;
   case 201776 : 

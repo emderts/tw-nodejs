@@ -739,15 +739,19 @@ Battlemodule.prototype.dealDamage = function(src, dst, damage) {
   }
   var damageDealt = shielded ? damageShield : damage.value;
   dst.lastDamage = damageDealt;
+  src.maxDamageDone = src.maxDamageDone < damageDealt ? damageDealt : src.maxDamageDone;
+  src.damageDone += damageDealt;
+  dst.maxDamageTaken = dst.maxDamageTaken < damageDealt ? damageDealt : dst.maxDamageTaken;
+  dst.damageTaken += damageDealt;
   
   var ruiDamage = damageDealt;
   var ruiBuff = findBuffByIds(dst, [201789]);
   if (ruiBuff.length > 0) {
-    if (ruiBuff[0].stack * 5 >= ruiDamage) {
-      ruiBuff[0].stack -= Math.floor(ruiDamage / 5);
+    if (ruiBuff[0].stack * 3 >= ruiDamage) {
+      ruiBuff[0].stack -= Math.floor(ruiDamage / 3);
       ruiDamage = 0;
     } else {
-      ruiDamage -= ruiBuff[0].stack * 5;
+      ruiDamage -= ruiBuff[0].stack * 3;
       removeBuff(ruiBuff[0]);
     }
   }
@@ -920,11 +924,11 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
       } else if (buffObj.id === 2017105) {
         buffObj.effect[0].value = Math.round(buffObj.effect[0].value * (winner.stat.maxHp - winner.curHp) * stackMpl);
       } else if (buffObj.id === 2017106) {
-        buffObj.effect[0].value = Math.round(buffObj.effect[0].value * damage.value * stackMpl);
+        buffObj.effect[0].value = Math.round(buffObj.effect[0].value * (winner.stat.phyAtk + winner.stat.magAtk) * stackMpl);
       }
 
       if (eff.setStack) {        
-        var valueUsed = eff.setStack;
+        var valueUsed = eff.setStack * stackMpl;
         if (eff.isPercentDamage) {
           valueUsed *= damage.value;
         } else if (eff.addDamage) {
@@ -932,6 +936,7 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
           tempObj.damage = eff.value * stackMpl;
           tempObj.type = eff.type;
           var damageAdd = this.calcDamage(winner, loser, tempObj);
+          valueUsed += damageAdd.value;
         }
         buffObj.stack = Math.round(valueUsed);
       }
@@ -1177,7 +1182,7 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
         this.result += '[ ' + eff.name + ' ] 효과로 공격 계수가 ' + namt + ' 올랐습니다!<br>';
       } else if (eff.anySkill && skill.code) {
         damage.skillRat += eff.value * stackMpl;
-        this.result += '[ ' + eff.name + ' ] 효과로 공격력이 ' + (eff.value * stackMpl) + ' 올랐습니다!<br>';      
+        this.result += '[ ' + eff.name + ' ] 효과로 공격력이 ' + (Math.round(eff.value * stackMpl * 100) / 100) + ' 올랐습니다!<br>';      
       } else {
         continue;
       }
@@ -1319,10 +1324,10 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
       if (eff.skillCode && eff.skillCode === skill.code) {
         if (eff.code === cons.EFFECT_TYPE_MULTIPLY_DAMAGE_OBJECT) {
           damage[eff.key] *= (eff.value * stackMpl);
-          this.result += '[ ' + eff.name + ' ] 효과로 ' + printName[eff.key] + '가 ' + (eff.value * stackMpl) + '배 증가합니다!<br>';
+          this.result += '[ ' + eff.name + ' ] 효과로 ' + printName[eff.key] + ' ' + (eff.value * stackMpl) + '배 증가합니다!<br>';
         } else {
           damage[eff.key] += (eff.value * stackMpl);
-          this.result += '[ ' + eff.name + ' ] 효과로 ' + printName[eff.key] + '가 ' + (eff.value * stackMpl) + ' 증가합니다!<br>';
+          this.result += '[ ' + eff.name + ' ] 효과로 ' + printName[eff.key] + ' ' + (eff.value * stackMpl) + ' 증가합니다!<br>';
         }
       } else {
         continue;
@@ -1744,6 +1749,10 @@ function calcStats(chara, opp) {
     if (val.isPercentStat) {
       stackMpl *= chara.stat[val.percentKey];
     }
+
+    if (val.chkNot && findBuffByIds(chara, val.chkNot).length > 0) {
+      continue;
+    }
     
     if (val.code === cons.EFFECT_TYPE_SET_SKILL) {
       if (val.key === 'base') {
@@ -1803,6 +1812,10 @@ function _initChar(char, flag) {
   char.nameOri = char.name;
   char.skillOri = JSON.parse(JSON.stringify(char.skill));
   char.lastDamage = 0;
+  char.damageDone = 0;
+  char.damageTaken = 0;
+  char.maxDamageDone = 0;
+  char.maxDamageTaken = 0;
   if (char.items.weapon) {
     for (eff of char.items.weapon.effect) {
       eff.item = char.items.weapon;

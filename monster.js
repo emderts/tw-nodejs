@@ -359,7 +359,7 @@ const item = require('./items');
   charLeft.skill.special = skillObj;
   module.exports.rKines2 = charLeft;
 
-  charLeft = {name : '허수아비', nameType : cons.NAME_KOR_END_CONS, title : '메비우스', rank : 8, level : 20, 
+  charLeft = {name : '허수아비', nameType : cons.NAME_KOR_NO_END_CONS, title : '메비우스', rank : 8, level : 20, 
       stat : {maxHp : 2000, phyAtk : 40, magAtk : 40}};
   _initChar(charLeft);
   
