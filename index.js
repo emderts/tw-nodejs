@@ -930,7 +930,9 @@ async function procBattle(req, res) {
       _doStatistics(left, re.leftInfo, right);
       _doStatistics(right, re.rightInfo, left);
       left.statistics.atkCnt += re.leftWin;
+      left.statistics.atkRecvCnt += re.rightWin;
       right.statistics.atkCnt += re.rightWin;
+      right.statistics.atkRecvCnt += re.leftWin;
       
       function _doStatistics(chara, charData, opp) {
         chara.statistics.damageDone += charData.damageDone;
@@ -970,31 +972,31 @@ async function procBattle(req, res) {
       
       
       if (re.winnerLeft) {
-        await _processWinner(left, right, body.charUid);
+        await _processWinner(left, right, body.charUid, cuid);
       }
       if (re.winnerRight) {
-        await _processWinner(right, left, cuid);
+        await _processWinner(right, left, cuid, body.charUid);
       }
       
-      async function _processWinner(winner, loser, uid) {
+      async function _processWinner(winner, loser, uid, suid) {
         winner.winCnt++;
         if (!winner.achievement[8] && winner.winCnt >= 100) {
-          await giveAchievement(uid, winner, 8);
+          await giveAchievement(suid, winner, 8);
         }
         if (!winner.achievement[9] && winner.winCnt >= 200) {
-          await giveAchievement(uid, winner, 9);
+          await giveAchievement(suid, winner, 9);
         }
         if (!winner.achievement[10] && winner.winCnt >= 500) {
-          await giveAchievement(uid, winner, 10);
+          await giveAchievement(suid, winner, 10);
         }
         if (!winner.achievement[11] && winner.winCnt >= 1000) {
-          await giveAchievement(uid, winner, 11);
+          await giveAchievement(suid, winner, 11);
         }
         if (!winner.achievement[12] && winner.winCnt >= 1500) {
-          await giveAchievement(uid, winner, 12);
+          await giveAchievement(suid, winner, 12);
         }
         if (!winner.achievement[13] && winner.winCnt >= 2000) {
-          await giveAchievement(uid, winner, 13);
+          await giveAchievement(suid, winner, 13);
         }
         
         winner.winRecord[uid] = winner.winRecord[uid] ? winner.winRecord[uid] + 1 : 1;
@@ -1017,16 +1019,16 @@ async function procBattle(req, res) {
         }
         loser.winChain = 0;
         if (!winner.achievement[14] && winner.winChain >= 6) {
-          await giveAchievement(uid, winner, 14);
+          await giveAchievement(suid, winner, 14);
         }
         if (!winner.achievement[15] && winner.winChain >= 9) {
-          await giveAchievement(uid, winner, 15);
+          await giveAchievement(suid, winner, 15);
         }
         if (!winner.achievement[16] && winner.winChain >= 15) {
-          await giveAchievement(uid, winner, 16);
+          await giveAchievement(suid, winner, 16);
         }
         if (!winner.achievement[33] && loser.title == '리치 왕') {
-          await giveAchievement(uid, winner, 33);
+          await giveAchievement(suid, winner, 33);
         }
         
         if (winner.quest[1]) {
