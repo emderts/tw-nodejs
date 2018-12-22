@@ -50,7 +50,7 @@
       <tr class="<%= charAch[key] ? 'earned' : '' %>">
         <td><%= key %></td>
         <td><%= val.name + (val.hidden ? '' : ('<br>' + val.desc)) %></td>
-        <td><%- (globalAch[key] ? (globalAch[key].date + ' (' + globalAch[key].holder + ')') : '미달성') + '<br>' + (charAch[key] ? charAch[key] : '미달성') %></td>
+        <td><%= (globalAch[key] ? (globalAch[key].date + ' (' + globalAch[key].holder + ')') : '미달성') %> <br> <%= (charAch[key] ? charAch[key] : '미달성') %></td>
       </tr>
     <% } %>
     </table>

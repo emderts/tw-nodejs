@@ -338,7 +338,6 @@ async function procInit2 () {
     } 
     for (val of result.rows) {
       var char = JSON.parse(val.char_data);
-      char.achievement = {};
       char.statistics = {damageDone : 0, maxDamageDone : 0, damageTaken : 0, maxDamageTaken : 0, atkCnt : 0, 
           lostLowerRank : 0, wonHigherRank : 0, apUsed : 0, rareAmt : 0, uniqueAmt : 0, epicAmt : 0, 
           cardUsed : 0, dustAmt : 0, premiumAmt : 0, maxHpStat : 0, phyAtkStat : 0, magAtkStat : 0};
@@ -926,24 +925,23 @@ async function procBattle(req, res) {
       right.battleRecord[cuid] = right.battleRecord[cuid] ? right.battleRecord[cuid] + 1 : 1;
       right.lastBattleTime = new Date();
       
-      _doStatistics(left, right);
-      _doStatistics(right, left);
+      _doStatistics(left, re.leftInfo, right);
+      _doStatistics(right, re.rightInfo, left);
       left.statistics.atkCnt += re.leftWin;
       right.statistics.atkCnt += re.rightWin;
       
-      function _doStatistics(chara, opp) {
-        console.log(chara);
-        chara.statistics.damageDone += chara.damageDone;
-        chara.statistics.damageTaken += chara.damageTaken;
-        if (chara.statistics.maxDamageDone < chara.maxDamageDone) {
-          chara.statistics.maxDamageDone = chara.maxDamageDone;
+      function _doStatistics(chara, charData, opp) {
+        chara.statistics.damageDone += charData.damageDone;
+        chara.statistics.damageTaken += charData.damageTaken;
+        if (chara.statistics.maxDamageDone < charData.maxDamageDone) {
+          chara.statistics.maxDamageDone = charData.maxDamageDone;
           chara.statistics.maxDamageDoneTo = opp.name;
         }
-        if (chara.statistics.maxDamageTaken < chara.maxDamageTaken) {
-          chara.statistics.maxDamageTaken = chara.maxDamageTaken;
+        if (chara.statistics.maxDamageTaken < charData.maxDamageTaken) {
+          chara.statistics.maxDamageTaken = charData.maxDamageTaken;
           chara.statistics.maxDamageTakenFrom = opp.name;
         }
-        chara.apUsed += globalObj.actionUsed.value;
+        chara.statistics.apUsed += globalObj.actionUsed.value;
       }
       
       if (left.quest[2]) {
