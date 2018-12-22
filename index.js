@@ -2138,7 +2138,7 @@ async function getPersonalNews (uid) {
 async function giveAchievement (chara, idx) {
   try {
     const client = await pool.connect();
-    const charRow = await getCharacter(sess.userUid);
+    const charRow = await getCharacter(req.session.userUid);
     const globals = await getGlobals();
     
     chara.achievement[idx] = new Date();
