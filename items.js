@@ -925,6 +925,10 @@ itemList[422] = { id : 422, name : '석상 파괴자', nameType : cons.NAME_KOR_
 itemList[423] = { id : 423, name : '무결한 물의 정령석', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_SKILL_ARTIFACT, flavor : '', rank : 7, rarity : cons.ITEM_RARITY_UNIQUE, stat : {  }, 
     effectDesc : '불타는 과수원에서 전투 시작 시 적에게 20턴 [봉인] 상태이상 부여', 
     effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, active : cons.ACTIVE_TYPE_BATTLE_START, buffCode : 10, buffDur : 20, chkTitle : '불타는 과수원'}] };
+itemList[434] = { id : 434, name : '과수원의 메마른 결실', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_SKILL_ARTIFACT, flavor : '', rank : 9, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 25 }, 
+    effectDesc : '', effect : [] };
+itemList[435] = { id : 435, name : '과수원의 충만한 결실', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_SKILL_ARTIFACT, flavor : '', rank : 8, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 45 }, 
+    effectDesc : '', effect : [] };
 
 itemList.forEach(function(tgt) {
   tgt.base = JSON.parse(JSON.stringify(tgt.stat));

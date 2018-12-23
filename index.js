@@ -233,27 +233,19 @@ function procFullTest() {
 }
 
 async function procInit () {
-  chara.dekaitz.maxExp += chara.dekaitz.reqExp * 20;
-  addExp(chara.dekaitz, chara.dekaitz.reqExp * 20);
-  chara.dekaitz.level = 1;
-  chara.dekaitz.rank--;
-  chara.dekaitz.reqExp += 90;
-  chara.dekaitz.base.maxHp += 150;
-  chara.dekaitz.base.phyAtk += 10;
-  chara.dekaitz.base.magAtk += 10;
-  calcStats(chara.dekaitz);
-  chara.dekaitz.maxExp += chara.dekaitz.reqExp * 20;
-  addExp(chara.dekaitz, chara.dekaitz.reqExp * 20);
-  chara.dekaitz.level = 1;
-  chara.dekaitz.rank--;
-  chara.dekaitz.reqExp += 90;
-  chara.dekaitz.base.maxHp += 150;
-  chara.dekaitz.base.phyAtk += 10;
-  chara.dekaitz.base.magAtk += 10;
-  calcStats(chara.dekaitz);
-  await setCharacter('guest', 12, chara.dekaitz);
   //await setCharacter('kemderts', 2, chara.kines);
-  /*await setCharacter('bemderts', 3, chara.julius);
+  var rc = {name : '계승의 리설트 카드 묶음', type : 90003, rarity : cons.ITEM_RARITY_PREMIUM};
+  var rc2 = {name : '계승의 찬란한 요일석 더미', type : 90004, rarity : cons.ITEM_RARITY_PREMIUM};
+  var rc3 = item.list[434];
+  var rc4 = item.list[435];
+  var tgt = chara.gaius;
+  tgt.inventory.push(rc);
+  tgt.inventory.push(rc3);
+  await setCharacter('bemderts', 3, tgt);
+  var tgt = chara.gaius;
+  tgt.inventory.push(rc);
+  tgt.inventory.push(rc3);
+  await setCharacter('bemderts', 3, tgt);
   await setCharacter('renia1369', 4, chara.psi);
   await setCharacter('bear1704', 5, chara.aeika);
   await setCharacter('megaxzero', 6, chara.seriers);
@@ -266,7 +258,7 @@ async function procInit () {
     client.release();
   } catch (err) {
     console.error(err);
-  }*/
+  }
 }
 
 async function procInit2 () {
@@ -520,7 +512,7 @@ async function procUseItem (req, res) {
         chara = JSON.parse(resultChar.rows[0].char_data);
         var tgtObj = chara.inventory[body.itemNum];
         if (tgtObj.type < 10) {
-          if (Math.abs(tgtObj.rank - chara.rank) >= 2) {
+          if (tgtObj.rank < chara.rank) {
             res.send('착용할 수 없는 급수의 아이템입니다.');
             client.release();
             return;
@@ -547,16 +539,16 @@ async function procUseItem (req, res) {
             if (rand < 0.236) {
               picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_COMMON_UNCOMMON);
               chara.inventory.push(picked);
-            } else if (rand < 0.486/*286*/) {
+            } else if (rand < 0.286) {
               picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_RARE);
               _processRare(chara, tgtObj, picked);
               chara.inventory.push(picked);
-            } else if (rand < 0.56/*2985*/) {
+            } else if (rand < 0.2985) {
               picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_UNIQUE);
               _processUnique(chara, tgtObj, picked);
               chara.inventory.push(picked);
               await addItemNews(client, chara, tgtObj, picked);
-            } else if (rand < 0.58/*3*/) {
+            } else if (rand < 0.3) {
               picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_EPIC);
               await _processEpic(chara, tgtObj, picked);
               chara.inventory.push(picked);
@@ -579,16 +571,16 @@ async function procUseItem (req, res) {
             if (rand < 0.605) {
               picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_UNCOMMON, tgtObj.resultType);
               chara.inventory.push(picked);
-            } else if (rand < 0.7/*881*/) {
+            } else if (rand < 0.881) {
               picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_RARE, tgtObj.resultType);
               _processRare(chara, tgtObj, picked);
               chara.inventory.push(picked);
-            } else if (rand < 0.895/*9365*/) {
+            } else if (rand < 0.9365) {
               picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_UNIQUE, tgtObj.resultType);
               _processUnique(chara, tgtObj, picked);
               chara.inventory.push(picked);
               await addItemNews(client, chara, tgtObj, picked);
-            } else if (rand < 0.895/*9895*/) {
+            } else if (rand < 0.9895) {
               picked = _getItem(tgtObj.rank - 1, cons.ITEM_RARITY_COMMON_UNCOMMON, tgtObj.resultType);
               chara.inventory.push(picked);
             } else {
@@ -1180,6 +1172,8 @@ async function procGive(req, res) {
       if (tgt.tradeCnt !== undefined) {
         if (tgt.tradeCnt <= 0) {
           res.send('거래 횟수 초과입니다.');
+          client.release();
+          return;
         } else {
           tgt.tradeCnt--;
         }        
@@ -1524,11 +1518,18 @@ async function procEnterDungeon(req, res) {
         var reward = damageDealt + ' 피해를 입혔습니다! (누적 피해 : ' + curData[row.phase].battleRecord[charRow.uid] + ')<br>';
         
         if (body.option == 4) {
-          if (curData[row.phase].battleRecord[charRow.uid] >= re.leftInfo.stat.maxHp / 4) {
+          var maxHpTotal = curData[0].stat.maxHp + curData[1].stat.maxHp + curData[2].stat.maxHp;
+          var dust = 10 * Math.floor(damageDealt * 100 / maxHpTotal);
+          if (dust > 0) {
+            char.dust += dust;
+            reward += dust + ' 가루를 획득했습니다.<br>';
+          }
+          if (curData[row.phase].battleRecord[charRow.uid] >= maxHpTotal / 10) {
             if (!char.dungeonInfos['rewardFieldBoss' + row.phase]) {
               char.dungeonInfos['rewardFieldBoss' + row.phase] = true;
+              char.currencies.warlock++;
               char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '고대 장비 카드', rank : 8, resultType : 4});
-              reward += '누적 피해량 보상으로 고대 장비 카드 1개를 획득했습니다.<br>';
+              reward += '누적 피해량 보상으로 고대 장비 카드 1개, 흑마술의 파편 1개를 획득했습니다.<br>';
             }  
           }
           
@@ -1536,11 +1537,13 @@ async function procEnterDungeon(req, res) {
         if (!re.winnerLeft) {
           if (body.option == 4) {
             if (row.phase <= 2) {
+              char.currencies.warlock++;
               char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '고대 장비 카드', rank : 8, resultType : 4});
-              reward += '페이즈 종료 보상으로 고대 장비 카드 1개를 획득했습니다.<br>';
+              reward += '페이즈 종료 보상으로 고대 장비 카드 1개, 흑마술의 파편 1개를 획득했습니다.<br>';
             } else {
-              char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '고대 흑마법사의 선물', rank : 8 - Math.floor(Math.random() * 2), resultType : 90004});
-              reward += re.leftInfo.name + getUlrul(re.leftInfo.nameType) + ' 처치했습니다!<br>고대 흑마법사의 선물 1개를 획득했습니다.<br>';
+              char.currencies.warlock += 3;
+              char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '고대 흑마법사의 선물', rank : 8, resultType : 90004});
+              reward += re.leftInfo.name + getUlrul(re.leftInfo.nameType) + ' 처치했습니다!<br>고대 흑마법사의 선물 1개, 흑마술의 파편 3개를 획득했습니다.<br>';
             await client.query('insert into news(content, date) values ($1, $2)', 
                 [char.name + getIga(char.nameType) + ' ' + re.leftInfo.name + getUlrul(re.leftInfo.nameType) + ' 처치했습니다!', new Date()]);
             }            
