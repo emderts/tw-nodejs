@@ -2349,7 +2349,7 @@ async function setGlobals (setObj) {
 async function setCharacter (id, uid, data) {
   try {
     const client = await pool.connect();
-    const result = await client.query('insert into characters(uid, char_data, actionpoint) values ($1, $2, 40)', [uid, data]);
+    const result = await client.query('insert into characters(uid, char_data, actionpoint) values ($1, $2, 10)', [uid, data]);
     const result2 = await client.query('update users set uid = $1 where id = $2', [uid, id]);
 
     client.release();
