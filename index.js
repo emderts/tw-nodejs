@@ -895,7 +895,7 @@ async function procBattleList(req, res) {
     const result = await client.query('select * from characters where uid <> $1 order by uid', [cuid]);
     var rval = [];
     for (val of result.rows) {
-      if (char.lastBattle == val.uid || val.uid == '12') {
+      if (char.lastBattle == val.uid) {
         continue;
       }
       var charData = JSON.parse(val.char_data);
