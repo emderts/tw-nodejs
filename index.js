@@ -241,15 +241,69 @@ async function procInit () {
   var tgt = chara.gaius;
   tgt.inventory.push(rc);
   tgt.inventory.push(rc3);
-  await setCharacter('bemderts', 3, tgt);
-  var tgt = chara.gaius;
+  tgt.premiumPoint = 5;
+  await setCharacter('bemderts', '03', tgt);
+  var tgt = chara.lunisha;
+  tgt.inventory.push(rc);
+  tgt.inventory.push(rc);
+  tgt.inventory.push(rc);
+  tgt.inventory.push(rc2);
+  tgt.inventory.push(rc3);
+  tgt.premiumPoint = 16;
+  await setCharacter('renia1369', '04', tgt);
+  var tgt = chara.ruisun;
+  tgt.inventory.push(item.list[408]);
+  tgt.inventory.push(rc3);
+  tgt.premiumPoint = 11;
+  await setCharacter('bear1704', '05', tgt);
+  var tgt = chara.seriers;
+  tgt.inventory.push(rc);
+  tgt.inventory.push(rc);
+  tgt.inventory.push(rc);
   tgt.inventory.push(rc);
   tgt.inventory.push(rc3);
-  await setCharacter('bemderts', 3, tgt);
-  await setCharacter('renia1369', 4, chara.psi);
-  await setCharacter('bear1704', 5, chara.aeika);
-  await setCharacter('megaxzero', 6, chara.seriers);
-  await setCharacter('kyrus1300', 7, chara.aeohelm);
+  tgt.statPoint = 5;
+  tgt.premiumPoint = 6;
+  tgt.cont = true;
+  await setCharacter('megaxzero', '06', tgt);
+  var tgt = chara.illun;
+  tgt.inventory.push(rc);
+  tgt.inventory.push(rc2);
+  tgt.inventory.push(rc3);
+  tgt.premiumPoint = 9;
+  await setCharacter('kyrus1300', '07', tgt);
+  var tgt = chara.bks;
+  tgt.inventory.push(rc);
+  tgt.inventory.push(rc);
+  tgt.inventory.push(rc);
+  tgt.inventory.push(rc);
+  tgt.inventory.push(rc);
+  tgt.statPoint = 5;
+  tgt.premiumPoint = 5;
+  tgt.cont = true;
+  await setCharacter('xko1023', '08', tgt);
+  var tgt = chara.nux;
+  tgt.inventory.push(rc);
+  tgt.inventory.push(rc2);
+  tgt.inventory.push(item.list[384]);
+  tgt.inventory.push(item.list[368]);
+  tgt.premiumPoint = 23;
+  tgt.cont = true;
+  await setCharacter('mun9659', '09', tgt);
+  var tgt = chara.kasien;
+  tgt.inventory.push(rc);
+  tgt.inventory.push(rc);
+  tgt.inventory.push(rc2);
+  tgt.premiumPoint = 9;
+  await setCharacter('sxngho', '10', tgt);
+  var tgt = chara.marang;
+  tgt.inventory.push(rc);
+  tgt.inventory.push(rc);
+  tgt.inventory.push(rc2);
+  tgt.premiumPoint = 9;
+  await setCharacter('tkrsjs', '11', tgt);
+  await setCharacter('miniho99', '12', chara.gabi);
+  await setCharacter('becrow115', '13', chara.jay);
   try {
     const client = await pool.connect();
     const result = await client.query('insert into raids(rindex, open, phase, monsters) values (2, \'C\', 1, $1)', 
@@ -330,10 +384,11 @@ async function procInit2 () {
     } 
     for (val of result.rows) {
       var char = JSON.parse(val.char_data);
-      char.dungeonInfos.taurusReward = 3;
-      char.dungeonInfos.enterMevious = 3;
-      char.dungeonInfos.enterEmberCrypt = 3;
       if (val.uid == '03') {
+        var rc = {name : '계승의 리설트 카드 묶음', type : 90003, rarity : cons.ITEM_RARITY_PREMIUM};
+        var rc2 = {name : '계승의 찬란한 요일석 더미', type : 90004, rarity : cons.ITEM_RARITY_PREMIUM};
+        char.inventory.push(rc);
+        char.inventory.push(rc2);
       }
       
       await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), val.uid]);
@@ -724,6 +779,20 @@ async function procUseItem (req, res) {
           chara.inventory.splice(body.itemNum, 1);
           chara.maxExp += chara.reqExp * tgtObj.value;
           addExp(chara, chara.reqExp * tgtObj.value);
+        } else if (tgtObj.type === 90003) {
+          chara.inventory.splice(body.itemNum, 1);
+          addSpecialResultCard(chara, 4);
+          addSpecialResultCard(chara, 4);
+          addSpecialResultCard(chara, 4);
+          addSpecialResultCard(chara, 4);
+          addSpecialResultCard(chara, 4);
+        } else if (tgtObj.type === 90004) {
+          chara.inventory.splice(body.itemNum, 1);
+          for (var i = 0; i < 7; i++) {
+            var ds = makeDayStone(i, null, 4);
+            ds.tradeCnt = 0;
+            chara.inventory.push(ds);            
+          }
         }
         await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(chara), result.rows[0].uid]);
       }
@@ -867,7 +936,7 @@ async function procBattle(req, res) {
     var randBattle = false;
     
     while (!body.charUid || body.charUid == resultUser.rows[0].uid) {
-      body.charUid = ('0' + (3 + Math.floor(Math.random() * 9))).slice(-2);
+      body.charUid = ('0' + (3 + Math.floor(Math.random() * 11))).slice(-2);
       randBattle = true;
     } 
     
