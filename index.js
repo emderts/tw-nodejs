@@ -1589,7 +1589,7 @@ async function procEnterDungeon(req, res) {
         var reward = damageDealt + ' 피해를 입혔습니다! (누적 피해 : ' + curData[row.phase].battleRecord[charRow.uid] + ')<br>';
         
         if (body.option == 4) {
-          var maxHpTotal = curData[0].stat.maxHp + curData[1].stat.maxHp + curData[2].stat.maxHp;
+          var maxHpTotal = curData[1].stat.maxHp + curData[2].stat.maxHp + curData[3].stat.maxHp;
           var dust = 10 * Math.floor(damageDealt * 100 / maxHpTotal);
           if (dust > 0) {
             char.dust += dust;
