@@ -996,6 +996,7 @@ async function procBattle(req, res) {
       left.statistics.atkRecvCnt += re.rightWin;
       right.statistics.atkCnt += re.rightWin;
       right.statistics.atkRecvCnt += re.leftWin;
+      left.statistics.apUsed += globalObj.actionUsed.value;
       
       function _doStatistics(chara, charData, opp) {
         chara.statistics.damageDone += charData.damageDone;
@@ -1008,7 +1009,6 @@ async function procBattle(req, res) {
           chara.statistics.maxDamageTaken = charData.maxDamageTaken;
           chara.statistics.maxDamageTakenFrom = opp.name;
         }
-        chara.statistics.apUsed += globalObj.actionUsed.value;
       }
       
       if (left.quest[2]) {
@@ -2359,7 +2359,7 @@ async function setCharacter (id, uid, data) {
 }
 
 function addExp(chara, exp) {
-  /*
+  
   if (exp > chara.maxExp) {
     exp = chara.maxExp;
   }
@@ -2371,7 +2371,7 @@ function addExp(chara, exp) {
     chara.exp -= chara.reqExp;
     chara.level++;
     chara.statPoint += 2;
-  }*/
+  }
 }
 
 const dayStoneData = [
