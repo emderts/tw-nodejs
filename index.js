@@ -233,8 +233,8 @@ function procFullTest() {
 }
 
 async function procInit () {
-  //await setCharacter('kemderts', 2, chara.kines);
-  var rc = {name : '계승의 카드 묶음', type : 90003, rarity : cons.ITEM_RARITY_PREMIUM};
+  await setCharacter('thelichking', 2, chara.lk);
+  /*var rc = {name : '계승의 카드 묶음', type : 90003, rarity : cons.ITEM_RARITY_PREMIUM};
   var rc2 = {name : '계승의 요일석 더미', type : 90004, rarity : cons.ITEM_RARITY_PREMIUM};
   var rc3 = item.list[434];
   var rc4 = item.list[435];
@@ -314,7 +314,7 @@ async function procInit () {
     client.release();
   } catch (err) {
     console.error(err);
-  }
+  }*/
 }
 
 async function procInit2 () {
@@ -1615,6 +1615,9 @@ async function procEnterDungeon(req, res) {
               char.currencies.warlock += 3;
               char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '고대 흑마법사의 선물', rank : 8, resultType : 90004});
               reward += re.leftInfo.name + getUlrul(re.leftInfo.nameType) + ' 처치했습니다!<br>고대 흑마법사의 선물 1개, 흑마술의 파편 3개를 획득했습니다.<br>';
+              if (!char.achievement[28]) {
+                await giveAchievement(charRow.uid, char, 28);
+              }
             await client.query('insert into news(content, date) values ($1, $2)', 
                 [char.name + getIga(char.nameType) + ' ' + re.leftInfo.name + getUlrul(re.leftInfo.nameType) + ' 처치했습니다!', new Date()]);
             }            
