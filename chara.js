@@ -1245,18 +1245,18 @@ const item = require('./items');
   charMarang.skill = {};
   charMarang.skill.base = [];
 
-  var skillObj = {code : 201746, name : '삼월참', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1.3, 
-      calcEffect : [{name : '삼월참', code : cons.EFFECT_TYPE_FORCE_CRIT, chkOpp : [12], skillCode : 201746}],
-      effect : [],
-      tooltip : '자신에게 [설화의 계절], [서리 날개] 버프가 있다면 각각 치명 피해 1.2배, 적에게 [빙결] 상태이상이 있다면 확정 치명 타격',
-      flavor : '서늘한 달빛을 머금고 베어내는 발검술.'};  
-  charMarang.skill.base.push(skillObj);
-
-  skillObj = {code : 201747, name : '설화의 계절', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 1, 
+  var skillObj = {code : 201747, name : '설화의 계절', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 0.7, 
       effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201755, buffDur : 4},
                 {code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.15, buffCode : 1, buffDur : 1}],
       tooltip : '100\% 확률로 자신에게 4턴 간 [설화의 계절] 부여, 15\% 확률로 적에게 1턴 간 [화상] 상태이상 부여<br><br>[설화의 계절] : 명중 +5\%, 물리저항 +5\%',
       flavor : '주변의 기온을 비정상적으로 조작하여 비좁은 공간에 냉기와 열기를 생성한다.'};  
+  charMarang.skill.base.push(skillObj);
+
+  skillObj = {code : 201746, name : '삼월참', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1.6, 
+      calcEffect : [{name : '삼월참', code : cons.EFFECT_TYPE_FORCE_CRIT, chkOpp : [12], skillCode : 201746}],
+      effect : [],
+      tooltip : '자신에게 [설화의 계절], [서리 날개] 버프가 있다면 각각 치명 피해 1.2배, 적에게 [빙결] 상태이상이 있다면 확정 치명 타격',
+      flavor : '서늘한 달빛을 머금고 베어내는 발검술.'};  
   charMarang.skill.base.push(skillObj);
 
   skillObj = {code : 201748, name : '서리 날개', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 0.7,
@@ -1267,7 +1267,7 @@ const item = require('./items');
   charMarang.skill.base.push(skillObj);
 
   skillObj = {code : 201749, name : '마랑의 검은 코트', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.SKILL_TYPE_DRIVE, 
-      active : cons.ACTIVE_TYPE_RECEIVE_BUFF, cost : 5, chance : 1, setCooldown : 5, chk : [1, 4, 6, 12],
+      active : cons.ACTIVE_TYPE_RECEIVE_BUFF, cost : 5, chance : 1, setCooldown : 6, chk : [1, 4, 6, 12],
       effect : [{code : cons.EFFECT_TYPE_REMOVE_BUFF, buffTarget : [1, 4, 6, 12]},
                 {code : cons.EFFECT_TYPE_SELF_HP, value : 0.05, isPercentStat : true, percentKey : 'maxHp'}],
       tooltip : '자신에게 [화상], [기절], [탈진], [빙결] 상태이상이 걸릴 경우, 해당 상태이상을 즉시 해제하고 최대 생명력의 5%만큼 회복 (쿨타임 5턴)',

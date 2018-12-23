@@ -1287,6 +1287,10 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
       this.result += '[ ' + damage.name + ' ] 스킬이 사용됩니다!<br>';
     } else if (eff.code === cons.EFFECT_TYPE_RESOLVE_SKILL) {
       var keyUsed = eff.randomSkill ? Math.floor(Math.random() * 3) : eff.value;
+      var skill = winner.skill.base[keyUsed];
+      if (eff.reduceDmg) {
+        skill.damage -= eff.reduceDmg;
+      }
       var resolvedDamage = this.calcDamage(winner, loser, winner.skill.base[keyUsed]);
       if (resolvedDamage.hit) {
         this.dealDamage(winner, loser, resolvedDamage);

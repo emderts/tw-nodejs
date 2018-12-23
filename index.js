@@ -74,7 +74,7 @@ const app = express()
 .post('/doRankup', procRankup)
 .post('/getCard', procGetCard)
 .post('/actionAccel', procActionAccel)
-.get('/test', (req, res) => res.render('pages/battle', {result: (new battlemodule.bmodule()).doBattle(JSON.parse(JSON.stringify(chara.gabi)), JSON.parse(JSON.stringify(chara.ruisun)), 1).result}))
+.get('/test', (req, res) => res.render('pages/battle', {result: (new battlemodule.bmodule()).doBattle(JSON.parse(JSON.stringify(chara.marang)), JSON.parse(JSON.stringify(chara.gaius)), 1).result}))
 .get('/test2', (req, res) => res.render('pages/trade', {room : '1', uid : '03'}))
 .get('/test3', (req, res) => res.render('pages/trade', {room : '1', uid : '06'}))
 .get('/test4', (req, res) => res.send(procInit2()))
@@ -234,8 +234,8 @@ function procFullTest() {
 
 async function procInit () {
   //await setCharacter('kemderts', 2, chara.kines);
-  var rc = {name : '계승의 리설트 카드 묶음', type : 90003, rarity : cons.ITEM_RARITY_PREMIUM};
-  var rc2 = {name : '계승의 찬란한 요일석 더미', type : 90004, rarity : cons.ITEM_RARITY_PREMIUM};
+  var rc = {name : '계승의 카드 묶음', type : 90003, rarity : cons.ITEM_RARITY_PREMIUM};
+  var rc2 = {name : '계승의 요일석 더미', type : 90004, rarity : cons.ITEM_RARITY_PREMIUM};
   var rc3 = item.list[434];
   var rc4 = item.list[435];
   var tgt = chara.gaius;
@@ -299,8 +299,10 @@ async function procInit () {
   var tgt = chara.marang;
   tgt.inventory.push(rc);
   tgt.inventory.push(rc);
-  tgt.inventory.push(rc2);
-  tgt.premiumPoint = 9;
+  tgt.inventory.push(rc);
+  tgt.inventory.push(rc);
+  tgt.premiumPoint = 8;
+  tgt.cont = true;
   await setCharacter('tkrsjs', '11', tgt);
   await setCharacter('miniho99', '12', chara.gabi);
   await setCharacter('becrow115', '13', chara.jay);

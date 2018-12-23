@@ -2815,7 +2815,8 @@ module.exports.getBuffData = function(eff) {
     effectObj.active = cons.ACTIVE_TYPE_USE_SPECIAL;
     effectObj.code = cons.EFFECT_TYPE_RESOLVE_SKILL;
     effectObj.chk = [201756];
-    effectObj.value = 0;
+    effectObj.value = 1;
+    effectObj.reduceDmg = 0.3;
     retObj.effect.push(effectObj);
     break;
   case 201756 : 
