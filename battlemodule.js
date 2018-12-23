@@ -1045,8 +1045,8 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
       var damageAdd = this.calcDamage(source, target, tempObj);
 
       if (!eff.hitMod || damageAdd.hit) {
-        var source = eff.name ? ' [ ' + eff.name + ' ] 효과로 ' : ' 추가로 ';
-        this.result += '<span class="skillDamage">' + target.name + getUnnun(target.nameType) + source + damageAdd.value + '대미지를 입었습니다!';
+        var sourceTxt = eff.name ? ' [ ' + eff.name + ' ] 효과로 ' : ' 추가로 ';
+        this.result += '<span class="skillDamage">' + target.name + getUnnun(target.nameType) + sourceTxt + damageAdd.value + '대미지를 입었습니다!';
         if (damageAdd.crit) {
           this.result += ' (치명타)';
         }
