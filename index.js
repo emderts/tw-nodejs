@@ -395,10 +395,11 @@ async function procInit2 () {
       
       await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), val.uid]);
     } 
-    client.release();
   } catch (err) {
     console.error(err);
     res.send('내부 오류');
+  } finally {
+    client.release();
   }
 }
 
@@ -428,9 +429,10 @@ async function procIndex (req, res) {
         //mark : mark
       });
     }
-    client.release();
   } catch (err) {
     console.error(err);
+  } finally {
+    client.release();
   }
 }
 
@@ -442,9 +444,10 @@ async function procEvent(req, res) {
       room: 1,
       uid: sess.userUid
     });
-    client.release();
   } catch (err) {
     console.error(err);
+  } finally {
+    client.release();
   }
 }
 
@@ -464,10 +467,11 @@ async function procLogin (req, res) {
     } else {
       res.send('아이디나 비밀번호 오류입니다.<br><a href="/">돌아가기</a>');
     }
-    client.release();
   } catch (err) {
     console.error(err);
     res.send('내부 오류');
+  } finally {
+    client.release();
   }
 }
 
@@ -487,11 +491,12 @@ async function procJoin (req, res) {
       const hash = bcrypt.hashSync(body.userPwd, salt); 
       const result = await client.query('insert into users(id, password, name, uid) values ($1, $2, $3, $4)', [body.userId, hash, body.userName, null]);
       res.send('가입되었습니다!');
-    }      
-    client.release();
+    }
   } catch (err) {
     console.error(err);
     res.send('내부 오류');
+  } finally {
+    client.release();
   }
 }
 
@@ -799,13 +804,14 @@ async function procUseItem (req, res) {
         await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(chara), result.rows[0].uid]);
       }
     }
-    client.release();
     if (!res.headersSent) {
       res.redirect('/');
     }
   } catch (err) {
     console.error(err);
     res.send('내부 오류');
+  } finally {
+    client.release();
   }
 }
 
@@ -826,11 +832,12 @@ async function procUnequip (req, res) {
         await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(chara), result.rows[0].uid]);
       }
     }
-    client.release();
     res.redirect('/');
   } catch (err) {
     console.error(err);
     res.send('내부 오류');
+  } finally {
+    client.release();
   }
 }
 
@@ -862,11 +869,12 @@ async function procEnchantItem (req, res) {
         await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(chara), result.rows[0].uid]);
       }
     }
-    client.release();
     res.redirect('/');
   } catch (err) {
     console.error(err);
     res.send('내부 오류');
+  } finally {
+    client.release();
   }
 }
 
@@ -921,10 +929,11 @@ async function procBattleList(req, res) {
       }
     } 
     res.render('pages/battleList', {list: rval, title: '전투 신청', formAction: '/doBattle'});
-    client.release();
   } catch (err) {
     console.error(err);
     res.send('내부 오류');
+  } finally {
+    client.release();
   }
 }
 
@@ -1113,7 +1122,7 @@ async function procBattle(req, res) {
       await client.query('update characters set char_data = $1, actionPoint = $2 where uid = $3', [JSON.stringify(left), left.actionAccel ? cap-2 : cap-1, cuid]);
       await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(right), body.charUid]);
       await client.query('insert into personal(uid, content, date) values ($1, $2, $3)', 
-          [body.charUid, left.name + '의 전투 신청이 있었습니다.', new Date()]);
+          [body.charUid, left.name + '의 전투 신청이 있었습니다. (' + (re.winnerLeft ? '패배' : '승리') + ')', new Date()]);
       await setGlobals(globalObj);
       var winner = re.winnerLeft ? left.name + ' 승리!' : (re.winnerRight ? right.name + ' 승리!' : '');
       var battleTitle = '[ ' + left.name + ' ] vs [ ' + right.name + ' ] - ' + winner;
@@ -1122,10 +1131,11 @@ async function procBattle(req, res) {
     } else {
       res.redirect('/');
     }
-    client.release();
   } catch (err) {
     console.error(err);
     res.send('내부 오류');
+  } finally {
+    client.release();
   }
 }
 
@@ -1134,10 +1144,11 @@ async function procBattleLogList(req, res) {
     const client = await pool.connect();
     const result = await client.query('select id, title, date from results order by date desc');
     res.render('pages/battleLogList', {list: result.rows});
-    client.release();
   } catch (err) {
     console.error(err);
     res.send('내부 오류');
+  } finally {
+    client.release();
   }
 }
 
@@ -1146,10 +1157,11 @@ async function procBattleLog(req, res) {
     const client = await pool.connect();
     const result = await client.query('select * from results where id = $1', [req.body.logId]);
     res.render('pages/battle', {result: result.rows[0].result});
-    client.release();
   } catch (err) {
     console.error(err);
     res.send('내부 오류');
+  } finally {
+    client.release();
   }
 }
 
@@ -1167,10 +1179,11 @@ async function procViewList(req, res) {
       rval.push(obj);
     } 
     res.render('pages/battleList', {list: rval, title: '정보 보기', formAction: '/viewChar'});
-    client.release();
   } catch (err) {
     console.error(err);
     res.send('내부 오류');
+  } finally {
+    client.release();
   }
 }
 
@@ -1182,10 +1195,11 @@ async function procView(req, res) {
       var charData = JSON.parse(val.char_data);
     } 
     res.render('pages/viewChar', {char: charData});
-    client.release();
   } catch (err) {
     console.error(err);
     res.send('내부 오류');
+  } finally {
+    client.release();
   }
 }
 
@@ -1203,10 +1217,11 @@ async function procTradeList(req, res) {
       rval.push(obj);
     } 
     res.render('pages/battleList', {list: rval, title: '거래 요청', formAction: '/doTrade'});
-    client.release();
   } catch (err) {
     console.error(err);
     res.send('내부 오류');
+  } finally {
+    client.release();
   }
 }
 
@@ -1221,10 +1236,11 @@ async function procTrade(req, res) {
       var charData = JSON.parse(val.char_data);
     }
     res.render('pages/selectItem', {title : '아이템 주기', premiumPoint : char.premiumPoint, inv : char.inventory, mode : 3, name : charData.name, uid : req.body.charUid, usedItem : null});
-    client.release();
   } catch (err) {
     console.error(err);
     res.send('내부 오류');
+  } finally {
+    client.release();
   }
 }
 
@@ -1256,13 +1272,14 @@ async function procGive(req, res) {
     await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(charTgt), charRow2.uid]);
     await client.query('insert into personal(uid, content, date) values ($1, $2, $3)', 
         [charRow2.uid, char.name + '에게 ' + tgt.name + getUlrul(tgt.nameType) + ' 받았습니다.', new Date()]);
-    client.release();
     if (!res.headersSent) {
       res.render('pages/selectItem', {title : '아이템 주기', premiumPoint : char.premiumPoint, inv : char.inventory, mode : 3, name : charTgt.name, uid : req.body.charUid, usedItem : null});
     }
   } catch (err) {
     console.error(err);
     res.send('내부 오류');
+  } finally {
+    client.release();
   }
 }
 
@@ -1284,13 +1301,14 @@ async function procGivePoint(req, res) {
     await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(charTgt), charRow2.uid]);
     await client.query('insert into personal(uid, content, date) values ($1, $2, $3)', 
         [charRow2.uid, char.name + '에게 프리미엄 포인트 ' + body.point + '점을 받았습니다.', new Date()]);
-    client.release();
     if (!res.headersSent) {
       res.render('pages/selectItem', {title : '아이템 주기', premiumPoint : char.premiumPoint, inv : char.inventory, mode : 3, name : charTgt.name, uid : req.body.charUid, usedItem : null});
     }
   } catch (err) {
     console.error(err);
     res.send('내부 오류');
+  } finally {
+    client.release();
   }
 }
 
@@ -1461,13 +1479,14 @@ async function procUseShop (req, res) {
       }
     }
     await client.query('update characters set char_data = $1, actionpoint = $3 where uid = $2', [JSON.stringify(char), charRow.uid, action]);
-    client.release();
     if (!res.headersSent) {
       res.redirect('/');
     }
   } catch (err) {
     console.error(err);
     res.send('내부 오류');
+  } finally {
+    client.release();
   }
 }
 
@@ -1506,10 +1525,11 @@ async function procDungeon(req, res) {
       }
     }
     res.render('pages/dungeon', {dungeonList : dungeonList, nameIn : char.name});
-    client.release();
   } catch (err) {
     console.error(err);
     res.send('내부 오류');
+  } finally {
+    client.release();
   }
 }
 
@@ -1630,10 +1650,11 @@ async function procEnterDungeon(req, res) {
     } else {
       res.redirect('/');
     }
-    client.release();
   } catch (err) {
     console.error(err);
     res.send('내부 오류');
+  } finally {
+    client.release();
   }
 }
 
@@ -1797,10 +1818,11 @@ async function procNextPhaseDungeon(req, res) {
     } else {
       res.redirect('/');
     }
-    client.release();
   } catch (err) {
     console.error(err);
     res.send('내부 오류');
+  } finally {
+    client.release();
   }
 }
 
@@ -1839,10 +1861,11 @@ async function procStopDungeon(req, res) {
     } else {
       res.redirect('/');
     }
-    client.release();
   } catch (err) {
     console.error(err);
     res.send('내부 오류');
+  } finally {
+    client.release();
   }
 }
 
@@ -1899,11 +1922,12 @@ async function procSortInventory(req, res) {
       }
     });
     await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
-    client.release();
     res.redirect('/');
   } catch (err) {
     console.error(err);
     res.send('내부 오류');
+  } finally {
+    client.release();
   }
 }
 
@@ -1962,13 +1986,14 @@ async function procSubmitQuest (req, res) {
       delete char.quest[body.option];
     }
     await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
-    client.release();
     if (!res.headersSent) {
       res.render('pages/quest', {quest : char.quest, resetQuest : char.resetQuest});
     }
   } catch (err) {
     console.error(err);
     res.send('내부 오류');
+  } finally {
+    client.release();
   }
 }
 
@@ -2011,13 +2036,14 @@ async function procResetQuest (req, res) {
       delete char.quest[body.option];
     }
     await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
-    client.release();
     if (!res.headersSent) {
       res.render('pages/quest', {quest : char.quest, resetQuest : char.resetQuest});
     }
   } catch (err) {
     console.error(err);
     res.send('내부 오류');
+  } finally {
+    client.release();
   }
 }
 
@@ -2054,13 +2080,14 @@ async function procDismantleItem (req, res) {
       }
     }
     await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
-    client.release();
     if (!res.headersSent) {
       res.render('pages/selectItem', {title : '아이템 해체', inv : char.inventory, mode : 2, dustVal : dustVal, dust : char.dust, usedItem : 0});;
     }
   } catch (err) {
     console.error(err);
     res.send('내부 오류');
+  } finally {
+    client.release();
   }
 }
 
@@ -2089,13 +2116,14 @@ async function procAddCube (req, res) {
       char.stoneCube.push(tgt);
     }
     await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
-    client.release();
     if (!res.headersSent) {
       res.render('pages/selectItem', {title : '요일석 합성', inv : char.inventory, mode : 4, cube : char.stoneCube, usedItem : 0});
     }
   } catch (err) {
     console.error(err);
     res.send('내부 오류');
+  } finally {
+    client.release();
   }
 }
 
@@ -2112,13 +2140,14 @@ async function procRemoveCube (req, res) {
       char.inventory.push(tgt);
     }
     await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
-    client.release();
     if (!res.headersSent) {
       res.render('pages/selectItem', {title : '요일석 합성', inv : char.inventory, mode : 4, cube : char.stoneCube, usedItem : 0});
     }
   } catch (err) {
     console.error(err);
     res.send('내부 오류');
+  } finally {
+    client.release();
   }
 }
 
@@ -2141,13 +2170,14 @@ async function procActivateCube (req, res) {
       }
       await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
     }
-    client.release();
     if (!res.headersSent) {
       res.render('pages/selectItem', {title : '요일석 합성', inv : char.inventory, mode : 4, cube : char.stoneCube, usedItem : 0});
     }
   } catch (err) {
     console.error(err);
     res.send('내부 오류');
+  } finally {
+    client.release();
   }
 }
 
@@ -2233,12 +2263,13 @@ async function getNews (cnt) {
       rval.push(val.content);
     }
 
-    client.release();
     return rval;
   } catch (err) {
     console.error(err);
     return [];
-  }   
+  } finally {
+    client.release();
+  }
 }
 
 async function getPersonalNews (uid) {
@@ -2250,12 +2281,13 @@ async function getPersonalNews (uid) {
       rval.push(val.content);
     }
 
-    client.release();
     return rval;
   } catch (err) {
     console.error(err);
     return [];
-  }   
+  } finally {
+    client.release();
+  }
 }
 
 async function giveAchievement (uid, chara, idx) {
@@ -2275,12 +2307,13 @@ async function giveAchievement (uid, chara, idx) {
       await client.query('insert into news(content, date) values ($1, $2)', 
           [chara.name + getIga(chara.nameType) + ' [ ' + ach.achData[idx].name + ' ] 업적을 달성했습니다!', new Date()]);
     }
-    client.release();
     return;
   } catch (err) {
     console.error(err);
     return;
-  }   
+  } finally {
+    client.release();
+  }
 }
 
 async function getCharacter (id) {
@@ -2297,12 +2330,13 @@ async function getCharacter (id) {
       }
     }
 
-    client.release();
     return rval;
   } catch (err) {
     console.error(err);
     return {};
-  }   
+  } finally {
+    client.release();
+  }
 }
 
 async function getGlobals (setObj) {
@@ -2310,12 +2344,13 @@ async function getGlobals (setObj) {
     const client = await pool.connect();
     const result = await client.query('select * from global');
 
-    client.release();
     return JSON.parse(result.rows[0].globals);
   } catch (err) {
     console.error(err);
     return;
-  }   
+  } finally {
+    client.release();
+  }
 }
 
 async function setGlobals (setObj) {
@@ -2341,12 +2376,13 @@ async function setGlobals (setObj) {
       await client.query('update global set globals = $1', [JSON.stringify(newObj)]);
     }
 
-    client.release();
     return;
   } catch (err) {
     console.error(err);
     return;
-  }   
+  } finally {
+    client.release();
+  }
 }
 
 async function setCharacter (id, uid, data) {
@@ -2355,9 +2391,10 @@ async function setCharacter (id, uid, data) {
     const result = await client.query('insert into characters(uid, char_data, actionpoint) values ($1, $2, 10)', [uid, data]);
     const result2 = await client.query('update users set uid = $1 where id = $2', [uid, id]);
 
-    client.release();
   } catch (err) {
     console.error(err);
+  } finally {
+    client.release();
   }
 }
 

@@ -844,7 +844,7 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
     if (eff.chkDmgType && eff.chkDmgType !== damage.type) {
       continue;
     }
-    if (eff.chkDmgMultiple && damage.value % eff.chkDmgMultiple !== 0) {
+    if (eff.chkDmgMultiple && (damage.value % eff.chkDmgMultiple !== 0 || damage.value == 0)) {
       continue;
     }
     if (eff.chkStack && eff.chkStack > eff.buff.stack) {
