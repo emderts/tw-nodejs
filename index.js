@@ -2263,12 +2263,13 @@ async function getNews (cnt) {
       rval.push(val.content);
     }
 
+    client.release();
     return rval;
   } catch (err) {
     console.error(err);
+    client.release();
     return [];
   } finally {
-    client.release();
   }
 }
 
@@ -2281,12 +2282,13 @@ async function getPersonalNews (uid) {
       rval.push(val.content);
     }
 
+    client.release();
     return rval;
   } catch (err) {
     console.error(err);
+    client.release();
     return [];
   } finally {
-    client.release();
   }
 }
 
@@ -2307,12 +2309,13 @@ async function giveAchievement (uid, chara, idx) {
       await client.query('insert into news(content, date) values ($1, $2)', 
           [chara.name + getIga(chara.nameType) + ' [ ' + ach.achData[idx].name + ' ] 업적을 달성했습니다!', new Date()]);
     }
+    client.release();
     return;
   } catch (err) {
+    client.release();
     console.error(err);
     return;
   } finally {
-    client.release();
   }
 }
 
@@ -2329,13 +2332,14 @@ async function getCharacter (id) {
         rval.uid = resultChar.rows[0].uid;
       }
     }
+    client.release();
 
     return rval;
   } catch (err) {
+    client.release();
     console.error(err);
     return {};
   } finally {
-    client.release();
   }
 }
 
@@ -2343,13 +2347,14 @@ async function getGlobals (setObj) {
   try {
     const client = await pool.connect();
     const result = await client.query('select * from global');
+    client.release();
 
     return JSON.parse(result.rows[0].globals);
   } catch (err) {
+    client.release();
     console.error(err);
     return;
   } finally {
-    client.release();
   }
 }
 
@@ -2376,12 +2381,13 @@ async function setGlobals (setObj) {
       await client.query('update global set globals = $1', [JSON.stringify(newObj)]);
     }
 
+    client.release();
     return;
   } catch (err) {
+    client.release();
     console.error(err);
     return;
   } finally {
-    client.release();
   }
 }
 
@@ -2391,10 +2397,10 @@ async function setCharacter (id, uid, data) {
     const result = await client.query('insert into characters(uid, char_data, actionpoint) values ($1, $2, 10)', [uid, data]);
     const result2 = await client.query('update users set uid = $1 where id = $2', [uid, id]);
 
-  } catch (err) {
-    console.error(err);
-  } finally {
     client.release();
+  } catch (err) {
+    client.release();
+    console.error(err);
   }
 }
 
