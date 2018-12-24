@@ -404,9 +404,9 @@ async function procInit2 () {
 }
 
 async function procIndex (req, res) {
+    const client = await pool.connect();
   try {
     const sess = req.session; 
-    const client = await pool.connect();
     const charRow = await getCharacter(sess.userUid);
     const news = await getNews(5);
     if (!sess.userUid) {
@@ -437,9 +437,9 @@ async function procIndex (req, res) {
 }
 
 async function procEvent(req, res) {
+    const client = await pool.connect();
   try {
     const sess = req.session; 
-    const client = await pool.connect();
     res.render('pages/trade', {
       room: 1,
       uid: sess.userUid
@@ -452,9 +452,9 @@ async function procEvent(req, res) {
 }
 
 async function procLogin (req, res) {
+    const client = await pool.connect();
   try {
     const body = req.body;
-    const client = await pool.connect();
     const result = await client.query('select * from users where id = $1', [body.userId]);
     if (result.rows.length > 0) {
       if (bcrypt.compareSync(body.userPwd, result.rows[0].password)) {
@@ -476,13 +476,13 @@ async function procLogin (req, res) {
 }
 
 async function procJoin (req, res) {
+    const client = await pool.connect();
   try {
     const body = req.body;
     if (body.userPwd !== body.userPwdCheck) {
       res.send('비밀번호 확인이 잘못되었습니다.');
       return;      
     }
-    const client = await pool.connect();
     const result = await client.query('select * from users where id = $1', [body.userId]);
     if (result.rows.length != 0) {
       res.send('아이디가 중복됩니다.');
@@ -519,10 +519,10 @@ function _getItem(rank, rarity, type) {
 }
 
 async function procUseItem (req, res) {
+    const client = await pool.connect();
   try {
     var chara;
     const body = req.body;
-    const client = await pool.connect();
     const result = await client.query('select * from users where id = $1', [req.session.userUid]);
     
     function _processRare(chara, tgtObj, picked) {
@@ -816,10 +816,10 @@ async function procUseItem (req, res) {
 }
 
 async function procUnequip (req, res) {
+    const client = await pool.connect();
   try {
     var chara;
     const body = req.body;
-    const client = await pool.connect();
     const result = await client.query('select * from users where id = $1', [req.session.userUid]);
     if (result.rows.length > 0) {
       const resultChar = await client.query('select char_data from characters where uid = $1', [result.rows[0].uid]);
@@ -842,10 +842,10 @@ async function procUnequip (req, res) {
 }
 
 async function procEnchantItem (req, res) {
+    const client = await pool.connect();
   try {
     var chara;
     const body = req.body;
-    const client = await pool.connect();
     const result = await client.query('select * from users where id = $1', [req.session.userUid]);
     if (result.rows.length > 0) {
       const resultChar = await client.query('select char_data from characters where uid = $1', [result.rows[0].uid]);
@@ -893,8 +893,8 @@ async function procTrain(req, res) {
 }
 
 async function procBattleList(req, res) {
-  try {
     const client = await pool.connect();
+  try {
     const sess = req.session; 
     const resultUser = await client.query('select * from users where id = $1', [req.session.userUid]);
     const cuid = resultUser.rows[0].uid;
@@ -938,9 +938,9 @@ async function procBattleList(req, res) {
 }
 
 async function procBattle(req, res) {
+    const client = await pool.connect();
   try {
     const body = req.body;
-    const client = await pool.connect();
     const resultUser = await client.query('select * from users where id = $1', [req.session.userUid]);
     const result = await client.query('select * from characters');
     const globals = await getGlobals();
@@ -1140,8 +1140,8 @@ async function procBattle(req, res) {
 }
 
 async function procBattleLogList(req, res) {
-  try {
     const client = await pool.connect();
+  try {
     const result = await client.query('select id, title, date from results order by date desc');
     res.render('pages/battleLogList', {list: result.rows});
   } catch (err) {
@@ -1153,8 +1153,8 @@ async function procBattleLogList(req, res) {
 }
 
 async function procBattleLog(req, res) {
-  try {
     const client = await pool.connect();
+  try {
     const result = await client.query('select * from results where id = $1', [req.body.logId]);
     res.render('pages/battle', {result: result.rows[0].result});
   } catch (err) {
@@ -1166,8 +1166,8 @@ async function procBattleLog(req, res) {
 }
 
 async function procViewList(req, res) {
-  try {
     const client = await pool.connect();
+  try {
     const resultUser = await client.query('select * from users where id = $1', [req.session.userUid]);
     const result = await client.query('select * from characters where uid <> $1 order by uid', [resultUser.rows[0].uid]);
     var rval = [];
@@ -1188,8 +1188,8 @@ async function procViewList(req, res) {
 }
 
 async function procView(req, res) {
-  try {
     const client = await pool.connect();
+  try {
     const result = await client.query('select * from characters where uid = $1', [req.body.charUid]);
     for (val of result.rows) {
       var charData = JSON.parse(val.char_data);
@@ -1204,8 +1204,8 @@ async function procView(req, res) {
 }
 
 async function procTradeList(req, res) {
-  try {
     const client = await pool.connect();
+  try {
     const resultUser = await client.query('select * from users where id = $1', [req.session.userUid]);
     const result = await client.query('select * from characters where uid <> $1 order by uid', [resultUser.rows[0].uid]);
     var rval = [];
@@ -1226,8 +1226,8 @@ async function procTradeList(req, res) {
 }
 
 async function procTrade(req, res) {
-  try {
     const client = await pool.connect();
+  try {
     const sess = req.session; 
     const charRow = await getCharacter(sess.userUid);
     const char = JSON.parse(charRow.char_data);
@@ -1245,9 +1245,9 @@ async function procTrade(req, res) {
 }
 
 async function procGive(req, res) {
+    const client = await pool.connect();
   try {
     const body = req.body;
-    const client = await pool.connect();
     const sess = req.session; 
     const charRow = await getCharacter(sess.userUid);
     const char = JSON.parse(charRow.char_data);
@@ -1284,10 +1284,10 @@ async function procGive(req, res) {
 }
 
 async function procGivePoint(req, res) {
+    const client = await pool.connect();
   try {
     const body = req.body;
     const sess = req.session; 
-    const client = await pool.connect();
     const charRow = await getCharacter(sess.userUid);
     const char = JSON.parse(charRow.char_data);
     const result = await client.query('select * from characters where uid = $1', [body.charUid]);
@@ -1329,9 +1329,9 @@ async function procShop(req, res) {
 }
 
 async function procUseShop (req, res) {
+    const client = await pool.connect();
   try {
     const body = req.body;
-    const client = await pool.connect();
     const sess = req.session; 
     const charRow = await getCharacter(sess.userUid);
     const char = JSON.parse(charRow.char_data);
@@ -1491,11 +1491,11 @@ async function procUseShop (req, res) {
 }
 
 async function procDungeon(req, res) {
+    const client = await pool.connect();
   try {
     const sess = req.session; 
     const charRow = await getCharacter(sess.userUid);
     const char = JSON.parse(charRow.char_data);
-    const client = await pool.connect();
     const result = await client.query('select * from raids');
     var dungeonList = [];
     dungeonList.push({name : '메모리얼 게이트 - 메비우스 섬멸 [9급 20레벨 이상]', code : 1, remain : char.dungeonInfos.enterMevious, active : !char.dungeonInfos.runMevious && char.dungeonInfos.enterMevious > 0 && (char.rank <= 8 || char.level >= 20)});
@@ -1534,10 +1534,10 @@ async function procDungeon(req, res) {
 }
 
 async function procEnterDungeon(req, res) {
+    const client = await pool.connect();
   try {
     const body = req.body;
     const sess = req.session; 
-    const client = await pool.connect();
     const charRow = await getCharacter(sess.userUid);
     const char = JSON.parse(charRow.char_data);
     var enemy, curData, hpBefore, row;
@@ -1659,8 +1659,8 @@ async function procEnterDungeon(req, res) {
 }
 
 async function procNextPhaseDungeon(req, res) {
-  try {
     const client = await pool.connect();
+  try {
     const sess = req.session; 
     const charRow = await getCharacter(sess.userUid);
     const char = JSON.parse(charRow.char_data);
@@ -1827,8 +1827,8 @@ async function procNextPhaseDungeon(req, res) {
 }
 
 async function procStopDungeon(req, res) {
-  try {
     const client = await pool.connect();
+  try {
     const sess = req.session; 
     const charRow = await getCharacter(sess.userUid);
     const char = JSON.parse(charRow.char_data);
@@ -1870,9 +1870,9 @@ async function procStopDungeon(req, res) {
 }
 
 async function procSortInventory(req, res) {
+    const client = await pool.connect();
   try {
     const sess = req.session; 
-    const client = await pool.connect();
     const charRow = await getCharacter(sess.userUid);
     const char = JSON.parse(charRow.char_data);
     char.inventory = char.inventory.filter(x => x != null);
@@ -1957,10 +1957,10 @@ async function procQuest(req, res) {
 }
 
 async function procSubmitQuest (req, res) {
+    const client = await pool.connect();
   try {
     const body = req.body;
     const sess = req.session; 
-    const client = await pool.connect();
     const charRow = await getCharacter(sess.userUid);
     const char = JSON.parse(charRow.char_data);
     var tgt = char.quest[body.option];
@@ -1998,10 +1998,10 @@ async function procSubmitQuest (req, res) {
 }
 
 async function procResetQuest (req, res) {
+    const client = await pool.connect();
   try {
     const body = req.body;
     const sess = req.session; 
-    const client = await pool.connect();
     const charRow = await getCharacter(sess.userUid);
     const char = JSON.parse(charRow.char_data);
     if (char.resetQuest) {
@@ -2061,9 +2061,9 @@ async function procDismantlingYard(req, res) {
 
 const dustInfo = [10, 14, 26, 26, 62, 170];
 async function procDismantleItem (req, res) {
+    const client = await pool.connect();
   try {
     const body = req.body;
-    const client = await pool.connect();
     const sess = req.session; 
     const charRow = await getCharacter(sess.userUid);
     const char = JSON.parse(charRow.char_data);
@@ -2104,10 +2104,10 @@ async function procStoneCube(req, res) {
 }
 
 async function procAddCube (req, res) {
+    const client = await pool.connect();
   try {
     const body = req.body;
     const sess = req.session; 
-    const client = await pool.connect();
     const charRow = await getCharacter(sess.userUid);
     const char = JSON.parse(charRow.char_data);
     var tgt = char.inventory[body.itemNum];
@@ -2128,10 +2128,10 @@ async function procAddCube (req, res) {
 }
 
 async function procRemoveCube (req, res) {
+    const client = await pool.connect();
   try {
     const body = req.body;
     const sess = req.session; 
-    const client = await pool.connect();
     const charRow = await getCharacter(sess.userUid);
     const char = JSON.parse(charRow.char_data);
     var tgt = char.stoneCube[body.itemNum];
@@ -2152,9 +2152,9 @@ async function procRemoveCube (req, res) {
 }
 
 async function procActivateCube (req, res) {
+  const client = await pool.connect();
   try {
     const sess = req.session; 
-    const client = await pool.connect();
     const charRow = await getCharacter(sess.userUid);
     const char = JSON.parse(charRow.char_data)
     if (char.stoneCube.length >= 3) {
