@@ -77,7 +77,7 @@ const app = express()
 .get('/test', (req, res) => res.render('pages/battle', {result: (new battlemodule.bmodule()).doBattle(JSON.parse(JSON.stringify(chara.marang)), JSON.parse(JSON.stringify(chara.gaius)), 1).result}))
 .get('/test2', (req, res) => res.render('pages/trade', {room : '1', uid : '03'}))
 .get('/test3', (req, res) => res.render('pages/trade', {room : '1', uid : '06'}))
-.get('/test4', (req, res) => res.send(procInit()))
+.get('/test4', (req, res) => res.send(procInit2()))
 .get('/test5', (req, res) => res.render('pages/resultCard', {item : {name: 'test', rarity: Math.floor(Math.random() * 6)}}))
 .get('/test6', (req, res) => res.render('pages/index', {
   user: {name: 'kk'},
