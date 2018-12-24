@@ -1515,11 +1515,11 @@ const item = require('./items');
   charRuisun.nameType = cons.NAME_KOR_END_CONS;
   charRuisun.title = '위대한 장군';
   
-  charRuisun.startEffects = [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201791, buffDur : null, setStack : 0, 
+  charRuisun.startEffects = [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201791, buffDur : null, setStack : 1, 
     addDamage : [{value : 0.3, type : cons.DAMAGE_TYPE_MAGICAL}]},
-    {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201788, buffDur : null, setStack : 0, 
+    {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201788, buffDur : null, setStack : 1, 
       addDamage : [{value : 0.3, type : cons.DAMAGE_TYPE_PHYSICAL}]},
-      {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201789, buffDur : null, setStack : 0, 
+      {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201789, buffDur : null, setStack : 1, 
         addDamage : [{value : 0.2, type : cons.DAMAGE_TYPE_MAGICAL}]}];
   
   charRuisun.skill = {};
