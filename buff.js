@@ -3031,7 +3031,7 @@ module.exports.getBuffData = function(eff) {
     effectObj.code = cons.EFFECT_TYPE_SET_SKILL;
     effectObj.key = 'drive';
     effectObj.target = {code : 201765, name : '참격진', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_DRIVE, 
-        active : cons.ACTIVE_TYPE_ATTACK, cost : 8, chance : 0.15,
+        active : cons.ACTIVE_TYPE_ATTACK, cost : -8, chance : 0.15,
         effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201762, buffDur : null, stack : 1},
                   {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201762, buffDur : null, stack : 1},
                   {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201769, buffDur : 4}]};
@@ -3076,7 +3076,7 @@ module.exports.getBuffData = function(eff) {
     effectObj.value = 2;
     effectObj.target = {code : 201763, name : '과부하', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 1, 
         effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201762, buffDur : null, stack : 1},
-                  {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201768, chance : 0.33, buffDur : 3}]};
+                  {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201768, chance : 0.4, buffDur : 3}]};
     retObj.effect.push(effectObj);
     effectObj = {};
     effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
@@ -3517,7 +3517,7 @@ module.exports.getBuffData = function(eff) {
     effectObj = {};
     effectObj.active = cons.ACTIVE_TYPE_CALC_DAMAGE;
     effectObj.code = cons.EFFECT_TYPE_MULTIPLY_DAMAGE;
-    effectObj.value = 1.3;
+    effectObj.value = 1.25;
     effectObj.anySkill = true;
     retObj.effect.push(effectObj);
     break;
@@ -3833,8 +3833,8 @@ module.exports.getBuffData = function(eff) {
     effectObj.key = 'special';
     effectObj.target = {code : 201795, name : '파국 - 마지막 호흡', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 105, 
         effect : [{code : cons.EFFECT_TYPE_SELF_HP, value : 0.4, isPercentHpLost : true},
-                  {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201799, buffDur : null},
-                  {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 2017104, buffDur : null}]};
+                  {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 2017104, buffDur : null},
+                  {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201799, buffDur : null}]};
     retObj.effect.push(effectObj);
     effectObj = {};
     effectObj.active = cons.ACTIVE_TYPE_BEFORE_USE_SPECIAL;
@@ -3912,7 +3912,7 @@ module.exports.getBuffData = function(eff) {
     effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
     effectObj.code = cons.EFFECT_TYPE_STAT_MULTIPLY;
     effectObj.key = 'hpRegen';
-    effectObj.value = 2;
+    effectObj.value = 5;
     effectObj.chk = [201792];
     retObj.effect.push(effectObj);
     break;

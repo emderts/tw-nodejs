@@ -1021,7 +1021,7 @@ const item = require('./items');
   effectObj.code = cons.EFFECT_TYPE_ADD_HIT;
   effectObj.chance = 1;
   effectObj.type = cons.DAMAGE_TYPE_ABSOLUTE;
-  effectObj.value = 1;
+  effectObj.value = 2.5;
   effectObj.isPercentOppStat = true;
   effectObj.percentKey = 'dmgReduce';
   effectObj.onCrit = true;
@@ -1032,7 +1032,7 @@ const item = require('./items');
   effectObj.buffCode = 201738;
   effectObj.buffDur = 2;
   skillObj.effect.push(effectObj);
-  skillObj.tooltip = '100\% 확률로 자신에게 2턴 간 [정밀 조사] 버프 부여, 치명 타격 시 상대의 피해감소값만큼 추가 절대 피해<br><br>[정밀 조사] : 관통 +30%';
+  skillObj.tooltip = '100\% 확률로 자신에게 2턴 간 [정밀 조사] 버프 부여, 치명 타격 시 상대의 피해감소값 * 2.5만큼 추가 절대 피해<br><br>[정밀 조사] : 관통 +30%';
   skillObj.flavor = '귀차니즘인 눅스에게 오류 같은걸 발견하면 만들어 놓은 Lookup이란 만능명령어로 모든 오류를 발견하고 바로 처리한다. 물론 눅스가 평범하기 때문에(절대로 그렇지 않지만) 쓸 일이 많이 없다.';
   charNux.skill.base.push(skillObj);
 
@@ -1048,7 +1048,7 @@ const item = require('./items');
   effectObj.chance = 1;
   effectObj.buffCode = 201739;
   effectObj.buffDur = null;
-  effectObj.value = 0.2;
+  effectObj.value = 0.25;
   effectObj.critNot = true;
   skillObj.effect.push(effectObj);
   effectObj = {};
@@ -1056,10 +1056,10 @@ const item = require('./items');
   effectObj.chance = 1;
   effectObj.buffCode = 201739;
   effectObj.buffDur = null;
-  effectObj.value = 0.3;
+  effectObj.value = 0.35;
   effectObj.onCrit = true;
   skillObj.effect.push(effectObj);
-  skillObj.tooltip = '100\% 확률로 자신에게 [고속 대응 명령어] 버프 부여<br><br>[고속 대응 명령어] : 저항 +20%/회피 +15% (치명타 시 +30%/+20%), 피격 시 소거';
+  skillObj.tooltip = '100\% 확률로 자신에게 [고속 대응 명령어] 버프 부여<br><br>[고속 대응 명령어] : 저항 +25%/회피 +15% (치명타 시 +35%/+20%), 피격 시 소거';
   skillObj.flavor = '왜인지 모르겠지만 눅스에게는 하루에 3번은 해킹 시도가 나타납니다. 따로 프로그램으로 대응하지도 않고 키보드로 엄청난 연타로 해킹 시도를 저지합니다.';
   charNux.skill.base.push(skillObj);
 
@@ -1101,7 +1101,7 @@ const item = require('./items');
   effectObj.buffDur = 1;
   effectObj.value = 40;
   skillObj.effect.push(effectObj);
-  skillObj.tooltip = '턴 시작 시 5\% 확률로 공격 시 SP를 40 회복하고 최대 생명력의 5%만큼 회복';
+  skillObj.tooltip = '턴 시작 시 8\% 확률로 공격 시 SP를 40 회복하고 최대 생명력의 5%만큼 회복';
   skillObj.flavor = '너무 피곤에 쩔어 있어서 에너지 드링크를 마셔 기운이 회복되었습니다!';
   charNux.skill.drive = skillObj;
 
@@ -1342,15 +1342,15 @@ const item = require('./items');
   charLunisha.skill.base.push(skillObj);
 
   skillObj = {code : 201757, name : '막고 찌르기', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1.2, 
-      effect : [{code : cons.EFFECT_TYPE_SELF_HP, value : 0.3, isPercentDamage : true, chkLoseLast : true}],
-      tooltip : '전 턴에 상성 패배했다면, 상대에게 입힌 대미지의 30%만큼 생명력 회복',
+      effect : [{code : cons.EFFECT_TYPE_SELF_HP, value : 0.5, isPercentDamage : true, chkLoseLast : true}],
+      tooltip : '전 턴에 상성 패배했다면, 상대에게 입힌 대미지의 50%만큼 생명력 회복',
       flavor : '방어 후 연계 동작으로 자신의 피해를 최소화시키거나, 강력한 횡베기로 적을 두동강냅니다.'};  
   charLunisha.skill.base.push(skillObj);
 
   skillObj = {code : 201758, name : '간섭', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 1,
       effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201762, buffDur : null, stack : 1},
-                {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201763, chance : 0.33, buffDur : 3}],
-      tooltip : '[오버 클락] 스택을 생성하며, 33% 확률로 자신에게 3턴 간 [상쇄장] 버프 부여<br><br>[상쇄장] : 물리/마법저항 2배',
+                {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201763, chance : 0.4, buffDur : 3}],
+      tooltip : '[오버 클락] 스택을 생성하며, 40% 확률로 자신에게 3턴 간 [상쇄장] 버프 부여<br><br>[상쇄장] : 물리/마법저항 2배',
       flavor : '어머니의 권한을 일부분 빌려옵니다. 특수한 힘으로 적의 공격을 상쇄시키거나, 신체의 성능을 일시적으로 증폭시킵니다.'};  
   charLunisha.skill.base.push(skillObj);
 
@@ -1474,14 +1474,14 @@ const item = require('./items');
   charKasien.skill.base = [];
 
   var skillObj = {code : 201776, name : '꿰뚫는 창', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 0.6, 
-      effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 201782, buffDur : 3}],
-      tooltip : '적에게 3턴 간 [꿰뚫는 창] 디버프 1중첩 부여<br><br>[꿰뚫는 창] : 적 관통 +1%p, 디버프 재부여 시 턴 갱신 및 중첩 증가',
+      effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 201782, buffDur : 4}],
+      tooltip : '적에게 4턴 간 [꿰뚫는 창] 디버프 1중첩 부여<br><br>[꿰뚫는 창] : 적 관통 +1%p, 디버프 재부여 시 턴 갱신 및 중첩 증가',
       flavor : '적의 몸을 관통하는 창을 던집니다.'};  
   charKasien.skill.base.push(skillObj);
 
   skillObj = {code : 201777, name : '약점 포착', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 1.2, 
       effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201783, buffDur : 2}],
-      tooltip : '자신에게 1턴 간 [약점 포착] 버프 부여<br><br>[약점 포착] : 자신 스킬의 피해량 30% 증폭',
+      tooltip : '자신에게 1턴 간 [약점 포착] 버프 부여<br><br>[약점 포착] : 자신 스킬의 피해량 25% 증폭',
       flavor : '적의 약점에 표식을 남깁니다.'};  
   charKasien.skill.base.push(skillObj);
 
@@ -1500,7 +1500,7 @@ const item = require('./items');
       flavor : ''};
   charKasien.skill.drive = skillObj;
 
-  skillObj = {code : 201780, name : 'QWEEE', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 85, 
+  skillObj = {code : 201780, name : 'QWEEE', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 75, 
       effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201785, buffDur : null},
                 {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201786, buffDur : 4}],
       tooltip : '자신에게 [하이퍼무브] 버프 부여 및 3턴 간 [QWEEE] 버프 부여<br><br>[하이퍼무브] : 공격 시 임의의 스킬 1회 추가 발동되며 [웜보콤보] 2중첩 부여<br>[QWEEE] : SP충전 +8',
@@ -1514,6 +1514,13 @@ const item = require('./items');
   charRuisun.name = '뤼순 창';
   charRuisun.nameType = cons.NAME_KOR_END_CONS;
   charRuisun.title = '위대한 장군';
+  
+  charRuisun.startEffects = [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201791, buffDur : null, setStack : 0, 
+    addDamage : [{value : 0.3, type : cons.DAMAGE_TYPE_MAGICAL}]},
+    {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201788, buffDur : null, setStack : 0, 
+      addDamage : [{value : 0.3, type : cons.DAMAGE_TYPE_PHYSICAL}]},
+      {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201789, buffDur : null, setStack : 0, 
+        addDamage : [{value : 0.2, type : cons.DAMAGE_TYPE_MAGICAL}]}];
   
   charRuisun.skill = {};
   charRuisun.skill.base = [];

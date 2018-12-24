@@ -386,11 +386,20 @@ async function procInit2 () {
     } 
     for (val of result.rows) {
       var char = JSON.parse(val.char_data);
-      if (val.uid == '03') {
-        var rc = {name : '계승의 리설트 카드 묶음', type : 90003, rarity : cons.ITEM_RARITY_PREMIUM};
-        var rc2 = {name : '계승의 찬란한 요일석 더미', type : 90004, rarity : cons.ITEM_RARITY_PREMIUM};
-        char.inventory.push(rc);
-        char.inventory.push(rc2);
+      if (val.uid == '04') {
+        char.skill = chara.lunisha.skill;
+      }
+      if (val.uid == '05') {
+        char.startEffects = chara.ruisun.startEffects;
+      }
+      if (val.uid == '09') {
+        char.skill = chara.nux.skill;
+      }
+      if (val.uid == '10') {
+        char.skill = chara.kasien.skill;
+      }
+      if (val.uid == '13') {
+        char.skill = chara.jay.skill;
       }
       
       await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), val.uid]);

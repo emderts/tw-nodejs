@@ -113,6 +113,8 @@ Battlemodule.prototype._doBattleStart = function (flag) {
 
   this.printCharInfo(0);
   this.result += '<div class="turnWrap">';
+  this.resolveEffects(this.charLeft, this.charRight, this.charLeft.startEffects, null);
+  this.resolveEffects(this.charRight, this.charLeft, this.charRight.startEffects, null);
   this.resolveEffects(this.charLeft, this.charRight, getItemEffects(this.charLeft, cons.ACTIVE_TYPE_BATTLE_START), null);
   this.resolveEffects(this.charRight, this.charLeft, getItemEffects(this.charRight, cons.ACTIVE_TYPE_BATTLE_START), null);
   calcStats(this.charLeft, this.charRight);
