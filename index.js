@@ -829,7 +829,7 @@ async function procConfirmItem (req, res) {
     const charRow = await getCharacter(req.session.userUid);
     const char = JSON.parse(charRow.char_data);
     
-    var tgtObj = char.inventory[body.itemNum];
+    var tgtObj = char.inventory[body.itemUsed];
     if (tgtObj.type === 90005) {
       
       const resultg = await client.query('select * from global');
