@@ -858,7 +858,7 @@ async function procConfirmItem (req, res) {
       
     }
     await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
-    if (res.headersSent) {
+    if (!res.headersSent) {
       res.redirect('/');
     }
   } catch (err) {
@@ -1730,6 +1730,7 @@ async function procEnterDungeon(req, res) {
               reward += '누적 피해량 보상으로 고대 장비 카드 1개, 흑마술의 파편 1개를 획득했습니다.<br>';
             }  
           }
+          await client.query('update raids set phase = $1, monsters = $2 where rindex = 3', [row.phase + (re.winnerLeft ? 0 : 1), JSON.stringify(curData)]);
           
         } else if (body.option == 5) {
           var maxHpTotal = curData[1].stat.maxHp;
@@ -1747,6 +1748,7 @@ async function procEnterDungeon(req, res) {
             }  
           }
           await client.query('update characters set actionPoint = $1 where uid = $2', [charRow.actionPoint - 1, charRow.uid]);
+          await client.query('update raids set phase = $1, monsters = $2 where rindex = 4', [row.phase + (re.winnerLeft ? 0 : 1), JSON.stringify(curData)]);
           
         }
         if (!re.winnerLeft) {
@@ -1835,7 +1837,6 @@ async function procEnterDungeon(req, res) {
             } 
           }
         } 
-        await client.query('update raids set phase = $1, monsters = $2 where rindex = 3', [row.phase + (re.winnerLeft ? 0 : 1), JSON.stringify(curData)]);
       }
       await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
       res.render('pages/dungeonResult', {result: re.result, resultList: resultList, isFinished : isFinished, reward : reward, stop : (body.option == 2)});
