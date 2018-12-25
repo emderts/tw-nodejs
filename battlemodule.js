@@ -220,8 +220,8 @@ Battlemodule.prototype._doBattleTurnManual = function(left, right) {
     this.result += '<br><div class="turnWrap"><span class="turnCount">' + this.turnCount + '턴</span><br>';
   }
   this.redecide = false;
-    if (left == right && !(findBuffByCode(left, 10004).length > 0 || findBuffByCode(left, 10005).length > 0)
-        && !(findBuffByCode(right, 10004).length > 0 || findBuffByCode(right, 10005).length > 0)) {
+    if (left == right && !(findBuffByCode(this.charLeft, 10004).length > 0 || findBuffByCode(this.charLeft, 10005).length > 0)
+        && !(findBuffByCode(this.charRight, 10004).length > 0 || findBuffByCode(this.charRight, 10005).length > 0)) {
       this.result += this.charLeft.name + '의 [ ' + this.charLeft.skill.base[left].name + ' ] vs ' + this.charRight.name + '의 [ ' + this.charRight.skill.base[right].name + ' ]</span><br>';
       this.result += '비겼습니다!<br>';
       this.redecide = true;
@@ -793,10 +793,11 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
     }
     var chance = eff.chance ? eff.chance : 1;
     if (eff.chanceAddKey) {
+      var factor = eff.chanceAddKeyFactor ? eff.chanceAddKeyFactor : 1;
       if (eff.chanceAddKey == 'hit') {
         chance += winner.stat.hit > 1 ? (winner.stat.hit - 1) : 0;
       } else {
-        chance += winner.stat[eff.chanceAddKey];
+        chance += winner.stat[eff.chanceAddKey * factor];
       }
     }
     if (eff.chanceSubKeyOpp) {
@@ -834,6 +835,9 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
       continue;
     }
     if (eff.chkOpp && findBuffByIds(loser, eff.chkOpp).length === 0) {
+      continue;
+    }
+    if (eff.chkBuffStack && (findBuffByIds(winner, eff.chkBuffStack.id).length != 0 && findBuffByIds(winner, eff.chkBuffStack.id)[0].stack > eff.chkBuffStack.stack)) {
       continue;
     }
     if (eff.chkHp && winner.curHp > (winner.stat.maxHp * eff.chkHp)) {
@@ -946,6 +950,9 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
             var damageAdd = this.calcDamage(winner, loser, tempObj);
             valueUsed += damageAdd.value;
           }
+        }
+        if (eff.stackBase) {
+          valueUsed += eff.stackBase;
         }
         buffObj.stack = Math.round(valueUsed);
       }

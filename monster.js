@@ -375,6 +375,28 @@ const chara = require('./chara');
   };
   module.exports.xTrain = charLeft;
   
+  charLeft = {name : '에이카', nameType : cons.NAME_KOR_NO_END_CONS, title : '움직이는 요새', rank : 7, level : 40, 
+      stat : {maxHp : 61800, phyAtk : 123.45, magAtk : 50}};
+  _initChar(charLeft);
+  
+  charLeft.items = {weapon : item.list[203], armor : item.list[219], subarmor : item.list[228], trinket : item.list[261]};
+  charLeft.boss = 0.85;
+  charLeft.bossStatus = 0.15;
+
+  charLeft.skill = chara.aeika.skill;
+  module.exports.rAeika = charLeft;
+  
+  charLeft = {name : '줄리어스 엠더츠', nameType : cons.NAME_KOR_NO_END_CONS, title : '매버릭 타임 코더', rank : 7, level : 40, 
+      stat : {maxHp : 70200, phyAtk : 70.3, magAtk : 70.3}};
+  _initChar(charLeft);
+  
+  charLeft.items = {weapon : item.list[203], armor : item.list[219], subarmor : item.list[228], trinket : item.list[261]};
+  charLeft.boss = 0.85;
+  charLeft.bossStatus = 0.15;
+
+  charLeft.skill = chara.julius.skill;
+  module.exports.rJulius = charLeft;
+  
   charLeft = {name : '프사이', nameType : cons.NAME_KOR_NO_END_CONS, title : '승급 시험관', rank : 9, level : 40, 
       stat : {maxHp : 672, phyAtk : 33.75, magAtk : 61.25}};
   _initChar(charLeft);

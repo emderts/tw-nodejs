@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>ThirdWorld - 확인</title>
+    <link href="https://fonts.googleapis.com/css?family=Nanum+Gothic" rel="stylesheet">
+    <style>
+      body {font-family: "Nanum Gothic", sans-serif; }
+      div {width: 450px; max-width: 100%; margin: 0 auto; }
+      div.cubeWrap {padding: 10px; border: 1px solid gainsboro; background-color: aliceblue; margin: 10px 5px 0 0; }
+      div.cubeItem {padding: 10px; }
+      .inventoryItem button {width: 150px; float: left; padding: 2px; }
+      .inventoryItem input {width: 150px; float: left; padding: 2px; }
+      .cubeItem button {width: 450px; padding: 2px; }
+      .inventoryItem button:hover { }
+      .itemTooltip {font-family: "Nanum Gothic", sans-serif; visibility: hidden; width: 250px; background-color: black; color: #fff; text-align: center; font-size: 13.3333px; border-radius: 6px; padding: 5px 0; position: absolute; z-index: 1; }
+      .inventoryItem:hover .itemTooltip {visibility: visible; }
+      .tooltipFlavor {font-style: italic; }
+      .rarityUncommon {color: #4bacc6; }
+      .rarityRare {color: #8054a2; }
+      .rarityPremium {color: #00b050; }
+      .rarityUnique {color: #ff33cc; }
+      .rarityEpic {color: #f79646; }
+      .buttonUncommon {background-color: #4bacc6; }
+      .buttonRare {background-color: #8054a2; }
+      .buttonPremium {background-color: #00b050; }
+      .buttonUnique {background-color: #ff33cc; }
+      .buttonEpic {background-color: #f79646; }
+      .backLink {text-align: center; width: 40%; margin: 10px auto; overflow: hidden; }
+    </style>
+    <script>
+      
+  function invClick(thisNode, event) {
+    if (thisNode.type !== 'submit') {
+      event.preventDefault();
+      for (item of document.getElementsByClassName('inventoryButton')) {
+        item.type = 'button';
+      }
+      thisNode.setAttribute('type', 'submit');
+    }
+  }
+    </script>
+</head>
+<body>
+<% 
+  var printName = {};
+  printName.maxHp = '생명력';
+  printName.hpRegen = 'HP재생';
+  printName.spRegen = 'SP재생';
+  printName.spCharge = 'SP충전';
+  printName.phyAtk = '물리공격력';
+  printName.magAtk = '마법공격력';
+  printName.crit = '치명';
+  printName.critDmg = '치명피해';
+  printName.phyReduce = '물리저항';
+  printName.magReduce = '마법저항';
+  printName.hit = '명중';
+  printName.evasion = '회피';
+  printName.dmgReduce = '피해감소';
+  printName.pierce = '관통';
+  printName[0] = '무기';
+  printName[1] = '갑옷';
+  printName[2] = '보조방어구';
+  printName[3] = '장신구';
+  printName[4] = '스킬 아티팩트';
+  
+  function getRarityText(rarity) {
+    var text = '';
+    var cname = 'rarity';
+    switch (rarity) {
+    case 0:
+      text = '커먼';
+      cname += 'Common';
+      break;
+    case 1:
+      text = '언커먼';
+      cname += 'Uncommon';
+      break;
+    case 2:
+      text = '레어';
+      cname += 'Rare';
+      break;
+    case 3:
+      text = '프리미엄';
+      cname += 'Premium';
+      break;
+    case 4:
+      text = '유니크';
+      cname += 'Unique';
+      break;
+    case 5:
+      text = '에픽';
+      cname += 'Epic';
+      break;
+    }
+    return '<span class="' + cname + '">' + text + '</span>';
+  }
+  
+  function getButtonText(rarity) {
+    var cname = 'button';
+    switch (rarity) {
+    case 0:
+      cname += 'Common';
+      break;
+    case 1:
+      cname += 'Uncommon';
+      break;
+    case 2:
+      cname += 'Rare';
+      break;
+    case 3:
+      cname += 'Premium';
+      break;
+    case 4:
+      cname += 'Unique';
+      break;
+    case 5:
+      cname += 'Epic';
+      break;
+    }
+    return cname;
+  }
+  
+  function getStatList(val) {
+    return Object.entries(val.stat).map(arr => { 
+      if (arr[0] == 'phyAtkMin') {
+        return  '물리공격력 +' + arr[1] + '~' + val.stat.phyAtkMax;
+      } else if (arr[0] == 'magAtkMin') {
+        return  '마법공격력 +' + arr[1] + '~' + val.stat.magAtkMax;        
+      } else if (arr[0] == 'phyAtkMax' || arr[0] == 'magAtkMax') {
+        return '';
+      } else {
+        var sign = arr[1] > 0 ? '+' : '';
+        if (arr[0] == 'phyReduce' || arr[0] == 'magReduce' || arr[0] == 'crit' || arr[0] == 'critDmg' || arr[0] == 'crit' || arr[0] == 'hit' || arr[0] == 'evasion' || arr[0] == 'pierce') {
+          arr[1] = (arr[1] * 100).toFixed(2) + '%'; 
+        }
+        return printName[arr[0]] + ' ' + sign + arr[1];
+      }      
+    }).filter(x => x.length > 0).join(', ');
+  }
+  
+  function makeTooltip(item) {
+    var rtext = '';
+    rtext += item.name;
+    if (item.type < 10) {
+      rtext += '<br>' + item.rank + '급 ' + getRarityText(item.rarity) + ' ' + printName[item.type];
+      if (item.tradeCnt !== undefined) {
+        rtext += '<br>거래횟수 : ' + item.tradeCnt;
+      }
+      rtext += '<br>' + getStatList(item);
+      if (item.effectDesc && item.effectDesc.length > 0) {
+        rtext += ', ' + item.effectDesc;
+      }
+    if (item.socket) {
+      for (sock of item.socket) {
+        if (sock) {
+          rtext += '<br><br>[' + sock.name + '] ' + sock.effectDesc;
+        }
+      }
+    }
+      if (item.flavor && item.flavor.length > 0) {
+        rtext += '<br><br><span class="tooltipFlavor">' + item.flavor + '</span>';
+      }
+      const dustInfo = [10, 14, 26, 26, 62, 170];
+      if (mode == 2) {
+        rtext += '<br><br>가루 양 : ' + Math.round(dustInfo[item.rarity] * Math.pow(2, 9 - item.rank));
+      }
+    } else if (item.type == 999 && item.tooltip) {
+      rtext += '<br>' + item.tooltip;
+    }
+    return rtext;
+  }
+  
+  if (mode === 1 && inv && usedItem) { 
+    var used = inv[usedItem]; 
+    var description = used.name + '을 사용합니다.';
+    var formAction = '/confirmItem';
+  } 
+  %>
+  <div>
+    <%= description %>
+        <form action="<%= formAction %>" method="post">
+          <button onclick="invClick(this, event)" type="button">
+              확인
+            <div class="itemTooltip"><%- makeTooltip(used) %></div>
+          </button>
+          <input type="hidden" name="itemUsed" value="<%= usedItem %>">
+        </form>
+  </div>
+  <br>
+  <div class="backLink">
+    <a href="/">돌아가기</a>
+  </div>
+</body>
+</html>

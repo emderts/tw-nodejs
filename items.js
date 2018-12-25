@@ -403,8 +403,8 @@ itemList[267] = { id : 267, name : '5000원짜리 지폐', nameType : cons.NAME_
       target : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 4, buffDur : 3},
                 {code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 4, buffDur : 3}]}] };
 itemList[432] = { id : 432, name : '장미 한 송이 @)--', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '장미 한 송이 두고갑니다 @)--', rank : 9, rarity : cons.ITEM_RARITY_UNIQUE, stat : { maxHp : 15, spRegen : 1 }, 
-    effectDesc : '스페셜 스킬 사용 시 적에게 3턴 간 [봉인] 상태이상 부여 및 특수 텍스트 출력', 
-    effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, active : cons.ACTIVE_TYPE_USE_SPECIAL, buffCode : 10, buffDur : 3, printText : '장미 한 송이 두고갑니다 @)--'}] };
+    effectDesc : '처음 스페셜 스킬 사용 시 적에게 4턴 간 [봉인] 상태이상 부여 및 특수 텍스트 출력', 
+    effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, active : cons.ACTIVE_TYPE_USE_SPECIAL, buffCode : 10, buffDur : 4, printText : '장미 한 송이 두고갑니다 @)--', removeEffect : true}] };
 itemList[433] = { id : 433, name : '아드레날린 주사기', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '', rank : 9, rarity : cons.ITEM_RARITY_UNIQUE, stat : { maxHp : 15 }, 
     effectDesc : '피격 시 자신에게 4턴 간 [아드레날린 촉진] 버프 부여 (쿨타임 6턴)<br><br>[아드레날린 촉진] : HP재생+6', 
     effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_TAKE_HIT, buffCode : 10080, buffDur : 4, setTurnCooldown : 6}] };

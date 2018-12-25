@@ -1032,7 +1032,7 @@ const item = require('./items');
   effectObj.buffCode = 201738;
   effectObj.buffDur = 2;
   skillObj.effect.push(effectObj);
-  skillObj.tooltip = '100\% 확률로 자신에게 2턴 간 [정밀 조사] 버프 부여, 치명 타격 시 상대의 피해감소값 * 2.5만큼 추가 절대 피해<br><br>[정밀 조사] : 관통 +30%';
+  skillObj.tooltip = '100\% 확률로 자신에게 2턴 간 [정밀 조사] 버프 부여<br><br>[정밀 조사] : 관통 +30%, 공격 시 상대의 피해감소값(치명타 시 * 2.5)만큼 추가 절대 피해';
   skillObj.flavor = '귀차니즘인 눅스에게 오류 같은걸 발견하면 만들어 놓은 Lookup이란 만능명령어로 모든 오류를 발견하고 바로 처리한다. 물론 눅스가 평범하기 때문에(절대로 그렇지 않지만) 쓸 일이 많이 없다.';
   charNux.skill.base.push(skillObj);
 
@@ -1069,20 +1069,20 @@ const item = require('./items');
   skillObj.nameType = cons.NAME_KOR_END_CONS;
   skillObj.type = cons.DAMAGE_TYPE_PHYSICAL;
   skillObj.damage = 1.0;
-  skillObj.effect = [{code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.15, chanceAddKey : 'hit', buffCode : 6, buffDur : 2, critNot : true},
-                     {code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.15, chanceAddKey : 'hit', buffCode : 7, buffDur : 2, critNot : true},
-                     {code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.15, chanceAddKey : 'hit', buffCode : 8, buffDur : 2, critNot : true},
-                     {code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.15, chanceAddKey : 'hit', buffCode : 9, buffDur : 2, critNot : true},
-                     {code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.15, chanceAddKey : 'hit', buffCode : 10, buffDur : 2, critNot : true},
-                     {code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.15, chanceAddKey : 'hit', buffCode : 11, buffDur : 2, critNot : true},
-                     {code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.25, chanceAddKey : 'hit', buffCode : 6, buffDur : 2, onCrit : true},
-                     {code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.25, chanceAddKey : 'hit', buffCode : 7, buffDur : 2, onCrit : true},
-                     {code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.25, chanceAddKey : 'hit', buffCode : 8, buffDur : 2, onCrit : true},
-                     {code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.25, chanceAddKey : 'hit', buffCode : 9, buffDur : 2, onCrit : true},
-                     {code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.25, chanceAddKey : 'hit', buffCode : 10, buffDur : 2, onCrit : true},
-                     {code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.25, chanceAddKey : 'hit', buffCode : 11, buffDur : 2, onCrit : true}];
-  skillObj.tooltip = '(각각 15\ + 추가 명중)% (치명타 시 기본 25%) 확률로 적에게 2턴 간 [탈진], [침묵], [실명], [마비], [봉인], [혼란] 상태이상 부여';
-  skillObj.flavor = '뒷세계에서 받은 기이한 물체, 테이저 건 같이 날아가서 붙이는데 이 때 감각 자체가 해킹이 돼서 오감의 활동을 불가능하게 만들어버린다.';
+  skillObj.effect = [{code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.2, chanceAddKey : 'hit', chanceAddKeyFactor : 0.6, buffCode : 6, buffDur : 2, critNot : true},
+                     {code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.2, chanceAddKey : 'hit', chanceAddKeyFactor : 0.6, buffCode : 7, buffDur : 2, critNot : true},
+                     {code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.2, chanceAddKey : 'hit', chanceAddKeyFactor : 0.6, buffCode : 8, buffDur : 2, critNot : true},
+                     {code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.2, chanceAddKey : 'hit', chanceAddKeyFactor : 0.6, buffCode : 9, buffDur : 2, critNot : true},
+                     {code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.2, chanceAddKey : 'hit', chanceAddKeyFactor : 0.6, buffCode : 10, buffDur : 2, critNot : true},
+                     {code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.2, chanceAddKey : 'hit', chanceAddKeyFactor : 0.6, buffCode : 11, buffDur : 2, critNot : true},
+                     {code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.3, chanceAddKey : 'hit', chanceAddKeyFactor : 0.6, buffCode : 6, buffDur : 2, onCrit : true},
+                     {code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.3, chanceAddKey : 'hit', chanceAddKeyFactor : 0.6, buffCode : 7, buffDur : 2, onCrit : true},
+                     {code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.3, chanceAddKey : 'hit', chanceAddKeyFactor : 0.6, buffCode : 8, buffDur : 2, onCrit : true},
+                     {code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.3, chanceAddKey : 'hit', chanceAddKeyFactor : 0.6, buffCode : 9, buffDur : 2, onCrit : true},
+                     {code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.3, chanceAddKey : 'hit', chanceAddKeyFactor : 0.6, buffCode : 10, buffDur : 2, onCrit : true},
+                     {code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.3, chanceAddKey : 'hit', chanceAddKeyFactor : 0.6, buffCode : 11, buffDur : 2, onCrit : true}];
+  skillObj.tooltip = '(각각 20\ + (추가 명중 * 0.6))% (치명타 시 기본 30%) 확률로 적에게 2턴 간 [탈진], [침묵], [실명], [마비], [봉인], [혼란] 상태이상 부여';
+  skillObj.flavor = '뒷세계에서 받은 기이한 물체, 테이저 건 같이 날아가서 붙이는데 이 때 감각 자체가 해킹이 돼서 오감의 활동을 불가능하게 만들어 버린다.';
   charNux.skill.base.push(skillObj);
 
   skillObj = {};
@@ -1110,7 +1110,7 @@ const item = require('./items');
   skillObj.name = '귀찮아서 대충 만든 프로그램 – Last Embryo';
   skillObj.nameType = cons.NAME_KOR_END_CONS;
   skillObj.type = cons.SKILL_TYPE_SPECIAL;
-  skillObj.cost = 180;
+  skillObj.cost = 170;
   skillObj.effect = [];
   effectObj = {};
   effectObj.code = cons.EFFECT_TYPE_SET_ALL_BUFF_DURATION;
@@ -1380,23 +1380,25 @@ const item = require('./items');
   charGabi.skill.base = [];
 
   var skillObj = {code : 201766, name : '깎아 올리는 재능', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1.2, 
-      effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201772, buffDur : null, setStack : 0.05, isPercentDamage : true, chkNot : [201775]},
-                {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201773, buffDur : null, setStack : 0.075, isPercentDamage : true, chk : [201775]}],
-      tooltip : '피해량의 5%만큼 [재능] 스택을 부여한다. [반복 숙달] 효과 : 기본 효과 대신, 피해량의 7.5%만큼 [연마된 재능] 스택을 부여한다.<br><br>[재능] : 물리/마법 최대 공격력 +1<br>[연마된 재능] : 물리/마법 공격력 +1',
+      effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201772, buffDur : null, setStack : 0.05, stackBase : 2, isPercentDamage : true, chkNot : [201775]},
+                {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201773, buffDur : null, setStack : 0.075, stackBase : 2, isPercentDamage : true, chk : [201775]}],
+      tooltip : '2 + 피해량의 5%만큼 [재능] 스택을 부여한다. [반복 숙달] 효과 : 기본 효과 대신, 2 + 피해량의 7.5%만큼 [연마된 재능] 스택을 부여한다.<br><br>[재능] : 물리/마법 최대 공격력 +1<br>[연마된 재능] : 물리/마법 공격력 +1',
       flavor : '가난으로부터 탈출하기 위한 끝없는 노력은 이세계에서 능력으로 보상받는다.'};  
   charGabi.skill.base.push(skillObj);
 
   skillObj = {code : 201767, name : '이세계 지식 설파', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 0.9, 
-      effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 201774, buffDur : 3, setStack : 0.15, isPercentDamage : true, chkNot : [201775]},
-                {code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 201774, buffDur : 3, setStack : 0.25, isPercentDamage : true, chk : [201775]},
+      effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 201774, buffDur : 3, setStack : 0.15, stackBase : 4, isPercentDamage : true, chkNot : [201775]},
+                {code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 201774, buffDur : 3, setStack : 0.25, stackBase : 4, isPercentDamage : true, chk : [201775]},
                 {code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 10, buffDur : 1}],
-      tooltip : '피해량의 15%만큼 상대에게 3턴 간 [이고깽] 스택을 부여하고 1턴 간 [봉인] 상태이상을 부여한다. [반복 숙달] 효과 : 피해량의 25%만큼으로 강화된다.<br><br>[이고깽] : 물리/마법 공격력 -1',
+      tooltip : '4 + 피해량의 15%만큼 상대에게 3턴 간 [이고깽] 스택을 부여하고 1턴 간 [봉인] 상태이상을 부여한다. [반복 숙달] 효과 : 피해량의 25%만큼으로 강화된다.<br><br>[이고깽] : 물리/마법 공격력 -1',
       flavor : '보았느냐! 이것이 현대인의 저력이다! / 오이오이, 굉장하잖아!'};  
   charGabi.skill.base.push(skillObj);
 
   skillObj = {code : 201768, name : '포탈 브레이슬릿', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 0.9,
+      calcEffect : [{code : cons.EFFECT_TYPE_ADD_DAMAGE_OBJECT, key : 'crit', value : 0.05, skillCode : 201768, name : '포탈 브레이슬릿'},
+                    {code : cons.EFFECT_TYPE_ADD_DAMAGE_OBJECT, key : 'hit', value : 0.05, skillCode : 201768, name : '포탈 브레이슬릿'}],
       effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201776, buffDur : 1, chk : [201775]}],
-      tooltip : '자신과 상대에게 부여된 [재능], [연마된 재능], [이고깽] 스택만큼 치명피해가 증가한다. [반복 숙달] 효과 : 해당 턴 동안 물리 및 마법 저항+95%',
+      tooltip : '이 스킬의 치명타와 명중 확률이 10%p 증가한다. 자신과 상대에게 부여된 [재능], [연마된 재능], [이고깽] 스택만큼 치명피해가 증가한다. [반복 숙달] 효과 : 치명타와 명중 확률이 추가로 50%p 증가, 해당 턴 동안 물리 및 마법 저항+95%',
       flavor : '자유자재로 공간전이를 할 수 있는 사기 팔찌를 다뤄, 이세계 고등학생다운 틈을 노린다.'};  
   charGabi.skill.base.push(skillObj);
 
@@ -1411,8 +1413,8 @@ const item = require('./items');
   skillObj = {code : 201770, name : '비급 - 급여 통장', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 135, 
       effect : [{code : cons.EFFECT_TYPE_SELF_HP, value : 0.025, isPercentStat : true, percentKey : 'maxHp', addAttackCount : true},
                 {code : cons.EFFECT_TYPE_REMOVE_BUFF, anyDebuff : true, limit : 2},
-                {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201775, buffDur : null}],
-      tooltip : '최대 생명력의 (공격횟수*3.5)%만큼 생명력을 회복하고(최대 35%), 자신에게 부여된 나쁜 상태이상을 2종 해제한다. 다음 1회의 일반 스킬에 <반복 숙달> 효과를 적용한다.',
+                {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 2017107, buffDur : null, stack : 3}],
+      tooltip : '최대 생명력의 (공격횟수*3.5)%만큼 생명력을 회복하고(최대 35%), 자신에게 부여된 나쁜 상태이상을 2종 해제한다. 자신의 [재능] 중첩을 모두 [연마된 재능]으로 변경하고, 자신에게 [월급 통장] 버프 3중첩을 부여한다.<br>[월급 통장] : 물리/마법저항 +50%p, 공격 시 1중첩을 소거하고 <반복 숙달> 효과 적용, 피격 시 1중첩 소거',
       flavor : '고된 노동에 대한 보상은 죽어가는 이세계 고등학생도 살리는 법이다.'};
   charGabi.skill.special = skillObj;
 
@@ -1515,12 +1517,8 @@ const item = require('./items');
   charRuisun.nameType = cons.NAME_KOR_END_CONS;
   charRuisun.title = '위대한 장군';
   
-  charRuisun.startEffects = [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201791, buffDur : null, setStack : 1, 
-    addDamage : [{value : 0.3, type : cons.DAMAGE_TYPE_MAGICAL}]},
-    {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201788, buffDur : null, setStack : 1, 
-      addDamage : [{value : 0.3, type : cons.DAMAGE_TYPE_PHYSICAL}]},
-      {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201789, buffDur : null, setStack : 1, 
-        addDamage : [{value : 0.2, type : cons.DAMAGE_TYPE_MAGICAL}]}];
+  charRuisun.startEffects = [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201789, buffDur : null, setStack : 1, 
+        addDamage : [{value : 0.5, type : cons.DAMAGE_TYPE_MAGICAL}, {value : 0.5, type : cons.DAMAGE_TYPE_PHYSICAL}]}];
   
   charRuisun.skill = {};
   charRuisun.skill.base = [];
@@ -1590,9 +1588,10 @@ const item = require('./items');
   charJay.skill.base = [];
 
   var skillObj = {code : 201786, name : '블레이드 악센트', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1.2, 
-      calcEffect : [{code : cons.EFFECT_TYPE_MULTIPLY_DAMAGE_OBJECT, key : 'critDmg', value : 1.2}],
+      calcEffect : [{code : cons.EFFECT_TYPE_MULTIPLY_DAMAGE_OBJECT, key : 'critDmg', value : 1.2, skillCode : 201786, name : '블레이드 악센트'},
+                    {code : cons.EFFECT_TYPE_ADD_DAMAGE_OBJECT, key : 'crit', value : 0.05, skillCode : 201786, name : '블레이드 악센트'}],
       effect : [{code : cons.EFFECT_TYPE_SELF_SP, value : 0.35, isPercentSkill : true, skillKey : 'special', percentKey : 'cost', onCrit : true}],
-      tooltip : '이 스킬의 치명 피해는 1.2배 상승한다. 치명타 시 스페셜 스킬이 요구하는 SP의 35%를 회복한다.',
+      tooltip : '이 스킬의 치명 피해가 1.2배가 되고 치명 확률이 20%p 증가한다. 치명타 시 스페셜 스킬이 요구하는 SP의 35%를 회복한다.',
       flavor : '기습적으로 힘을 주어 상대를 향해 칼날을 내민다.'};  
   charJay.skill.base.push(skillObj);
 
@@ -1606,8 +1605,9 @@ const item = require('./items');
 
   skillObj = {code : 201788, name : '메소드 연주', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 0.6,
       calcEffect : [{code : cons.EFFECT_TYPE_SELF_SP, value : 0.35, isPercentSkill : true, skillKey : 'special', percentKey : 'cost', chk : [201792]}],
-      effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201792, buffDur : null}],
-      tooltip : '현재 자신이 보유한 버프에 따라 다음 1회의 공격까지 추가 능력치를 부여한다. 추가 능력치가 부여된 상태에서 이 스킬을 재사용 시, 스페셜 스킬이 요구하는 SP의 35%를 회복한다.<br>[선셋 라이더] : 자신의 캐릭터 컬러가 황금색으로 변경. 순수 물리,마법공격력 +35%<br>[로드 오브 레인저] : 치명+10%, [앙상블]*5% 만큼 스킬 피해량 증가<br>[블러디 카니발] : HP재생 2배, [앙상블]*5% 만큼 흡혈<br>[티켓 투 헤븐] : SP재생 2배, [앙상블]*5% 만큼 치명피해 증가<br>[마지막 호흡] : 치명+10%, 명중+60%',
+      effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201792, buffDur : null},
+                {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201793, buffDur : null, chkBuffStack : {id : [201793], stack : 1}}],
+      tooltip : '자신의 [앙상블] 중첩이 1 미만이면 자신에게 [앙상블] 1중첩을 부여하고 현재 자신이 보유한 버프에 따라 다음 1회의 공격까지 추가 능력치를 부여한다. 추가 능력치가 부여된 상태에서 이 스킬을 재사용 시, 스페셜 스킬이 요구하는 SP의 35%를 회복한다.<br>[선셋 라이더] : 자신의 캐릭터 컬러가 황금색으로 변경. 순수 물리,마법공격력 +35%<br>[로드 오브 레인저] : 치명+10%, [앙상블]*5% 만큼 스킬 피해량 증가<br>[블러디 카니발] : HP재생 2배, [앙상블]*5% 만큼 흡혈<br>[티켓 투 헤븐] : SP재생 2배, [앙상블]*5% 만큼 치명피해 증가<br>[마지막 호흡] : 치명+10%, 명중+60%',
       flavor : '악상에 심취하는 방법론.'};  
   charJay.skill.base.push(skillObj);
 
@@ -1661,7 +1661,6 @@ const item = require('./items');
     char.stat.magAtkMax = 0;
     char.stat.dmgReduce = 0;
     char.stat.pierce = 0;
-    char.base = JSON.parse(JSON.stringify(char.stat));
     char.inventory = [];
     char.items = {};
     char.items.weapon = item.list[0];
@@ -1694,6 +1693,14 @@ const item = require('./items');
         cardUsed : 0, dustAmt : 0, premiumAmt : 0, maxHpStat : 0, phyAtkStat : 0, magAtkStat : 0};
     char.matchCount = 10;
     char.winChain = 0;
+    char.stat.maxHp = 908;
+    char.stat.phyAtk = 71.25;
+    char.stat.magAtk = 71.25;
+    char.items.weapon = item.list[11];//[0];
+    char.items.armor = item.list[143];//[114];
+    char.items.subarmor = item.list[187];
+    char.items.trinket = item.list[244];
+    char.base = JSON.parse(JSON.stringify(char.stat));
   }
 
   module.exports.kines = charLeft;

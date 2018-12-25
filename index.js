@@ -74,17 +74,12 @@ const app = express()
 .post('/doRankup', procRankup)
 .post('/getCard', procGetCard)
 .post('/actionAccel', procActionAccel)
-.get('/test', (req, res) => res.render('pages/battle', {result: (new battlemodule.bmodule()).doBattle(JSON.parse(JSON.stringify(chara.gaius)), JSON.parse(JSON.stringify(chara.illun)), 1).result}))
+.get('/test', (req, res) => res.render('pages/battle', {result: (new battlemodule.bmodule()).doBattle(JSON.parse(JSON.stringify(chara.nux)), JSON.parse(JSON.stringify(chara.ruisun)), 1).result}))
 .get('/test2', (req, res) => res.render('pages/trade', {room : '1', uid : '03'}))
 .get('/test3', (req, res) => res.render('pages/trade', {room : '1', uid : '06'}))
 .get('/test4', (req, res) => res.send(procInit2()))
 .get('/test5', (req, res) => res.render('pages/resultCard', {item : {name: 'test', rarity: Math.floor(Math.random() * 6)}}))
-.get('/test6', (req, res) => res.render('pages/index', {
-  user: {name: 'kk'},
-  char: chara.julius,
-  actionPoint : 0,
-  news : []
-}))
+.get('/test6', (req, res) => res.send(procFullTest()))
 .listen(PORT, () => console.log(`Listening on ${ PORT }`));
 
 const io = socketIO(app);
@@ -431,20 +426,27 @@ async function procInit2 () {
     } 
     for (val of result.rows) {
       var char = JSON.parse(val.char_data);
-      if (val.uid == '04') {
-        char.skill = chara.lunisha.skill;
-      }
       if (val.uid == '05') {
         char.startEffects = chara.ruisun.startEffects;
       }
       if (val.uid == '09') {
         char.skill = chara.nux.skill;
       }
-      if (val.uid == '10') {
-        char.skill = chara.kasien.skill;
+      if (val.uid == '12') {
+        char.skill = chara.gabi.skill;
       }
       if (val.uid == '13') {
         char.skill = chara.jay.skill;
+      }
+      if (char.items.trinket.id == 432) {
+        char.items.trinket.tooltip = item.list[432].tooltip;
+        char.items.trinket.effect = item.list[432].effect;
+      }
+      for (item of char.inventory) {
+        if (item.id == 432) {
+          item.tooltip = item.list[432].tooltip;
+          item.effect = item.list[432].effect;
+        }
       }
       
       await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), val.uid]);
@@ -570,7 +572,7 @@ function _getItem(rank, rarity, type) {
 }
 
 async function procUseItem (req, res) {
-    const client = await pool.connect();
+  const client = await pool.connect();
   try {
     var chara;
     const body = req.body;
@@ -667,7 +669,13 @@ async function procUseItem (req, res) {
               chara.inventory.push(picked);
               await addItemNews(client, chara, tgtObj, picked);
             } else if (rand < 0.62) {
-              picked = _processPremiumPoint(chara, tgtObj, 1);
+              if (rand < 0.615 && tgtObj.rank <= 8) {
+                picked = {name : '레이드 소환권 - 움직이는 요새', type : 90005, rarity : cons.ITEM_RARITY_PREMIUM, value : 0};
+              } else if (rand < 0.61 && tgtObj.rank <= 7) {
+                picked = {name : '레이드 소환권 - 매버릭 타임 코더', type : 90005, rarity : cons.ITEM_RARITY_PREMIUM, value : 1};
+              } else {
+                picked = _processPremiumPoint(chara, tgtObj, 1);
+              }
             } else if (rand < 0.65) {
               picked = _processPremiumPoint(chara, tgtObj, 2);
             } else if (rand < 0.79) {
@@ -851,6 +859,8 @@ async function procUseItem (req, res) {
             ds.tradeCnt = 0;
             chara.inventory.push(ds);            
           }
+        } else if (tgtObj.type === 90005) {
+          res.render('pages/confirm', {inv : chara.inventory, mode : 1, usedItem : body.itemNum});
         }
         await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(chara), result.rows[0].uid]);
       }
@@ -866,8 +876,54 @@ async function procUseItem (req, res) {
   }
 }
 
+async function procConfirm (req, res) {
+  const client = await pool.connect();
+  try {
+    const body = req.body;
+    const charRow = await getCharacter(req.session.userUid);
+    const char = JSON.parse(charRow.char_data);
+    
+    var tgtObj = char.inventory[body.itemNum];
+    if (tgtObj.type === 90005) {
+      
+      const resultg = await client.query('select * from global');
+      for (val of resultg.rows) {
+        var glb = JSON.parse(val.globals);
+        if (!glb['fieldBossSpawned' + tgtObj.value]) {
+          char.inventory.splice(body.itemNum, 1);
+          if (tgt.value == 0) {
+            await client.query('insert into news(content, date) values ($1, $2)', 
+                ['움직이는 요새 - 에이카가 나타났습니다!', new Date()]);
+              await client.query('insert into raids(rindex, open, phase, monsters) values (4, \'O\', 1, $1)', 
+                [JSON.stringify({1 : monster.rAeika})]);
+          } else if (tgt.value == 1) {
+            await client.query('insert into news(content, date) values ($1, $2)', 
+                ['매버릭 타임 코더 - 줄리어스 엠더츠가 나타났습니다!', new Date()]);
+              await client.query('insert into raids(rindex, open, phase, monsters) values (5, \'O\', 1, $1)', 
+                [JSON.stringify({1 : monster.rJulius})]);
+          }
+          glb['fieldBossSpawned' + tgtObj.value] = 12;
+          await client.query('update global set globals = $1', [JSON.stringify(glb)]);
+        } else {
+          res.send('오늘 이미 해당 보스가 소환되었습니다.');
+        }
+      }
+      
+    }
+    await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
+    if (res.headersSent) {
+      res.redirect('/');
+    }
+  } catch (err) {
+    console.error(err);
+    res.send('내부 오류');
+  } finally {
+    client.release();
+  }
+}
+
 async function procUnequip (req, res) {
-    const client = await pool.connect();
+  const client = await pool.connect();
   try {
     var chara;
     const body = req.body;
@@ -1555,11 +1611,15 @@ async function procDungeon(req, res) {
     dungeonList.push({name : '어나더 게이트 - 재의 묘소 [9급 20레벨 이상]', code : 2, remain : char.dungeonInfos.enterEmberCrypt, active : !char.dungeonInfos.runEmberCrypt && char.dungeonInfos.enterEmberCrypt > 0 && (char.rank <= 8 || char.level >= 20)});
     dungeonList.push({name : '승급 심사장 [20레벨 이상]', code : 3, active : !char.dungeonInfos.runRankup && char.level >= 20});
     dungeonList.push({name : '필드 보스 - 고대 흑마법사 출현', code : 4, active : false});
+    dungeonList.push({name : '필드 보스 - 움직이는 요새 [피로도 1]', code : 5, active : false});
+    dungeonList.push({name : '필드 보스 - 매버릭 타임 코더 [피로도 1]', code : 6, active : false});
     if (result && result.rows) {
       for (row of result.rows) {
         var tgt = dungeonList[row.rindex];
         if (row.rindex == 3 && row.phase <= 3) {
           tgt.active = row.open == 'O' && !char.dungeonInfos.runFieldBoss;
+        } else if (row.rindex <= 5 && row.phase <= 1) {
+          tgt.active = row.open == 'O' && !char.dungeonInfos['runFieldBoss' + (row.rindex - 4)];
         }
         if (row.open == 'O') {
           tgt.phase = row.phase;
@@ -1585,7 +1645,7 @@ async function procDungeon(req, res) {
 }
 
 async function procEnterDungeon(req, res) {
-    const client = await pool.connect();
+  const client = await pool.connect();
   try {
     const body = req.body;
     const sess = req.session; 
@@ -1620,6 +1680,25 @@ async function procEnterDungeon(req, res) {
         char.dungeonInfos.runFieldBoss = true;
         enemy = curData[row.phase];
         hpBefore = enemy.curHp ? enemy.curHp : enemy.stat.maxHp;
+      }
+    } else if (body.option == 5) {
+      const result = await client.query('select * from raids where rindex = 4');
+      row = result.rows[0];
+      if (!char.dungeonInfos.runFieldBoss0 && (row.open == 'O')) {
+        curData = JSON.parse(row.monsters);
+        char.dungeonInfos.runFieldBoss0 = true;
+        enemy = curData[row.phase];
+        hpBefore = enemy.curHp ? enemy.curHp : enemy.stat.maxHp;
+        if (charRow.actionPoint <= 0) {
+          client.release();
+          res.redirect('/');
+          return;
+        }
+      }
+    } else if (body.option == 6) {
+      if (!char.dungeonInfos.runFieldBoss1) {
+        char.dungeonInfos.runFieldBoss1 = true;
+        enemy = monster.timeStorm;
       }
     }
     if (enemy) {
@@ -1674,6 +1753,23 @@ async function procEnterDungeon(req, res) {
             if (!char.dungeonInfos['rewardFieldBoss' + row.phase]) {
               char.dungeonInfos['rewardFieldBoss' + row.phase] = true;
               char.currencies.warlock++;
+              char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '고대 장비 카드', rank : 8, resultType : 4});
+              reward += '누적 피해량 보상으로 고대 장비 카드 1개, 흑마술의 파편 1개를 획득했습니다.<br>';
+            }  
+          }
+          
+        } else if (body.option == 5) {
+          var maxHpTotal = curData[1].stat.maxHp;
+          var dust = 11 * Math.floor(damageDealt * 100 / maxHpTotal);
+          if (dust > 0) {
+            char.dust += dust;
+            reward += dust + ' 가루를 획득했습니다.<br>';
+          }
+          if (curData[row.phase].battleRecord[charRow.uid] >= maxHpTotal / 10) {
+            var perNum = Math.floor(curData[row.phase].battleRecord[charRow.uid] * 10 / maxHpTotal);
+            if (!char.dungeonInfos['rewardFieldBoss0' + perNum]) {
+              char.dungeonInfos['rewardFieldBoss0' + perNum] = true;
+              char.currencies.aeika++;
               char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '고대 장비 카드', rank : 8, resultType : 4});
               reward += '누적 피해량 보상으로 고대 장비 카드 1개, 흑마술의 파편 1개를 획득했습니다.<br>';
             }  
@@ -1918,7 +2014,9 @@ async function procStopDungeon(req, res) {
       await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
       res.render('pages/dungeonResult', {result: '', resultList: req.session.dungeonProgress.resultList, isFinished : true, reward : reward});
     } else {
-      res.redirect('/');
+      if (!res.headersSent) {
+        res.redirect('/');
+      }
     }
   } catch (err) {
     console.error(err);
