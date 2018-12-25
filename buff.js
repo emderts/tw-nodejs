@@ -2116,7 +2116,7 @@ module.exports.getBuffData = function(eff) {
     effectObj = {};
     effectObj.active = cons.ACTIVE_TYPE_DEAL_DAMAGE_RECEIVE;
     effectObj.code = cons.EFFECT_TYPE_SHIELD;
-    effectObj.value = 0.07;
+    effectObj.value = 0.0014;
     retObj.effect.push(effectObj);
     break;
   case 201720 : 
@@ -2205,7 +2205,7 @@ module.exports.getBuffData = function(eff) {
     effectObj.code = cons.EFFECT_TYPE_SELF_HP;
     effectObj.isPercentStat = true;
     effectObj.percentKey = 'maxHp';
-    effectObj.value = 0.01;
+    effectObj.value = 0.0002;
     retObj.effect.push(effectObj);
     break;
   case 201726 : 
