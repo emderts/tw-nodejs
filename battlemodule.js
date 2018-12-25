@@ -217,7 +217,7 @@ Battlemodule.prototype._doBattleEnd = function(flag) {
 Battlemodule.prototype._doBattleTurnManual = function(left, right) {
   if (!this.redecide) {
     this.turnCount++;
-    this.result += '<br><div class="turnWrap"><span class="turnCount">' + turnCount + '턴</span><br>';
+    this.result += '<br><div class="turnWrap"><span class="turnCount">' + this.turnCount + '턴</span><br>';
   }
   this.redecide = false;
     if (left == right) {
