@@ -442,10 +442,10 @@ async function procInit2 () {
         char.items.trinket.tooltip = item.list[432].tooltip;
         char.items.trinket.effect = item.list[432].effect;
       }
-      for (item of char.inventory) {
-        if (item.id == 432) {
-          item.tooltip = item.list[432].tooltip;
-          item.effect = item.list[432].effect;
+      for (itm of char.inventory) {
+        if (itm.id == 432) {
+          itm.tooltip = item.list[432].tooltip;
+          itm.effect = item.list[432].effect;
         }
       }
       
