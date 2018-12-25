@@ -929,6 +929,11 @@ itemList[434] = { id : 434, name : '과수원의 메마른 결실', nameType : c
     effectDesc : '', effect : [] };
 itemList[435] = { id : 435, name : '과수원의 충만한 결실', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_SKILL_ARTIFACT, flavor : '', rank : 8, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 45 }, 
     effectDesc : '', effect : [] };
+itemList[436] = { id : 436, name : '복합 장갑 재현 장치', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SKILL_ARTIFACT, flavor : '', rank : 7, rarity : cons.ITEM_RARITY_RARE, stat : {  }, 
+    effectDesc : '가위 스킬 사용 시 2턴 간 물리/마법저항 +10%p', 
+    effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_SKILL_WIN, buffCode : 10081, buffDur : 2, chkSkillNum : 0}] };
+itemList[437] = { id : 437, name : '움직이는 요새', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SKILL_ARTIFACT, flavor : '', rank : 7, rarity : cons.ITEM_RARITY_UNIQUE, stat : { maxHp : 30, phyReduce : 0.04, magReduce : 0.04 }, 
+    effectDesc : '', effect : [] };
 
 itemList.forEach(function(tgt) {
   tgt.base = JSON.parse(JSON.stringify(tgt.stat));

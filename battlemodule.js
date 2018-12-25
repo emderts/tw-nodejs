@@ -898,6 +898,9 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
     if (eff.chkLoseLast && winner.winLast) {
       continue;
     }
+    if (eff.chkSkillNum && skill !== eff.chkSkillNum) {
+      continue;
+    }
     if (eff.code === cons.EFFECT_TYPE_SELF_BUFF || eff.code === cons.EFFECT_TYPE_OPP_BUFF) {
       if (eff.direct) {
         damage.dur *= eff.durMod;

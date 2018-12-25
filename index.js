@@ -39,6 +39,7 @@ const app = express()
 .post('/join', procJoin)
 .get('/logout', procLogout)
 .post('/useItem', procUseItem)
+.post('/confirmItem', procConfirmItem)
 .post('/unequipItem', procUnequip)
 .post('/enchantItem', procEnchantItem)
 .get('/doTest', procTrain)
@@ -361,82 +362,11 @@ async function procInit2 () {
   try {
     const client = await pool.connect();
     const result = await client.query('select * from characters');
-    const result2 = await client.query('select * from raids');
-    var leaderboard = [];
-    var reward;
-    const names = {'03' : '줄리어스 엠더츠', '04' : '프사이', '05' : '에이카', '06' : '세리어스 플로에르시아',
-        '07' : '에오헬름', '08' : '나백수', '09' : '이 눅스', '10' : '세컨드 로직', '11' : '마랑'};
-    for (val of result2.rows) {/*
-      var char = JSON.parse(val.monsters);
-      var record = {};
-      for (key in char[1].battleRecord) { 
-        if (record[key]) {
-          record[key] += char[1].battleRecord[key];
-        } else {
-          record[key] = char[1].battleRecord[key];
-        }
-      }
-      for (key in char[2].battleRecord) { 
-        if (record[key]) {
-          record[key] += char[2].battleRecord[key];
-        } else {
-          record[key] = char[2].battleRecord[key];
-        }
-      }
-      for (key in char[3].battleRecord) { 
-        if (record[key]) {
-          record[key] += char[3].battleRecord[key];
-        } else {
-          record[key] = char[3].battleRecord[key];
-        }
-      }
-      for (key in char[4].battleRecord) { 
-        if (record[key]) {
-          record[key] += char[4].battleRecord[key];
-        } else {
-          record[key] = char[4].battleRecord[key];
-        }
-      }
-      for (key in record) { 
-        leaderboard.push({name : names[key], damage : record[key], key : key});
-      }
-      leaderboard.sort(function(a, b) {
-        if (a.damage > b.damage) {
-          return -1;
-        } else if (a.damage == b.damage) {
-          return 0;
-        } else {
-          return 1;
-        }
-      }); 
-      reward = '<table>';
-      for (key in leaderboard) {
-        reward += '<tr><td>' + (Number(key) + 1) + '</td>';
-        reward += '<td>' + leaderboard[key].name + '</td>';
-        reward += '<td>' + (char[1].battleRecord[leaderboard[key].key] ? char[1].battleRecord[leaderboard[key].key] : 0) + ' / ' + (char[1].winRecord[leaderboard[key].key] ? char[1].winRecord[leaderboard[key].key] : 0) + '</td>';
-        reward += '<td>' + (char[2].battleRecord[leaderboard[key].key] ? char[2].battleRecord[leaderboard[key].key] : 0) + ' / ' + (char[2].winRecord[leaderboard[key].key] ? char[2].winRecord[leaderboard[key].key] : 0) + '</td>';
-        reward += '<td>' + (char[3].battleRecord[leaderboard[key].key] ? char[3].battleRecord[leaderboard[key].key] : 0) + ' / ' + (char[3].winRecord[leaderboard[key].key] ? char[3].winRecord[leaderboard[key].key] : 0) + '</td>';
-        reward += '<td>' + (char[4].battleRecord[leaderboard[key].key] ? char[4].battleRecord[leaderboard[key].key] : 0) + ' / ' + (char[4].winRecord[leaderboard[key].key] ? char[4].winRecord[leaderboard[key].key] : 0) + '</td>';
-        reward += '<td>' + leaderboard[key].damage + '</td></tr>';
-      }
-      reward += '</table>';
-        await client.query('insert into news(content, date) values ($1, $2)', 
-            ['시즌 레이드 미터기입니다.<div class="itemTooltip longWidth">' + reward + '</div>', new Date()]);*/
-        
-    } 
     for (val of result.rows) {
       var char = JSON.parse(val.char_data);
-      if (val.uid == '05') {
-        char.startEffects = chara.ruisun.startEffects;
-      }
-      if (val.uid == '09') {
-        char.skill = chara.nux.skill;
-      }
-      if (val.uid == '12') {
-        char.skill = chara.gabi.skill;
-      }
-      if (val.uid == '13') {
-        char.skill = chara.jay.skill;
+      char.currencies.aeika = 0;
+      if (val.uid == '02') {
+        char.inventory.push({name : '레이드 소환권 - 움직이는 요새', type : 90005, rarity : cons.ITEM_RARITY_PREMIUM, value : 0});
       }
       if (char.items.trinket.id == 432) {
         char.items.trinket.tooltip = item.list[432].tooltip;
@@ -601,7 +531,13 @@ async function procUseItem (req, res) {
       }
       if (!chara.achievement[26 - tgtObj.rank]) {
         await giveAchievement(result.rows[0].uid, chara, 26 - tgtObj.rank);
-      }      
+      }
+      if (!chara.achievement[26] && chara.statistics.epicAmt >= 5) {
+        await giveAchievement(result.rows[0].uid, chara, 26);
+      }
+      if (!chara.achievement[27] && chara.statistics.epicAmt >= 10) {
+        await giveAchievement(result.rows[0].uid, chara, 27);
+      }
     }
     
     function _processPremiumPoint(chara, tgtObj, value) {
@@ -610,8 +546,8 @@ async function procUseItem (req, res) {
       return {name : '프리미엄 포인트 ' + value + '점' , rarity : cons.ITEM_RARITY_COMMON};
     }
     
-    function _processDust(chara, tgtObj, value) {
-      const dustValue = value * Math.pow(2, 9 - tgtObj.rank);
+    function _processDust(chara, tgtObj, value, forceFlag) {
+      const dustValue = value * (forceFlag ? 1 : Math.pow(2, 9 - tgtObj.rank));
       chara.dust += dustValue;
       chara.statistics.dustAmt += dustValue;
       if (chara.quest[4]) {
@@ -823,14 +759,24 @@ async function procUseItem (req, res) {
               await addItemNews(client, chara, tgtObj, picked);
             } 
           } else if (tgtObj.resultType == 90005) {
-            if (rand < 0) {
-              picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_UNIQUE, tgtObj.resultType);
-              _processUnique(chara, tgtObj, picked);
+            picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_EPIC, tgtObj.resultType);
+            await _processEpic(chara, tgtObj, picked);
+            chara.inventory.push(picked);
+            await addItemNews(client, chara, tgtObj, picked);
+          } else if (tgtObj.resultType == 90006) {
+            if (rand < 0.55) {
+              picked = _processDust(chara, tgtObj, 150, true);
+            } else if (rand < 0.85) {
+              picked = _processDust(chara, tgtObj, 300, true);
+            } else if (rand < 0.95) {
+              picked = _processDust(chara, tgtObj, 600, true);
+            } else if (rand < 0.99) {
+              picked = item.list[436];
+              _processRare(chara, tgtObj, picked);
               chara.inventory.push(picked);
-              await addItemNews(client, chara, tgtObj, picked);
             } else {
-              picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_EPIC, tgtObj.resultType);
-              await _processEpic(chara, tgtObj, picked);
+              picked = item.list[437];
+              _processUnique(chara, tgtObj, picked);
               chara.inventory.push(picked);
               await addItemNews(client, chara, tgtObj, picked);
             } 
@@ -876,7 +822,7 @@ async function procUseItem (req, res) {
   }
 }
 
-async function procConfirm (req, res) {
+async function procConfirmItem (req, res) {
   const client = await pool.connect();
   try {
     const body = req.body;
@@ -889,7 +835,7 @@ async function procConfirm (req, res) {
       const resultg = await client.query('select * from global');
       for (val of resultg.rows) {
         var glb = JSON.parse(val.globals);
-        if (!glb['fieldBossSpawned' + tgtObj.value]) {
+        if (glb['fieldBossSpawned' + tgtObj.value] == undefined) {
           char.inventory.splice(body.itemNum, 1);
           if (tgt.value == 0) {
             await client.query('insert into news(content, date) values ($1, $2)', 
@@ -903,6 +849,7 @@ async function procConfirm (req, res) {
                 [JSON.stringify({1 : monster.rJulius})]);
           }
           glb['fieldBossSpawned' + tgtObj.value] = 12;
+          glb['fieldBossSummon' + tgtObj.value] = charRow.uid;
           await client.query('update global set globals = $1', [JSON.stringify(glb)]);
         } else {
           res.send('오늘 이미 해당 보스가 소환되었습니다.');
@@ -1574,7 +1521,7 @@ async function procUseShop (req, res) {
         char.currencies.ember -= cost;
         char.inventory.push(JSON.parse(JSON.stringify(item.list[416 + (body.option - 90005)])));
       }
-    } else if (body.option >= 90009 && body.option < 90014) {
+    } else if (body.option >= 90009 && body.option < 90013) {
       var cost = (body.option == 90009 || body.option == 90013) ? 5 : (body.option == 90010 ? 10 : (body.option == 90011 ? 20 : 60));
       if (char.currencies.burntMark < cost) {
         res.send('불탄 증표가 부족합니다.');
@@ -1584,6 +1531,32 @@ async function procUseShop (req, res) {
           char.inventory.push(JSON.parse(JSON.stringify(item.list[420 + (body.option - 90009)])));
         } else {
           char.dungeonInfos.runBurningOrchard = false;
+        }
+      }
+    } else if (body.option >= 90013 && body.option < 90016) {
+      var cost = (body.option == 90013) ? 1 : (body.option == 90014 ? 4 : 7);
+      if (char.currencies.warlock < cost) {
+        res.send('흑마술의 파편이 부족합니다.');
+      } else {
+        char.currencies.warlock -= cost;
+        if (body.option == 90013) {
+          char.premiumPoint += 1;
+        } else {
+          char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '고대 흑마법사의 선물', rank : 8, resultType : 90004});
+        }
+      }
+    } else if (body.option >= 90016 && body.option < 90019) {
+      var cost = (body.option == 90016) ? 1 : (body.option == 90017 ? 3 : 5);
+      if (char.currencies.aeika < cost) {
+        res.send('움직이는 요새의 파편이 부족합니다.');
+      } else {
+        char.currencies.aeika -= cost;
+        if (body.option == 90016) {
+          char.premiumPoint += 1;
+        } else if (body.option == 90017) {
+          addSpecialResultCard(char, 4);
+        } else {
+          char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '에이카의 예비 부품 상자', resultType : 90006, value : 0});
         }
       }
     }
@@ -1770,10 +1743,10 @@ async function procEnterDungeon(req, res) {
             if (!char.dungeonInfos['rewardFieldBoss0' + perNum]) {
               char.dungeonInfos['rewardFieldBoss0' + perNum] = true;
               char.currencies.aeika++;
-              char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '고대 장비 카드', rank : 8, resultType : 4});
-              reward += '누적 피해량 보상으로 고대 장비 카드 1개, 흑마술의 파편 1개를 획득했습니다.<br>';
+              reward += '누적 피해량 보상으로 움직이는 요새의 파편 1개를 획득했습니다.<br>';
             }  
           }
+          await client.query('update characters set actionPoint = $1 where uid = $2', [charRow.actionPoint - 1, charRow.uid]);
           
         }
         if (!re.winnerLeft) {
@@ -1789,9 +1762,77 @@ async function procEnterDungeon(req, res) {
               if (!char.achievement[28]) {
                 await giveAchievement(charRow.uid, char, 28);
               }
-            await client.query('insert into news(content, date) values ($1, $2)', 
-                [char.name + getIga(char.nameType) + ' ' + re.leftInfo.name + getUlrul(re.leftInfo.nameType) + ' 처치했습니다!', new Date()]);
+              var leaderboard = await createRaidResults(3, 4, char);
+              if (charRow.uid == leaderboard[0].key) {
+                char.currencies.warlock += 3;
+                char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '고대 흑마법사의 선물', rank : 8, resultType : 90004});
+                reward += '누적 피해 보상으로 고대 흑마법사의 선물 1개, 흑마술의 파편 3개를 획득했습니다.<br>';
+                if (!char.achievement[35]) {
+                  await giveAchievement(charRow.uid, char, 35);
+                }                
+              } else {
+                const charRow2 = await getCharacterByUid(leaderboard[0].key);
+                const char2 = JSON.parse(charRow2.char_data);
+                char2.currencies.warlock += 3;
+                char2.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '고대 흑마법사의 선물', rank : 8, resultType : 90004});
+                if (!char2.achievement[35]) {
+                  await giveAchievement(charRow2.uid, char2, 35);
+                }
+                await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char2), charRow2.uid]);
+              }
             }            
+          } else if (body.option == 5) {
+            char.currencies.aeika += 2;
+            char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '에이카의 예비 부품 상자', resultType : 90006, value : 0});
+            char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '에이카의 예비 부품 상자', resultType : 90006, value : 0});
+            reward += re.leftInfo.name + getUlrul(re.leftInfo.nameType) + ' 처치했습니다!<br>에이카의 예비 부품 상자 2개, 움직이는 요새의 파편 2개를 획득했습니다.<br>';
+            if (!char.achievement[34]) {
+              await giveAchievement(charRow.uid, char, 34);
+            }
+            const globals = await getGlobals();
+            var leaderboard = await createRaidResults(4, 1, char);
+            if (charRow.uid == globals.fieldBossSummon0) {
+              char.currencies.aeika++;
+              char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '에이카의 예비 부품 상자', resultType : 90006, value : 0});
+              reward += '소환 보상으로 에이카의 예비 부품 상자 1개, 움직이는 요새의 파편 1개를 획득했습니다.<br>';
+            } else {
+              const charRow2 = await getCharacterByUid(globals.fieldBossSummon0);
+              const char2 = JSON.parse(charRow2.char_data);
+              char.currencies.aeika++;
+              char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '에이카의 예비 부품 상자', resultType : 90006, value : 0});
+              await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char2), charRow2.uid]);
+            }
+            if (charRow.uid == leaderboard[0].key) {
+              char.currencies.aeika++;
+              char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '에이카의 예비 부품 상자', resultType : 90006, value : 0});
+              reward += '누적 피해 보상으로 에이카의 예비 부품 상자 1개, 움직이는 요새의 파편 1개를 획득했습니다.<br>';
+              if (!char.achievement[36]) {
+                await giveAchievement(charRow.uid, char, 36);
+              }                
+            } else {
+              const charRow2 = await getCharacterByUid(leaderboard[0].key);
+              const char2 = JSON.parse(charRow2.char_data);
+              char.currencies.aeika++;
+              char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '에이카의 예비 부품 상자', resultType : 90006, value : 0});
+              if (!char2.achievement[36]) {
+                await giveAchievement(charRow2.uid, char2, 36);
+              }
+              await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char2), charRow2.uid]);
+            }
+            const results = await client.query('select * from characters');
+            const partList = leaderboard.map(x => x.key);
+            for (val of results.rows) {
+              if (val.uid == charRow.uid) {
+                continue;
+              } 
+              if (!partList.includes(val.uid)) {
+                continue;
+              }
+              const charx = JSON.parse(val.char_data);
+              charx.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '에이카의 예비 부품 상자', resultType : 90006, value : 0});
+              
+              await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(charx), val.uid]);
+            } 
           }
         } 
         await client.query('update raids set phase = $1, monsters = $2 where rindex = 3', [row.phase + (re.winnerLeft ? 0 : 1), JSON.stringify(curData)]);
@@ -2581,6 +2622,61 @@ async function setCharacter (id, uid, data) {
     client.release();
     console.error(err);
   }
+}
+
+async function createRaidResults (rindex, phase, killed) {
+  const client = pool.connect();
+  try {
+    const result = await client.query('select * from raids where rindex = $1', rindex);
+    var leaderboard = [];
+    var reward;
+    const names = {'03' : '가이우스 엠더츠', '04' : '루니샤', '05' : '뤼순 창', '06' : '세리어스 플로에르시아',
+        '07' : '일룬드롤', '08' : '나백수', '09' : '이 눅스', '10' : '카시엔', '11' : '마랑', '12' : '가비류이', '13' : '제이'};
+    for (val of result.rows) {
+      var char = JSON.parse(val.monsters);
+      var record = {};
+      for (var i = 1; i <= phase; i++) {
+        for (key in char[i].battleRecord) { 
+          if (record[key]) {
+            record[key] += char[i].battleRecord[key];
+          } else {
+            record[key] = char[i].battleRecord[key];
+          }
+        }        
+      }
+      for (key in record) { 
+        leaderboard.push({name : names[key], damage : record[key], key : key});
+      }
+      leaderboard.sort(function(a, b) {
+        if (a.damage > b.damage) {
+          return -1;
+        } else if (a.damage == b.damage) {
+          return 0;
+        } else {
+          return 1;
+        }
+      }); 
+      reward = '<table>';
+      for (key in leaderboard) {
+        reward += '<tr><td>' + (Number(key) + 1) + '</td>';
+        reward += '<td>' + leaderboard[key].name + '</td>';
+        for (var i = 1; i <= phase; i++) {
+          reward += '<td>' + (char[i].battleRecord[leaderboard[key].key] ? char[i].battleRecord[leaderboard[key].key] : 0) + ' / ' + (char[i].winRecord[leaderboard[key].key] ? char[i].winRecord[leaderboard[key].key] : 0) + '</td>';
+        }
+        reward += '<td>' + leaderboard[key].damage + '</td></tr>';
+      }
+      reward += '</table>';
+      await client.query('insert into news(content, date) values ($1, $2)', 
+          [killed.name + getIga(killed.nameType) + ' ' + char[phase].name + getUlrul(char[phase].nameType) + ' 처치했습니다!<div class="itemTooltip longWidth">' + reward + '</div>', new Date()]);
+      
+      return leaderboard;
+    } 
+  } catch (err) {
+    console.error(err);
+  } finally {
+    client.release();
+  }
+  
 }
 
 function addExp(chara, exp) {

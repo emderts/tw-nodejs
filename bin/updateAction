@@ -182,9 +182,12 @@ try {
       glb.actionUsed = 0;
       glb.fieldBossSummoned = false;
       glb.fieldBossSpawned = false;
+      delete glb.fieldBossSpawned0;
+      delete glb.fieldBossSummon0;
     }
     await client.query('update global set globals = $1', [JSON.stringify(glb)]);
     await client.query('delete from raids where rindex = 3');
+    await client.query('delete from raids where rindex = 4');
     await client.query('delete from personal');
   }
   client.release();  
