@@ -1553,7 +1553,7 @@ async function procDungeon(req, res) {
     var dungeonList = [];
     dungeonList.push({name : '메모리얼 게이트 - 메비우스 섬멸 [9급 20레벨 이상]', code : 1, remain : char.dungeonInfos.enterMevious, active : !char.dungeonInfos.runMevious && char.dungeonInfos.enterMevious > 0 && (char.rank <= 8 || char.level >= 20)});
     dungeonList.push({name : '어나더 게이트 - 재의 묘소 [9급 20레벨 이상]', code : 2, remain : char.dungeonInfos.enterEmberCrypt, active : !char.dungeonInfos.runEmberCrypt && char.dungeonInfos.enterEmberCrypt > 0 && (char.rank <= 8 || char.level >= 20)});
-    dungeonList.push({name : '승급 심사장 [20레벨 이상]', code : 5, active : !char.dungeonInfos.runRankup && char.level >= 20});
+    dungeonList.push({name : '승급 심사장 [20레벨 이상]', code : 3, active : !char.dungeonInfos.runRankup && char.level >= 20});
     dungeonList.push({name : '필드 보스 - 고대 흑마법사 출현', code : 4, active : false});
     if (result && result.rows) {
       for (row of result.rows) {
