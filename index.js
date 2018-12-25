@@ -836,8 +836,8 @@ async function procConfirmItem (req, res) {
       for (val of resultg.rows) {
         var glb = JSON.parse(val.globals);
         if (glb['fieldBossSpawned' + tgtObj.value] == undefined) {
-          char.inventory.splice(body.itemNum, 1);
-          if (tgt.value == 0) {
+          char.inventory.splice(body.itemUsed, 1);
+          if (tgtObj.value == 0) {
             await client.query('insert into news(content, date) values ($1, $2)', 
                 ['움직이는 요새 - 에이카가 나타났습니다!', new Date()]);
               await client.query('insert into raids(rindex, open, phase, monsters) values (4, \'O\', 1, $1)', 
