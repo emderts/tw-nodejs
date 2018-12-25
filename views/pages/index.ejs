@@ -292,9 +292,9 @@
           <td class="charViewTitle"><%= char.rank %>급 <%= char.level %>레벨</td>
           <td class="charViewContent"><%= char.exp + '/' + char.reqExp + ' (' + char.maxExp + ')' + (char.expBoost ? ' / Boost ' + char.expBoost : '')  %></td>
           <td class="charViewContent">
-          <% if (char.level >= 20 && char.rank > 7) { %>
+          <% if (char.level >= 20 && char.rank > 6) { %>
             <form action="/doRankup" method="post">
-              <button type="submit">랭크업</button>
+              <button type="submit" <%= !char.rankReq ? 'disabled' : '' %>>랭크업</button>
             </form>
           <% } %>
           </td>

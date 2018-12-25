@@ -1,5 +1,6 @@
 const cons = require('./constant');
 const item = require('./items');
+const chara = require('./chara');
   
   var charLeft = {name : '메비우스 크로울러 무리', nameType : cons.NAME_KOR_NO_END_CONS, title : '메비우스', rank : 8, level : 20, 
       stat : {maxHp : 700, phyAtk : 48, magAtk : 40, hit : 1.1}};
@@ -373,6 +374,43 @@ const item = require('./items');
              ],
   };
   module.exports.xTrain = charLeft;
+  
+  charLeft = {name : '프사이', nameType : cons.NAME_KOR_NO_END_CONS, title : '승급 시험관', rank : 9, level : 40, 
+      stat : {maxHp : 672, phyAtk : 33.75, magAtk : 61.25}};
+  _initChar(charLeft);
+  
+  charLeft.items = {weapon : item.list[203], armor : item.list[219], subarmor : item.list[228], trinket : item.list[261]};
+
+  charLeft.skill = chara.psi.skill;
+  charLeft.skillSelect = function() {
+    return Math.floor(Math.random() * 3);
+  }
+  module.exports.ruPsi9 = charLeft;
+  
+  charLeft = {name : '에오헬름', nameType : cons.NAME_KOR_END_CONS, title : '승급 시험관', rank : 9, level : 40, 
+      stat : {maxHp : 400, phyAtk : 117.5, magAtk : 20}};
+  _initChar(charLeft);
+  
+  charLeft.items = {weapon : item.list[206], armor : item.list[222], subarmor : item.list[233], trinket : item.list[262]};
+
+  charLeft.skill = chara.aeohelm.skill;
+  charLeft.skillSelect = function() {
+    var rand = Math.random();
+    return rand < 0.45 ? 0 : (rand < 0.9 ? 2 : 1);
+  }
+  module.exports.ruAeohelm9 = charLeft;
+  
+  charLeft = {name : '세컨드 로직', nameType : cons.NAME_KOR_END_CONS, title : '승급 시험관', rank : 9, level : 40, 
+      stat : {maxHp : 880, phyAtk : 42.5, magAtk : 20}};
+  _initChar(charLeft);
+  
+  charLeft.items = {weapon : item.list[209], armor : item.list[218], subarmor : item.list[232], trinket : item.list[264]};
+
+  charLeft.skill = chara.lozic.skill;
+  charLeft.skillSelect = function() {
+    return Math.floor(Math.random() * 3);
+  }
+  module.exports.ruLozic9 = charLeft;
   
   function _initChar(char) {
     char.stat.spCharge = 5;

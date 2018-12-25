@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>ThirdWorld - 수동전투 Proto</title>
+    <title>ThirdWorld - 수동전투</title>
     <link href="https://fonts.googleapis.com/css?family=Nanum+Gothic" rel="stylesheet">
     <style>
       body {font-family: "Nanum Gothic", sans-serif; }
@@ -60,7 +60,7 @@
   </div>
     <script>  
   var socket = io();
-  socket.emit('manualInit', '<%= room %>', '<%= uid %>');
+  socket.emit('rankupDungeonInit', '<%= room %>', '<%= uid %>');
     document.getElementById('selectBtn0').setAttribute('disabled', true);
     document.getElementById('selectBtn1').setAttribute('disabled', true);
     document.getElementById('selectBtn2').setAttribute('disabled', true);
@@ -84,9 +84,13 @@
     document.getElementById('selectBtn2').removeAttribute('disabled');
     window.scrollTo(0, document.getElementById('result').scrollHeight);
   });
+  socket.on('manualSelectEnd', function(result) {
+    document.getElementById('result').innerHTML = result + '<div class="backLink"><a href="/nextPhaseDungeon">다음 단계로</a></div>';
+    window.scrollTo(0, document.getElementById('result').scrollHeight);
+  });
   
   function invClick(key) {
-    socket.emit('manualSelect', '<%= room %>', '<%= uid %>', key);
+    socket.emit('rankupDungeonSelect', '<%= room %>', '<%= uid %>', key);
     document.getElementById('selectBtn0').setAttribute('disabled', true);
     document.getElementById('selectBtn1').setAttribute('disabled', true);
     document.getElementById('selectBtn2').setAttribute('disabled', true);

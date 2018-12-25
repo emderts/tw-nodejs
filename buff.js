@@ -3184,7 +3184,7 @@ module.exports.getBuffData = function(eff) {
     effectObj.key = 'dmgReduce';
     effectObj.isPercentStat = true;
     effectObj.percentKey = 'phyReduce';
-    effectObj.value = 1.5;
+    effectObj.value = 150;
     retObj.effect.push(effectObj);
     effectObj = {};
     effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
@@ -3192,7 +3192,7 @@ module.exports.getBuffData = function(eff) {
     effectObj.key = 'dmgReduce';
     effectObj.isPercentStat = true;
     effectObj.percentKey = 'magReduce';
-    effectObj.value = 1.5;
+    effectObj.value = 150;
     retObj.effect.push(effectObj);
     break;
   case 201771 : 

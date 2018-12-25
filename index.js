@@ -96,6 +96,7 @@ app
 var ring = [];
 var people = [];
 var trades = {};
+var curRoom = 1;
 io.on('connection', (socket) => {
   socket.on('login', function(userName, uid) {
     socket.request.session.userName = userName;
@@ -165,6 +166,50 @@ io.on('connection', (socket) => {
       trades[room].right.emit('manualSelectAck', result.result);
       for (sock of trades[room].obv) {
         sock.emit('manualSelectAck', result.result);     
+      }
+      delete trades[room].leftSel;
+      delete trades[room].rightSel;
+    }
+  });
+  
+  socket.on('rankupDungeonInit', async function(room, uid) {
+    if (!trades[room]) {
+      return;
+    } else if (trades[room].leftUid == uid) {
+      trades[room].left = socket;
+      var charRow = await getCharacterByUid(uid);
+      trades[room].leftChr = JSON.parse(charRow.char_data);
+      trades[room].bmod = (new battlemodule.bmodule());
+    }
+    
+    if (trades[room].left) {
+      const result = trades[room].bmod.procBattleStart(trades[room].leftChr, trades[room].rightChr, 1);
+      trades[room].left.emit('manualAck', result, getNames(trades[room].leftChr), getNames(trades[room].rightChr));
+      
+      function makeSkillTooltip(skill) {
+        var rtext = '<div class="itemTooltip">';
+        rtext += skill.tooltip + '<br><br><span class="tooltipFlavor">' + skill.flavor + '</span></div>';
+        return rtext;
+      }
+      
+      function getNames(chara) {
+        return [chara.skill.base[0].name + makeSkillTooltip(chara.skill.base[0]), chara.skill.base[1].name + makeSkillTooltip(chara.skill.base[1]), chara.skill.base[2].name + makeSkillTooltip(chara.skill.base[2])];
+      }
+    }
+  });
+  socket.on('rankupDungeonSelect', function(room, uid, key) {
+    if (trades[room].leftUid == uid) {
+      trades[room].leftSel = key;
+      trades[room].rightSel = trades[room].rightChr.skillSelect();
+    }
+    
+    if (trades[room].leftSel !== undefined && trades[room].rightSel !== undefined) {
+      const result = trades[room].bmod.procBattleTurn(trades[room].leftSel, trades[room].rightSel, 1);
+      if (!result.leftInfo) {
+        trades[room].left.emit('manualSelectAck', result.result);
+      } else {
+        trades[room].result = result;
+        trades[room].left.emit('manualSelectEnd', result.result);        
       }
       delete trades[room].leftSel;
       delete trades[room].rightSel;
@@ -449,10 +494,7 @@ async function procEvent(req, res) {
     const client = await pool.connect();
   try {
     const sess = req.session; 
-    res.render('pages/trade', {
-      room: 1,
-      uid: sess.userUid
-    });
+    res.render('pages/trade', {room: 1, uid: sess.userUid});
   } catch (err) {
     console.error(err);
   } finally {
@@ -835,9 +877,11 @@ async function procUnequip (req, res) {
       if (resultChar.rows.length > 0) {
         chara = JSON.parse(resultChar.rows[0].char_data);
         var tgtObj = chara.items[body.itemType];
-        chara.items[body.itemType] = undefined;
-        calcStats(chara);
-        chara.inventory.push(tgtObj);
+        if (tgtObj) {
+          chara.items[body.itemType] = undefined;
+          calcStats(chara);
+          chara.inventory.push(tgtObj);
+        }
         await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(chara), result.rows[0].uid]);
       }
     }
@@ -1509,14 +1553,12 @@ async function procDungeon(req, res) {
     var dungeonList = [];
     dungeonList.push({name : '메모리얼 게이트 - 메비우스 섬멸 [9급 20레벨 이상]', code : 1, remain : char.dungeonInfos.enterMevious, active : !char.dungeonInfos.runMevious && char.dungeonInfos.enterMevious > 0 && (char.rank <= 8 || char.level >= 20)});
     dungeonList.push({name : '어나더 게이트 - 재의 묘소 [9급 20레벨 이상]', code : 2, remain : char.dungeonInfos.enterEmberCrypt, active : !char.dungeonInfos.runEmberCrypt && char.dungeonInfos.enterEmberCrypt > 0 && (char.rank <= 8 || char.level >= 20)});
-    dungeonList.push({name : '시즌 레이드 - 불타는 과수원 [피로도 1 / 7급 10레벨 이상]', code : 3, active : false});
+    dungeonList.push({name : '승급 심사장 [20레벨 이상]', code : 5, active : !char.dungeonInfos.runRankup && char.level >= 20});
     dungeonList.push({name : '필드 보스 - 고대 흑마법사 출현', code : 4, active : false});
     if (result && result.rows) {
       for (row of result.rows) {
         var tgt = dungeonList[row.rindex];
-        if (row.rindex == 2 && row.phase <= 4) {
-          tgt.active = row.open == 'O' && !char.dungeonInfos.runBurningOrchard;
-        } else if (row.rindex == 3 && row.phase <= 3) {
+        if (row.rindex == 3 && row.phase <= 3) {
           tgt.active = row.open == 'O' && !char.dungeonInfos.runFieldBoss;
         }
         if (row.open == 'O') {
@@ -1565,14 +1607,10 @@ async function procEnterDungeon(req, res) {
         enemy = rand < 0.5 ? monster.eBroken : monster.eCrossbow;
       }
     } else if (body.option == 3) {
-      if (!char.dungeonInfos.runBurningOrchard) {
-        char.dungeonInfos.runBurningOrchard = true;
-        enemy = monster.oFlame;
-        if (charRow.actionPoint <= 0) {
-          client.release();
-          res.redirect('/');
-          return;
-        }
+      if (!char.dungeonInfos.runRankup) {
+        char.dungeonInfos.runRankup = true;
+        const list = [monster.ruPsi9, monster.ruAeohelm9, monster.ruLozic9];
+        enemy = list[Math.floor(Math.random() * 3)];
       }
     } else if (body.option == 4) {
       const result = await client.query('select * from raids where rindex = 3');
@@ -1585,7 +1623,7 @@ async function procEnterDungeon(req, res) {
       }
     }
     if (enemy) {
-      if (body.option == 1 || body.option == 2 || body.option == 3) {
+      if (body.option == 1 || body.option == 2) {
         var re = (new battlemodule.bmodule()).doBattle(JSON.parse(JSON.stringify(char)), JSON.parse(JSON.stringify(enemy)), 1);
         var resultList = [{phase : 1, monImage : enemy.image, monName : enemy.name, 
           result : re.winnerLeft ? '승리' : '패배', hpLeft : re.winnerLeft ? re.leftInfo.curHp : re.rightInfo.curHp}];
@@ -1597,13 +1635,19 @@ async function procEnterDungeon(req, res) {
           isFinished = true;
           reward += '패배했습니다..';
         }
-        if (body.option == 3) {
-          await client.query('update characters set actionPoint = $1 where uid = $2', [charRow.actionPoint - 1, charRow.uid]);
-        }
         req.session.dungeonProgress = {code : body.option, phase : 1, resultList : resultList, charData : re.leftInfo};
         if (body.option == 1) {
           req.session.dungeonProgress.taurus = 0;
         }
+      } else if (body.option == 3) {
+        var roomNum = curRoom++;
+        trades[roomNum] = {};
+        trades[roomNum].leftUid = charRow.uid;
+        trades[roomNum].leftChr = JSON.parse(JSON.stringify(char));
+        trades[roomNum].rightChr = JSON.parse(JSON.stringify(enemy));
+        req.session.dungeonProgress = {code : body.option, phase : 1, resultList : [], roomNum : roomNum};
+
+        res.render('pages/trade', {room: roomNum, uid: charRow.uid});
       } else {
         var re = (new battlemodule.bmodule()).doBattle(JSON.parse(JSON.stringify(enemy)), JSON.parse(JSON.stringify(char)), 1);
         var resultList = [{phase : 1, monImage : enemy.image, monName : enemy.name, 
@@ -1689,12 +1733,16 @@ async function procNextPhaseDungeon(req, res) {
         if (sess.dungeonProgress.phase == 1) {
           enemy = monster.eGunda;
         } 
-      } else if (sess.dungeonProgress.code == 3 && req.session.dungeonProgress.phase == 1) {
-        const result = await client.query('select * from raids where rindex = 2');
-        row = result.rows[0];
-        curData = JSON.parse(row.monsters);
-        enemy = curData[row.phase];
-        hpBefore = enemy.curHp ? enemy.curHp : enemy.stat.maxHp;
+      } else if (sess.dungeonProgress.code == 3 && req.session.dungeonProgress.phase == (10 - char.rank)) {
+        var re = trades[sess.dungeonProgress.roomNum].result;
+        var reward = '';
+        if (re.leftWin) {
+          reward += '승급 심사를 통과했습니다!<br>';
+          char.rankReq = true;
+        }
+        delete trades[sess.dungeonProgress.roomNum];
+        await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
+        res.render('pages/dungeonResult', {result: re.result, resultList: [], isFinished : true, reward : reward, stop : false});
       }
     }
     if (enemy) {
@@ -2212,13 +2260,14 @@ async function procRankup (req, res) {
   const sess = req.session; 
   const charRow = await getCharacter(sess.userUid);
   const char = JSON.parse(charRow.char_data);
-  if (char.level >= 20 && char.rank > 7) {
+  if (char.level >= 20 && char.rank > 6 && char.rankReq) {
     char.level = 1;
     char.rank--;
     char.reqExp += 90;
     char.base.maxHp += 150;
     char.base.phyAtk += 10;
     char.base.magAtk += 10;
+    char.rankReq = false;
     calcStats(char);
   } 
   await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
@@ -2340,6 +2389,27 @@ async function getCharacter (id) {
         rval.actionPoint = resultChar.rows[0].actionpoint;
         rval.uid = resultChar.rows[0].uid;
       }
+    }
+    client.release();
+
+    return rval;
+  } catch (err) {
+    client.release();
+    console.error(err);
+    return {};
+  } finally {
+  }
+}
+
+async function getCharacterByUid (uid) {
+  try {
+    var rval = {};
+    const client = await pool.connect();
+    const resultChar = await client.query('select * from characters where uid = $1', [uid]);
+    if (resultChar.rows.length > 0) {
+      rval.char_data = resultChar.rows[0].char_data;
+      rval.actionPoint = resultChar.rows[0].actionpoint;
+      rval.uid = resultChar.rows[0].uid;
     }
     client.release();
 
