@@ -1647,6 +1647,7 @@ async function procEnterDungeon(req, res) {
         trades[roomNum].rightChr = JSON.parse(JSON.stringify(enemy));
         req.session.dungeonProgress = {code : body.option, phase : 1, resultList : [], roomNum : roomNum};
 
+        await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
         res.render('pages/trade', {room: roomNum, uid: charRow.uid});
         return;
       } else {

@@ -45,19 +45,13 @@ try {
       await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(charData), val.uid]);
     } 
   
-  // 1시간마다 (과수원)
-  if (min < 25) {  
+  // 3시간마다 (승급)
+  if (hour % 3 == 0 && min < 25) {  
     const result = await client.query('select * from characters');
     for (val of result.rows) {
       var charData = JSON.parse(val.char_data);
-      charData.dungeonInfos.runBurningOrchard = false;
+      charData.dungeonInfos.runRankup = false;
       await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(charData), val.uid]);
-    } 
-    const resultm = await client.query('select * from raids where rindex = 2');
-    for (val of resultm.rows) {
-      var charData = JSON.parse(val.monsters);
-      //charData[val.phase].curHp += 1500;
-      await client.query('update raids set monsters = $1 where rindex = 2', [JSON.stringify(charData)]);
     } 
   }
   

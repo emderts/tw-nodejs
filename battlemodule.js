@@ -220,7 +220,8 @@ Battlemodule.prototype._doBattleTurnManual = function(left, right) {
     this.result += '<br><div class="turnWrap"><span class="turnCount">' + this.turnCount + '턴</span><br>';
   }
   this.redecide = false;
-    if (left == right) {
+    if (left == right && !(findBuffByCode(left, 10004).length > 0 || findBuffByCode(left, 10005).length > 0)
+        && !(findBuffByCode(right, 10004).length > 0 || findBuffByCode(right, 10005).length > 0)) {
       this.result += this.charLeft.name + '의 [ ' + this.charLeft.skill.base[left].name + ' ] vs ' + this.charRight.name + '의 [ ' + this.charRight.skill.base[right].name + ' ]</span><br>';
       this.result += '비겼습니다!<br>';
       this.redecide = true;
