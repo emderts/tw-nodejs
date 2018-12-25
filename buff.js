@@ -1652,6 +1652,7 @@ module.exports.getBuffData = function(eff) {
     effectObj.isPercentChar = true;
     effectObj.percentKey = 'curSp';
     effectObj.chkStack = 5;
+    effectObj.noStack = true;
     effectObj.removeBuff = true;
     retObj.effect.push(effectObj);
     break;
