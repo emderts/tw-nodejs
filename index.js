@@ -200,7 +200,7 @@ io.on('connection', (socket) => {
   socket.on('rankupDungeonSelect', function(room, uid, key) {
     if (trades[room].leftUid == uid) {
       trades[room].leftSel = key;
-      trades[room].rightSel = trades[room].rightChr.skillSelect();
+      trades[room].rightSel = monster.selectFunc[trades[room].rightChr.skillSelect]();
     }
     
     if (trades[room].leftSel !== undefined && trades[room].rightSel !== undefined) {
@@ -1648,6 +1648,7 @@ async function procEnterDungeon(req, res) {
         req.session.dungeonProgress = {code : body.option, phase : 1, resultList : [], roomNum : roomNum};
 
         res.render('pages/trade', {room: roomNum, uid: charRow.uid});
+        return;
       } else {
         var re = (new battlemodule.bmodule()).doBattle(JSON.parse(JSON.stringify(enemy)), JSON.parse(JSON.stringify(char)), 1);
         var resultList = [{phase : 1, monImage : enemy.image, monName : enemy.name, 

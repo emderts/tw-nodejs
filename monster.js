@@ -382,9 +382,7 @@ const chara = require('./chara');
   charLeft.items = {weapon : item.list[203], armor : item.list[219], subarmor : item.list[228], trinket : item.list[261]};
 
   charLeft.skill = chara.psi.skill;
-  charLeft.skillSelect = function() {
-    return Math.floor(Math.random() * 3);
-  }
+  charLeft.skillSelect = 0;
   module.exports.ruPsi9 = charLeft;
   
   charLeft = {name : '에오헬름', nameType : cons.NAME_KOR_END_CONS, title : '승급 시험관', rank : 9, level : 40, 
@@ -394,10 +392,7 @@ const chara = require('./chara');
   charLeft.items = {weapon : item.list[206], armor : item.list[222], subarmor : item.list[233], trinket : item.list[262]};
 
   charLeft.skill = chara.aeohelm.skill;
-  charLeft.skillSelect = function() {
-    var rand = Math.random();
-    return rand < 0.45 ? 0 : (rand < 0.9 ? 2 : 1);
-  }
+  charLeft.skillSelect = 1;
   module.exports.ruAeohelm9 = charLeft;
   
   charLeft = {name : '세컨드 로직', nameType : cons.NAME_KOR_END_CONS, title : '승급 시험관', rank : 9, level : 40, 
@@ -407,10 +402,16 @@ const chara = require('./chara');
   charLeft.items = {weapon : item.list[209], armor : item.list[218], subarmor : item.list[232], trinket : item.list[264]};
 
   charLeft.skill = chara.lozic.skill;
-  charLeft.skillSelect = function() {
-    return Math.floor(Math.random() * 3);
-  }
+  charLeft.skillSelect = 0;
   module.exports.ruLozic9 = charLeft;
+  
+  module.exports.selectFunc = 
+    [function() {
+    return Math.floor(Math.random() * 3);
+  }, function() {
+    var rand = Math.random();
+    return rand < 0.45 ? 0 : (rand < 0.9 ? 2 : 1);
+  }];
   
   function _initChar(char) {
     char.stat.spCharge = 5;
