@@ -608,10 +608,10 @@ async function procUseItem (req, res) {
               chara.inventory.push(picked);
               await addItemNews(client, chara, tgtObj, picked);
             } else if (rand < 0.62) {
-              if (rand < 0.615 && tgtObj.rank <= 8) {
+              if (rand > 0.615 && tgtObj.rank <= 8) {
                 picked = {name : '레이드 소환권 - 움직이는 요새', type : 90005, rarity : cons.ITEM_RARITY_PREMIUM, value : 0};
                 chara.inventory.push(picked);
-              } else if (rand < 0.61 && tgtObj.rank <= 7) {
+              } else if (rand > 0.61 && tgtObj.rank <= 7) {
                 picked = {name : '레이드 소환권 - 매버릭 타임 코더', type : 90005, rarity : cons.ITEM_RARITY_PREMIUM, value : 1};
                 chara.inventory.push(picked);
               } else {
