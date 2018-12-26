@@ -365,11 +365,11 @@ async function procInit2 () {
     for (val of result.rows) {
       var char = JSON.parse(val.char_data);
       
-      if (val.uid == '03') {
-        char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '고대 흑마법사의 선물', rank : 8, resultType : 6});
+      if (val.uid == '06') {
+        char.skill = chara.seriers.skill;
       }
-      if (val.uid == '10') {
-        char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '고대 흑마법사의 선물', rank : 8, resultType : 6});
+      if (val.uid == '09') {
+        char.skill = chara.nux.skill;
       }
       /*if (char.items.trinket.id == 432) {
         char.items.trinket.effectDesc = item.list[432].effectDesc;
@@ -1141,7 +1141,10 @@ async function procBattle(req, res) {
             await client.query('insert into news(content, date) values ($1, $2)', 
                 [winner.name + getIga(winner.nameType) + ' ' + winner.winChain + '연승 중입니다!', new Date()]);
           }
-          winner.premiumPoint += winner.winChain / 3;          
+          winner.premiumPoint += 1;
+          if (winner.winChain % 9 == 0) {
+            winner.premiumPoint += 1;
+          }
         }
         if (loser.winChain >= 3) {
           if (loser.winChain >= 5) {

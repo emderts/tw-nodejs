@@ -2574,12 +2574,6 @@ module.exports.getBuffData = function(eff) {
     retObj.effect.push(effectObj);
     effectObj = {};
     effectObj.active = cons.ACTIVE_TYPE_DURATION_END;
-    effectObj.code = cons.EFFECT_TYPE_OPP_BUFF;
-    effectObj.buffCode = 201744;
-    effectObj.buffDur = 2;
-    retObj.effect.push(effectObj);
-    effectObj = {};
-    effectObj.active = cons.ACTIVE_TYPE_DURATION_END;
     effectObj.code = cons.EFFECT_TYPE_OPP_BUFF_REFRESH;
     effectObj.buffTarget = [201743];
     effectObj.buffDur = 0;
