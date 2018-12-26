@@ -1641,7 +1641,7 @@ module.exports.getBuffData = function(eff) {
     effectObj.active = cons.ACTIVE_TYPE_TURN_END;
     effectObj.code = cons.EFFECT_TYPE_SELF_BUFF;
     effectObj.buffCode = 8;
-    effectObj.buffDur = 4;
+    effectObj.buffDur = 3;
     effectObj.chkStack = 5;
     retObj.effect.push(effectObj);
     effectObj = {};

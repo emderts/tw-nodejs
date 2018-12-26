@@ -1876,7 +1876,7 @@ async function procNextPhaseDungeon(req, res) {
       } else if (sess.dungeonProgress.code == 3 && req.session.dungeonProgress.phase == (10 - char.rank)) {
         var re = trades[sess.dungeonProgress.roomNum].result;
         var reward = '';
-        if (re.leftWin) {
+        if (true || re.winnerLeft) {
           reward += '승급 심사를 통과했습니다!<br>';
           char.rankReq = true;
         }
@@ -2664,7 +2664,9 @@ async function createRaidResults (rindex, phase, killed) {
         for (var i = 1; i <= phase; i++) {
           reward += '<td>' + (char[i].battleRecord[leaderboard[key].key] ? char[i].battleRecord[leaderboard[key].key] : 0) + ' / ' + (char[i].winRecord[leaderboard[key].key] ? char[i].winRecord[leaderboard[key].key] : 0) + '</td>';
         }
-        reward += '<td>' + leaderboard[key].damage + '</td></tr>';
+        if (phase > 1) {
+          reward += '<td>' + leaderboard[key].damage + '</td></tr>';
+        }
       }
       reward += '</table>';
       await client.query('insert into news(content, date) values ($1, $2)', 

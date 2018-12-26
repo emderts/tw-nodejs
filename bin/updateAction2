@@ -15,8 +15,6 @@ doWork();
 async function doWork() {
 try {
   const client = await pool.connect();
-  // 30분마다 (기본 피로도, 필드보스, 던전)
-  await client.query('update characters set actionPoint = actionPoint + 1 where actionPoint < 100');
   
   const resultg = await client.query('select * from global');
   for (val of resultg.rows) {
