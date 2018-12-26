@@ -2657,7 +2657,7 @@ async function setCharacter (id, uid, data) {
 async function createRaidResults (rindex, phase, killed) {
   const client = await pool.connect();
   try {
-    const result = await client.query('select * from raids where rindex = $1', rindex);
+    const result = await client.query('select * from raids where rindex = $1', [rindex]);
     var leaderboard = [];
     var reward;
     const names = {'03' : '가이우스 엠더츠', '04' : '루니샤', '05' : '뤼순 창', '06' : '세리어스 플로에르시아',
