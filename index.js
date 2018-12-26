@@ -359,28 +359,17 @@ async function procInit () {
 }
 
 async function procInit2 () {
-  try {
     const client = await pool.connect();
+  try {
     const result = await client.query('select * from characters');
     for (val of result.rows) {
       var char = JSON.parse(val.char_data);
       
       if (val.uid == '03') {
-        char.achievement[35] = new Date();
-        char.premiumPoint += 1;
-        char.currencies.warlock += 3;
-        char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '고대 흑마법사의 선물', rank : 8, resultType : 90004});
+        char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '고대 흑마법사의 선물', rank : 8, resultType : 6});
       }
       if (val.uid == '10') {
-        char.base.maxHp -= 16;
-        char.base.phyAtk += 2.5;
-        char.statistics.maxHpStat -= 2;
-        char.statistics.phyAtkStat += 2;
-        
-        char.achievement[28] = new Date();
-        char.premiumPoint += 1;
-        char.currencies.warlock += 3;
-        char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '고대 흑마법사의 선물', rank : 8, resultType : 90004});
+        char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '고대 흑마법사의 선물', rank : 8, resultType : 6});
       }
       /*if (char.items.trinket.id == 432) {
         char.items.trinket.effectDesc = item.list[432].effectDesc;
@@ -1558,7 +1547,7 @@ async function procUseShop (req, res) {
         if (body.option == 90013) {
           char.premiumPoint += 1;
         } else {
-          char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '고대 흑마법사의 선물', rank : 8, resultType : 90004});
+          char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '고대 흑마법사의 선물', rank : 8, resultType : 6});
         }
       }
     } else if (body.option >= 90016 && body.option < 90019) {
@@ -1777,7 +1766,7 @@ async function procEnterDungeon(req, res) {
               reward += '페이즈 종료 보상으로 고대 장비 카드 1개, 흑마술의 파편 1개를 획득했습니다.<br>';
             } else {
               char.currencies.warlock += 3;
-              char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '고대 흑마법사의 선물', rank : 8, resultType : 90004});
+              char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '고대 흑마법사의 선물', rank : 8, resultType : 6});
               reward += re.leftInfo.name + getUlrul(re.leftInfo.nameType) + ' 처치했습니다!<br>고대 흑마법사의 선물 1개, 흑마술의 파편 3개를 획득했습니다.<br>';
               if (!char.achievement[28]) {
                 await giveAchievement(charRow.uid, char, 28);
@@ -1785,7 +1774,7 @@ async function procEnterDungeon(req, res) {
               var leaderboard = await createRaidResults(3, 3, char);
               if (charRow.uid == leaderboard[0].key) {
                 char.currencies.warlock += 3;
-                char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '고대 흑마법사의 선물', rank : 8, resultType : 90004});
+                char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '고대 흑마법사의 선물', rank : 8, resultType : 6});
                 reward += '누적 피해 보상으로 고대 흑마법사의 선물 1개, 흑마술의 파편 3개를 획득했습니다.<br>';
                 if (!char.achievement[35]) {
                   await giveAchievement(charRow.uid, char, 35);
@@ -1794,7 +1783,7 @@ async function procEnterDungeon(req, res) {
                 const charRow2 = await getCharacterByUid(leaderboard[0].key);
                 const char2 = JSON.parse(charRow2.char_data);
                 char2.currencies.warlock += 3;
-                char2.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '고대 흑마법사의 선물', rank : 8, resultType : 90004});
+                char2.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '고대 흑마법사의 선물', rank : 8, resultType : 6});
                 if (!char2.achievement[35]) {
                   await giveAchievement(charRow2.uid, char2, 35);
                 }
