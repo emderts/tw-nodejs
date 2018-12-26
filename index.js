@@ -365,6 +365,12 @@ async function procInit2 () {
     for (val of result.rows) {
       var char = JSON.parse(val.char_data);
       
+      if (val.uid == '03') {
+        char.achievement[35] = new Date();
+        char.premiumPoint += 1;
+        char.currencies.warlock += 3;
+        char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '고대 흑마법사의 선물', rank : 8, resultType : 90004});
+      }
       if (val.uid == '10') {
         char.base.maxHp -= 16;
         char.base.phyAtk += 2.5;
@@ -375,23 +381,6 @@ async function procInit2 () {
         char.premiumPoint += 1;
         char.currencies.warlock += 3;
         char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '고대 흑마법사의 선물', rank : 8, resultType : 90004});
-        var leaderboard = await createRaidResults(3, 3, char);
-        if (val.uid == leaderboard[0].key) {
-          char.currencies.warlock += 3;
-          char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '고대 흑마법사의 선물', rank : 8, resultType : 90004});
-          if (!char.achievement[35]) {
-            await giveAchievement(val.uid, char, 35);
-          }                
-        } else {
-          const charRow2 = await getCharacterByUid(leaderboard[0].key);
-          const char2 = JSON.parse(charRow2.char_data);
-          char2.currencies.warlock += 3;
-          char2.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '고대 흑마법사의 선물', rank : 8, resultType : 90004});
-          if (!char2.achievement[35]) {
-            await giveAchievement(charRow2.uid, char2, 35);
-          }
-          await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char2), charRow2.uid]);
-        }
       }
       /*if (char.items.trinket.id == 432) {
         char.items.trinket.effectDesc = item.list[432].effectDesc;
