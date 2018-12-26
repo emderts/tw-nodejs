@@ -375,7 +375,7 @@ async function procInit2 () {
         char.premiumPoint += 1;
         char.currencies.warlock += 3;
         char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '고대 흑마법사의 선물', rank : 8, resultType : 90004});
-        var leaderboard = await createRaidResults(3, 4, char);
+        var leaderboard = await createRaidResults(3, 3, char);
         if (val.uid == leaderboard[0].key) {
           char.currencies.warlock += 3;
           char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '고대 흑마법사의 선물', rank : 8, resultType : 90004});
@@ -1793,7 +1793,7 @@ async function procEnterDungeon(req, res) {
               if (!char.achievement[28]) {
                 await giveAchievement(charRow.uid, char, 28);
               }
-              var leaderboard = await createRaidResults(3, 4, char);
+              var leaderboard = await createRaidResults(3, 3, char);
               if (charRow.uid == leaderboard[0].key) {
                 char.currencies.warlock += 3;
                 char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '고대 흑마법사의 선물', rank : 8, resultType : 90004});
