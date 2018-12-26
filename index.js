@@ -364,11 +364,35 @@ async function procInit2 () {
     const result = await client.query('select * from characters');
     for (val of result.rows) {
       var char = JSON.parse(val.char_data);
-      char.currencies.aeika = 0;
-      if (val.uid == '09') {
-        char.inventory.push({name : '레이드 소환권 - 움직이는 요새', type : 90005, rarity : cons.ITEM_RARITY_PREMIUM, value : 0});
+      
+      if (val.uid == '10') {
+        char.base.maxHp -= 16;
+        char.base.phyAtk += 2.5;
+        char.statistics.maxHpStat -= 2;
+        char.statistics.phyAtkStat += 2;
+        char.achievement[28] = new Date();
+        char.premiumPoint += 1;
+        char.currencies.warlock += 3;
+        char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '고대 흑마법사의 선물', rank : 8, resultType : 90004});
+        var leaderboard = await createRaidResults(3, 4, char);
+        if (val.uid == leaderboard[0].key) {
+          char.currencies.warlock += 3;
+          char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '고대 흑마법사의 선물', rank : 8, resultType : 90004});
+          if (!char.achievement[35]) {
+            await giveAchievement(val.uid, char, 35);
+          }                
+        } else {
+          const charRow2 = await getCharacterByUid(leaderboard[0].key);
+          const char2 = JSON.parse(charRow2.char_data);
+          char2.currencies.warlock += 3;
+          char2.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '고대 흑마법사의 선물', rank : 8, resultType : 90004});
+          if (!char2.achievement[35]) {
+            await giveAchievement(charRow2.uid, char2, 35);
+          }
+          await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char2), charRow2.uid]);
+        }
       }
-      if (char.items.trinket.id == 432) {
+      /*if (char.items.trinket.id == 432) {
         char.items.trinket.effectDesc = item.list[432].effectDesc;
         char.items.trinket.effect = item.list[432].effect;
       }
@@ -377,7 +401,7 @@ async function procInit2 () {
           itm.effectDesc = item.list[432].effectDesc;
           itm.effect = item.list[432].effect;
         }
-      }
+      }*/
       
       await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), val.uid]);
     } 
@@ -1654,7 +1678,9 @@ async function procEnterDungeon(req, res) {
         curData = JSON.parse(row.monsters);
         char.dungeonInfos.runFieldBoss = true;
         enemy = curData[row.phase];
-        hpBefore = enemy.curHp ? enemy.curHp : enemy.stat.maxHp;
+        if (enemy) {
+          hpBefore = enemy.curHp ? enemy.curHp : enemy.stat.maxHp;
+        }
       }
     } else if (body.option == 5) {
       const result = await client.query('select * from raids where rindex = 4');
@@ -1784,7 +1810,7 @@ async function procEnterDungeon(req, res) {
                 }
                 await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char2), charRow2.uid]);
               }
-            }            
+            }
           } else if (body.option == 5) {
             char.currencies.aeika += 2;
             char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '에이카의 예비 부품 상자', resultType : 90006, value : 0});
@@ -2628,7 +2654,7 @@ async function setCharacter (id, uid, data) {
 }
 
 async function createRaidResults (rindex, phase, killed) {
-  const client = pool.connect();
+  const client = await pool.connect();
   try {
     const result = await client.query('select * from raids where rindex = $1', rindex);
     var leaderboard = [];
