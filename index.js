@@ -365,16 +365,16 @@ async function procInit2 () {
     for (val of result.rows) {
       var char = JSON.parse(val.char_data);
       char.currencies.aeika = 0;
-      if (val.uid == '02') {
+      if (val.uid == '09') {
         char.inventory.push({name : '레이드 소환권 - 움직이는 요새', type : 90005, rarity : cons.ITEM_RARITY_PREMIUM, value : 0});
       }
       if (char.items.trinket.id == 432) {
-        char.items.trinket.tooltip = item.list[432].tooltip;
+        char.items.trinket.effectDesc = item.list[432].effectDesc;
         char.items.trinket.effect = item.list[432].effect;
       }
       for (itm of char.inventory) {
         if (itm.id == 432) {
-          itm.tooltip = item.list[432].tooltip;
+          itm.effectDesc = item.list[432].effectDesc;
           itm.effect = item.list[432].effect;
         }
       }
@@ -607,8 +607,10 @@ async function procUseItem (req, res) {
             } else if (rand < 0.62) {
               if (rand < 0.615 && tgtObj.rank <= 8) {
                 picked = {name : '레이드 소환권 - 움직이는 요새', type : 90005, rarity : cons.ITEM_RARITY_PREMIUM, value : 0};
+                chara.inventory.push(picked);
               } else if (rand < 0.61 && tgtObj.rank <= 7) {
                 picked = {name : '레이드 소환권 - 매버릭 타임 코더', type : 90005, rarity : cons.ITEM_RARITY_PREMIUM, value : 1};
+                chara.inventory.push(picked);
               } else {
                 picked = _processPremiumPoint(chara, tgtObj, 1);
               }
