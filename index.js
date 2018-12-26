@@ -370,6 +370,7 @@ async function procInit2 () {
         char.base.phyAtk += 2.5;
         char.statistics.maxHpStat -= 2;
         char.statistics.phyAtkStat += 2;
+        
         char.achievement[28] = new Date();
         char.premiumPoint += 1;
         char.currencies.warlock += 3;
