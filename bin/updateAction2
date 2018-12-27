@@ -27,8 +27,6 @@ try {
       await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(charData), val.uid]);
     } 
       
-      await client.query('insert into raids(rindex, open, phase, monsters) values (3, \'O\', 1, $1)', 
-        [JSON.stringify({1 : monster.rKines1, 2 : monster.rInfernal, 3 : monster.rKines2})]);
       glb.fieldBossSpawned0--;
     }
     if (glb.fieldBossSpawned0 === 0) {
