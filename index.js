@@ -2422,13 +2422,13 @@ async function procRankup (req, res) {
     char.rankReq = false;
     calcStats(char);
   } 
-  await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
-  await client.query('insert into news(content, date) values ($1, $2)', 
-      [char.name + getIga(char.nameType) + ' ' + char.rank + '급을 달성했습니다!', new Date()]);
   
   if (!char.achievement[8 - char.rank]) {
     await giveAchievement(charRow.uid, char, 8 - char.rank);
   }
+  await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
+  await client.query('insert into news(content, date) values ($1, $2)', 
+      [char.name + getIga(char.nameType) + ' ' + char.rank + '급을 달성했습니다!', new Date()]);
   client.release();
   res.redirect('/');
 }
