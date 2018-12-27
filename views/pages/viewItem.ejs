@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>ThirdWorld - 아이템 보기</title>
+    <link href="https://fonts.googleapis.com/css?family=Nanum+Gothic" rel="stylesheet">
+    <style>
+      body {font-family: "Nanum Gothic", sans-serif; }
+      div {width: 450px; max-width: 100%; margin: 0 auto; }
+      div.cubeWrap {padding: 10px; border: 1px solid gainsboro; background-color: aliceblue; margin: 10px 5px 0 0; }
+      div.cubeItem {padding: 10px; }
+      .inventoryItem button {width: 150px; float: left; padding: 2px; }
+      .inventoryItem input {width: 150px; float: left; padding: 2px; }
+      .cubeItem button {width: 450px; padding: 2px; }
+      .inventoryItem button:hover { }
+      .itemTooltip {font-family: "Nanum Gothic", sans-serif; visibility: hidden; width: 250px; background-color: black; color: #fff; text-align: center; font-size: 13.3333px; border-radius: 6px; padding: 5px 0; position: absolute; z-index: 1; }
+      .inventoryItem:hover .itemTooltip {visibility: visible; }
+      .tooltipFlavor {font-style: italic; }
+      .rarityUncommon {color: #4bacc6; }
+      .rarityRare {color: #8054a2; }
+      .rarityPremium {color: #00b050; }
+      .rarityUnique {color: #ff33cc; }
+      .rarityEpic {color: #f79646; }
+      .buttonUncommon {background-color: #4bacc6; }
+      .buttonRare {background-color: #8054a2; }
+      .buttonPremium {background-color: #00b050; }
+      .buttonUnique {background-color: #ff33cc; }
+      .buttonEpic {background-color: #f79646; }
+      .backLink {text-align: center; width: 40%; margin: 10px auto; overflow: hidden; }
+      table {margin: 30px auto; text-align: center; }
+      tr {background-color: gainsboro; }
+      tr.tblTitle {background-color: lightblue; }
+      td {max-width: 50%; }
+    </style>
+    <script>
+      function setCopy() {
+      const button = document.querySelector("button");
+
+button.onclick = function() {
+  document.execCommand("copy");
+}
+
+button.addEventListener("copy", function(event) {
+  event.preventDefault();
+  if (event.clipboardData) {
+    event.clipboardData.setData("text/plain", button.children[0].textContent);
+    console.log(event.clipboardData.getData("text"))
+  }
+});
+}
+      
+    </script>
+</head>
+<body onload="setCopy()">
+<% 
+  var printName = {};
+  printName.maxHp = '생명력';
+  printName.hpRegen = 'HP재생';
+  printName.spRegen = 'SP재생';
+  printName.spCharge = 'SP충전';
+  printName.phyAtk = '물리공격력';
+  printName.magAtk = '마법공격력';
+  printName.crit = '치명';
+  printName.critDmg = '치명피해';
+  printName.phyReduce = '물리저항';
+  printName.magReduce = '마법저항';
+  printName.hit = '명중';
+  printName.evasion = '회피';
+  printName.dmgReduce = '피해감소';
+  printName.pierce = '관통';
+  printName[0] = '무기';
+  printName[1] = '갑옷';
+  printName[2] = '보조방어구';
+  printName[3] = '장신구';
+  printName[4] = '스킬 아티팩트';
+  
+  function getRarityText(rarity) {
+    var text = '';
+    var cname = 'rarity';
+    switch (rarity) {
+    case 0:
+      text = '커먼';
+      cname += 'Common';
+      break;
+    case 1:
+      text = '언커먼';
+      cname += 'Uncommon';
+      break;
+    case 2:
+      text = '레어';
+      cname += 'Rare';
+      break;
+    case 3:
+      text = '프리미엄';
+      cname += 'Premium';
+      break;
+    case 4:
+      text = '유니크';
+      cname += 'Unique';
+      break;
+    case 5:
+      text = '에픽';
+      cname += 'Epic';
+      break;
+    }
+    return '<span class="' + cname + '">' + text + '</span>';
+  }
+  
+  function getButtonText(rarity) {
+    var cname = 'button';
+    switch (rarity) {
+    case 0:
+      cname += 'Common';
+      break;
+    case 1:
+      cname += 'Uncommon';
+      break;
+    case 2:
+      cname += 'Rare';
+      break;
+    case 3:
+      cname += 'Premium';
+      break;
+    case 4:
+      cname += 'Unique';
+      break;
+    case 5:
+      cname += 'Epic';
+      break;
+    }
+    return cname;
+  }
+  
+  function getStatList(val) {
+    return Object.entries(val.stat).map(arr => { 
+      if (arr[0] == 'phyAtkMin') {
+        return  '물리공격력 +' + arr[1] + '~' + val.stat.phyAtkMax;
+      } else if (arr[0] == 'magAtkMin') {
+        return  '마법공격력 +' + arr[1] + '~' + val.stat.magAtkMax;        
+      } else if (arr[0] == 'phyAtkMax' || arr[0] == 'magAtkMax') {
+        return '';
+      } else {
+        var sign = arr[1] > 0 ? '+' : '';
+        if (arr[0] == 'phyReduce' || arr[0] == 'magReduce' || arr[0] == 'crit' || arr[0] == 'critDmg' || arr[0] == 'crit' || arr[0] == 'hit' || arr[0] == 'evasion' || arr[0] == 'pierce') {
+          arr[1] = (arr[1] * 100).toFixed(2) + '%'; 
+        }
+        return printName[arr[0]] + ' ' + sign + arr[1];
+      }      
+    }).filter(x => x.length > 0).join(', ');
+  }
+  
+  function makeTooltip(item) {
+    var rtext = '';
+    rtext += item.name;
+    if (item.type < 10) {
+      rtext += '<br>' + item.rank + '급 ' + getRarityText(item.rarity) + ' ' + printName[item.type];
+      if (item.tradeCnt !== undefined) {
+        rtext += '<br>거래횟수 : ' + item.tradeCnt;
+      }
+      rtext += '<br>' + getStatList(item);
+      if (item.effectDesc && item.effectDesc.length > 0) {
+        rtext += ', ' + item.effectDesc;
+      }
+    if (item.socket) {
+      for (sock of item.socket) {
+        if (sock) {
+          rtext += '<br><br>[' + sock.name + '] ' + sock.effectDesc;
+        }
+      }
+    }
+      if (item.flavor && item.flavor.length > 0) {
+        rtext += '<br><br><span class="tooltipFlavor">' + item.flavor + '</span>';
+      }
+    } else if (item.type == 999 && item.tooltip) {
+      rtext += '<br>' + item.tooltip;
+    }
+    return rtext;
+  }
+  
+  %>
+  <div>
+    <form action="/viewItem" method="post">
+      급수 
+      <input type="checkbox" id="rank7" name="rank[]" value="7"> <label for="rank7">7급</label>
+      <input type="checkbox" id="rank8" name="rank[]" value="8"> <label for="rank8">8급</label>
+      <input type="checkbox" id="rank9" name="rank[]" value="9"> <label for="rank9">9급</label>
+      <br>레어리티
+      <input type="checkbox" id="rarity0" name="rarity[]" value="0"> <label for="rarity0">커먼</label>
+      <input type="checkbox" id="rarity1" name="rarity[]" value="1"> <label for="rarity1">언커먼</label>
+      <input type="checkbox" id="rarity2" name="rarity[]" value="2"> <label for="rarity2">레어</label>
+      <input type="checkbox" id="rarity4" name="rarity[]" value="4"> <label for="rarity4">유니크</label>
+      <input type="checkbox" id="rarity5" name="rarity[]" value="5"> <label for="rarity5">에픽</label>
+      <br>종류
+      <input type="checkbox" id="type0" name="type[]" value="0"> <label for="type0">무기</label>
+      <input type="checkbox" id="type1" name="type[]" value="1"> <label for="type1">방어구</label>
+      <input type="checkbox" id="type2" name="type[]" value="2"> <label for="type2">보조방어구</label>
+      <input type="checkbox" id="type3" name="type[]" value="3"> <label for="type3">장신구</label>
+      <input type="checkbox" id="type4" name="type[]" value="4"> <label for="type4">스킬 아티팩트</label>
+      <br>이름
+      <input type="text" id="name" name="name" value="" />
+      <br>효과
+      <input type="text" id="effect" name="effect" value="" />
+      <br><br><input type="submit" value="검색" />
+    </form>
+  </div>
+  
+    <table>
+      <tr class="tblTitle">
+        <td width="10%">이름</td>
+        <td width="5%">종류</td>
+        <td width="5%">급수</td>
+        <td width="5%">레어리티</td>
+        <td width="25%">스탯</td>
+        <td width="45%">효과</td>
+      </tr>
+    <% for (val of items) { %>
+      <tr>
+        <td><%= val.name %></td>
+        <td><%= printName[val.type] %></td>
+        <td><%= val.rank %></td>
+        <td><%- getRarityText(val.rarity) %></td>
+        <td><%= getStatList(val) %></td>
+        <td><%- val.effectDesc ? val.effectDesc : '' %></td>
+      </tr>
+    <% } %>
+    </table>
+  <br>
+  <div class="backLink">
+    <a href="/">돌아가기</a>
+  </div>
+</body>
+</html>

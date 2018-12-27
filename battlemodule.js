@@ -1193,6 +1193,7 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
       }
       this.result += '[ ' + winner.items[eff.key].name + ' ] 아이템이 [ ' + picked.name + ' ] 아이템으로 바뀌었다!<br>';
       this.result += '<br>' + getItemText(null, picked);
+      picked.socket = eff.item.socket;
       winner.items[eff.key] = picked;
     } else if (eff.code === cons.EFFECT_TYPE_ADD_DAMAGE) {
       if (eff.skillCode && eff.skillCode === skill.code) {

@@ -27,7 +27,7 @@ const favicon = require('serve-favicon');
 const app = express()
 .use(express.static(path.join(__dirname, 'public')))
 .use(sessionMiddleware)
-.use(bodyParser.urlencoded({extended: false}))
+.use(bodyParser.urlencoded({extended: true}))
 .set('views', path.join(__dirname, 'views'))
 .set('view engine', 'ejs')
 .use(favicon(path.join(__dirname, 'public', 'favicon.ico')))
@@ -50,6 +50,8 @@ const app = express()
 .post('/battleLog', procBattleLog)
 .get('/viewList', procViewList)
 .post('/viewChar', procView)
+.get('/viewItem', procViewItem)
+.post('/viewItem', procViewItem)
 .get('/tradeList', procTradeList)
 .post('/doTrade', procTrade)
 .post('/giveItem', procGive)
@@ -1252,7 +1254,7 @@ async function procViewList(req, res) {
 }
 
 async function procView(req, res) {
-    const client = await pool.connect();
+  const client = await pool.connect();
   try {
     const result = await client.query('select * from characters where uid = $1', [req.body.charUid]);
     for (val of result.rows) {
@@ -1265,6 +1267,55 @@ async function procView(req, res) {
   } finally {
     client.release();
   }
+}
+
+async function procViewItem(req, res) {
+  const body = req.body;
+  var list = item.list;
+  console.log(body);
+  if (body.rank && body.rank.includes) {
+    var used = body.rank.map(x => Number(x));
+    list = list.filter(x => used.includes(x.rank));
+  }
+  if (body.rarity && body.rarity.includes) {
+    var used = body.rarity.map(x => Number(x));
+    list = list.filter(x => used.includes(x.rarity));
+  }
+  if (body.type && body.type.includes) {
+    var used = body.type.map(x => Number(x));
+    list = list.filter(x => used.includes(x.type));
+  }
+  if (body.name) {
+    list = list.filter(x => x.name.includes(body.name));
+  }
+  if (body.effect) {
+    list = list.filter(x => x.effectDesc && x.effectDesc.includes(body.effect));
+  }
+  
+  list.sort(function (a, b) {
+      if (a.type < b.type) {
+        return -1;
+      } else if (a.type > b.type) {
+        return 1;
+      } else {
+          if (a.rank > b.rank) {
+            return -1;
+          } else if (a.rank < b.rank) {
+            return 1;
+          } else if (a.rarity < b.rarity) {
+            return -1;
+          } else if (a.rarity > b.rarity) {
+            return 1;
+          } else if (a.name < b.name) {
+            return -1;
+          } else if (a.name > b.name) {
+            return 1;
+          } else {
+            return 0;
+          }
+      }
+  });
+  res.render('pages/viewItem', {items : list});
 }
 
 async function procTradeList(req, res) {
@@ -2079,7 +2130,7 @@ async function procStopDungeon(req, res) {
 }
 
 async function procSortInventory(req, res) {
-    const client = await pool.connect();
+  const client = await pool.connect();
   try {
     const sess = req.session; 
     const charRow = await getCharacter(sess.userUid);
