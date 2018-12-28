@@ -1271,7 +1271,7 @@ async function procView(req, res) {
 
 async function procViewItem(req, res) {
   const body = req.body;
-  var list = item.list;
+  var list = item.list.slice();
   console.log(body);
   if (body.rank && body.rank.includes) {
     var used = body.rank.map(x => Number(x));
