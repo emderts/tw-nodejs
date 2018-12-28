@@ -31,6 +31,7 @@ try {
        
       glb.fieldBossSpawned0--;
       if (row.phase >= 2) {
+        await client.query('delete from raids where rindex = 4');
         glb.fieldBossSpawned0 = 0;
       }
     }
