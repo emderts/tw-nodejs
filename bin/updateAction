@@ -120,6 +120,15 @@ try {
       charData.dungeonInfos.enterEmberCrypt = 3;
       charData.dungeonInfos.resetMevious = false;
       charData.dungeonInfos.resetEmberCrypt = false;
+      charData.dungeonInfos.rewardFieldBoss01 = false;
+      charData.dungeonInfos.rewardFieldBoss02 = false;
+      charData.dungeonInfos.rewardFieldBoss03 = false;
+      charData.dungeonInfos.rewardFieldBoss04 = false;
+      charData.dungeonInfos.rewardFieldBoss05 = false;
+      charData.dungeonInfos.rewardFieldBoss06 = false;
+      charData.dungeonInfos.rewardFieldBoss07 = false;
+      charData.dungeonInfos.rewardFieldBoss08 = false;
+      charData.dungeonInfos.rewardFieldBoss09 = false;
       charData.resetGauge = false;
       charData.quest = {};
       var quests = [{code : 1, progress : 0, target : 5},

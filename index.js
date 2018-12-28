@@ -842,7 +842,7 @@ async function procConfirmItem (req, res) {
       const resultg = await client.query('select * from global');
       for (val of resultg.rows) {
         var glb = JSON.parse(val.globals);
-        if (glb['fieldBossSpawned' + tgtObj.value] == undefined) {
+        if (!glb['fieldBossSpawned' + tgtObj.value]) {
           char.inventory.splice(body.itemUsed, 1);
           if (tgtObj.value == 0) {
             await client.query('insert into news(content, date) values ($1, $2)', 
@@ -1847,8 +1847,7 @@ async function procEnterDungeon(req, res) {
           } else if (body.option == 5) {
             char.currencies.aeika += 2;
             char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '에이카의 예비 부품 상자', resultType : 90006, value : 0});
-            char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '에이카의 예비 부품 상자', resultType : 90006, value : 0});
-            reward += re.leftInfo.name + getUlrul(re.leftInfo.nameType) + ' 처치했습니다!<br>에이카의 예비 부품 상자 2개, 움직이는 요새의 파편 2개를 획득했습니다.<br>';
+            reward += re.leftInfo.name + getUlrul(re.leftInfo.nameType) + ' 처치했습니다!<br>에이카의 예비 부품 상자 1개, 움직이는 요새의 파편 2개를 획득했습니다.<br>';
             if (!char.achievement[34]) {
               await giveAchievement(charRow.uid, char, 34);
             }

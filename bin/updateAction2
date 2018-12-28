@@ -19,21 +19,26 @@ try {
   const resultg = await client.query('select * from global');
   for (val of resultg.rows) {
     var glb = JSON.parse(val.globals);
+    const result = await client.query('select * from raids where rindex = 4');
+    var row = result.rows[0];
     if (glb.fieldBossSpawned0 > 0) {
-    const resultx = await client.query('select * from characters');
-    for (val of resultx.rows) {
-      var charData = JSON.parse(val.char_data);
-      charData.dungeonInfos.runFieldBoss0 = false;
-      await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(charData), val.uid]);
-    } 
-      
+      const resultx = await client.query('select * from characters');
+      for (val of resultx.rows) {
+        var charData = JSON.parse(val.char_data);
+        charData.dungeonInfos.runFieldBoss0 = false;
+        await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(charData), val.uid]);
+      } 
+       
       glb.fieldBossSpawned0--;
+      if (row.phase >= 2) {
+        glb.fieldBossSpawned0 = 0;
+      }
     }
-    if (glb.fieldBossSpawned0 === 0) {
+    if (glb.fieldBossSpawned0 === 0 && row.phase == 1) {
       await client.query('update raids set open = $1 where rindex = 4', ['C']);
       await client.query('insert into news(content, date) values ($1, $2)', 
         ['움직이는 요새 - 에이카가 사라졌습니다..', new Date()]);
-      glb.fieldBossSpawned0 = -1;
+      glb.fieldBossSpawned0 = 0;
     }
   }
   await client.query('update global set globals = $1', [JSON.stringify(glb)]);
