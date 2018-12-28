@@ -859,7 +859,7 @@ async function procConfirmItem (req, res) {
           glb['fieldBossSummon' + tgtObj.value] = charRow.uid;
           await client.query('update global set globals = $1', [JSON.stringify(glb)]);
         } else {
-          res.send('오늘 이미 해당 보스가 소환되었습니다.');
+          res.send('이미 해당 보스가 소환되었습니다.');
         }
       }
       

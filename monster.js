@@ -379,7 +379,7 @@ const chara = require('./chara');
       stat : {maxHp : 61800, phyAtk : 123.45, magAtk : 50}};
   _initChar(charLeft);
   
-  charLeft.items = {weapon : item.list[203], armor : item.list[219], subarmor : item.list[228], trinket : item.list[261]};
+  charLeft.items = {weapon : item.list[352], armor : item.list[370], subarmor : item.list[307], trinket : item.list[333], skillArtifact : item.list[437]};
   charLeft.boss = 0.85;
   charLeft.bossStatus = 0.15;
 
