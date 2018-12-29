@@ -214,12 +214,12 @@ io.on('connection', (socket) => {
     }
   });
   socket.on('manualAdmin', function(room, luid, ruid, lc, rc) {
-    trades[1] = {};
-    trades[1].obv = [];
-    trades[1].leftUid = luid;
-    trades[1].rightUid = ruid;
-    trades[1].leftChr = lc;
-    trades[1].rightChr = rc;
+    trades[1000] = {};
+    trades[1000].obv = [];
+    trades[1000].leftUid = luid;
+    trades[1000].rightUid = ruid;
+    trades[1000].leftChr = lc;
+    trades[1000].rightChr = rc;
   });
   
   socket.on('disconnect', function() {
@@ -431,7 +431,7 @@ async function procEvent(req, res) {
     const client = await pool.connect();
   try {
     const sess = req.session; 
-    res.render('pages/trade', {room: 1, uid: sess.userUid});
+    res.render('pages/trade', {room: 1000, uid: sess.userUid});
   } catch (err) {
     console.error(err);
   } finally {
@@ -946,7 +946,7 @@ async function procTrain(req, res) {
     const sess = req.session; 
     const charRow = await getCharacter(sess.userUid);
     const char = JSON.parse(charRow.char_data);
-    monster.xTrain.base.maxHp = 2000 * pow(2, 9 - char.rank);
+    monster.xTrain.base.maxHp = 2000 * Math.pow(2, 9 - char.rank);
     
     var re = (new battlemodule.bmodule()).doBattle(JSON.parse(JSON.stringify(char)), JSON.parse(JSON.stringify(monster.xTrain)), 1);
     res.render('pages/battle', {result: re.result});
