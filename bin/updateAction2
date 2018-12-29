@@ -36,7 +36,7 @@ try {
       }
     }
     if (glb.fieldBossSpawned0 === 0 && row.phase == 1) {
-      await client.query('update raids set open = $1 where rindex = 4', ['C']);
+        await client.query('delete from raids where rindex = 4');
       await client.query('insert into news(content, date) values ($1, $2)', 
         ['움직이는 요새 - 에이카가 사라졌습니다..', new Date()]);
       glb.fieldBossSpawned0 = 0;
