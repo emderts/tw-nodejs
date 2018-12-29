@@ -367,11 +367,8 @@ async function procInit2 () {
     for (val of result.rows) {
       var char = JSON.parse(val.char_data);
       
-      if (val.uid == '06') {
-        char.skill = chara.seriers.skill;
-      }
-      if (val.uid == '09') {
-        char.skill = chara.nux.skill;
+      if (val.uid == '02') {
+        char.rank++;
       }
       /*if (char.items.trinket.id == 432) {
         char.items.trinket.effectDesc = item.list[432].effectDesc;
@@ -1684,7 +1681,7 @@ async function procEnterDungeon(req, res) {
     const sess = req.session; 
     const charRow = await getCharacter(sess.userUid);
     const char = JSON.parse(charRow.char_data);
-    var enemy, curData, hpBefore, row;
+    var enemy, curData, hpBefore, row, list;
     // check entering cond
     const rand = Math.random();
     if (body.option == 1) {
@@ -1702,8 +1699,10 @@ async function procEnterDungeon(req, res) {
     } else if (body.option == 3) {
       if (!char.dungeonInfos.runRankup) {
         char.dungeonInfos.runRankup = true;
-        const list = [monster.ruPsi9, monster.ruAeohelm9, monster.ruLozic9];
-        enemy = list[Math.floor(Math.random() * 3)];
+        list = [monster['ruPsi' + char.rank], monster['ruAeohelm' + char.rank], monster['ruLozic' + char.rank]];
+        const idx = Math.floor(Math.random() * 3);
+        enemy = list[idx];
+        list.splice(idx, 1);
       }
     } else if (body.option == 4) {
       const result = await client.query('select * from raids where rindex = 3');
@@ -1759,7 +1758,7 @@ async function procEnterDungeon(req, res) {
         trades[roomNum].leftUid = charRow.uid;
         trades[roomNum].leftChr = JSON.parse(JSON.stringify(char));
         trades[roomNum].rightChr = JSON.parse(JSON.stringify(enemy));
-        req.session.dungeonProgress = {code : body.option, phase : 1, resultList : [], roomNum : roomNum};
+        req.session.dungeonProgress = {code : body.option, phase : 1, resultList : [], roomNum : roomNum, tgtList : list};
 
         await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
         res.render('pages/trade', {room: roomNum, uid: charRow.uid});
@@ -1918,7 +1917,7 @@ async function procNextPhaseDungeon(req, res) {
     const sess = req.session; 
     const charRow = await getCharacter(sess.userUid);
     const char = JSON.parse(charRow.char_data);
-    var enemy, curData, hpBefore, row;
+    var enemy, curData, hpBefore, row, list;
     // check entering cond
     const rand = Math.random();
     if (sess.dungeonProgress) {
@@ -1934,19 +1933,39 @@ async function procNextPhaseDungeon(req, res) {
         if (sess.dungeonProgress.phase == 1) {
           enemy = monster.eGunda;
         } 
-      } else if (sess.dungeonProgress.code == 3 && req.session.dungeonProgress.phase == (10 - char.rank)) {
-        var re = trades[sess.dungeonProgress.roomNum].result;
-        var reward = '';
-        if (true || re.winnerLeft) {
-          reward += '승급 심사를 통과했습니다!<br>';
-          char.rankReq = true;
+      } else if (sess.dungeonProgress.code == 3) {
+        if (req.session.dungeonProgress.phase == (10 - char.rank)) {
+          var re = trades[sess.dungeonProgress.roomNum].result;
+          var reward = '';
+          if (re.winnerLeft) {
+            reward += '승급 심사를 통과했습니다!<br>';
+           char.rankReq = true;
+          } 
+          delete trades[sess.dungeonProgress.roomNum];
+          await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
+          res.render('pages/dungeonResult', {result: re.result, resultList: [], isFinished : true, reward : reward, stop : false});
+        } else {
+          list = req.session.dungeonProgress.tgtList;
+          const idx = Math.floor(Math.random() * list.length);
+          enemy = list[idx];
+          list.splice(idx, 1);
         }
-        delete trades[sess.dungeonProgress.roomNum];
-        await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
-        res.render('pages/dungeonResult', {result: re.result, resultList: [], isFinished : true, reward : reward, stop : false});
       }
     }
     if (enemy) {
+      if (req.session.dungeonProgress.code == 3) {
+        var roomNum = curRoom++;
+        trades[roomNum] = {};
+        trades[roomNum].leftUid = charRow.uid;
+        trades[roomNum].leftChr = JSON.parse(JSON.stringify(char));
+        trades[roomNum].rightChr = JSON.parse(JSON.stringify(enemy));
+        req.session.dungeonProgress.phase = req.session.dungeonProgress.phase + 1;
+        req.session.dungeonProgress.tgtList = req.session.dungeonProgress.list;
+        req.session.dungeonProgress.roomNum = req.session.dungeonProgress.roomNum;
+
+        res.render('pages/trade', {room: roomNum, uid: charRow.uid});
+        return;
+      }
       var re = (new battlemodule.bmodule()).doBattle(JSON.parse(JSON.stringify(req.session.dungeonProgress.charData)), JSON.parse(JSON.stringify(enemy)), 1);
       req.session.dungeonProgress.resultList.push({phase : req.session.dungeonProgress.phase + 1, monImage : enemy.image, monName : enemy.name, 
         result : re.winnerLeft ? '승리' : '패배', hpLeft : re.winnerLeft ? re.leftInfo.curHp : re.rightInfo.curHp});

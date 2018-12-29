@@ -1960,6 +1960,61 @@ module.exports.getBuffData = function(eff) {
     effectObj.removeBuff = true;
     retObj.effect.push(effectObj);
     break;
+  case 10095 : 
+    retObj.name = '에너지 방패';
+    retObj.nameType = cons.NAME_KOR_NO_END_CONS;
+    retObj.stackType = 1;
+    retObj.isDebuff = false;
+    retObj.durOff = null;
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_DEAL_DAMAGE_RECEIVE;
+    effectObj.code = cons.EFFECT_TYPE_SHIELD;
+    effectObj.value = 30;
+    retObj.effect.push(effectObj);
+    break;
+  case 10096 : 
+    retObj.name = '에너지 고갈';
+    retObj.nameType = cons.NAME_KOR_END_CONS;
+    retObj.stackType = 1;
+    effectObj = {};
+    effectObj.code = cons.EFFECT_TYPE_SELF_BUFF;
+    effectObj.buffCode = 10095;
+    effectObj.buffDur = null;
+    retObj.effect.push(effectObj);
+    break;
+  case 10097 : 
+    retObj.name = '문워크';
+    retObj.nameType = cons.NAME_KOR_NO_END_CONS;
+    retObj.stackType = 1;
+    retObj.isDebuff = false;
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_STAT_ADD;
+    effectObj.key = 'evasion';
+    effectObj.value = 0.05;
+    retObj.effect.push(effectObj);
+    break;
+  case 10098 : 
+    retObj.name = '간지';
+    retObj.nameType = cons.NAME_KOR_NO_END_CONS;
+    retObj.stackType = 1;
+    retObj.isDebuff = false;
+    retObj.durOff = null;
+    break;
+  case 10099 : 
+    retObj.name = '헥사곤';
+    retObj.nameType = cons.NAME_KOR_END_CONS;
+    retObj.stackType = 2;
+    retObj.stack = 1;
+    retObj.durOff = null;
+    retObj.isDebuff = false;
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_STAT_ADD;
+    effectObj.key = 'dmgReduce';
+    effectObj.value = 3;
+    retObj.effect.push(effectObj);
+    break;
   case 20101 : 
     retObj.name = '혼돈의 힘';
     retObj.nameType = cons.NAME_KOR_END_CONS;

@@ -937,191 +937,208 @@ itemList[436] = { id : 436, name : '복합 장갑 재현 장치', nameType : con
     effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_SKILL_WIN, buffCode : 10081, buffDur : 2, chkSkillNum : 0}] };
 itemList[437] = { id : 437, name : '움직이는 요새', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SKILL_ARTIFACT, flavor : '', rank : 7, rarity : cons.ITEM_RARITY_UNIQUE, stat : { maxHp : 30, phyReduce : 0.04, magReduce : 0.04 }, 
     effectDesc : '', effect : [] };
-itemList[439] = { id : 439, name : '연장점검', type : cons.ITEM_TYPE_WEAPON, flavor : '다른 세계에서 악명을 떨치고 있는 4대 명검 중 하나. 예상치 못한 곳에서 상대를 찔러오는 검.', rank : 6, rarity : cons.ITEM_RARITY_RARE, stat : { phyAtkMin : 34, phyAtkMax : 38, magAtkMin : 34, magAtkMax : 38, crit : 0.03 }, 
+itemList[439] = { id : 439, name : '연장점검', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_WEAPON, flavor : '다른 세계에서 악명을 떨치고 있는 4대 명검 중 하나. 예상치 못한 곳에서 상대를 찔러오는 검.', rank : 6, rarity : cons.ITEM_RARITY_RARE, stat : { phyAtkMin : 34, phyAtkMax : 38, magAtkMin : 34, magAtkMax : 38, crit : 0.03 }, 
     effectDesc : '자신이 부여하는 행동 불가 상태이상의 지속 턴 수 1 증가', 
     effect : [{code : cons.EFFECT_TYPE_REDUCE_BUFF_DURATION, active : cons.ACTIVE_TYPE_RECEIVE_BUFF, value : -1, buffCodes : [4, 5, 6, 7]},
               {code : cons.EFFECT_TYPE_REDUCE_BUFF_DURATION, active : cons.ACTIVE_TYPE_GIVE_BUFF, value : -1, buffCodes : [4, 5, 6, 7]}] };
-itemList[440] = { id : 440, name : '대군주의 도끼', type : cons.ITEM_TYPE_WEAPON, flavor : '보기만 해도 무시무시한 도끼.', rank : 6, rarity : cons.ITEM_RARITY_RARE, stat : { phyAtkMin : 39, phyAtkMax : 51, magAtkMin : 21, magAtkMax : 33, crit : 0.03 }, 
+itemList[440] = { id : 440, name : '대군주의 도끼', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_WEAPON, flavor : '보기만 해도 무시무시한 도끼.', rank : 6, rarity : cons.ITEM_RARITY_RARE, stat : { phyAtkMin : 39, phyAtkMax : 51, magAtkMin : 21, magAtkMax : 33, crit : 0.03 }, 
     effectDesc : '공격 시 10% 확률로 적에게 2턴 간 [탈진] 상태이상 부여', 
     effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, active : cons.ACTIVE_TYPE_ATTACK, chance : 0.1, buffCode : 6, buffDur : 2}] };
-itemList[441] = { id : 441, name : '지옥공허 장창', type : cons.ITEM_TYPE_WEAPON, flavor : '불타는 기운과 공허의 기운이 동시에 깃들어 당장이라도 폭발할 것만 같은 창. 사용에 주의를 요한다.', rank : 6, rarity : cons.ITEM_RARITY_RARE, stat : { phyAtkMin : 42, phyAtkMax : 48, magAtkMin : 24, magAtkMax : 30, crit : 0.03 }, 
+itemList[441] = { id : 441, name : '지옥공허 장창', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_WEAPON, flavor : '불타는 기운과 공허의 기운이 동시에 깃들어 당장이라도 폭발할 것만 같은 창. 사용에 주의를 요한다.', rank : 6, rarity : cons.ITEM_RARITY_RARE, stat : { phyAtkMin : 42, phyAtkMax : 48, magAtkMin : 24, magAtkMax : 30, crit : 0.03 }, 
     effectDesc : '공격 시 8% 확률로 적에게 2턴 간 [화상] 상태이상 부여, 공격 시 8% 확률로 적에게 2턴 간 [침묵] 상태이상 부여', 
     effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, active : cons.ACTIVE_TYPE_ATTACK, chance : 0.08, buffCode : 1, buffDur : 2},
               {code : cons.EFFECT_TYPE_OPP_BUFF, active : cons.ACTIVE_TYPE_ATTACK, chance : 0.08, buffCode : 7, buffDur : 2}] };
-itemList[442] = { id : 442, name : '슈발츠 잭스 프로토타입 MK-II', type : cons.ITEM_TYPE_WEAPON, flavor : '일단 제3세계에서 새로운 능력을 부여받았다. 이 장비의 정체를 밝히지 말 것.', rank : 6, rarity : cons.ITEM_RARITY_RARE, stat : { phyAtkMin : 24, phyAtkMax : 36, magAtkMin : 30, magAtkMax : 54, crit : 0.03 }, 
+itemList[442] = { id : 442, name : '슈발츠 잭스 프로토타입 MK-II', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_WEAPON, flavor : '일단 제3세계에서 새로운 능력을 부여받았다. 이 장비의 정체를 밝히지 말 것.', rank : 6, rarity : cons.ITEM_RARITY_RARE, stat : { phyAtkMin : 24, phyAtkMax : 36, magAtkMin : 30, magAtkMax : 54, crit : 0.03 }, 
     effectDesc : '마법 공격 피격 시 30% 확률로 2턴 간 [슈발츠 실드] 전개<br><br>[슈발츠 실드] : 마법공격력 -20, 마법 저항 +30%', 
     effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_TAKE_HIT, chance : 0.3, buffCode : 10082, buffDur : 2, chkDmgType : cons.DAMAGE_TYPE_MAGICAL}] };
-itemList[443] = { id : 443, name : '가시톱날 검', type : cons.ITEM_TYPE_WEAPON, flavor : '상대의 피를 보기 위해 만든 듯 톱날이 달린 검. 출혈 능력을 극대화하지만, 기본 능력이 떨어지는 것을 감수해야 한다.', rank : 6, rarity : cons.ITEM_RARITY_RARE, stat : { phyAtkMin : 32, phyAtkMax : 36, magAtkMin : 32, magAtkMax : 36, crit : 0.03 }, 
+itemList[443] = { id : 443, name : '가시톱날 검', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_WEAPON, flavor : '상대의 피를 보기 위해 만든 듯 톱날이 달린 검. 출혈 능력을 극대화하지만, 기본 능력이 떨어지는 것을 감수해야 한다.', rank : 6, rarity : cons.ITEM_RARITY_RARE, stat : { phyAtkMin : 32, phyAtkMax : 36, magAtkMin : 32, magAtkMax : 36, crit : 0.03 }, 
     effectDesc : '공격 시 22% 확률로 적에게 1턴 간 [출혈] 상태이상 부여, [출혈] 상태이상 부여 시 30% 확률로 지속 턴 1 증가', 
     effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, active : cons.ACTIVE_TYPE_ATTACK, chance : 0.22, buffCode : 3, buffDur : 1},
               {code : cons.EFFECT_TYPE_REDUCE_BUFF_DURATION, active : cons.ACTIVE_TYPE_GIVE_BUFF, value : -1, buffCode : 3}] };
-itemList[444] = { id : 444, name : '언익셉터블 비빗쟈', type : cons.ITEM_TYPE_WEAPON, flavor : '기관단총 Sten Mk.2가 서브컬쳐를 만나 해괴해진 형태. 초유의 청각 테러를 일으키는데, 궁금하면 유튜브에 검색하자.', rank : 6, rarity : cons.ITEM_RARITY_RARE, stat : { phyAtkMin : 24, phyAtkMax : 48, magAtkMin : 24, magAtkMax : 48, crit : 0.03 }, 
+itemList[444] = { id : 444, name : '언익셉터블 비빗쟈', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_WEAPON, flavor : '기관단총 Sten Mk.2가 서브컬쳐를 만나 해괴해진 형태. 초유의 청각 테러를 일으키는데, 궁금하면 유튜브에 검색하자.', rank : 6, rarity : cons.ITEM_RARITY_RARE, stat : { phyAtkMin : 24, phyAtkMax : 48, magAtkMin : 24, magAtkMax : 48, crit : 0.03 }, 
     effectDesc : '9의 배수 턴 시작 시 전투 텍스트가 커지며 자신과 적에게 각각 60% 확률로 5턴 간 [혼란] 상태이상 부여', 
     effect : [{active : cons.ACTIVE_TYPE_SKILL_WIN, printText : '<span style="font-size: 18px; ">', chkTurn : 9, setTurnCooldown : 9},
               {code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_SKILL_WIN, chance : 0.6, buffCode : 11, buffDur : 5, chkTurn : 9, setTurnCooldown : 9},
               {code : cons.EFFECT_TYPE_OPP_BUFF, active : cons.ACTIVE_TYPE_SKILL_WIN, chance : 0.6, buffCode : 11, buffDur : 5, chkTurn : 9, setTurnCooldown : 9},
               {active : cons.ACTIVE_TYPE_TURN_END, printText : '</span>', chkTurn : 9, setTurnCooldown : 9}] };
-itemList[445] = { id : 445, name : '카운터 소드', type : cons.ITEM_TYPE_WEAPON, flavor : '받은 공격을 되받아치기 위해 만들어진 세트형 무기. 사용자의 재량에 따라 입체기동을 가능케 한다. 세계관이 변하면서 디자인이 조금 너프된 상태.', rank : 6, rarity : cons.ITEM_RARITY_RARE, stat : { phyAtkMin : 30, phyAtkMax : 44, magAtkMin : 30, magAtkMax : 44, dmgReduce : 4 }, 
+itemList[445] = { id : 445, name : '카운터 소드', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_WEAPON, flavor : '받은 공격을 되받아치기 위해 만들어진 세트형 무기. 사용자의 재량에 따라 입체기동을 가능케 한다. 세계관이 변하면서 디자인이 조금 너프된 상태.', rank : 6, rarity : cons.ITEM_RARITY_RARE, stat : { phyAtkMin : 30, phyAtkMax : 44, magAtkMin : 30, magAtkMax : 44, dmgReduce : 4 }, 
     effectDesc : '피격 시 피해량의 30%만큼 자신의 물리/마법공격력이 상승한다(최대 60). 상승한 공격력은 매 턴의 시작에 10씩 감소한다.', 
     effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_TAKE_HIT, buffCode : 10083, buffDur : null, setStack : 0.3, isPercentDamage : true}] };
-itemList[446] = { id : 446, name : '발리스타', type : cons.ITEM_TYPE_WEAPON, flavor : '두꺼운 갑옷도 손쉽게 뚫어버리는 거대한 투창.', rank : 6, rarity : cons.ITEM_RARITY_RARE, stat : { phyAtkMin : 28, phyAtkMax : 33, magAtkMin : 36, magAtkMax : 41, pierce : 0.09 }, 
+itemList[446] = { id : 446, name : '발리스타', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_WEAPON, flavor : '두꺼운 갑옷도 손쉽게 뚫어버리는 거대한 투창.', rank : 6, rarity : cons.ITEM_RARITY_RARE, stat : { phyAtkMin : 28, phyAtkMax : 33, magAtkMin : 36, magAtkMax : 41, pierce : 0.09 }, 
     effectDesc : '', effect : [] };
-itemList[447] = { id : 447, name : '쉰카 - 강압적인 지배', type : cons.ITEM_TYPE_WEAPON, flavor : '검은색의 기운이 거대한 도끼날을 뒤덮듯 둘러싸고 있는 도끼. 강력한 힘을 내지만 그 사용자는 대가를 감내해야 할 것이다.', rank : 6, rarity : cons.ITEM_RARITY_UNIQUE, stat : { phyAtkMin : 68, phyAtkMax : 80, magAtkMin : 39, magAtkMax : 51, crit : 0.03 }, 
+itemList[447] = { id : 447, name : '쉰카 - 강압적인 지배', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_WEAPON, flavor : '검은색의 기운이 거대한 도끼날을 뒤덮듯 둘러싸고 있는 도끼. 강력한 힘을 내지만 그 사용자는 대가를 감내해야 할 것이다.', rank : 6, rarity : cons.ITEM_RARITY_UNIQUE, stat : { phyAtkMin : 68, phyAtkMax : 80, magAtkMin : 39, magAtkMax : 51, crit : 0.03 }, 
     effectDesc : '전투 시작 시 자신에게 [샤에 물듦] 디버프 부여 (지속 없음)<br><br>[샤에 물듦] : 상대에게 피해를 줄 때마다 자신이 준 피해의 10%만큼 절대 피해를 입음', 
     effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_BATTLE_START, chance : 1, buffCode : 10004, buffDur : null}] };
-itemList[448] = { id : 448, name : '성상파괴자', type : cons.ITEM_TYPE_WEAPON, flavor : '세례를 받은 성당기사들의 망치. 교리를 관철하기 위한 무력의 상징이다.', rank : 6, rarity : cons.ITEM_RARITY_UNIQUE, stat : { phyAtkMin : 33, phyAtkMax : 39, magAtkMin : 39, magAtkMax : 45, crit : 0.03 }, 
+itemList[448] = { id : 448, name : '성상파괴자', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_WEAPON, flavor : '세례를 받은 성당기사들의 망치. 교리를 관철하기 위한 무력의 상징이다.', rank : 6, rarity : cons.ITEM_RARITY_UNIQUE, stat : { phyAtkMin : 33, phyAtkMax : 39, magAtkMin : 39, magAtkMax : 45, crit : 0.03 }, 
     effectDesc : '공격 시 21% 확률로 적에게 2턴 간 [탈진] 혹은 [침묵] 상태이상 부여, 공격 시 [탈진] 혹은 [침묵] 상태이상에 걸린 적에게 80의 추가 물리 피해', 
     effect : [{code : cons.EFFECT_TYPE_SELECTION, active : cons.ACTIVE_TYPE_ATTACK, chance : 0.21, selectChances : [0.5, 1],
       options : [{code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 6, buffDur : 2},
                  {code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 7, buffDur : 2}]},
               {code : cons.EFFECT_TYPE_ADD_HIT, active : cons.ACTIVE_TYPE_ATTACK, type : cons.DAMAGE_TYPE_PHYSICAL_FIXED, value : 80, chk : [6, 7]}] };
-itemList[449] = { id : 449, name : '2연발 산탄총', type : cons.ITEM_TYPE_WEAPON, flavor : '6 주사위가 나오면 2배의 데미지를 입히는 옵션은 시스템 관계상 확률로 대체했다.', rank : 6, rarity : cons.ITEM_RARITY_UNIQUE, stat : { phyAtkMin : 38, phyAtkMax : 45, magAtkMin : 28, magAtkMax : 35, hit : -0.15 }, 
+itemList[449] = { id : 449, name : '2연발 산탄총', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_WEAPON, flavor : '6 주사위가 나오면 2배의 데미지를 입히는 옵션은 시스템 관계상 확률로 대체했다.', rank : 6, rarity : cons.ITEM_RARITY_UNIQUE, stat : { phyAtkMin : 38, phyAtkMax : 45, magAtkMin : 28, magAtkMax : 35, hit : -0.15 }, 
     effectDesc : '공격 시 18% 확률로 피해량의 100%만큼의 추가 절대 피해', 
     effect : [{code : cons.EFFECT_TYPE_ADD_HIT, active : cons.ACTIVE_TYPE_ATTACK, chance : 0.18, type : cons.DAMAGE_TYPE_ABSOLUTE, value : 1, isPercentDamage : true}] };
-itemList[450] = { id : 450, name : '스타라이트 스틱', type : cons.ITEM_TYPE_WEAPON, flavor : '별 모양으로 세공된 루비 보석이 박혀있는 마법봉. 어떤 사고뭉치 마법사가 남을 후려치기 위해 쓴 걸로 알려져 있다.', rank : 6, rarity : cons.ITEM_RARITY_UNIQUE, stat : { phyAtkMin : 30, phyAtkMax : 36, magAtkMin : 40, magAtkMax : 50, crit : 0.03 }, 
+itemList[450] = { id : 450, name : '스타라이트 스틱', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_WEAPON, flavor : '별 모양으로 세공된 루비 보석이 박혀있는 마법봉. 어떤 사고뭉치 마법사가 남을 후려치기 위해 쓴 걸로 알려져 있다.', rank : 6, rarity : cons.ITEM_RARITY_UNIQUE, stat : { phyAtkMin : 30, phyAtkMax : 36, magAtkMin : 40, magAtkMax : 50, crit : 0.03 }, 
     effectDesc : '자신이 공격한 마법 피해량의 10%를 에너지로 저장한다. 저장된 에너지는 자신의 스페셜 스킬 발동 시 전부 소진되어 상대에게 저장량만큼 고정 마법 피해를 입힌다. (최대 150)', 
     effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_ATTACK, buffCode : 10084, buffDur : null, setStack : 0.1, isPercentDamage : true, chkDmgType : cons.DAMAGE_TYPE_MAGICAL}] };
-itemList[451] = { id : 451, name : '불타는 과수원의 검', type : cons.ITEM_TYPE_WEAPON, flavor : '어떤 정령왕의 기운이 깃든 검. 정령계와 연결이 남아 있는 듯하다.', rank : 6, rarity : cons.ITEM_RARITY_UNIQUE, stat : { phyAtkMin : 33, phyAtkMax : 45, magAtkMin : 33, magAtkMax : 45, crit : 0.03 }, 
+itemList[451] = { id : 451, name : '불타는 과수원의 검', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_WEAPON, flavor : '어떤 정령왕의 기운이 깃든 검. 정령계와 연결이 남아 있는 듯하다.', rank : 6, rarity : cons.ITEM_RARITY_UNIQUE, stat : { phyAtkMin : 33, phyAtkMax : 45, magAtkMin : 33, magAtkMax : 45, crit : 0.03 }, 
     effectDesc : '공격 시 10% 확률로 자신에게 [불의 정령] 버프 부여, [불타는 과수원 경갑] 착용 시 공격 시 10% 확률로 적에게 1턴 간 [화상] 상태이상 부여', 
     effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_ATTACK, chance : 0.1, buffCode : 90003, buffDur : null},
               {code : cons.EFFECT_TYPE_OPP_BUFF, active : cons.ACTIVE_TYPE_ATTACK, chance : 0.1, buffCode : 1, buffDur : 1, chkEquip : 464}] };
-itemList[452] = { id : 452, name : '광란의 맹독채찍', type : cons.ITEM_TYPE_WEAPON, flavor : '마계의 대영주, 리서드의 채찍. 정체를 알 수 없는 수많은 종류의 맹독으로 끈적거린다.', rank : 6, rarity : cons.ITEM_RARITY_EPIC, stat : { phyAtkMin : 34, phyAtkMax : 42, magAtkMin : 42, magAtkMax : 50, crit : 0.04, critDmg : 0.15 }, 
+itemList[452] = { id : 452, name : '광란의 맹독채찍', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_WEAPON, flavor : '마계의 대영주, 리서드의 채찍. 정체를 알 수 없는 수많은 종류의 맹독으로 끈적거린다.', rank : 6, rarity : cons.ITEM_RARITY_EPIC, stat : { phyAtkMin : 34, phyAtkMax : 42, magAtkMin : 42, magAtkMax : 50, crit : 0.04, critDmg : 0.15 }, 
     effectDesc : '공격 시 222% 확률로 적에게 1턴 간 [실명], [봉인], [기절], [중독], [마비] 중 한 가지 상태이상 부여 (발동 확률은 발동할 때마다 20%씩 감소)', 
     effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, active : cons.ACTIVE_TYPE_ATTACK, chance : 2.22, buffCode : [2, 4, 8, 9, 10], buffDur : 1, multiple : true, chanceReduce : 0.2}] };
-itemList[453] = { id : 453, name : '허무의 복음 : Dead at eve', type : cons.ITEM_TYPE_WEAPON, flavor : '에레보스의 레지스탕스 대장이었던 라지에르프가 사용했다고 전해지는 흑갈색의 무기. 실종 당시 그의 허무주의적인 사념이 자리잡았다.', rank : 6, rarity : cons.ITEM_RARITY_EPIC, stat : { phyAtkMin : 24, phyAtkMax : 30, magAtkMin : 24, magAtkMax : 30, crit : 0.1 }, 
+itemList[453] = { id : 453, name : '허무의 복음 : Dead at eve', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_WEAPON, flavor : '에레보스의 레지스탕스 대장이었던 라지에르프가 사용했다고 전해지는 흑갈색의 무기. 실종 당시 그의 허무주의적인 사념이 자리잡았다.', rank : 6, rarity : cons.ITEM_RARITY_EPIC, stat : { phyAtkMin : 24, phyAtkMax : 30, magAtkMin : 24, magAtkMax : 30, crit : 0.1 }, 
     effectDesc : '20턴 시작 시 자신과 적에게 10턴 간 [지는 태양] 상태 부여, [지는 태양] 상태 시 이 장비를 착용하고 있을 경우 물리/마법공격력 +36<br><br>[지는 태양] : 일반 스킬 효과 봉인', 
     effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_TURN_START, buffCode : 10085, buffDur : 10, chkTurn : 20, removeEffect : true},
               {code : cons.EFFECT_TYPE_OPP_BUFF, active : cons.ACTIVE_TYPE_TURN_START, buffCode : 10085, buffDur : 10, chkTurn : 20, removeEffect : true},
               {code : cons.EFFECT_TYPE_STAT_ADD, active : cons.ACTIVE_TYPE_CALC_STATS, key : 'phyAtk', value : 36, chk : [10085]},
               {code : cons.EFFECT_TYPE_STAT_ADD, active : cons.ACTIVE_TYPE_CALC_STATS, key : 'magAtk', value : 36, chk : [10085]}] };
-itemList[454] = { id : 454, name : '흑검 그란시온', type : cons.ITEM_TYPE_WEAPON, flavor : '몽마의 왕, 그란시온의 검. 검신에 박힌 붉은 눈과 마주치면 깨어나지 못할 긴 잠에 빠져든다고 한다.', rank : 6, rarity : cons.ITEM_RARITY_EPIC, stat : { phyAtkMin : 42, phyAtkMax : 52, magAtkMin : 32, magAtkMax : 42, crit : 0.04 }, 
+itemList[454] = { id : 454, name : '흑검 그란시온', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_WEAPON, flavor : '몽마의 왕, 그란시온의 검. 검신에 박힌 붉은 눈과 마주치면 깨어나지 못할 긴 잠에 빠져든다고 한다.', rank : 6, rarity : cons.ITEM_RARITY_EPIC, stat : { phyAtkMin : 42, phyAtkMax : 52, magAtkMin : 32, magAtkMax : 42, crit : 0.04 }, 
     effectDesc : '공격 시 10% 확률로 적에게 1턴 간 [수면] 상태이상 부여, [수면] 상태이상인 적 공격 시 적에게 1턴 간 [달의 꿈] 디버프 부여, [달의 꿈] 상태인 적 공격 시 자신에게 4턴 간 [월야의 마안] 버프 부여<br><br>[달의 꿈] : 공격 불가, SP재생 0 고정<br>[월야의 마안] : 관통+10%, 공격 시 적의 SP를 20만큼 뺏어오고 2턴 간 [봉인] 상태이상 부여', 
     effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_ATTACK, buffCode : 10087, buffDur : 4, chkOpp : [10086]},
               {code : cons.EFFECT_TYPE_OPP_BUFF, active : cons.ACTIVE_TYPE_ATTACK, buffCode : 10086, buffDur : 1, chkOpp : [5]},
               {code : cons.EFFECT_TYPE_OPP_BUFF, active : cons.ACTIVE_TYPE_ATTACK, buffCode : 5, buffDur : 1}] };
-itemList[455] = { id : 455, name : '검귀 가죽옷', type : cons.ITEM_TYPE_ARMOR, flavor : '어딜 공격하십니까? 그건 제... 분신입니다.', rank : 6, rarity : cons.ITEM_RARITY_RARE, stat : { phyReduce : 0.06, magReduce : 0.06, maxHp : 185, spRegen : 1, evasion : 0.05 }, 
+itemList[455] = { id : 455, name : '검귀 가죽옷', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_ARMOR, flavor : '어딜 공격하십니까? 그건 제... 분신입니다.', rank : 6, rarity : cons.ITEM_RARITY_RARE, stat : { phyReduce : 0.06, magReduce : 0.06, maxHp : 185, spRegen : 1, evasion : 0.05 }, 
     effectDesc : '피격 시 15% 확률로 자신에게 [거울상] 버프 부여<br><br>[거울상] : 다음 피격 피해 50% 경감', 
     effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_TAKE_HIT, chance : 0.15, buffCode : 10088, buffDur : null}] };
-itemList[456] = { id : 456, name : '엘프의 튜닉', type : cons.ITEM_TYPE_ARMOR, flavor : '신비로운 종족인 엘프들의 생활복. 아무것도 입지 않은 느낌이 들 정도로 가볍고 부드럽다.', rank : 6, rarity : cons.ITEM_RARITY_RARE, stat : { phyReduce : 0.034, magReduce : 0.079, maxHp : 177, hpRegen : 1.5, spRegen : 1, evasion : 0.08 }, 
+itemList[456] = { id : 456, name : '엘프의 튜닉', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_ARMOR, flavor : '신비로운 종족인 엘프들의 생활복. 아무것도 입지 않은 느낌이 들 정도로 가볍고 부드럽다.', rank : 6, rarity : cons.ITEM_RARITY_RARE, stat : { phyReduce : 0.034, magReduce : 0.079, maxHp : 177, hpRegen : 1.5, spRegen : 1, evasion : 0.08 }, 
     effectDesc : '', effect : [] };
-itemList[457] = { id : 457, name : '무관의 두정갑', type : cons.ITEM_TYPE_ARMOR, flavor : '동양의 정서와 뽕맛을 느낄 수 있는 갑옷. 활에 대한 뛰어난 저항력, 높은 기동성이 강점이다.', rank : 6, rarity : cons.ITEM_RARITY_RARE, stat : { phyReduce : 0.06, magReduce : 0.06, maxHp : 240, spCharge : 3, critDmg : 0.1, hit : 0.06, evasion : 0.03 }, 
+itemList[457] = { id : 457, name : '무관의 두정갑', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_ARMOR, flavor : '동양의 정서와 뽕맛을 느낄 수 있는 갑옷. 활에 대한 뛰어난 저항력, 높은 기동성이 강점이다.', rank : 6, rarity : cons.ITEM_RARITY_RARE, stat : { phyReduce : 0.06, magReduce : 0.06, maxHp : 240, spCharge : 3, critDmg : 0.1, hit : 0.06, evasion : 0.03 }, 
     effectDesc : '회피 시 SP 5 회복 (쿨타임 3턴)', 
     effect : [{code : cons.EFFECT_TYPE_SELF_SP, active : cons.ACTIVE_TYPE_EVADE, value : 5, setTurnCooldown : 3}] };
-itemList[458] = { id : 458, name : '가시갑옷', type : cons.ITEM_TYPE_ARMOR, flavor : '주의 : 이 갑옷을 입은채로 등을 긁지 마시오.', rank : 6, rarity : cons.ITEM_RARITY_RARE, stat : { phyReduce : 0.063, magReduce : 0.055, maxHp : 264, critDmg : 0.1 }, 
+itemList[458] = { id : 458, name : '가시갑옷', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_ARMOR, flavor : '주의 : 이 갑옷을 입은채로 등을 긁지 마시오.', rank : 6, rarity : cons.ITEM_RARITY_RARE, stat : { phyReduce : 0.063, magReduce : 0.055, maxHp : 264, critDmg : 0.1 }, 
     effectDesc : '피격 시 적에게 물리 0.15 피해 (적의 물리공격력 적용)', 
     effect : [{code : cons.EFFECT_TYPE_OPP_SELF_HIT, active : cons.ACTIVE_TYPE_TAKE_HIT, type : cons.DAMAGE_TYPE_PHYSICAL, value : 0.15}] };
-itemList[459] = { id : 459, name : '고대 전투 프레임', type : cons.ITEM_TYPE_ARMOR, flavor : '마력이 담긴 듯한 슈트 같은 물건. 제대로 사용하기는 어려워 보인다.', rank : 6, rarity : cons.ITEM_RARITY_RARE, stat : { phyReduce : 0.08, magReduce : 0.08, maxHp : 343, crit : 0.02, critDmg : 0.2, evasion : -0.09 }, 
+itemList[459] = { id : 459, name : '고대 전투 프레임', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_ARMOR, flavor : '마력이 담긴 듯한 슈트 같은 물건. 제대로 사용하기는 어려워 보인다.', rank : 6, rarity : cons.ITEM_RARITY_RARE, stat : { phyReduce : 0.08, magReduce : 0.08, maxHp : 343, crit : 0.02, critDmg : 0.2, evasion : -0.09 }, 
     effectDesc : '', effect : [] };
-itemList[460] = { id : 460, name : '자이언트 스킨', type : cons.ITEM_TYPE_ARMOR, flavor : '평범한 공격으로는 거인의 피부를 뚫을 수 없다.', rank : 6, rarity : cons.ITEM_RARITY_RARE, stat : { phyReduce : 0.055, magReduce : 0.055, maxHp : 340, evasion : -0.03, dmgReduce : 7 }, 
+itemList[460] = { id : 460, name : '자이언트 스킨', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_ARMOR, flavor : '평범한 공격으로는 거인의 피부를 뚫을 수 없다.', rank : 6, rarity : cons.ITEM_RARITY_RARE, stat : { phyReduce : 0.055, magReduce : 0.055, maxHp : 340, evasion : -0.03, dmgReduce : 7 }, 
     effectDesc : '', effect : [] };
-itemList[461] = { id : 461, name : '나무껍질의 의복', type : cons.ITEM_TYPE_ARMOR, flavor : '적절한 시점에 생존기를 돌리는 것은 누구에게나 중요하다.', rank : 6, rarity : cons.ITEM_RARITY_UNIQUE, stat : { phyReduce : 0.05, magReduce : 0.07, maxHp : 200, spRegen : 1, evasion : 0.05 }, 
+itemList[461] = { id : 461, name : '나무껍질의 의복', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_ARMOR, flavor : '적절한 시점에 생존기를 돌리는 것은 누구에게나 중요하다.', rank : 6, rarity : cons.ITEM_RARITY_UNIQUE, stat : { phyReduce : 0.05, magReduce : 0.07, maxHp : 200, spRegen : 1, evasion : 0.05 }, 
     effectDesc : '적이 스페셜 스킬을 사용하기 전에 자신에게 2턴 간 [나무껍질] 버프 부여<br><br>[나무껍질] : 물리저항+20%, 마법저항+20%', 
     effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_BEFORE_OPP_USE_SPECIAL, buffCode : 10089, buffDur : 2}] };
-itemList[462] = { id : 462, name : '검정색 타이즈', type : cons.ITEM_TYPE_ARMOR, flavor : '이것만 입으면 당신도 수상한 용의자가 될 수 있다.', rank : 6, rarity : cons.ITEM_RARITY_UNIQUE, stat : { phyReduce : 0.064, magReduce : 0.058, maxHp : 200, spRegen : 1, evasion : 0.05 }, 
+itemList[462] = { id : 462, name : '검정색 타이즈', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_ARMOR, flavor : '이것만 입으면 당신도 수상한 용의자가 될 수 있다.', rank : 6, rarity : cons.ITEM_RARITY_UNIQUE, stat : { phyReduce : 0.064, magReduce : 0.058, maxHp : 200, spRegen : 1, evasion : 0.05 }, 
     effectDesc : '회피 시 자신의 드라이브 스킬을 비용 없이 발동', 
     effect : [{code : cons.EFFECT_TYPE_SELF_SP, active : cons.ACTIVE_TYPE_EVADE, value : 1, isPercentSkill : true, skillKey : 'drive', percentKey : 'cost'},
               {code : cons.EFFECT_TYPE_RESOLVE_DRIVE, active : cons.ACTIVE_TYPE_EVADE}] };
-itemList[463] = { id : 463, name : '만크릭의 의지', type : cons.ITEM_TYPE_ARMOR, flavor : '황무지에서 죽은 아내의 복수를 실현하고 있는 복수귀의 의지가 담긴 갑옷.', rank : 6, rarity : cons.ITEM_RARITY_UNIQUE, stat : { phyReduce : 0.065, magReduce : 0.065, maxHp : 286, critDmg : 0.1 }, 
+itemList[463] = { id : 463, name : '만크릭의 의지', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_ARMOR, flavor : '황무지에서 죽은 아내의 복수를 실현하고 있는 복수귀의 의지가 담긴 갑옷.', rank : 6, rarity : cons.ITEM_RARITY_UNIQUE, stat : { phyReduce : 0.065, magReduce : 0.065, maxHp : 286, critDmg : 0.1 }, 
     effectDesc : '공격 시 자신에게 1턴 간 [복수의 의지] 버프 부여<br><br>[복수의 의지] : 스킬 피해 +10%', 
     effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_ATTACK, buffCode : 10090, buffDur : 2}] };
-itemList[464] = { id : 464, name : '불타는 과수원 경갑', type : cons.ITEM_TYPE_ARMOR, flavor : '다양한 영석들로 장식되어 있는 갑옷이다. 강렬한 온기가 느껴진다.', rank : 6, rarity : cons.ITEM_RARITY_UNIQUE, stat : { phyReduce : 0.065, magReduce : 0.065, maxHp : 286, critDmg : 0.1 }, 
+itemList[464] = { id : 464, name : '불타는 과수원 경갑', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_ARMOR, flavor : '다양한 영석들로 장식되어 있는 갑옷이다. 강렬한 온기가 느껴진다.', rank : 6, rarity : cons.ITEM_RARITY_UNIQUE, stat : { phyReduce : 0.065, magReduce : 0.065, maxHp : 286, critDmg : 0.1 }, 
     effectDesc : '피격 시 10% 확률로 자신에게 [타오르는 영석-악], [타오르는 영석-수호], [타오르는 영석-충전] 중 하나 부여, [불타는 과수원 방패] 착용 시 피격 시 10% 확률로 자신에게 [에너지 파동] 버프 부여', 
     effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_TAKE_HIT, chance : 0.1, buffCode : [90006, 90007, 90008], buffDur : null, multiple : true},
               {code : cons.EFFECT_TYPE_OPP_BUFF, active : cons.ACTIVE_TYPE_TAKE_HIT, chance : 0.1, buffCode : 90009, buffDur : null, chkEquip : 479}] };
-itemList[465] = { id : 465, name : '영혼을 마시는 자', type : cons.ITEM_TYPE_ARMOR, flavor : '매우 탁한 기운이 느껴지는 갑옷. 주위의 생명력을 빨아들이고 있는 것 같다.', rank : 6, rarity : cons.ITEM_RARITY_UNIQUE, stat : { phyReduce : 0.055, magReduce : 0.075, maxHp : 372, hpRegen : 1, evasion : -0.03 }, 
+itemList[465] = { id : 465, name : '영혼을 마시는 자', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_ARMOR, flavor : '매우 탁한 기운이 느껴지는 갑옷. 주위의 생명력을 빨아들이고 있는 것 같다.', rank : 6, rarity : cons.ITEM_RARITY_UNIQUE, stat : { phyReduce : 0.055, magReduce : 0.075, maxHp : 372, hpRegen : 1, evasion : -0.03 }, 
     effectDesc : '공격 시 최대 생명력의 1% 회복', 
     effect : [{code : cons.EFFECT_TYPE_SELF_HP, active : cons.ACTIVE_TYPE_ATTACK, isPercentStat : true, value : 0.01, percentKey : 'maxHp'}] };
-itemList[466] = { id : 466, name : '레지스텐스', type : cons.ITEM_TYPE_ARMOR, flavor : '아... 저항... 너무 저항!!!', rank : 6, rarity : cons.ITEM_RARITY_UNIQUE, stat : { phyReduce : 0.1, magReduce : 0.1, maxHp : 370, evasion : -0.03 }, 
+itemList[466] = { id : 466, name : '레지스텐스', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_ARMOR, flavor : '아... 저항... 너무 저항!!!', rank : 6, rarity : cons.ITEM_RARITY_UNIQUE, stat : { phyReduce : 0.1, magReduce : 0.1, maxHp : 370, evasion : -0.03 }, 
     effectDesc : '', effect : [] };
-itemList[467] = { id : 467, name : '에스페란자의 흰 가운', type : cons.ITEM_TYPE_ARMOR, flavor : '이 가운을 착용한 자에게 마과학에 대한 막대한 데이터를 전송시킬 수 있는 마법이 걸려있다. 엄청난 량의 정보로 뇌에 쇼크가 올 수도 있으므로 주의.', rank : 6, rarity : cons.ITEM_RARITY_EPIC, stat : { phyReduce : 0.059, magReduce : 0.079, maxHp : 204, spRegen : 1, evasion : 0.05 }, 
+itemList[467] = { id : 467, name : '에스페란자의 흰 가운', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_ARMOR, flavor : '이 가운을 착용한 자에게 마과학에 대한 막대한 데이터를 전송시킬 수 있는 마법이 걸려있다. 엄청난 량의 정보로 뇌에 쇼크가 올 수도 있으므로 주의.', rank : 6, rarity : cons.ITEM_RARITY_EPIC, stat : { phyReduce : 0.059, magReduce : 0.079, maxHp : 204, spRegen : 1, evasion : 0.05 }, 
     effectDesc : '스페셜 스킬의 SP 요구량 20% 감소, 스페셜 스킬 발동 시 자신에게 [지식의 급류] 버프 부여 (최대 3중첩)<br><br>[지식의 급류] : SP재생+4, HP재생-5', 
     effect : [{active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_SP_COST_PERCENTAGE, key : 'special', value : -0.2},
               {code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_USE_SPECIAL, buffCode : 10091, buffDur : null}] };
-itemList[468] = { id : 468, name : '라이포트 - 고대 왕의 비보', type : cons.ITEM_TYPE_ARMOR, flavor : '동부 대륙의 고대 왕이 사용했다고 알려진 갑옷. 이 왕은 전투에 매우 능했다고 하며 그가 전장에 뛰어들면 그를 손댈 수도 없었다고 전해진다.', rank : 6, rarity : cons.ITEM_RARITY_EPIC, stat : { phyReduce : 0.08, magReduce : 0.06, maxHp : 308, critDmg : 0.1, spRegen : 1 }, 
+itemList[468] = { id : 468, name : '라이포트 - 고대 왕의 비보', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_ARMOR, flavor : '동부 대륙의 고대 왕이 사용했다고 알려진 갑옷. 이 왕은 전투에 매우 능했다고 하며 그가 전장에 뛰어들면 그를 손댈 수도 없었다고 전해진다.', rank : 6, rarity : cons.ITEM_RARITY_EPIC, stat : { phyReduce : 0.08, magReduce : 0.06, maxHp : 308, critDmg : 0.1, spRegen : 1 }, 
     effectDesc : '자신의 첫 스페셜 스킬을 \'[왕의 비보] : SP80, 3턴 간 무적 및 매 턴 종료 시 상대에게 1.3 물리 피해\' 로 변경', 
     effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_BATTLE_START, buffCode : 10092, buffDur : null}] };
-itemList[469] = { id : 469, name : '군주의 검은 갑주', type : cons.ITEM_TYPE_ARMOR, flavor : '피와 살점이 묻은 대검을 휘두르는 흑기사들과 그들을 이끄는 검은 군주는 전장의 재앙이다.', rank : 6, rarity : cons.ITEM_RARITY_EPIC, stat : { phyReduce : 0.077, magReduce : 0.065, maxHp : 400, evasion : -0.03 }, 
+itemList[469] = { id : 469, name : '군주의 검은 갑주', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_ARMOR, flavor : '피와 살점이 묻은 대검을 휘두르는 흑기사들과 그들을 이끄는 검은 군주는 전장의 재앙이다.', rank : 6, rarity : cons.ITEM_RARITY_EPIC, stat : { phyReduce : 0.077, magReduce : 0.065, maxHp : 400, evasion : -0.03 }, 
     effectDesc : '피격 시 자신에게 [격노의 메가데우스] 버프 부여 (중첩 가능, 공격 시 전체 소거)<br><br>[격노의 메가데우스] : 물리/마법공격력 +17, 회피-7%', 
     effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_TAKE_HIT, buffCode : 10094, buffDur : null}] };
-itemList[470] = { id : 470, name : '에너지 방패', type : cons.ITEM_TYPE_SUBARMOR, flavor : '내 등 뒤로 오게!', rank : 6, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 55, dmgReduce : 8 }, 
-    effectDesc : '<br><br>[에너지 방패] : 보호막 30', effect : [] };
-itemList[471] = { id : 471, name : '후라이팬', type : cons.ITEM_TYPE_SUBARMOR, flavor : '등 뒤를 보호하기 위한 최고의 아이템.', rank : 6, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 106 }, 
+itemList[470] = { id : 470, name : '에너지 방패', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '내 등 뒤로 오게!', rank : 6, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 55, dmgReduce : 8 }, 
+    effectDesc : '턴 시작 시 자신에게 [에너지 방패] 버프 부여, [에너지 방패]가 사라지면 5턴 후 SP 5를 소모해서 다시 [에너지 방패] 부여<br><br>[에너지 방패] : 보호막 30', 
+    effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 10096, buffDur : 5, chkNot : [10095], chkTurn : 2},
+              {code : cons.EFFECT_TYPE_MULTIPLE, active : cons.ACTIVE_TYPE_TURN_START, chkNot : [10095, 10096], 
+      target : [{code : cons.EFFECT_TYPE_SELF_SP, value : -5},
+                {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 10095, buffDur : null}]}] };
+itemList[471] = { id : 471, name : '후라이팬', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '등 뒤를 보호하기 위한 최고의 아이템.', rank : 6, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 106 }, 
+    effectDesc : '치명타 피격 시 피해량 50% 경감', 
+    effect : [{code : cons.EFFECT_TYPE_CANCEL_DAMAGE, active : cons.ACTIVE_TYPE_TAKE_HIT, value : 0.5, onCrit : true}] };
+itemList[472] = { id : 472, name : '단말마의 장화', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '착용자에게 자신의 죽음에 관한 환영을 보여준다고 한다.', rank : 6, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 106, evasion : 0.06 }, 
+    effectDesc : '생명력이 15% 이하일 시 회피+13%', 
+    effect : [{code : cons.EFFECT_TYPE_STAT_ADD, active : cons.ACTIVE_TYPE_CALC_STATS, key : 'evasion', value : 0.13, chkHp : 0.15}] };
+itemList[473] = { id : 473, name : '문워커', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '역사에 길이남을 한 댄서의 신발. 달 위를 걷는 듯한 우아한 춤사위를 보여주자.', rank : 6, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 100, evasion : 0.05 }, 
+    effectDesc : '회피 시 적의 SP를 7만큼 뺏어오며 자신에게 2턴 간 [문워크] 버프 부여<br><br>[문워크] : 회피+5%', 
+    effect : [{code : cons.EFFECT_TYPE_MULTIPLE, active : cons.ACTIVE_TYPE_EVADE,  
+      target : [{code : cons.EFFECT_TYPE_OPP_SP, value : -7},
+                {code : cons.EFFECT_TYPE_SELF_SP, value : 7},
+                {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 10097, buffDur : 2}]}] };
+itemList[474] = { id : 474, name : '원펀치', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '강력한 한방딜을 원하는 사람들에게 추천.', rank : 6, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 80, crit : -0.05, critDmg : 0.75, hit : 0.015 }, 
     effectDesc : '', effect : [] };
-itemList[472] = { id : 472, name : '단말마의 장화', type : cons.ITEM_TYPE_SUBARMOR, flavor : '착용자에게 자신의 죽음에 관한 환영을 보여준다고 한다.', rank : 6, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 106, evasion : 0.06 }, 
+itemList[475] = { id : 475, name : '시몬스의 장갑', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '전설적인 불면증 치료사 시몬스의 장갑. 그의 손에 1분만 몸을 맡기면 즉시 렘 수면에 빠져들 수 있다고 한다.', rank : 6, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 106, hit : 0.075 }, 
+    effectDesc : '공격 시 8% 확률로 적에게 2턴 간 [수면] 상태이상 부여, [수면] 상태이상 지속 1턴 감소', 
+    effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, active : cons.ACTIVE_TYPE_ATTACK, chance : 0.08, buffCode : 5, buffDur : 2},
+              {code : cons.EFFECT_TYPE_REDUCE_BUFF_DURATION, active : cons.ACTIVE_TYPE_RECEIVE_BUFF, value : 1, buffCode : 5}] };
+itemList[476] = { id : 476, name : '보급형 샤쿠러스 망토', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '암흑 기사들이 애용하는 망토. 모습을 숨기고 공격을 흘리는 데 탁월하다.', rank : 6, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 84, spCharge : 2, evasion : 0.04, dmgReduce : 2 }, 
     effectDesc : '', effect : [] };
-itemList[473] = { id : 473, name : '문워커', type : cons.ITEM_TYPE_SUBARMOR, flavor : '역사에 길이남을 한 댄서의 신발. 달 위를 걷는 듯한 우아한 춤사위를 보여주자.', rank : 6, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 100, evasion : 0.05 }, 
-    effectDesc : '<br><br>[문워크] : 회피+5%', effect : [] };
-itemList[474] = { id : 474, name : '원펀치', type : cons.ITEM_TYPE_SUBARMOR, flavor : '강력한 한방딜을 원하는 사람들에게 추천.', rank : 6, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 80, crit : -0.05, critDmg : 0.75, hit : 0.015 }, 
+itemList[477] = { id : 477, name : '장교의 흰색 코트', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '모름지기 패셔너블한 장교라면 코트를 입지않고 걸쳐야 하는 법.', rank : 6, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 123, spCharge : 2 }, 
+    effectDesc : '전투 시작 시 자신에게 [간지] 버프 부여<br><br>[간지] : 당신은 간지가 난다.', 
+    effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_BATTLE_START, buffCode : 10098, buffDur : null}] };
+itemList[478] = { id : 478, name : '헥사곤 실드', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '펜타곤 실드의 업그레이드형. 참고로 헵타곤 실드는 만들기 어렵다는 이유로 개발이 취소되었다.', rank : 6, rarity : cons.ITEM_RARITY_UNIQUE, stat : { maxHp : 110, dmgReduce : 8 }, 
+    effectDesc : '피격 시 피해량이 6의 배수라면 자신에게 [헥사곤] 버프 부여<br><br>[헥사곤] : 피해감소 3', 
+    effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_TAKE_HIT, buffCode : 10099, buffDur : null, chkDmgMultiple : 6}] };
+itemList[479] = { id : 479, name : '불타는 과수원 방패', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '죽음과 그 너머의 불길한 기운이 넘실거린다.', rank : 6, rarity : cons.ITEM_RARITY_UNIQUE, stat : { maxHp : 114, dmgReduce : 12 }, 
+    effectDesc : '공격 시 5% 확률로 적에게 [죽음과 부패] 디버프 부여, [불타는 과수원 인장] 착용 시 공격 시 5% 확률로 자신에게 [가고일] 버프 부여', 
+    effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, active : cons.ACTIVE_TYPE_ATTACK, chance : 0.05, buffCode : 90010, buffDur : null},
+              {code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_ATTACK, chance : 0.05, buffCode : 90011, buffDur : null, chkEquip : 505}] };
+itemList[480] = { id : 480, name : '하늘과 바람과 별과 시', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '성찰을 향한 간결한 울림으로, 청년의 천명은 이곳에서 빛난다. "오늘 밤에도 별이 바람에 스치운다."', rank : 6, rarity : cons.ITEM_RARITY_UNIQUE, stat : { maxHp : 114, evasion : 0.05 }, 
+    effectDesc : '표준 상태이상 피격 시 해당 턴 동안 받게 되는 모든 표준 상태이상을 무효화하고, 다음 턴의 시작까지 저항+28% (쿨타임 10턴)', 
+    effect : [] };
+itemList[481] = { id : 481, name : '빙판 위의 발레리나', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '', rank : 6, rarity : cons.ITEM_RARITY_UNIQUE, stat : { maxHp : 114, evasion : 0.05 }, 
     effectDesc : '', effect : [] };
-itemList[475] = { id : 475, name : '시몬스의 장갑', type : cons.ITEM_TYPE_SUBARMOR, flavor : '전설적인 불면증 치료사 시몬스의 장갑. 그의 손에 1분만 몸을 맡기면 즉시 램수면에 빠져들 수 있다고 한다.', rank : 6, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 106, hit : 0.075 }, 
+itemList[482] = { id : 482, name : '검은색 절연 장갑', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '어디에선가는 \'정점\'의 상징 같은 물건이라는 모양이다.', rank : 6, rarity : cons.ITEM_RARITY_UNIQUE, stat : { maxHp : 114, hit : 0.075 }, 
     effectDesc : '', effect : [] };
-itemList[476] = { id : 476, name : '보급형 샤쿠러스 망토', type : cons.ITEM_TYPE_SUBARMOR, flavor : '암흑 기사들이 애용하는 망토. 모습을 숨기고 공격을 흘리는 데 탁월하다.', rank : 6, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 84, spCharge : 2, evasion : 0.04, dmgReduce : 2 }, 
+itemList[483] = { id : 483, name : '트리플 버스터', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '거대한 파괴력을 가진 건틀릿. 세번정도 사용하고 나면 한동안은 사용할 수 없다.', rank : 6, rarity : cons.ITEM_RARITY_UNIQUE, stat : { phyAtkMin : 4, phyAtkMax : 4, magAtkMin : 4, magAtkMax : 4, maxHp : 114, hit : 0.075 }, 
     effectDesc : '', effect : [] };
-itemList[477] = { id : 477, name : '장교의 흰색 코트', type : cons.ITEM_TYPE_SUBARMOR, flavor : '모름지기 패셔너블한 장교라면 코트를 입지않고 걸쳐야 하는 법.', rank : 6, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 123, spCharge : 2 }, 
-    effectDesc : '<br><br>[간지]: 당신은 간지가 난다.', effect : [] };
-itemList[478] = { id : 478, name : '헥사곤 실드', type : cons.ITEM_TYPE_SUBARMOR, flavor : '펜타곤 실드의 업그레이드형. 참고로 헵타곤 실드는 만들기 어렵다는 이유로 개발이 취소되었다.', rank : 6, rarity : cons.ITEM_RARITY_UNIQUE, stat : { maxHp : 110, dmgReduce : 8 }, 
-    effectDesc : '<br><br>[헥사곤] : 피해감소 3', effect : [] };
-itemList[479] = { id : 479, name : '불타는 과수원 방패', type : cons.ITEM_TYPE_SUBARMOR, flavor : '죽음과 그 너머의 불길한 기운이 넘실거린다.', rank : 6, rarity : cons.ITEM_RARITY_UNIQUE, stat : { maxHp : 114, dmgReduce : 12 }, 
+itemList[484] = { id : 484, name : '레비테이션 망토', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '자아를 가지고 스스로 움직이는 망토이다. 자유자재로 날아다닐 수 있으며, 사각에서 날아오는 공격을 알아서 회피한다.', rank : 6, rarity : cons.ITEM_RARITY_UNIQUE, stat : { maxHp : 60, spCharge : 2, evasion : 0.08 }, 
     effectDesc : '', effect : [] };
-itemList[480] = { id : 480, name : '하늘과 바람과 별과 시', type : cons.ITEM_TYPE_SUBARMOR, flavor : '성찰을 향한 간결한 울림으로, 청년의 천명은 이곳에서 빛난다. "오늘 밤에도 별이 바람에 스치운다."', rank : 6, rarity : cons.ITEM_RARITY_UNIQUE, stat : { maxHp : 114, evasion : 0.05 }, 
-    effectDesc : '', effect : [] };
-itemList[481] = { id : 481, name : '빙판 위의 발레리나', type : cons.ITEM_TYPE_SUBARMOR, flavor : '', rank : 6, rarity : cons.ITEM_RARITY_UNIQUE, stat : { maxHp : 114, evasion : 0.05 }, 
-    effectDesc : '', effect : [] };
-itemList[482] = { id : 482, name : '검은색 절연 장갑', type : cons.ITEM_TYPE_SUBARMOR, flavor : '어디에선가는 \'정점\'의 상징 같은 물건이라는 모양이다.', rank : 6, rarity : cons.ITEM_RARITY_UNIQUE, stat : { maxHp : 114, hit : 0.075 }, 
-    effectDesc : '', effect : [] };
-itemList[483] = { id : 483, name : '트리플 버스터', type : cons.ITEM_TYPE_SUBARMOR, flavor : '거대한 파괴력을 가진 건틀릿. 세번정도 사용하고 나면 한동안은 사용할 수 없다.', rank : 6, rarity : cons.ITEM_RARITY_UNIQUE, stat : { phyAtkMin : 4, phyAtkMax : 4, magAtkMin : 4, magAtkMax : 4, maxHp : 114, hit : 0.075 }, 
-    effectDesc : '', effect : [] };
-itemList[484] = { id : 484, name : '레비테이션 망토', type : cons.ITEM_TYPE_SUBARMOR, flavor : '자아를 가지고 스스로 움직이는 망토이다. 자유자재로 날아다닐 수 있으며, 사각에서 날아오는 공격을 알아서 회피한다.', rank : 6, rarity : cons.ITEM_RARITY_UNIQUE, stat : { maxHp : 60, spCharge : 2, evasion : 0.08 }, 
-    effectDesc : '', effect : [] };
-itemList[485] = { id : 485, name : '잠행하는 성자', type : cons.ITEM_TYPE_SUBARMOR, flavor : '세상에 빛을 쐬어 줄 사명을 지닌 성자가 잠행을 위해 두른 로브. 수수한 인상의 로브이지만 신성한 아우라가 느껴진다.', rank : 6, rarity : cons.ITEM_RARITY_UNIQUE, stat : { maxHp : 114, spCharge : 2 }, 
+itemList[485] = { id : 485, name : '잠행하는 성자', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '세상에 빛을 쐬어 줄 사명을 지닌 성자가 잠행을 위해 두른 로브. 수수한 인상의 로브이지만 신성한 아우라가 느껴진다.', rank : 6, rarity : cons.ITEM_RARITY_UNIQUE, stat : { maxHp : 114, spCharge : 2 }, 
     effectDesc : '<br><br>[신실한 가호] : 물리,마법저항+5%', effect : [] };
-itemList[486] = { id : 486, name : '고대 병기 조각', type : cons.ITEM_TYPE_SUBARMOR, flavor : '고대병기 \'제펄린\'의 기운이 담긴 조각. 사용자에게 강력한 고대의 힘을 부여하나 그 힘의 성질이 너무나 방대하고 이질적이어서 다루기가 매우 어렵다.', rank : 6, rarity : cons.ITEM_RARITY_EPIC, stat : { phyReduce : 0.05, magReduce : 0.05, maxHp : 333, hit : -0.1, evasion : -0.4, dmgReduce : 22 }, 
+itemList[486] = { id : 486, name : '고대 병기 조각', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '고대병기 \'제펄린\'의 기운이 담긴 조각. 사용자에게 강력한 고대의 힘을 부여하나 그 힘의 성질이 너무나 방대하고 이질적이어서 다루기가 매우 어렵다.', rank : 6, rarity : cons.ITEM_RARITY_EPIC, stat : { phyReduce : 0.05, magReduce : 0.05, maxHp : 333, hit : -0.1, evasion : -0.4, dmgReduce : 22 }, 
     effectDesc : '', effect : [] };
-itemList[487] = { id : 487, name : '바람추적자 - 고대 왕의 비보', type : cons.ITEM_TYPE_SUBARMOR, flavor : '동부 대륙의 고대 왕이 사용했다고 알려진 장화. 그는 바람과 같은 속도와 물과 같은 몸눌림으로 전장을 유린했다고 전해진다.', rank : 6, rarity : cons.ITEM_RARITY_EPIC, stat : { maxHp : 104, spCharge : 2, evasion : 0.05 }, 
+itemList[487] = { id : 487, name : '바람추적자 - 고대 왕의 비보', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '동부 대륙의 고대 왕이 사용했다고 알려진 장화. 그는 바람과 같은 속도와 물과 같은 몸눌림으로 전장을 유린했다고 전해진다.', rank : 6, rarity : cons.ITEM_RARITY_EPIC, stat : { maxHp : 104, spCharge : 2, evasion : 0.05 }, 
     effectDesc : '<br><br>[심안] : 회피+1%, 치명피해+3% (최대 20중첩)', effect : [] };
-itemList[488] = { id : 488, name : '골렘 제조사의 장갑', type : cons.ITEM_TYPE_SUBARMOR, flavor : '제작 난이도가 어려운 병기 중 하나인 골렘을 전문으로 다루는 제조사들이 애용하는 장갑. 골렘을 만들어 보자!', rank : 6, rarity : cons.ITEM_RARITY_EPIC, stat : { maxHp : 123, spCharge : 2, hit : 0.075 }, 
+itemList[488] = { id : 488, name : '골렘 제조사의 장갑', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '제작 난이도가 어려운 병기 중 하나인 골렘을 전문으로 다루는 제조사들이 애용하는 장갑. 골렘을 만들어 보자!', rank : 6, rarity : cons.ITEM_RARITY_EPIC, stat : { maxHp : 123, spCharge : 2, hit : 0.075 }, 
     effectDesc : '<br><br>[돌 골렘] : 물리저항+50%, 물리 피격 시 제거되며 30% 확률로 적 2턴 간 [탈진]', effect : [] };
-itemList[489] = { id : 489, name : '놀티아의 번개', type : cons.ITEM_TYPE_SUBARMOR, flavor : '놀티아의 대마법사 메가니움이 애용하던 망토. 번개의 힘으로 사용자를 감싸 보호막을 생성한다.', rank : 6, rarity : cons.ITEM_RARITY_EPIC, stat : { maxHp : 123, spCharge : 2 }, 
+itemList[489] = { id : 489, name : '놀티아의 번개', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '놀티아의 대마법사 메가니움이 애용하던 망토. 번개의 힘으로 사용자를 감싸 보호막을 생성한다.', rank : 6, rarity : cons.ITEM_RARITY_EPIC, stat : { maxHp : 123, spCharge : 2 }, 
     effectDesc : '', effect : [] };
-itemList[490] = { id : 490, name : '추종자의 고서', type : cons.ITEM_TYPE_TRINKET, flavor : '판글루 글루나파... 크툴루 르뤼에 가나글 파탄...', rank : 6, rarity : cons.ITEM_RARITY_RARE, stat : {  }, 
+itemList[490] = { id : 490, name : '추종자의 고서', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '판글루 글루나파... 크툴루 르뤼에 가나글 파탄...', rank : 6, rarity : cons.ITEM_RARITY_RARE, stat : {  }, 
     effectDesc : '', effect : [] };
-itemList[491] = { id : 491, name : '서약의 증표', type : cons.ITEM_TYPE_TRINKET, flavor : '안쪽에 붉은 선이 그려진 은색 반지. 소중한 사람에게 마음을 전하고자 할 때 선물한다고 한다. 중혼은 금지되어 있으므로 중복 착용은 불가능하다.', rank : 6, rarity : cons.ITEM_RARITY_RARE, stat : { hpRegen : 2.5, spRegen : 1.5 }, 
+itemList[491] = { id : 491, name : '서약의 증표', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '안쪽에 붉은 선이 그려진 은색 반지. 소중한 사람에게 마음을 전하고자 할 때 선물한다고 한다. 중혼은 금지되어 있으므로 중복 착용은 불가능하다.', rank : 6, rarity : cons.ITEM_RARITY_RARE, stat : { hpRegen : 2.5, spRegen : 1.5 }, 
     effectDesc : '', effect : [] };
-itemList[492] = { id : 492, name : '파란색 큐브', type : cons.ITEM_TYPE_TRINKET, flavor : '투명한 파란색 큐브. 왠지 치워야 할 것 같다.', rank : 6, rarity : cons.ITEM_RARITY_RARE, stat : { phyAtkMin : 8, phyAtkMax : 12, magAtkMin : 8, magAtkMax : 12, hpRegen : -2, crit : 0.04, critDmg : 0.18 }, 
+itemList[492] = { id : 492, name : '파란색 큐브', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '투명한 파란색 큐브. 왠지 치워야 할 것 같다.', rank : 6, rarity : cons.ITEM_RARITY_RARE, stat : { phyAtkMin : 8, phyAtkMax : 12, magAtkMin : 8, magAtkMax : 12, hpRegen : -2, crit : 0.04, critDmg : 0.18 }, 
     effectDesc : '', effect : [] };
-itemList[493] = { id : 493, name : '포켓몬 볼', type : cons.ITEM_TYPE_TRINKET, flavor : '여기선 쓸 수 없어! -오박사', rank : 6, rarity : cons.ITEM_RARITY_RARE, stat : {  }, 
+itemList[493] = { id : 493, name : '포켓몬 볼', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '여기선 쓸 수 없어! -오박사', rank : 6, rarity : cons.ITEM_RARITY_RARE, stat : {  }, 
     effectDesc : '', effect : [] };
-itemList[494] = { id : 494, name : '불의 군주 카드', type : cons.ITEM_TYPE_TRINKET, flavor : '죽어라, 벌레야!', rank : 6, rarity : cons.ITEM_RARITY_RARE, stat : { phyAtkMin : 8, phyAtkMax : 8, magAtkMin : 8, magAtkMax : 8, critDmg : 0.08 }, 
+itemList[494] = { id : 494, name : '불의 군주 카드', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '죽어라, 벌레야!', rank : 6, rarity : cons.ITEM_RARITY_RARE, stat : { phyAtkMin : 8, phyAtkMax : 8, magAtkMin : 8, magAtkMax : 8, critDmg : 0.08 }, 
     effectDesc : '', effect : [] };
-itemList[495] = { id : 495, name : '고여버린 무지개 여섯', type : cons.ITEM_TYPE_TRINKET, flavor : '고이면 세진다. 스타터는 사지 말자.', rank : 6, rarity : cons.ITEM_RARITY_RARE, stat : {  }, 
+itemList[495] = { id : 495, name : '고여버린 무지개 여섯', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '고이면 세진다. 스타터는 사지 말자.', rank : 6, rarity : cons.ITEM_RARITY_RARE, stat : {  }, 
     effectDesc : '<br><br>[고인물]', effect : [] };
-itemList[496] = { id : 496, name : '봉인된 자의 몸통', type : cons.ITEM_TYPE_TRINKET, flavor : '무언가 강력한 마력으로 봉인되어 있는 존재의 신체 일부. 신체 부위를 모두다 모으면 신비한 힘을 얻을 수 있을지도...?', rank : 6, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 40 }, 
+itemList[496] = { id : 496, name : '봉인된 자의 몸통', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '무언가 강력한 마력으로 봉인되어 있는 존재의 신체 일부. 신체 부위를 모두다 모으면 신비한 힘을 얻을 수 있을지도...?', rank : 6, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 40 }, 
     effectDesc : '<br><br>[봉인 해제] : 물리공격력+12, 마법공격력+12, 스페셜스킬 사용시 사용한 SP의 10%를 회복', effect : [] };
-itemList[497] = { id : 497, name : '봉인된 자의 머리', type : cons.ITEM_TYPE_TRINKET, flavor : '무언가 강력한 마력으로 봉인되어 있는 존재의 신체 일부. 신체 부위를 모두다 모으면 신비한 힘을 얻을 수 있을지도...?', rank : 6, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 40 }, 
+itemList[497] = { id : 497, name : '봉인된 자의 머리', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '무언가 강력한 마력으로 봉인되어 있는 존재의 신체 일부. 신체 부위를 모두다 모으면 신비한 힘을 얻을 수 있을지도...?', rank : 6, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 40 }, 
     effectDesc : '<br><br>[봉인 해제] : 물리공격력+12, 마법공격력+12, 스페셜스킬 사용시 사용한 SP의 10%를 회복', effect : [] };
-itemList[498] = { id : 498, name : '봉인된 자의 오른팔', type : cons.ITEM_TYPE_TRINKET, flavor : '무언가 강력한 마력으로 봉인되어 있는 존재의 신체 일부. 신체 부위를 모두다 모으면 신비한 힘을 얻을 수 있을지도...?', rank : 6, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 40 }, 
+itemList[498] = { id : 498, name : '봉인된 자의 오른팔', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '무언가 강력한 마력으로 봉인되어 있는 존재의 신체 일부. 신체 부위를 모두다 모으면 신비한 힘을 얻을 수 있을지도...?', rank : 6, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 40 }, 
     effectDesc : '<br><br>[봉인 해제] : 물리공격력+12, 마법공격력+12, 스페셜스킬 사용시 사용한 SP의 10%를 회복', effect : [] };
-itemList[499] = { id : 499, name : '봉인된 자의 왼팔', type : cons.ITEM_TYPE_TRINKET, flavor : '무언가 강력한 마력으로 봉인되어 있는 존재의 신체 일부. 신체 부위를 모두다 모으면 신비한 힘을 얻을 수 있을지도...?', rank : 6, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 40 }, 
+itemList[499] = { id : 499, name : '봉인된 자의 왼팔', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '무언가 강력한 마력으로 봉인되어 있는 존재의 신체 일부. 신체 부위를 모두다 모으면 신비한 힘을 얻을 수 있을지도...?', rank : 6, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 40 }, 
     effectDesc : '<br><br>[봉인 해제] : 물리공격력+12, 마법공격력+12, 스페셜스킬 사용시 사용한 SP의 10%를 회복', effect : [] };
-itemList[500] = { id : 500, name : '봉인된 자의 오른다리', type : cons.ITEM_TYPE_TRINKET, flavor : '무언가 강력한 마력으로 봉인되어 있는 존재의 신체 일부. 신체 부위를 모두다 모으면 신비한 힘을 얻을 수 있을지도...?', rank : 6, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 40 }, 
+itemList[500] = { id : 500, name : '봉인된 자의 오른다리', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '무언가 강력한 마력으로 봉인되어 있는 존재의 신체 일부. 신체 부위를 모두다 모으면 신비한 힘을 얻을 수 있을지도...?', rank : 6, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 40 }, 
     effectDesc : '<br><br>[봉인 해제] : 물리공격력+12, 마법공격력+12, 스페셜스킬 사용시 사용한 SP의 10%를 회복', effect : [] };
-itemList[501] = { id : 501, name : '봉인된 자의 왼다리', type : cons.ITEM_TYPE_TRINKET, flavor : '무언가 강력한 마력으로 봉인되어 있는 존재의 신체 일부. 신체 부위를 모두다 모으면 신비한 힘을 얻을 수 있을지도...?', rank : 6, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 40 }, 
+itemList[501] = { id : 501, name : '봉인된 자의 왼다리', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '무언가 강력한 마력으로 봉인되어 있는 존재의 신체 일부. 신체 부위를 모두다 모으면 신비한 힘을 얻을 수 있을지도...?', rank : 6, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 40 }, 
     effectDesc : '<br><br>[봉인 해제] : 물리공격력+12, 마법공격력+12, 스페셜스킬 사용시 사용한 SP의 10%를 회복', effect : [] };
-itemList[502] = { id : 502, name : '뜨거운 감자', type : cons.ITEM_TYPE_TRINKET, flavor : '악! 너무너무 뜨겁다! 얼른 상대에게 넘겨주자!', rank : 6, rarity : cons.ITEM_RARITY_UNIQUE, stat : { spCharge : 3, hit : 0.06 }, 
+itemList[502] = { id : 502, name : '뜨거운 감자', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '악! 너무너무 뜨겁다! 얼른 상대에게 넘겨주자!', rank : 6, rarity : cons.ITEM_RARITY_UNIQUE, stat : { spCharge : 3, hit : 0.06 }, 
     effectDesc : '<br><br>[object Object]', effect : [] };
-itemList[503] = { id : 503, name : '무형의 작은 결정', type : cons.ITEM_TYPE_TRINKET, flavor : '그 어떤 형태로도 확정할 수 없는 조각. 계속 변이하는 듯하다..', rank : 6, rarity : cons.ITEM_RARITY_UNIQUE, stat : {  }, 
+itemList[503] = { id : 503, name : '무형의 작은 결정', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '그 어떤 형태로도 확정할 수 없는 조각. 계속 변이하는 듯하다..', rank : 6, rarity : cons.ITEM_RARITY_UNIQUE, stat : {  }, 
     effectDesc : '', effect : [] };
-itemList[504] = { id : 504, name : '쌍장총 개', type : cons.ITEM_TYPE_TRINKET, flavor : '귀여운 개. 등에 총 두 자루가 묶여 있다.', rank : 6, rarity : cons.ITEM_RARITY_UNIQUE, stat : { crit : 0.03, critDmg : 0.25 }, 
+itemList[504] = { id : 504, name : '쌍장총 개', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '귀여운 개. 등에 총 두 자루가 묶여 있다.', rank : 6, rarity : cons.ITEM_RARITY_UNIQUE, stat : { crit : 0.03, critDmg : 0.25 }, 
     effectDesc : '', effect : [] };
-itemList[505] = { id : 505, name : '불타는 과수원 인장', type : cons.ITEM_TYPE_TRINKET, flavor : '기이한 문양들이 잔뜩 새겨진 인장. 그 의미는 해석할 수가 없다.', rank : 6, rarity : cons.ITEM_RARITY_UNIQUE, stat : {  }, 
+itemList[505] = { id : 505, name : '불타는 과수원 인장', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '기이한 문양들이 잔뜩 새겨진 인장. 그 의미는 해석할 수가 없다.', rank : 6, rarity : cons.ITEM_RARITY_UNIQUE, stat : {  }, 
     effectDesc : '', effect : [] };
-itemList[506] = { id : 506, name : '불렛푸르프 노키아', type : cons.ITEM_TYPE_TRINKET, flavor : '다른 세계에서 넘어온 정체불명의 물건. 매우 단단하며, 주머니 속에 넣어두면 방어력이 증가한다.', rank : 6, rarity : cons.ITEM_RARITY_UNIQUE, stat : {  }, 
+itemList[506] = { id : 506, name : '불렛푸르프 노키아', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '다른 세계에서 넘어온 정체불명의 물건. 매우 단단하며, 주머니 속에 넣어두면 방어력이 증가한다.', rank : 6, rarity : cons.ITEM_RARITY_UNIQUE, stat : {  }, 
     effectDesc : '<br><br>[방탄] : 방어구가 지닌 저항력만큼 저항력 상승', effect : [] };
-itemList[507] = { id : 507, name : '플람베르그의 모자', type : cons.ITEM_TYPE_TRINKET, flavor : '플람베르그 가문의 깃털 모자. 계약한 불사조를 불러낼 수 있는 힘이 있었지만, 세계를 건너오며 링크가 깨져버렸다.', rank : 6, rarity : cons.ITEM_RARITY_EPIC, stat : { maxHp : 60, hpRegen : 1, spRegen : 1 }, 
+itemList[507] = { id : 507, name : '플람베르그의 모자', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '플람베르그 가문의 깃털 모자. 계약한 불사조를 불러낼 수 있는 힘이 있었지만, 세계를 건너오며 링크가 깨져버렸다.', rank : 6, rarity : cons.ITEM_RARITY_EPIC, stat : { maxHp : 60, hpRegen : 1, spRegen : 1 }, 
     effectDesc : '<br><br>[지크프리드의 불꽃] : 물리,마법 공격력+40, 치명+6%, SP충전+2 / [얀닉스의 영원] : 매 턴 종료에 잃은 생명력의 1% 회복, SP재생+2', effect : [] };
-itemList[508] = { id : 508, name : '빛나는 영석 묶음', type : cons.ITEM_TYPE_TRINKET, flavor : '어떤 미네르프의 결계사가 사용했다는 영석의 묶음. 세 가지 빛깔을 띄고 있으며 각기 다른 힘을 가지고 있다. 특정한 순서대로 사용되면 힘이 증폭되는 듯하다.', rank : 6, rarity : cons.ITEM_RARITY_EPIC, stat : {  }, 
+itemList[508] = { id : 508, name : '빛나는 영석 묶음', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '어떤 미네르프의 결계사가 사용했다는 영석의 묶음. 세 가지 빛깔을 띄고 있으며 각기 다른 힘을 가지고 있다. 특정한 순서대로 사용되면 힘이 증폭되는 듯하다.', rank : 6, rarity : cons.ITEM_RARITY_EPIC, stat : {  }, 
     effectDesc : '<br><br>[영석-악] : 12 절대 피해<br>[영석-봉인] : 적의 HP/SP재생 -2<br>[영석-수호] : 피해감소 5', effect : [] };
-itemList[509] = { id : 509, name : '황금의 대도서관 열쇠', type : cons.ITEM_TYPE_TRINKET, flavor : '실존 여부조차 판가름 되지 않은 채, 전설 속으로만 내려오는 \'어둠의 대도서관\'을 열 수 있다는 열쇠. 그 도서관은 문이 열리는 순간 숨겨진 어둠의 역사를 세상 밖으로 이끌어낸다고 한다. 왜인지 금칠이 되어 있다.', rank : 6, rarity : cons.ITEM_RARITY_EPIC, stat : { maxHp : 90, spRegen : 1, spCharge : 3 }, 
+itemList[509] = { id : 509, name : '황금의 대도서관 열쇠', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '실존 여부조차 판가름 되지 않은 채, 전설 속으로만 내려오는 \'어둠의 대도서관\'을 열 수 있다는 열쇠. 그 도서관은 문이 열리는 순간 숨겨진 어둠의 역사를 세상 밖으로 이끌어낸다고 한다. 왜인지 금칠이 되어 있다.', rank : 6, rarity : cons.ITEM_RARITY_EPIC, stat : { maxHp : 90, spRegen : 1, spCharge : 3 }, 
     effectDesc : '<br><br>[도서관 장서 방출] : 턴 종료 시 적에게 SP재생*3만큼의 절대 피해 및 1-4턴간 [흑역사] 디버프 부여<br>[흑역사] : 무작위 스탯 -1~5', effect : [] };
 
 
