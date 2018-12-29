@@ -431,7 +431,7 @@ async function procEvent(req, res) {
     const client = await pool.connect();
   try {
     const sess = req.session; 
-    res.render('pages/trade', {room: 1000, uid: sess.userUid});
+    res.render('pages/event', {room: 1000, uid: sess.userUid});
   } catch (err) {
     console.error(err);
   } finally {
