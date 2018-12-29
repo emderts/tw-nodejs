@@ -946,6 +946,7 @@ async function procTrain(req, res) {
     const sess = req.session; 
     const charRow = await getCharacter(sess.userUid);
     const char = JSON.parse(charRow.char_data);
+    monster.xTrain.base.maxHp = 2000 * pow(2, 9 - char.rank);
     
     var re = (new battlemodule.bmodule()).doBattle(JSON.parse(JSON.stringify(char)), JSON.parse(JSON.stringify(monster.xTrain)), 1);
     res.render('pages/battle', {result: re.result});
@@ -2009,16 +2010,16 @@ async function procNextPhaseDungeon(req, res) {
             char.currencies.mevious = curr;
           }
           reward += '메비우스 섬멸의 증표 ' + curr + '개를 획득했습니다.<br>';
-          if (enemy.name == '메비우스 타우러스') {
-            if (char.dungeonInfos.taurusReward > 0) {
-              char.dungeonInfos.taurusReward--;
-              char.currencies.mevious += 2;
-              reward += '타우러스를 처치했으므로 메비우스 섬멸의 증표 2개를 추가로 획득했습니다.<br>';  
-            }
-            req.session.dungeonProgress.taurus++;
-            if (!char.achievement[30] && req.session.dungeonProgress.taurus >= 5) {
-              await giveAchievement(charRow.uid, char, 30);
-            }
+        }
+        if (enemy.name == '메비우스 타우러스') {
+          if (char.dungeonInfos.taurusReward > 0) {
+            char.dungeonInfos.taurusReward--;
+            char.currencies.mevious += 2;
+            reward += '타우러스를 처치했으므로 메비우스 섬멸의 증표 2개를 추가로 획득했습니다.<br>';  
+          }
+          req.session.dungeonProgress.taurus++;
+          if (!char.achievement[30] && req.session.dungeonProgress.taurus >= 5) {
+            await giveAchievement(charRow.uid, char, 30);
           }
         }
         if (!char.dungeonInfos.clearMevious && req.session.dungeonProgress.phase == 10) {
@@ -2028,11 +2029,23 @@ async function procNextPhaseDungeon(req, res) {
           await client.query('insert into news(content, date) values ($1, $2)', 
               [char.name + getIga(char.nameType) + ' [메모리얼 게이트 - 메비우스 섬멸]을 돌파했습니다!', new Date()]);
         }
-      } else if (req.session.dungeonProgress.code == 1 && req.session.dungeonProgress.phase == 5) {
-        if (!char.dungeonInfos.rewardMevious) {
+      } else if (req.session.dungeonProgress.code == 1 && req.session.dungeonProgress.phase % 2 == 1) {
+        if (!char.dungeonInfos.rewardMevious && req.session.dungeonProgress.phase == 5) {
           char.dungeonInfos.rewardMevious = true;
           char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '메비우스 섬멸 공훈 카드', rank : 8, resultType : 90001});
           reward += '메비우스 섬멸 공훈 카드 1개를 획득했습니다.';
+        }
+
+        if (enemy.name == '메비우스 타우러스') {
+          if (char.dungeonInfos.taurusReward > 0) {
+            char.dungeonInfos.taurusReward--;
+            char.currencies.mevious += 2;
+            reward += '타우러스를 처치했으므로 메비우스 섬멸의 증표 2개를 추가로 획득했습니다.<br>';  
+          }
+          req.session.dungeonProgress.taurus++;
+          if (!char.achievement[30] && req.session.dungeonProgress.taurus >= 5) {
+            await giveAchievement(charRow.uid, char, 30);
+          }
         }
       } else if (req.session.dungeonProgress.code == 2 && req.session.dungeonProgress.phase >= 2) {
         isFinished = true;

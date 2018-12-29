@@ -870,6 +870,9 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
     if (eff.chkInventory && !winner.inventory.some(checkInv.bind(this, eff.chkInventory))) {
       continue;
     }
+    if (eff.chkEquip && !winner.items.values().some(checkInv.bind(this, eff.chkEquip))) {
+      continue;
+    }
     if (eff.chkPercentDamage && damage.value < winner.stat.maxHp * eff.chkPercentDamage) {
       continue;
     }
@@ -1247,6 +1250,8 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
         continue;
       } else if (eff.anyDebuff && (!damage.isDebuff || !damage.dispellable || !damage.durOff)) {
         continue;
+      } else if (eff.buffCodes && !eff.buffCodes.includes(damage.id)) {
+        continue;
       }
       this.result += '[ ' + damage.name + ' ] 효과의 지속시간이 ' + eff.value + ' 감소합니다!<br>';
       damage.dur -= eff.value;
@@ -1386,6 +1391,9 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
       if (eff.buff.stack <= 0) {
         removeBuff(eff.buff);
       }
+    }
+    if (eff.chanceReduce) {
+      eff.chance -= eff.chanceReduce;
     }
     if (eff.removeEffect) {
       eff.code = -1;
@@ -1559,6 +1567,9 @@ Battlemodule.prototype.giveBuff = function(src, recv, buffObj, printFlag, name) 
       recv.buffs.push(buffObj);
     } else if (buffObj.stackType === 4) {
       buffChk.stack += buffObj.stack;
+      if (buffChk.maxStack && buffChk.maxStack <= buffChk.stack) {
+        buffChk.stack = buffChk.maxStack;
+      }
     }
   } else {
     recv.buffs.push(buffObj);
@@ -1718,7 +1729,11 @@ function calcStats(chara, opp) {
       stackMpl *= chara.stat[val.percentKey];
     } else if (val.isPercentItemValue) {
       stackMpl *= val.item.itemValue;
-    } 
+    } else if (val.isPercentSkill) {
+      stackMpl *= chara.skill[val.skillKey][val.percentKey];
+    } else if (val.isPercentCurSp) {
+      stackMpl *= ((chara.curSp * 100) / chara.skill.special.cost);
+    }
     
     if (val.countInv) {
       var usedMpl = chara.inventory.length;
@@ -1739,6 +1754,36 @@ function calcStats(chara, opp) {
     }
     if (val.code === cons.EFFECT_TYPE_STAT_ADD) {
       chara.stat[val.key] += val.value * stackMpl;
+    }
+  }
+
+  for (val of getBuffEffects(chara, cons.ACTIVE_TYPE_CALC_STATS)) {
+    var stackMpl = val.buff ? (val.buff.stack ? val.buff.stack : 1) : 1;
+    if (val.isPercentStat) {
+      stackMpl *= chara.stat[val.percentKey];
+    }
+
+    if (val.chkNot && findBuffByIds(chara, val.chkNot).length > 0) {
+      continue;
+    }
+    
+    if (val.code === cons.EFFECT_TYPE_SET_SKILL) {
+      if (val.key === 'base') {
+        var valueSel = val.randomValue ? Math.floor(Math.random() * 3) : val.value;
+        chara.skill.base[valueSel] = JSON.parse(JSON.stringify(val.target));
+      } else if (val.key) {
+        chara.skill[val.key] = JSON.parse(JSON.stringify(val.target));
+      }
+    } else if (val.code === cons.EFFECT_TYPE_ADD_SKILL_VALUE) {
+      if (val.type == 'base') {
+        if (val.effIndex !== undefined) {
+          chara.skill.base[val.skillKey].effect[val.effIndex][val.key] += val.value * stackMpl;
+        } else if (val.set) {
+          chara.skill.base[val.skillKey][val.key] = val.value;
+        }
+      } else {
+        chara.skill[val.type][val.key] += val.value * stackMpl;
+      }
     }
   }
   
@@ -1765,32 +1810,6 @@ function calcStats(chara, opp) {
       chara.stat[val.key] *= (1 + val.value * stackMpl);
     } else if (val.code === cons.EFFECT_TYPE_SP_COST_PERCENTAGE) {
       chara.skill[val.key].cost *= (1 + val.value * stackMpl);
-    }
-  }
-
-  for (val of getBuffEffects(chara, cons.ACTIVE_TYPE_CALC_STATS)) {
-    var stackMpl = val.buff ? (val.buff.stack ? val.buff.stack : 1) : 1;
-    if (val.isPercentStat) {
-      stackMpl *= chara.stat[val.percentKey];
-    }
-
-    if (val.chkNot && findBuffByIds(chara, val.chkNot).length > 0) {
-      continue;
-    }
-    
-    if (val.code === cons.EFFECT_TYPE_SET_SKILL) {
-      if (val.key === 'base') {
-        var valueSel = val.randomValue ? Math.floor(Math.random() * 3) : val.value;
-        chara.skill.base[valueSel] = val.target;
-      } else if (val.key) {
-        chara.skill[val.key] = val.target;
-      }
-    } else if (val.code === cons.EFFECT_TYPE_ADD_SKILL_VALUE) {
-      if (val.type == 'base' && val.effIndex !== undefined) {
-        chara.skill.base[val.skillKey].effect[val.effIndex][val.key] += val.value * stackMpl;
-      } else {
-        chara.skill[val.type][val.key] += val.value * stackMpl;
-      }
     }
   }
   

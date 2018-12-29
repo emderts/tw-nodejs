@@ -1,7 +1,7 @@
 const excel = require('exceljs');
 const fs = require('fs');
 
-const fseq = 347;
+const fseq = 439;
 var seq = 0;
 var names, result = '';
 
@@ -32,7 +32,7 @@ workbook.xlsx.readFile('target.xlsx')
       } else if (rowVal[2] == '경갑옷') {
         rowVal[29] = rowVal[29] ? rowVal[29] + 10 : 10;
       } else if (rowVal[2] == '중갑옷') {
-        rowVal[31] = rowVal[31] ? rowVal[31] - 5 : -5;
+        rowVal[31] = rowVal[31] ? rowVal[31] - 3 : -3;
       } else if (rowVal[2] == '방패') {
         //rowVal[32] = rowVal[32] ? rowVal[32] + rds[rowVal[3]] : rds[rowVal[3]];
       } else if (rowVal[2] == '신발') {
