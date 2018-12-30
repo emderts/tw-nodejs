@@ -20,6 +20,7 @@ try {
   for (val of resultg.rows) {
     var glb = JSON.parse(val.globals);
     const result = await client.query('select * from raids where rindex = 4');
+    if (result.rows.length > 0) {
     var row = result.rows[0];
     if (glb.fieldBossSpawned0 > 0) {
       const resultx = await client.query('select * from characters');
@@ -41,9 +42,11 @@ try {
         ['움직이는 요새 - 에이카가 사라졌습니다..', new Date()]);
       glb.fieldBossSpawned0 = 0;
     }
+    }
     
     const result2 = await client.query('select * from raids where rindex = 5');
-    var row = result2.rows[0];
+    if (result.rows.length > 0) {
+    row = result2.rows[0];
     if (glb.fieldBossSpawned1 > 0) {
       const resultx2 = await client.query('select * from characters');
       for (val of resultx2.rows) {
@@ -63,6 +66,7 @@ try {
       await client.query('insert into news(content, date) values ($1, $2)', 
         ['매버릭 타임 코더 - 줄리어스 엠더츠가 사라졌습니다..', new Date()]);
       glb.fieldBossSpawned1 = 0;
+    }
     }
   }
   await client.query('update global set globals = $1', [JSON.stringify(glb)]);
