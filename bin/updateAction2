@@ -45,8 +45,8 @@ try {
     const result2 = await client.query('select * from raids where rindex = 5');
     var row = result2.rows[0];
     if (glb.fieldBossSpawned1 > 0) {
-      const resultx = await client.query('select * from characters');
-      for (val of resultx.rows) {
+      const resultx2 = await client.query('select * from characters');
+      for (val of resultx2.rows) {
         var charData = JSON.parse(val.char_data);
         charData.dungeonInfos.runFieldBoss1 = false;
         await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(charData), val.uid]);
