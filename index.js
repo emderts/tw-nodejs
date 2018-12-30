@@ -847,7 +847,7 @@ async function procConfirmItem (req, res) {
                 ['움직이는 요새 - 에이카가 나타났습니다!', new Date()]);
               await client.query('insert into raids(rindex, open, phase, monsters) values (4, \'O\', 1, $1)', 
                 [JSON.stringify({1 : monster.rAeika})]);
-          } else if (tgt.value == 1) {
+          } else if (tgtObj.value == 1) {
             await client.query('insert into news(content, date) values ($1, $2)', 
                 ['매버릭 타임 코더 - 줄리어스 엠더츠가 나타났습니다!', new Date()]);
               await client.query('insert into raids(rindex, open, phase, monsters) values (5, \'O\', 1, $1)', 
