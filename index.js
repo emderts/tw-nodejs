@@ -1959,7 +1959,7 @@ async function procNextPhaseDungeon(req, res) {
       } else if (sess.dungeonProgress.code == 6) {
         const result = await client.query('select * from raids where rindex = 5');
         row = result.rows[0];
-        if (!char.dungeonInfos.runFieldBoss1 && (row.open == 'O')) {
+        if ((row.open == 'O')) {
           curData = JSON.parse(row.monsters);
           enemy = curData[row.phase];
           hpBefore = enemy.curHp ? enemy.curHp : enemy.stat.maxHp;
