@@ -539,6 +539,11 @@ Battlemodule.prototype._doBattleTurn = function() {
       this.resolveTurnEnd(winner, loser);
       this.result += '</div></div>';
       this.printCharInfo(1);
+      if (winner == this.charLeft) {
+        this.leftWin++;
+      } else {
+        this.rightWin++;
+      }
       return;
     }
   } 

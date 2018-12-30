@@ -2133,9 +2133,9 @@ async function procNextPhaseDungeon(req, res) {
         curData[row.phase].winRecord[charRow.uid] = curData[row.phase].winRecord[charRow.uid] ? curData[row.phase].winRecord[charRow.uid] + 1 : 1;
         var reward = damageDealt + ' 피해를 입혔습니다! (누적 피해 : ' + curData[row.phase].battleRecord[charRow.uid] + ')<br>';
         
-        if (body.option == 6) {
+        if (req.session.dungeonProgress.code == 6) {
           var maxHpTotal = curData[1].stat.maxHp;
-          var dust = 11 * Math.floor(damageDealt * 100 / maxHpTotal);
+          var dust = 12 * Math.floor(damageDealt * 100 / maxHpTotal);
           if (dust > 0) {
             char.dust += dust;
             reward += dust + ' 가루를 획득했습니다.<br>';
@@ -2153,7 +2153,7 @@ async function procNextPhaseDungeon(req, res) {
           
         }
         if (!re.winnerLeft) {
-          if (body.option == 6) {
+          if (req.session.dungeonProgress.code == 6) {
             char.currencies.julius += 2;
             char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '조작된 시간의 잠금 상자', resultType : 90006, value : 1});
             reward += re.leftInfo.name + getUlrul(re.leftInfo.nameType) + ' 처치했습니다!<br>조작된 시간의 잠금 상자 1개, 조작된 시간의 파편 2개를 획득했습니다.<br>';
