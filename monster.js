@@ -393,7 +393,7 @@ const chara = require('./chara');
   charLeft.items = {weapon : item.list[203], armor : item.list[219], subarmor : item.list[228], trinket : item.list[261]};
   charLeft.boss = 0.85;
   charLeft.bossStatus = 0.15;
-  charLeft.startEffects = [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 12, buffDur : 999999}];
+  charLeft.startEffects = [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 13, buffDur : 999999}];
 
   charLeft.skill = {
       base : [
@@ -403,8 +403,8 @@ const chara = require('./chara');
              ],
       drive : {code : 90039, name : '시간의 폭풍', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_DRIVE, active : cons.ACTIVE_TYPE_TURN_START,
                cost : 0, chance : 1,
-               effect : [{code : cons.EFFECT_TYPE_SELF_HIT, type : cons.DAMAGE_TYPE_ABSOLUTE, value : 999999, chkTurn : 50},
-                         {code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_ABSOLUTE, value : 999999, chkMoreAttack : true, chkTurn : 50}]}
+               effect : [{code : cons.EFFECT_TYPE_SELF_HIT, type : cons.DAMAGE_TYPE_ABSOLUTE, value : 999999, chkTurn : 51},
+                         {code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_ABSOLUTE, value : 999999, chkMoreAttack : true, chkTurn : 51}]}
   };
   module.exports.rTimeStorm = charLeft;
   

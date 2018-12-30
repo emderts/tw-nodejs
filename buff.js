@@ -164,6 +164,14 @@ module.exports.getBuffData = function(eff) {
     effectObj.percentKey = 'maxHp';
     retObj.effect.push(effectObj);
     break;
+  case 13 : 
+    retObj.name = '공격 불가';
+    retObj.nameType = cons.NAME_KOR_END_CONS;
+    retObj.stackType = 1;
+    effectObj = {};
+    effectObj.code = 10006;
+    retObj.effect.push(effectObj);
+    break;
   case 10001 : 
     retObj.name = '깨진 유리검';
     retObj.nameType = cons.NAME_KOR_END_CONS;
