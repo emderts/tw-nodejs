@@ -1940,8 +1940,8 @@ async function procNextPhaseDungeon(req, res) {
           enemy = monster.eGunda;
         } 
       } else if (sess.dungeonProgress.code == 3) {
+        var re = trades[sess.dungeonProgress.roomNum].result;
         if (req.session.dungeonProgress.phase == (10 - char.rank)) {
-          var re = trades[sess.dungeonProgress.roomNum].result;
           var reward = '';
           if (re.winnerLeft) {
             reward += '승급 심사를 통과했습니다!<br>';
