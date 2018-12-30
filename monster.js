@@ -393,6 +393,7 @@ const chara = require('./chara');
   charLeft.items = {weapon : item.list[203], armor : item.list[219], subarmor : item.list[228], trinket : item.list[261]};
   charLeft.boss = 0.85;
   charLeft.bossStatus = 0.15;
+  charLeft.startEffects = [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 12, buffDur : 999999}];
 
   charLeft.skill = {
       base : [
