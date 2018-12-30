@@ -28,6 +28,8 @@ const item = require('./items');
   ach[34] = {name : '추락한 요새', nameType : cons.NAME_KOR_NO_END_CONS, desc : '움직이는 요새 - 에이카 처치'};
   ach[35] = {name : '영예의 고대 공격대원', nameType : cons.NAME_KOR_END_CONS, desc : '고대 흑마법사 - 카이네스 엠더츠 누적 피해 1위 달성'};
   ach[36] = {name : '영예의 요새 공격대원', nameType : cons.NAME_KOR_END_CONS, desc : '움직이는 요새 - 에이카 누적 피해 1위 달성'};
+  ach[37] = {name : '시간 복원', nameType : cons.NAME_KOR_END_CONS, desc : '매버릭 타임 코더 - 줄리어스 엠더츠 처치'};
+  ach[38] = {name : '영예의 시간 공격대원', nameType : cons.NAME_KOR_END_CONS, desc : '매버릭 타임 코더 - 줄리어스 엠더츠 누적 피해 1위 달성'};
 
   ach[33] = {name : '여명의 빛', nameType : cons.NAME_KOR_END_CONS, desc : '아서스 메네실에게 승리', hidden : true};
 

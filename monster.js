@@ -386,11 +386,32 @@ const chara = require('./chara');
   charLeft.skill = chara.aeika.skill;
   module.exports.rAeika = charLeft;
   
+  charLeft = {name : '시간의 폭풍', nameType : cons.NAME_KOR_END_CONS, title : '매버릭 타임 코더', rank : 7, level : 40, 
+      stat : {maxHp : 6000, phyAtk : 70.3, magAtk : 70.3}};
+  _initChar(charLeft);
+  
+  charLeft.items = {weapon : item.list[203], armor : item.list[219], subarmor : item.list[228], trinket : item.list[261]};
+  charLeft.boss = 0.85;
+  charLeft.bossStatus = 0.15;
+
+  charLeft.skill = {
+      base : [
+              {code : 90001, name : '물리 공격', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1.0, effect : []}, 
+              {code : 90002, name : '물리 공격', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1.0, effect : []}, 
+              {code : 90003, name : '마법 공격', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 1.0, effect : []}
+             ],
+      drive : {code : 90039, name : '시간의 폭풍', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_DRIVE, active : cons.ACTIVE_TYPE_TURN_START,
+               cost : 0, chance : 1, chkTurn : 50,
+               effect : [{code : cons.EFFECT_TYPE_SELF_HIT, type : cons.DAMAGE_TYPE_ABSOLUTE, value : 999999},
+                         {code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_ABSOLUTE, value : 999999, chkMoreAttack : true}]}
+  };
+  module.exports.rTimeStorm = charLeft;
+  
   charLeft = {name : '줄리어스 엠더츠', nameType : cons.NAME_KOR_NO_END_CONS, title : '매버릭 타임 코더', rank : 7, level : 40, 
       stat : {maxHp : 70200, phyAtk : 70.3, magAtk : 70.3}};
   _initChar(charLeft);
   
-  charLeft.items = {weapon : item.list[203], armor : item.list[219], subarmor : item.list[228], trinket : item.list[261]};
+  charLeft.items = {weapon : item.list[356], armor : item.list[372], subarmor : item.list[391], trinket : item.list[411]};
   charLeft.boss = 0.85;
   charLeft.bossStatus = 0.15;
 

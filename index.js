@@ -367,8 +367,9 @@ async function procInit2 () {
     for (val of result.rows) {
       var char = JSON.parse(val.char_data);
       
+      char.currencies.julius = 0;
       if (val.uid == '02') {
-        char.rank++;
+        char.inventory.push({name : '레이드 소환권 - 매버릭 타임 코더', type : 90005, rarity : cons.ITEM_RARITY_PREMIUM, value : 1});
       }
       /*if (char.items.trinket.id == 432) {
         char.items.trinket.effectDesc = item.list[432].effectDesc;
@@ -775,11 +776,11 @@ async function procUseItem (req, res) {
             } else if (rand < 0.95) {
               picked = _processDust(chara, tgtObj, 600, true);
             } else if (rand < 0.99) {
-              picked = item.list[436];
+              picked = tgtObj.value == 0 ? item.list[436] : item.list[510];
               _processRare(chara, tgtObj, picked);
               chara.inventory.push(picked);
             } else {
-              picked = item.list[437];
+              picked = tgtObj.value == 0 ? item.list[437] : item.list[511];
               _processUnique(chara, tgtObj, picked);
               chara.inventory.push(picked);
               await addItemNews(client, chara, tgtObj, picked);
@@ -1732,11 +1733,16 @@ async function procEnterDungeon(req, res) {
     } else if (body.option == 6) {
       if (!char.dungeonInfos.runFieldBoss1) {
         char.dungeonInfos.runFieldBoss1 = true;
-        enemy = monster.timeStorm;
+        enemy = monster.rTimeStorm;
+        if (charRow.actionPoint <= 0) {
+          client.release();
+          res.redirect('/');
+          return;
+        }
       }
     }
     if (enemy) {
-      if (body.option == 1 || body.option == 2) {
+      if (body.option == 1 || body.option == 2 || body.option == 6) {
         var re = (new battlemodule.bmodule()).doBattle(JSON.parse(JSON.stringify(char)), JSON.parse(JSON.stringify(enemy)), 1);
         var resultList = [{phase : 1, monImage : enemy.image, monName : enemy.name, 
           result : re.winnerLeft ? '승리' : '패배', hpLeft : re.winnerLeft ? re.leftInfo.curHp : re.rightInfo.curHp}];
@@ -1950,6 +1956,19 @@ async function procNextPhaseDungeon(req, res) {
           enemy = list[idx];
           list.splice(idx, 1);
         }
+      } else if (sess.dungeonProgress.code == 6) {
+        const result = await client.query('select * from raids where rindex = 5');
+        row = result.rows[0];
+        if (!char.dungeonInfos.runFieldBoss0 && (row.open == 'O')) {
+          curData = JSON.parse(row.monsters);
+          enemy = curData[row.phase];
+          hpBefore = enemy.curHp ? enemy.curHp : enemy.stat.maxHp;
+          if (charRow.actionPoint <= 0) {
+            client.release();
+            res.redirect('/');
+            return;
+          }
+        }
       }
     }
     if (enemy) {
@@ -2101,6 +2120,92 @@ async function procNextPhaseDungeon(req, res) {
             await giveAchievement(charRow.uid, char, 32);
           }
         }
+      } else if (req.session.dungeonProgress.code == 6 && req.session.dungeonProgress.phase >= 2) {
+        var re = (new battlemodule.bmodule()).doBattle(JSON.parse(JSON.stringify(enemy)), JSON.parse(JSON.stringify(char)), 1);
+        var resultList = [{phase : 1, monImage : enemy.image, monName : enemy.name, 
+          result : re.winnerRight ? '승리' : '패배', hpLeft : re.leftInfo.curHp}];
+        const damageDealt = hpBefore - re.leftInfo.curHp;
+        re.leftInfo.buffs = [];
+        re.leftInfo.items = enemy.items;
+        var isFinished = true;
+        curData[row.phase] = re.leftInfo;
+        curData[row.phase].battleRecord[charRow.uid] = curData[row.phase].battleRecord[charRow.uid] ? curData[row.phase].battleRecord[charRow.uid] + damageDealt : damageDealt;
+        curData[row.phase].winRecord[charRow.uid] = curData[row.phase].winRecord[charRow.uid] ? curData[row.phase].winRecord[charRow.uid] + 1 : 1;
+        var reward = damageDealt + ' 피해를 입혔습니다! (누적 피해 : ' + curData[row.phase].battleRecord[charRow.uid] + ')<br>';
+        
+        if (body.option == 6) {
+          var maxHpTotal = curData[1].stat.maxHp;
+          var dust = 11 * Math.floor(damageDealt * 100 / maxHpTotal);
+          if (dust > 0) {
+            char.dust += dust;
+            reward += dust + ' 가루를 획득했습니다.<br>';
+          }
+          if (curData[1].battleRecord[charRow.uid] >= maxHpTotal / 10) {
+            var perNum = Math.floor(curData[1].battleRecord[charRow.uid] * 10 / maxHpTotal);
+            if (!char.dungeonInfos['rewardFieldBoss1' + perNum]) {
+              char.dungeonInfos['rewardFieldBoss1' + perNum] = true;
+              char.currencies.julius++;
+              reward += '누적 피해량 보상으로 조작된 시간의 파편 1개를 획득했습니다.<br>';
+            }  
+          }
+          await client.query('update characters set actionPoint = $1 where uid = $2', [charRow.actionPoint - 1, charRow.uid]);
+          await client.query('update raids set phase = $1, monsters = $2 where rindex = 5', [row.phase + (re.winnerLeft ? 0 : 1), JSON.stringify(curData)]);
+          
+        }
+        if (!re.winnerLeft) {
+          if (body.option == 6) {
+            char.currencies.julius += 2;
+            char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '조작된 시간의 잠금 상자', resultType : 90006, value : 1});
+            reward += re.leftInfo.name + getUlrul(re.leftInfo.nameType) + ' 처치했습니다!<br>조작된 시간의 잠금 상자 1개, 조작된 시간의 파편 2개를 획득했습니다.<br>';
+            if (!char.achievement[37]) {
+              await giveAchievement(charRow.uid, char, 37);
+            }
+            const globals = await getGlobals();
+            var leaderboard = await createRaidResults(5, 1, char);
+            if (charRow.uid == globals.fieldBossSummon1) {
+              char.currencies.julius++;
+              char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '조작된 시간의 잠금 상자', resultType : 90006, value : 1});
+              reward += '소환 보상으로 조작된 시간의 잠금 상자 1개, 조작된 시간의 파편 1개를 획득했습니다.<br>';
+            } else {
+              const charRow2 = await getCharacterByUid(globals.fieldBossSummon1);
+              const char2 = JSON.parse(charRow2.char_data);
+              char.currencies.julius++;
+              char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '조작된 시간의 잠금 상자', resultType : 90006, value : 1});
+              await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char2), charRow2.uid]);
+            }
+            if (charRow.uid == leaderboard[0].key) {
+              char.currencies.julius++;
+              char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '조작된 시간의 잠금 상자', resultType : 90006, value : 1});
+              reward += '누적 피해 보상으로 조작된 시간의 잠금 상자 1개, 조작된 시간의 파편 1개를 획득했습니다.<br>';
+              if (!char.achievement[38]) {
+                await giveAchievement(charRow.uid, char, 38);
+              }                
+            } else {
+              const charRow2 = await getCharacterByUid(leaderboard[0].key);
+              const char2 = JSON.parse(charRow2.char_data);
+              char.currencies.julius++;
+              char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '조작된 시간의 잠금 상자', resultType : 90006, value : 1});
+              if (!char2.achievement[38]) {
+                await giveAchievement(charRow2.uid, char2, 38);
+              }
+              await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char2), charRow2.uid]);
+            }
+            const results = await client.query('select * from characters');
+            const partList = leaderboard.map(x => x.key);
+            for (val of results.rows) {
+              if (val.uid == charRow.uid) {
+                continue;
+              } 
+              if (!partList.includes(val.uid)) {
+                continue;
+              }
+              const charx = JSON.parse(val.char_data);
+              char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '조작된 시간의 잠금 상자', resultType : 90006, value : 1});
+              
+              await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(charx), val.uid]);
+            } 
+          }
+        } 
       }
       await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
       res.render('pages/dungeonResult', {result: re.result, resultList: req.session.dungeonProgress.resultList, isFinished : isFinished, reward : reward, stop : false});

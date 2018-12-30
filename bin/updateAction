@@ -129,6 +129,15 @@ try {
       charData.dungeonInfos.rewardFieldBoss07 = false;
       charData.dungeonInfos.rewardFieldBoss08 = false;
       charData.dungeonInfos.rewardFieldBoss09 = false;
+      charData.dungeonInfos.rewardFieldBoss11 = false;
+      charData.dungeonInfos.rewardFieldBoss12 = false;
+      charData.dungeonInfos.rewardFieldBoss13 = false;
+      charData.dungeonInfos.rewardFieldBoss14 = false;
+      charData.dungeonInfos.rewardFieldBoss15 = false;
+      charData.dungeonInfos.rewardFieldBoss16 = false;
+      charData.dungeonInfos.rewardFieldBoss17 = false;
+      charData.dungeonInfos.rewardFieldBoss18 = false;
+      charData.dungeonInfos.rewardFieldBoss19 = false;
       charData.resetGauge = false;
       charData.quest = {};
       var quests = [{code : 1, progress : 0, target : 5},
@@ -193,10 +202,13 @@ try {
       glb.fieldBossSpawned = false;
       delete glb.fieldBossSpawned0;
       delete glb.fieldBossSummon0;
+      delete glb.fieldBossSpawned1;
+      delete glb.fieldBossSummon1;
     }
     await client.query('update global set globals = $1', [JSON.stringify(glb)]);
     await client.query('delete from raids where rindex = 3');
     await client.query('delete from raids where rindex = 4');
+    await client.query('delete from raids where rindex = 5');
     await client.query('delete from personal');
   }
   client.release();  

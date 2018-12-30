@@ -1140,6 +1140,14 @@ itemList[508] = { id : 508, name : '빛나는 영석 묶음', nameType : cons.NA
     effectDesc : '<br><br>[영석-악] : 12 절대 피해<br>[영석-봉인] : 적의 HP/SP재생 -2<br>[영석-수호] : 피해감소 5', effect : [] };
 itemList[509] = { id : 509, name : '황금의 대도서관 열쇠', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '실존 여부조차 판가름 되지 않은 채, 전설 속으로만 내려오는 \'어둠의 대도서관\'을 열 수 있다는 열쇠. 그 도서관은 문이 열리는 순간 숨겨진 어둠의 역사를 세상 밖으로 이끌어낸다고 한다. 왜인지 금칠이 되어 있다.', rank : 6, rarity : cons.ITEM_RARITY_EPIC, stat : { maxHp : 90, spRegen : 1, spCharge : 3 }, 
     effectDesc : '<br><br>[도서관 장서 방출] : 턴 종료 시 적에게 SP재생*3만큼의 절대 피해 및 1-4턴간 [흑역사] 디버프 부여<br>[흑역사] : 무작위 스탯 -1~5', effect : [] };
+itemList[510] = { id : 510, name : '다중 선택 시계', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SKILL_ARTIFACT, flavor : '', rank : 6, rarity : cons.ITEM_RARITY_RARE, stat : {  }, 
+    effectDesc : '상성 패배 시 3.5% 확률로 스킬 재선택', 
+    effect : [{code : cons.EFFECT_TYPE_SKILL_RESELECT, active : cons.ACTIVE_TYPE_SKILL_RESELECT, chance : 0.35}] };
+itemList[511] = { id : 511, name : '타임 코더', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SKILL_ARTIFACT, flavor : '', rank : 6, rarity : cons.ITEM_RARITY_UNIQUE, stat : { maxHp : 50 }, 
+    effectDesc : 'SP 소모량 4% 감소, 스페셜 스킬 사용 시 자신에게 [시간 왜곡] 버프 부여', 
+    effect : [{active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_SP_COST_PERCENTAGE, key : 'special', value : -0.04},
+              {active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_SP_COST_PERCENTAGE, key : 'special', value : -0.04},
+              {code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_USE_SPECIAL, buffCode : 201715, buffDur : null}] };
 
 
 itemList.forEach(function(tgt) {

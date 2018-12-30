@@ -319,6 +319,14 @@ Battlemodule.prototype._doBattleTurnManual = function(left, right) {
           return;
         }
       }
+      for (val of getItemEffects(loser, cons.ACTIVE_TYPE_SKILL_RESELECT)) {
+        if (val.code === cons.EFFECT_TYPE_SKILL_RESELECT && getRandom(val.chance)) {
+          this.result += '[ ' + val.item.name + ' ] 효과로 스킬이 재선택됩니다!<br>';
+          this.redecide = true;
+          this.resolveEffects(loser, winner, [val], null);
+          return;
+        }
+      }
     }
     
   for (val of findBuffByCode(winner, 10006)) {
@@ -504,6 +512,14 @@ Battlemodule.prototype._doBattleTurn = function() {
       for (val of getBuffEffects(loser, cons.ACTIVE_TYPE_SKILL_RESELECT)) {
         if (val.code === cons.EFFECT_TYPE_SKILL_RESELECT && getRandom(val.chance)) {
           this.result += '[ ' + val.buff.name + ' ] 효과로 스킬이 재선택됩니다!<br>';
+          redecide = true;
+          this.resolveEffects(loser, winner, [val], null);
+          break;
+        }
+      }
+      for (val of getItemEffects(loser, cons.ACTIVE_TYPE_SKILL_RESELECT)) {
+        if (val.code === cons.EFFECT_TYPE_SKILL_RESELECT && getRandom(val.chance)) {
+          this.result += '[ ' + val.item.name + ' ] 효과로 스킬이 재선택됩니다!<br>';
           redecide = true;
           this.resolveEffects(loser, winner, [val], null);
           break;
@@ -1000,6 +1016,9 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
         this.atkCntBefore = atkCnt;
       }
       valueUsed = Math.round(valueUsed * stackMpl);
+      if (valueUsed > eff.maxApply) {
+        valueUsed = eff.maxApply;
+      }
       var target = 'SP';
       if (eff.code === cons.EFFECT_TYPE_SELF_SP) {
         winner.curSp += valueUsed;

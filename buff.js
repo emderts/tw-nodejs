@@ -540,6 +540,7 @@ module.exports.getBuffData = function(eff) {
     effectObj.isPercentStat = true;
     effectObj.percentKey = 'magReduce';
     effectObj.value = 200;
+    effectObj.maxApply = 50;
     retObj.effect.push(effectObj);
     break;
   case 10024 : 
