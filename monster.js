@@ -401,9 +401,9 @@ const chara = require('./chara');
               {code : 90003, name : '마법 공격', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 1.0, effect : []}
              ],
       drive : {code : 90039, name : '시간의 폭풍', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_DRIVE, active : cons.ACTIVE_TYPE_TURN_START,
-               cost : 0, chance : 1, chkTurn : 50,
-               effect : [{code : cons.EFFECT_TYPE_SELF_HIT, type : cons.DAMAGE_TYPE_ABSOLUTE, value : 999999},
-                         {code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_ABSOLUTE, value : 999999, chkMoreAttack : true}]}
+               cost : 0, chance : 1,
+               effect : [{code : cons.EFFECT_TYPE_SELF_HIT, type : cons.DAMAGE_TYPE_ABSOLUTE, value : 999999, chkTurn : 50},
+                         {code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_ABSOLUTE, value : 999999, chkMoreAttack : true, chkTurn : 50}]}
   };
   module.exports.rTimeStorm = charLeft;
   
