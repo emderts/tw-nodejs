@@ -367,7 +367,7 @@ async function procInit2 () {
     for (val of result.rows) {
       var char = JSON.parse(val.char_data);
       
-      char..julius = 0;
+    //  char.julius = 0;
       if (val.uid == '02') {
         char.inventory.push({name : '레이드 소환권 - 매버릭 타임 코더', type : 90005, rarity : cons.ITEM_RARITY_PREMIUM, value : 1});
       }
