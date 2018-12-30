@@ -2029,7 +2029,7 @@ async function procNextPhaseDungeon(req, res) {
               [char.name + getIga(char.nameType) + ' 불타는 과수원에서 ' + re.rightInfo.name + getUlrul(re.rightInfo.nameType) + ' 처치했습니다!', new Date()]);
         }
         await client.query('update raids set phase = $1, monsters = $2 where rindex = $3', [row.phase + (re.winnerRight ? 0 : 1), JSON.stringify(curData), 2]);
-      } else if (!re.winnerLeft) {
+      } else if (!re.winnerLeft && req.session.dungeonProgress.code != 6) {
         isFinished = true;
         reward += '패배했습니다..';
       } else if (req.session.dungeonProgress.code == 1 && req.session.dungeonProgress.phase % 2 == 0) {
