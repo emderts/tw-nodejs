@@ -2200,7 +2200,7 @@ async function procNextPhaseDungeon(req, res) {
                 continue;
               }
               const charx = JSON.parse(val.char_data);
-              char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '조작된 시간의 잠금 상자', resultType : 90006, value : 1});
+              charx.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '조작된 시간의 잠금 상자', resultType : 90006, value : 1});
               
               await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(charx), val.uid]);
             } 
