@@ -1944,7 +1944,7 @@ async function procNextPhaseDungeon(req, res) {
           delete trades[sess.dungeonProgress.roomNum];
           await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
           res.render('pages/dungeonResult', {result: re.result, resultList: [], isFinished : true, reward : reward, stop : false});
-        } else {
+        } else if (re.winnerLeft) {
           list = req.session.dungeonProgress.tgtList;
           const idx = Math.floor(Math.random() * list.length);
           enemy = list[idx];

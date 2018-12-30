@@ -686,6 +686,8 @@ Battlemodule.prototype.calcDamage = function(winner, loser, skill) {
       this.result += '[ ' + val.buff.name + ' ] 효과로 치명타가 적용됩니다!<br>';
       this.resolveEffects(winner, loser, getBuffEffects(winner, cons.ACTIVE_TYPE_SLEEP), retObj, skill);
       this.resolveEffects(winner, loser, getItemEffects(winner, cons.ACTIVE_TYPE_SLEEP), retObj, skill);
+      this.resolveEffects(loser, winner, getBuffEffects(loser, cons.ACTIVE_TYPE_SLEEP), retObj, skill);
+      this.resolveEffects(loser, winner, getItemEffects(loser, cons.ACTIVE_TYPE_SLEEP), retObj, skill);
       retObj.crit = true;
       break;
     }
