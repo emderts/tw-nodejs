@@ -1941,7 +1941,7 @@ async function procNextPhaseDungeon(req, res) {
         } 
       } else if (sess.dungeonProgress.code == 3) {
         var re = trades[sess.dungeonProgress.roomNum].result;
-        if (req.session.dungeonProgress.phase == (10 - char.rank)) {
+        if (req.session.dungeonProgress.phase == (10 - char.rank) && re.winnerLeft) {
           var reward = '';
           if (re.winnerLeft) {
             reward += '승급 심사를 통과했습니다!<br>';
