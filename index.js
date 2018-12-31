@@ -2043,8 +2043,8 @@ async function procNextPhaseDungeon(req, res) {
               char.dungeonInfos.clearBlacklight = true;
               char.statPoint += 5;
               reward += '첫 번째 [메모리얼 게이트 - 검은 빛의 수련장] 2페이즈 돌파!<br>스탯 포인트 5를 획득했습니다.<br>';
-              //await client.query('insert into news(content, date) values ($1, $2)', 
-              //    [char.name + getIga(char.nameType) + ' [메모리얼 게이트 - 검은 빛의 수련장]을 돌파했습니다!', new Date()]);
+              await client.query('insert into news(content, date) values ($1, $2)', 
+                  [char.name + getIga(char.nameType) + ' [메모리얼 게이트 - 검은 빛의 수련장]을 돌파했습니다!', new Date()]);
             }
             if (req.session.dungeonProgress.phase == 2) {
               enterNext = false;
@@ -2059,6 +2059,9 @@ async function procNextPhaseDungeon(req, res) {
             }
             if (req.session.dungeonProgress.phase == 3) {
               enterNext = false;
+              if (!char.achievement[39]) {
+                await giveAchievement(charRow.uid, char, 39);
+              }
             }
             delete trades[sess.dungeonProgress.roomNum];
             await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
