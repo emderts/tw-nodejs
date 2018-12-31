@@ -15,6 +15,12 @@ doWork();
 async function doWork() {
 try {
   const client = await pool.connect();
+    const results = await client.query('select * from characters');
+    for (val of results.rows) {
+      var charData = JSON.parse(val.char_data);
+      charData.dungeonInfos.runRankup = false;
+      await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(charData), val.uid]);
+    } 
   
   const resultg = await client.query('select * from global');
   for (val of resultg.rows) {
