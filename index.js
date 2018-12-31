@@ -2064,7 +2064,7 @@ async function procNextPhaseDungeon(req, res) {
             }
             delete trades[sess.dungeonProgress.roomNum];
             await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
-            res.render('pages/dungeonResult', {result: re.result, resultList: [], isFinished : enterNext, reward : reward, stop : false});
+            res.render('pages/dungeonResult', {result: re.result, resultList: [], isFinished : !enterNext, reward : reward, stop : false});
           }
         } else {
           sess.dungeonProgress.charData.curHp += (sess.dungeonProgress.charData.stat.maxHp - sess.dungeonProgress.charData.curHp) * 0.15;
@@ -2085,7 +2085,7 @@ async function procNextPhaseDungeon(req, res) {
         trades[roomNum].rightChr = JSON.parse(JSON.stringify(enemy));
         req.session.dungeonProgress.phase = req.session.dungeonProgress.phase + 1;
         req.session.dungeonProgress.tgtList = req.session.dungeonProgress.list;
-        req.session.dungeonProgress.roomNum = req.session.dungeonProgress.roomNum;
+        req.session.dungeonProgress.roomNum = roomNum;
 
         res.render('pages/trade', {room: roomNum, uid: charRow.uid});
         return;
