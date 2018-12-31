@@ -506,12 +506,12 @@ Battlemodule.prototype._doBattleTurn = function() {
     var redecide = false;
     if (findBuffByCode(loser, 10004).length == 0 && findBuffByCode(loser, 10005).length == 0) {
       if (!redecide && skillFailed.effect[0] && skillFailed.effect[0].code === cons.EFFECT_TYPE_SKILL_RESELECT && getRandom(skillFailed.effect[0].chance)) {
-        this.result += '[ ' + skillFailed.name + ' ] 효과로 스킬이 재선택됩니다!<br>';
+        this.result += '[ ' + skillFailed.name + ' ] 효과로 스킬이 재선택됩니다!<br></div>';
         continue;
       } 
       for (val of getBuffEffects(loser, cons.ACTIVE_TYPE_SKILL_RESELECT)) {
         if (val.code === cons.EFFECT_TYPE_SKILL_RESELECT && getRandom(val.chance)) {
-          this.result += '[ ' + val.buff.name + ' ] 효과로 스킬이 재선택됩니다!<br>';
+          this.result += '[ ' + val.buff.name + ' ] 효과로 스킬이 재선택됩니다!<br></div>';
           redecide = true;
           this.resolveEffects(loser, winner, [val], null);
           break;
@@ -519,7 +519,7 @@ Battlemodule.prototype._doBattleTurn = function() {
       }
       for (val of getItemEffects(loser, cons.ACTIVE_TYPE_SKILL_RESELECT)) {
         if (val.code === cons.EFFECT_TYPE_SKILL_RESELECT && getRandom(val.chance)) {
-          this.result += '[ ' + val.item.name + ' ] 효과로 스킬이 재선택됩니다!<br>';
+          this.result += '[ ' + val.item.name + ' ] 효과로 스킬이 재선택됩니다!<br></div>';
           redecide = true;
           this.resolveEffects(loser, winner, [val], null);
           break;
