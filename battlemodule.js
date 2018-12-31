@@ -1018,6 +1018,11 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
       } else if (eff.isPercentSkill) {
         valueUsed *= winner.skill[eff.skillKey][eff.percentKey];
       }
+      
+      if ((eff.percentKey == 'maxHp' || eff.percentKey == 'curHp') && dst.boss) {
+        valueUsed *= (1 - dst.boss);
+      }
+      
       if (eff.addAttackCount) {
         const atkCnt = (isLeft ? this.leftWin : this.rightWin);
         valueUsed *= (atkCnt - (this.atkCntBefore ? this.atkCntBefore : 0));
