@@ -13,89 +13,89 @@ const min = new Date().getMinutes();
 doWork();
 
 async function doWork() {
-try {
-  const client = await pool.connect();
-    const results = await client.query('select * from characters');
-    for (val of results.rows) {
-      var charData = JSON.parse(val.char_data);
-      charData.dungeonInfos.runRankup = false;
-      await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(charData), val.uid]);
-    } 
-  
-  const resultg = await client.query('select * from global');
-  for (val of resultg.rows) {
-    var glb = JSON.parse(val.globals);
-    const result = await client.query('select * from raids where rindex = 4');
-    if (result.rows.length > 0) {
-    var row = result.rows[0];
-    if (glb.fieldBossSpawned0 > 0) {
-      const resultx = await client.query('select * from characters');
-      for (val of resultx.rows) {
-        var charData = JSON.parse(val.char_data);
-        charData.dungeonInfos.runFieldBoss0 = false;
-        await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(charData), val.uid]);
-      } 
-       
-      glb.fieldBossSpawned0--;
-      if (row.phase >= 2) {
-        await client.query('delete from raids where rindex = 4');
-        glb.fieldBossSpawned0 = 0;
+    try {
+      const client = await pool.connect();
+        const results = await client.query('select * from characters');
+        for (val of results.rows) {
+          var charData = JSON.parse(val.char_data);
+          charData.dungeonInfos.runRankup = false;
+          await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(charData), val.uid]);
+        } 
+      
+      const resultg = await client.query('select * from global');
+      for (val of resultg.rows) {
+        var glb = JSON.parse(val.globals);
+        const result = await client.query('select * from raids where rindex = 4');
+        if (result.rows.length > 0) {
+        var row = result.rows[0];
+        if (glb.fieldBossSpawned0 > 0) {
+          const resultx = await client.query('select * from characters');
+          for (val of resultx.rows) {
+            var charData = JSON.parse(val.char_data);
+            charData.dungeonInfos.runFieldBoss0 = false;
+            await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(charData), val.uid]);
+          } 
+           
+          glb.fieldBossSpawned0--;
+          if (row.phase >= 2) {
+            await client.query('delete from raids where rindex = 4');
+            glb.fieldBossSpawned0 = 0;
+          }
+        }
+        if (glb.fieldBossSpawned0 === 6 && row.phase == 1) {
+          await client.query('insert into news(content, date) values ($1, $2)', ['움직이는 요새 - 에이카가 사라지기까지 1시간 남았습니다!', new Date()]);
+        }
+        if (glb.fieldBossSpawned0 === 3 && row.phase == 1) {
+          await client.query('insert into news(content, date) values ($1, $2)', ['움직이는 요새 - 에이카가 사라지기까지 30분 남았습니다!', new Date()]);
+        }
+        if (glb.fieldBossSpawned0 === 1 && row.phase == 1) {
+          await client.query('insert into news(content, date) values ($1, $2)', ['움직이는 요새 - 에이카가 사라지기까지 10분 남았습니다!', new Date()]);
+        }
+        if (glb.fieldBossSpawned0 === 0 && row.phase == 1) {
+            await client.query('delete from raids where rindex = 4');
+          await client.query('insert into news(content, date) values ($1, $2)', 
+            ['움직이는 요새 - 에이카가 사라졌습니다..', new Date()]);
+          glb.fieldBossSpawned0 = 0;
+        }
+        }
+        
+        const result2 = await client.query('select * from raids where rindex = 5');
+        if (result2.rows.length > 0) {
+        row = result2.rows[0];
+        if (glb.fieldBossSpawned1 > 0) {
+          const resultx2 = await client.query('select * from characters');
+          for (val of resultx2.rows) {
+            var charData = JSON.parse(val.char_data);
+            charData.dungeonInfos.runFieldBoss1 = false;
+            await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(charData), val.uid]);
+          } 
+           
+          glb.fieldBossSpawned1--;
+          if (row.phase >= 2) {
+            await client.query('delete from raids where rindex = 5');
+            glb.fieldBossSpawned1 = 0;
+          }
+        }
+        if (glb.fieldBossSpawned1 === 6 && row.phase == 1) {
+          await client.query('insert into news(content, date) values ($1, $2)', ['매버릭 타임 코더 - 줄리어스 엠더츠가 사라지기까지 1시간 남았습니다!', new Date()]);
+        }
+        if (glb.fieldBossSpawned1 === 3 && row.phase == 1) {
+          await client.query('insert into news(content, date) values ($1, $2)', ['매버릭 타임 코더 - 줄리어스 엠더츠가 사라지기까지 30분 남았습니다!', new Date()]);
+        }
+        if (glb.fieldBossSpawned1 === 1 && row.phase == 1) {
+          await client.query('insert into news(content, date) values ($1, $2)', ['매버릭 타임 코더 - 줄리어스 엠더츠가 사라지기까지 10분 남았습니다!', new Date()]);
+        }
+        if (glb.fieldBossSpawned1 === 0 && row.phase == 1) {
+            await client.query('delete from raids where rindex = 5');
+          await client.query('insert into news(content, date) values ($1, $2)', 
+            ['매버릭 타임 코더 - 줄리어스 엠더츠가 사라졌습니다..', new Date()]);
+          glb.fieldBossSpawned1 = 0;
+        }
+        }
       }
+      await client.query('update global set globals = $1', [JSON.stringify(glb)]);
+      
+      client.release();  
+    } catch (err) {
     }
-    if (glb.fieldBossSpawned0 === 6 && row.phase == 1) {
-      await client.query('insert into news(content, date) values ($1, $2)', ['움직이는 요새 - 에이카가 사라지기까지 1시간 남았습니다!', new Date()]);
-    }
-    if (glb.fieldBossSpawned0 === 3 && row.phase == 1) {
-      await client.query('insert into news(content, date) values ($1, $2)', ['움직이는 요새 - 에이카가 사라지기까지 30분 남았습니다!', new Date()]);
-    }
-    if (glb.fieldBossSpawned0 === 1 && row.phase == 1) {
-      await client.query('insert into news(content, date) values ($1, $2)', ['움직이는 요새 - 에이카가 사라지기까지 10분 남았습니다!', new Date()]);
-    }
-    if (glb.fieldBossSpawned0 === 0 && row.phase == 1) {
-        await client.query('delete from raids where rindex = 4');
-      await client.query('insert into news(content, date) values ($1, $2)', 
-        ['움직이는 요새 - 에이카가 사라졌습니다..', new Date()]);
-      glb.fieldBossSpawned0 = 0;
-    }
-    }
-    
-    const result2 = await client.query('select * from raids where rindex = 5');
-    if (result2.rows.length > 0) {
-    row = result2.rows[0];
-    if (glb.fieldBossSpawned1 > 0) {
-      const resultx2 = await client.query('select * from characters');
-      for (val of resultx2.rows) {
-        var charData = JSON.parse(val.char_data);
-        charData.dungeonInfos.runFieldBoss1 = false;
-        await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(charData), val.uid]);
-      } 
-       
-      glb.fieldBossSpawned1--;
-      if (row.phase >= 2) {
-        await client.query('delete from raids where rindex = 5');
-        glb.fieldBossSpawned1 = 0;
-      }
-    }
-    if (glb.fieldBossSpawned1 === 6 && row.phase == 1) {
-      await client.query('insert into news(content, date) values ($1, $2)', ['매버릭 타임 코더 - 줄리어스 엠더츠가 사라지기까지 1시간 남았습니다!', new Date()]);
-    }
-    if (glb.fieldBossSpawned1 === 3 && row.phase == 1) {
-      await client.query('insert into news(content, date) values ($1, $2)', ['매버릭 타임 코더 - 줄리어스 엠더츠가 사라지기까지 30분 남았습니다!', new Date()]);
-    }
-    if (glb.fieldBossSpawned1 === 1 && row.phase == 1) {
-      await client.query('insert into news(content, date) values ($1, $2)', ['매버릭 타임 코더 - 줄리어스 엠더츠가 사라지기까지 10분 남았습니다!', new Date()]);
-    }
-    if (glb.fieldBossSpawned1 === 0 && row.phase == 1) {
-        await client.query('delete from raids where rindex = 5');
-      await client.query('insert into news(content, date) values ($1, $2)', 
-        ['매버릭 타임 코더 - 줄리어스 엠더츠가 사라졌습니다..', new Date()]);
-      glb.fieldBossSpawned1 = 0;
-    }
-    }
-  }
-  await client.query('update global set globals = $1', [JSON.stringify(glb)]);
-  
-  client.release();  
-  } catch (err) {
-  }
   }

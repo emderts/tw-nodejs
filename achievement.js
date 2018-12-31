@@ -40,3 +40,8 @@ const item = require('./items');
   ach[39] = {name : '검은 빛의 검무', nameType : cons.NAME_KOR_END_CONS, desc : '메모리얼 게이트 - 검은 빛의 수련장에서 로엔그린에게 승리', hidden : true};
   
   module.exports.achData = ach;
+  
+  
+  
+  
+  
