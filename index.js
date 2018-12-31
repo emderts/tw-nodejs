@@ -1651,7 +1651,7 @@ async function procUseShop (req, res) {
     } else if (body.option >= 90022 && body.option < 90026) {
       var cost = (body.option == 90023 || body.option == 90024) ? 30 : (body.option == 90022 ? 10 : 60);
       if (char.currencies.train < cost) {
-        res.send('불탄 증표가 부족합니다.');
+        res.send('수련의 결실이 부족합니다.');
       } else {
         char.currencies.train -= cost;
         if (body.option != 90022) {
@@ -2035,6 +2035,8 @@ async function procNextPhaseDungeon(req, res) {
               var minVal = sess.dungeonProgress.phase == 1 ? 1 : (sess.dungeonProgress.phase == 2 ? 2 : 4);
               var varVal = sess.dungeonProgress.phase == 1 ? 1 : (sess.dungeonProgress.phase == 2 ? 1 : 2);
               var train = minVal + Math.floor(varVal * Math.random());
+              re.leftInfo.buffs = [];
+              re.leftInfo.items = char.items;
               req.session.dungeonProgress.charData = re.leftInfo;
               reward += '수련의 결실 ' + train + '개를 획득했습니다!<br>';
               char.currencies.train += train;
