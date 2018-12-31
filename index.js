@@ -1778,6 +1778,7 @@ async function procEnterDungeon(req, res) {
       }
     } else if (body.option == 6) {
       enemy = monster.rTimeStorm;
+      char.dungeonInfos.runFieldBoss1 = true;
       if (char.dungeonInfos.runFieldBoss1) {
         if (charRow.actionPoint <= 0) {
           client.release();
