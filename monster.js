@@ -397,9 +397,9 @@ const chara = require('./chara');
 
   charLeft.skill = {
       base : [
-              {code : 90001, name : '물리 공격', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1.0, effect : []}, 
-              {code : 90002, name : '물리 공격', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1.0, effect : []}, 
-              {code : 90003, name : '마법 공격', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 1.0, effect : []}
+              {code : 90001, name : '시간의 폭풍', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1.0, effect : []}, 
+              {code : 90002, name : '시간의 폭풍', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1.0, effect : []}, 
+              {code : 90003, name : '시간의 폭풍', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 1.0, effect : []}
              ],
       drive : {code : 90039, name : '시간의 폭풍', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_DRIVE, active : cons.ACTIVE_TYPE_TURN_START,
                cost : 0, chance : 1,
@@ -418,6 +418,79 @@ const chara = require('./chara');
 
   charLeft.skill = chara.julius.skill;
   module.exports.rJulius = charLeft;
+  
+  charLeft = {name : '초급 기사', nameType : cons.NAME_KOR_NO_END_CONS, title : '검은 빛의 수련장', rank : 7, level : 30, 
+      stat : {maxHp : 1440, phyAtk : 92, magAtk : 57}};
+  _initChar(charLeft);
+  
+  charLeft.items = {weapon : item.list[11], armor : item.list[143], subarmor : item.list[178]};
+  charLeft.image = '';
+
+  charLeft.skill = {
+      base : [
+              {code : 90015, name : '물리 공격', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1.0, effect : []},
+              {code : 90016, name : '물리 공격', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1.0, effect : []},
+              {code : 90017, name : '마법 공격', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 1.0, effect : []}
+             ],
+      drive : {code : 90041, name : '긴급 회피', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.SKILL_TYPE_DRIVE, 
+               active : cons.ACTIVE_TYPE_SKILL_LOSE, cost : 10, chance : 0.05,
+               effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 90013, buffDur : 1}]},
+      special : {code : 90040, name : '플레어 스트라이크', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 100, 
+               effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 8, buffDur : 2},
+                         {code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL, value : 2.0}]}
+  };
+  charLeft.skillSelect = 0;
+  module.exports.d7Knight = charLeft;
+  
+  charLeft = {name : '정예 기사', nameType : cons.NAME_KOR_NO_END_CONS, title : '검은 빛의 수련장', rank : 7, level : 30, 
+      stat : {maxHp : 1560, phyAtk : 120, magAtk : 65}};
+  _initChar(charLeft);
+  
+  charLeft.items = {weapon : item.list[341], armor : item.list[143], subarmor : item.list[178], trinket : item.list[398]};
+  charLeft.image = '';
+
+  charLeft.skill = {
+      base : [
+              {code : 90015, name : '물리 공격', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1.0, effect : []},
+              {code : 90016, name : '물리 공격', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1.0, effect : []},
+              {code : 90017, name : '마법 공격', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 1.0, effect : []}
+             ],
+      drive : {code : 90041, name : '향상된 긴급 회피', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.SKILL_TYPE_DRIVE, 
+               active : cons.ACTIVE_TYPE_SKILL_LOSE, cost : 10, chance : 0.08,
+               effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 90013, buffDur : 1}]},
+      special : {code : 90040, name : '플레어 스트라이크', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 100, 
+               effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 8, buffDur : 2},
+                         {code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL, value : 2.0}]}
+  };
+  charLeft.skillSelect = 0;
+  module.exports.d7EliteKnight = charLeft;
+  
+  charLeft = {name : '기사단장 로엔그린', nameType : cons.NAME_KOR_END_CONS, title : '검은 빛의 수련장', rank : 7, level : 40, 
+      stat : {maxHp : 1680, phyAtk : 127, magAtk : 68}};
+  _initChar(charLeft);
+  
+  charLeft.items = {weapon : item.list[357], armor : item.list[143], subarmor : item.list[389], trinket : item.list[396], skillArtifact : item.list[514]};
+  charLeft.image = '';
+
+  charLeft.skill = {
+      base : [
+              {code : 90042, name : '피날레 임팩션', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1.0, 
+                effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : [10068, 10069, 10070, 10071, 10072, 10073], buffDur : 3, multiple : true},
+                          {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : [10068, 10069, 10070, 10071, 10072, 10073], buffDur : 3, multiple : true}]},
+              {code : 90043, name : '전술 지휘', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1.0, 
+                effect : [{code : cons.EFFECT_TYPE_OPP_SP, value : -10},
+                          {code : cons.EFFECT_TYPE_RESOLVE_DRIVE}]},
+              {code : 90044, name : '플레어 캐논', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 1.0, 
+                effect : [{code : cons.EFFECT_TYPE_MULTIPLE, chance : 0.25, 
+                  target : [{code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 8, buffDur : 2},
+                            {code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 11, buffDur : 2}]}]}
+             ],
+      drive : {code : 90045, name : '흑색 유성', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_DRIVE, 
+               active : cons.ACTIVE_TYPE_TAKE_HIT, cost : 10, chance : 0.25,
+               effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 90014, buffDur : 1}]}
+  };
+  charLeft.skillSelect = 0;
+  module.exports.d7Lohengrin = charLeft;
   
   charLeft = {name : '프사이', nameType : cons.NAME_KOR_NO_END_CONS, title : '승급 시험관', rank : 9, level : 40, 
       stat : {maxHp : 672, phyAtk : 33.75, magAtk : 61.25}};

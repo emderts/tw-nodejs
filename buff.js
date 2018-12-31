@@ -4607,6 +4607,36 @@ module.exports.getBuffData = function(eff) {
     effectObj.code = 10004;
     retObj.effect.push(effectObj);
     break;
+  case 90013 : 
+    retObj.name = '긴급 회피';
+    retObj.nameType = cons.NAME_KOR_NO_END_CONS;
+    retObj.stackType = 1;
+    retObj.durOff = cons.DURATION_TYPE_TURN_END;
+    retObj.isDebuff = false;
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_STAT_ADD;
+    effectObj.key = 'evasion';
+    effectObj.value = 0.5;
+    retObj.effect.push(effectObj);
+    break;
+  case 90014 : 
+    retObj.name = '흑색 유성';
+    retObj.nameType = cons.NAME_KOR_END_CONS;
+    retObj.stackType = 1;
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_STAT_MULTIPLY;
+    effectObj.key = 'phyReduce';
+    effectObj.value = 0;
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_STAT_MULTIPLY;
+    effectObj.key = 'magReduce';
+    effectObj.value = 0;
+    retObj.effect.push(effectObj);
+    break;
   }
 
   return retObj;

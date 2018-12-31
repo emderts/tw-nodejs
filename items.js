@@ -1148,6 +1148,14 @@ itemList[511] = { id : 511, name : '타임 코더', nameType : cons.NAME_KOR_NO_
     effect : [{active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_SP_COST_PERCENTAGE, key : 'special', value : -0.04},
               {active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_SP_COST_PERCENTAGE, key : 'special', value : -0.04},
               {code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_USE_SPECIAL, buffCode : 201715, buffDur : null}] };
+itemList[512] = { id : 512, name : '흑색의 기사', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SKILL_ARTIFACT, flavor : '', rank : 7, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 30, crit : 0.02, critDmg : 0.1 }, 
+    effectDesc : '', effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_SKILL_WIN, buffCode : 10081, buffDur : 2, chkSkillNum : 0}] };
+itemList[513] = { id : 513, name : '섬광의 기사', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SKILL_ARTIFACT, flavor : '', rank : 7, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 30 }, 
+    effectDesc : '공격 시 6% 확률로 2턴 간 적에게 [실명] 상태이상 부여', 
+    effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 8, buffDur : 2}] };
+itemList[514] = { id : 514, name : '로엔그린의 무위', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SKILL_ARTIFACT, flavor : '', rank : 7, rarity : cons.ITEM_RARITY_UNIQUE, stat : {  }, 
+    effectDesc : '연속 공격 시 스킬 피해량 +13%', 
+    effect : [{active : cons.ACTIVE_TYPE_CALC_DAMAGE, code : cons.EFFECT_TYPE_MULTIPLY_DAMAGE, value : 1.13, anySkill : true, chkWinLast : true}] };
 
 
 itemList.forEach(function(tgt) {

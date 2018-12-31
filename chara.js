@@ -1632,14 +1632,6 @@ const item = require('./items');
   charJay.skill.special = skillObj;
 
   charDekais.items = {weapon : item.list[11], armor : item.list[125], subarmor : item.list[169], trinket : item.list[253]};
-  charMarang.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '흔들리는 달빛의 무기 카드', rank : 9, resultType : 0});
-  charMarang.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '흔들리는 달빛의 무기 카드', rank : 9, resultType : 0});
-  charMarang.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '흔들리는 달빛의 방어구 카드', rank : 9, resultType : 1});
-  charMarang.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '흔들리는 달빛의 방어구 카드', rank : 9, resultType : 1});
-  charMarang.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '흔들리는 달빛의 보조방어구 카드', rank : 9, resultType : 2});
-  charMarang.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '흔들리는 달빛의 보조방어구 카드', rank : 9, resultType : 2});
-  charMarang.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '흔들리는 달빛의 장신구 카드', rank : 9, resultType : 3});
-  charMarang.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '흔들리는 달빛의 장신구 카드', rank : 9, resultType : 3});
   
   function _initChar(char) {
     char.stat = {};
@@ -1680,8 +1672,8 @@ const item = require('./items');
     char.battleRecord = {};
     char.winRecord = {};
     char.dust = 0;
-    char.dungeonInfos = {taurusReward : 3, enterMevious : 3, enterEmberCrypt : 3};
-    char.currencies = {warlock : 0, aeika : 0};
+    char.dungeonInfos = {taurusReward : 3, enterMevious : 3, enterEmberCrypt : 3, enterBlacklight : 3, buyBlacklight : 0};
+    char.currencies = {warlock : 0, aeika : 0, train : 0};
     char.quest = {};
     char.stoneCube = [];
     char.birth = null;

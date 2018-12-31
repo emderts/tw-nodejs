@@ -25,7 +25,7 @@
   <% for (dun of dungeonList) { %>
   <div class="charItem">
     <form action="/enterDungeon" method="post">
-      <button type="submit"<%= dun.active ? '' : ' disabled' %>><%= dun.name %><%= dun.remain ? ' (' + dun.remain + '회 남음)' : '' %></button>
+      <button type="submit"<%= dun.active ? '' : ' disabled' %>><%= dun.name %><%= dun.remain ? ' (' + dun.remain + '회 남음)' : '' %><%= dun.additional ? ' [1 피로도]' : '' %></button>
       <input type="hidden" name="option" value="<%= dun.code %>">
     </form>
     <% if (dun.phase) { 

@@ -921,6 +921,9 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
     if (eff.chkEqualAttack && this.leftWin != this.rightWin) {
       continue;
     }
+    if (eff.chkWinLast && !winner.winLast) {
+      continue;
+    }
     if (eff.chkLoseLast && winner.winLast) {
       continue;
     }

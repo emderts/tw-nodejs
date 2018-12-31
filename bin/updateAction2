@@ -42,6 +42,15 @@ try {
         glb.fieldBossSpawned0 = 0;
       }
     }
+    if (glb.fieldBossSpawned0 === 6 && row.phase == 1) {
+      await client.query('insert into news(content, date) values ($1, $2)', ['움직이는 요새 - 에이카가 사라지기까지 1시간 남았습니다!', new Date()]);
+    }
+    if (glb.fieldBossSpawned0 === 3 && row.phase == 1) {
+      await client.query('insert into news(content, date) values ($1, $2)', ['움직이는 요새 - 에이카가 사라지기까지 30분 남았습니다!', new Date()]);
+    }
+    if (glb.fieldBossSpawned0 === 1 && row.phase == 1) {
+      await client.query('insert into news(content, date) values ($1, $2)', ['움직이는 요새 - 에이카가 사라지기까지 10분 남았습니다!', new Date()]);
+    }
     if (glb.fieldBossSpawned0 === 0 && row.phase == 1) {
         await client.query('delete from raids where rindex = 4');
       await client.query('insert into news(content, date) values ($1, $2)', 
@@ -66,6 +75,15 @@ try {
         await client.query('delete from raids where rindex = 5');
         glb.fieldBossSpawned1 = 0;
       }
+    }
+    if (glb.fieldBossSpawned1 === 6 && row.phase == 1) {
+      await client.query('insert into news(content, date) values ($1, $2)', ['매버릭 타임 코더 - 줄리어스 엠더츠가 사라지기까지 1시간 남았습니다!', new Date()]);
+    }
+    if (glb.fieldBossSpawned1 === 3 && row.phase == 1) {
+      await client.query('insert into news(content, date) values ($1, $2)', ['매버릭 타임 코더 - 줄리어스 엠더츠가 사라지기까지 30분 남았습니다!', new Date()]);
+    }
+    if (glb.fieldBossSpawned1 === 1 && row.phase == 1) {
+      await client.query('insert into news(content, date) values ($1, $2)', ['매버릭 타임 코더 - 줄리어스 엠더츠가 사라지기까지 10분 남았습니다!', new Date()]);
     }
     if (glb.fieldBossSpawned1 === 0 && row.phase == 1) {
         await client.query('delete from raids where rindex = 5');

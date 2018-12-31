@@ -172,7 +172,7 @@
       <button onclick="invClick(this, event)" type="button">최대 경험치 제한 확장 [10pt]</button>
       <input type="hidden" name="option" value="8">
     </form>
-  </div><!--
+  </div>
   <div class="charItem">
     <form action="/useShop" method="post">
       <button onclick="invClick(this, event)" type="button">메비우스 섬멸 보상 초기화 [10pt]</button>
@@ -184,7 +184,7 @@
       <button onclick="invClick(this, event)" type="button">재의 묘소 보상 초기화 [10pt]</button>
       <input type="hidden" name="option" value="10">
     </form>
-  </div>-->
+  </div>
   <div class="charItem">
     <form action="/useShop" method="post">
       <button onclick="invClick(this, event)" type="button">추가 피로도 +10 [<%= actionBought ? 15 : 10 %>pt]</button>
@@ -402,6 +402,61 @@
     <form action="/useShop" method="post">
       <button onclick="invClick(this, event)" type="button">에이카의 예비 부품 상자 [5 움직이는 요새의 파편]</button>
       <input type="hidden" name="option" value="90018">
+    </form>
+  </div>
+  <% } %>
+  <% if (currencies.julius) { %>
+  <div class="backLink">
+    조작된 시간의 파편 교환자 (현재 조작된 시간의 파편 : <%= currencies.julius %>)
+  </div>
+  <div class="charItem">
+    <form action="/useShop" method="post">
+      <button onclick="invClick(this, event)" type="button">프리미엄 포인트 1점 [1 조작된 시간의 파편]</button>
+      <input type="hidden" name="option" value="90019">      
+    </form>
+  </div>
+  <div class="charItem">
+    <form action="/useShop" method="post">
+      <button onclick="invClick(this, event)" type="button">장비 리설트 카드 [3 조작된 시간의 파편]</button>
+      <input type="hidden" name="option" value="90020">
+    </form>
+  </div>
+  <div class="charItem">
+    <form action="/useShop" method="post">
+      <button onclick="invClick(this, event)" type="button">조작된 시간의 잠금 상자 [5 조작된 시간의 파편]</button>
+      <input type="hidden" name="option" value="90021">
+    </form>
+  </div>
+  <% } %>
+  <% if (currencies.train) { %>
+  <div class="backLink">
+    검은 빛의 수련가 (현재 수련의 결실 : <%= currencies.train %>)
+  </div>
+  <div class="charItem">
+    <form action="/useShop" method="post">
+      <button onclick="invClick(this, event)" type="button">스탯 포인트 +2 (<%= 5 - item.train[3] %>회 남음) [10 수련의 결실]</button>
+      <input type="hidden" name="option" value="90022">
+    </form>
+  </div>
+  <div class="charItem">
+    <form action="/useShop" method="post">
+      <button onclick="invClick(this, event)" type="button">흑색의 기사 [30 수련의 결실]</button>
+      <div class="itemTooltip"><%- makeTooltip(item.train[0]) %></div> 
+      <input type="hidden" name="option" value="90023">
+    </form>
+  </div>
+  <div class="charItem">
+    <form action="/useShop" method="post">
+      <button onclick="invClick(this, event)" type="button">섬광의 기사 [30 수련의 결실]</button>
+      <div class="itemTooltip"><%- makeTooltip(item.train[1]) %></div> 
+      <input type="hidden" name="option" value="90024">
+    </form>
+  </div>
+  <div class="charItem">
+    <form action="/useShop" method="post">
+      <button onclick="invClick(this, event)" type="button">로엔그린의 무위 [60 수련의 결실]</button>
+      <div class="itemTooltip"><%- makeTooltip(item.train[2]) %></div> 
+      <input type="hidden" name="option" value="90025">
     </form>
   </div>
   <% } %>

@@ -41,6 +41,7 @@ try {
       var charData = JSON.parse(val.char_data);
       charData.dungeonInfos.runMevious = false;
       charData.dungeonInfos.runEmberCrypt = false;
+      charData.dungeonInfos.runBlacklight = false;
       charData.dungeonInfos.runFieldBoss = false;
       await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(charData), val.uid]);
     } 
@@ -104,6 +105,7 @@ try {
       charData.matchCount = 10;
       charData.resultMaxGauge = 0;
       charData.addExpCount = 3;
+      charData.dungeonInfos.rewardMevious = false;
       charData.dungeonInfos.rewardMevious2 = false;
       charData.dungeonInfos.rewardMevious4 = false;
       charData.dungeonInfos.rewardMevious6 = false;
@@ -118,6 +120,10 @@ try {
       charData.dungeonInfos.taurusReward = 3;
       charData.dungeonInfos.rewardEmberCrypt = false;
       charData.dungeonInfos.enterEmberCrypt = 3;
+      charData.dungeonInfos.enterBlacklight = 3;
+      charData.dungeonInfos.rewardBlacklight1 = false;
+      charData.dungeonInfos.rewardBlacklight2 = false;
+      charData.dungeonInfos.rewardBlacklight3 = false;
       charData.dungeonInfos.resetMevious = false;
       charData.dungeonInfos.resetEmberCrypt = false;
       charData.dungeonInfos.rewardFieldBoss01 = false;

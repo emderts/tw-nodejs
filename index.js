@@ -77,7 +77,7 @@ const app = express()
 .post('/doRankup', procRankup)
 .post('/getCard', procGetCard)
 .post('/actionAccel', procActionAccel)
-.get('/test', (req, res) => res.render('pages/battle', {result: (new battlemodule.bmodule()).doBattle(JSON.parse(JSON.stringify(chara.nux)), JSON.parse(JSON.stringify(chara.ruisun)), 1).result}))
+.get('/test', (req, res) => res.render('pages/battle', {result: (new battlemodule.bmodule()).doBattle(JSON.parse(JSON.stringify(chara.nux)), JSON.parse(JSON.stringify(monster.d7Lohengrin)), 1).result}))
 .get('/test2', (req, res) => res.render('pages/trade', {room : '1', uid : '03'}))
 .get('/test3', (req, res) => res.render('pages/trade', {room : '1', uid : '06'}))
 .get('/test4', (req, res) => res.send(procInit2()))
@@ -368,9 +368,12 @@ async function procInit2 () {
     for (val of result.rows) {
       var char = JSON.parse(val.char_data);
       
-    //  char.julius = 0;
+      char.currencies.train = 0;
+      char.dungeonInfos.enterBlacklight = 3;
+      char.dungeonInfos.buyBlacklight = 0;
       if (val.uid == '02') {
-        char.inventory.push({name : '레이드 소환권 - 매버릭 타임 코더', type : 90005, rarity : cons.ITEM_RARITY_PREMIUM, value : 1});
+        char.rank =  7;
+        //char.inventory.push({name : '레이드 소환권 - 매버릭 타임 코더', type : 90005, rarity : cons.ITEM_RARITY_PREMIUM, value : 1});
       }
       /*if (char.items.trinket.id == 432) {
         char.items.trinket.effectDesc = item.list[432].effectDesc;
@@ -854,7 +857,7 @@ async function procConfirmItem (req, res) {
               await client.query('insert into raids(rindex, open, phase, monsters) values (5, \'O\', 1, $1)', 
                 [JSON.stringify({1 : monster.rJulius})]);
           }
-          glb['fieldBossSpawned' + tgtObj.value] = 12;
+          glb['fieldBossSpawned' + tgtObj.value] = 15;
           glb['fieldBossSummon' + tgtObj.value] = charRow.uid;
           await client.query('update global set globals = $1', [JSON.stringify(glb)]);
         } else {
@@ -1436,7 +1439,8 @@ async function procShop(req, res) {
       actionBought : char.actionBought, rankFactor : Math.pow(2, 9 - char.rank), currencies : char.currencies,
       item : {mevious : [item.list[412], item.list[413], item.list[414], item.list[415]], 
               ember : [item.list[416], item.list[417], item.list[418], item.list[419]],
-              burntMark : [item.list[420], item.list[421], item.list[422], item.list[423]]}});
+              burntMark : [item.list[420], item.list[421], item.list[422], item.list[423]],
+              train : [item.list[512], item.list[513], item.list[514], char.dungeonInfos.buyBlacklight]}});
   } catch (err) {
     console.error(err);
     res.send('내부 오류');
@@ -1509,7 +1513,18 @@ async function procUseShop (req, res) {
       } else {
         char.premiumPoint -= 10;
         char.dungeonInfos.runMevious = false;
+        char.dungeonInfos.enterMevious = 3;
         char.dungeonInfos.rewardMevious = false;
+        char.dungeonInfos.rewardMevious2 = false;
+        char.dungeonInfos.rewardMevious4 = false;
+        char.dungeonInfos.rewardMevious6 = false;
+        char.dungeonInfos.rewardMevious8 = false;
+        char.dungeonInfos.rewardMevious10 = false;
+        char.dungeonInfos.rewardMevious12 = false;
+        char.dungeonInfos.rewardMevious14 = false;
+        char.dungeonInfos.rewardMevious16 = false;
+        char.dungeonInfos.rewardMevious18 = false;
+        char.dungeonInfos.rewardMevious20 = false;
         char.dungeonInfos.resetMevious = true;
         if (char.quest[8]) {
           char.quest[8].progress += 1;
@@ -1523,6 +1538,7 @@ async function procUseShop (req, res) {
       } else {
         char.premiumPoint -= 10;
         char.dungeonInfos.runEmberCrypt = false;
+        char.dungeonInfos.enterEmberCrypt = 3;
         char.dungeonInfos.rewardEmberCrypt = false;
         char.dungeonInfos.resetEmberCrypt = true;
         if (char.quest[8]) {
@@ -1618,6 +1634,38 @@ async function procUseShop (req, res) {
           char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '에이카의 예비 부품 상자', resultType : 90006, value : 0});
         }
       }
+    } else if (body.option >= 90019 && body.option < 90022) {
+      var cost = (body.option == 90019) ? 1 : (body.option == 90020 ? 3 : 5);
+      if (char.currencies.julius < cost) {
+        res.send('조작된 시간의 파편이 부족합니다.');
+      } else {
+        char.currencies.julius -= cost;
+        if (body.option == 90019) {
+          char.premiumPoint += 1;
+        } else if (body.option == 90020) {
+          addSpecialResultCard(char, 4);
+        } else {
+          char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '조작된 시간의 잠금 상자', resultType : 90006, value : 1});
+        }
+      }
+    } else if (body.option >= 90022 && body.option < 90026) {
+      var cost = (body.option == 90023 || body.option == 90024) ? 30 : (body.option == 90022 ? 10 : 60);
+      if (char.currencies.train < cost) {
+        res.send('불탄 증표가 부족합니다.');
+      } else {
+        char.currencies.train -= cost;
+        if (body.option != 90022) {
+          char.inventory.push(JSON.parse(JSON.stringify(item.list[512 + (body.option - 90023)])));
+        } else {
+          if (char.dungeonInfos.buyBlacklight >= 5) {
+            char.currencies.train += cost;
+            res.send('더 이상 구매할 수 없습니다.');            
+          } else {
+            char.dungeonInfos.buyBlacklight++;
+            char.statPoint += 2;
+          }
+        }
+      }
     }
     await client.query('update characters set char_data = $1, actionpoint = $3 where uid = $2', [JSON.stringify(char), charRow.uid, action]);
     if (!res.headersSent) {
@@ -1643,15 +1691,16 @@ async function procDungeon(req, res) {
     dungeonList.push({name : '어나더 게이트 - 재의 묘소 [9급 20레벨 이상]', code : 2, remain : char.dungeonInfos.enterEmberCrypt, active : !char.dungeonInfos.runEmberCrypt && char.dungeonInfos.enterEmberCrypt > 0 && (char.rank <= 8 || char.level >= 20)});
     dungeonList.push({name : '승급 심사장 [20레벨 이상]', code : 3, active : !char.dungeonInfos.runRankup && char.level >= 20});
     dungeonList.push({name : '필드 보스 - 고대 흑마법사 출현', code : 4, active : false});
-    dungeonList.push({name : '필드 보스 - 움직이는 요새 [피로도 1]', code : 5, active : false});
-    dungeonList.push({name : '필드 보스 - 매버릭 타임 코더 [피로도 1]', code : 6, active : false});
+    dungeonList.push({name : '필드 보스 - 움직이는 요새', code : 5, active : false, additional : char.dungeonInfos.runFieldBoss0});
+    dungeonList.push({name : '필드 보스 - 매버릭 타임 코더', code : 6, active : false, additional : char.dungeonInfos.runFieldBoss1});
+    dungeonList.push({name : '메모리얼 게이트 - 검은 빛의 수련장 [7급 10레벨 이상]', code : 7, remain : char.dungeonInfos.enterBlacklight, active : !char.dungeonInfos.runBlacklight && char.dungeonInfos.enterBlacklight > 0 && (char.rank <= 6 || (char.rank == 7 && char.level >= 10))});
     if (result && result.rows) {
       for (row of result.rows) {
         var tgt = dungeonList[row.rindex];
         if (row.rindex == 3 && row.phase <= 3) {
           tgt.active = row.open == 'O' && !char.dungeonInfos.runFieldBoss;
         } else if (row.rindex <= 5 && row.phase <= 1) {
-          tgt.active = row.open == 'O' && !char.dungeonInfos['runFieldBoss' + (row.rindex - 4)];
+          tgt.active = row.open == 'O';
         }
         if (row.open == 'O') {
           tgt.phase = row.phase;
@@ -1720,11 +1769,10 @@ async function procEnterDungeon(req, res) {
     } else if (body.option == 5) {
       const result = await client.query('select * from raids where rindex = 4');
       row = result.rows[0];
-      if (!char.dungeonInfos.runFieldBoss0 && (row.open == 'O')) {
-        curData = JSON.parse(row.monsters);
-        char.dungeonInfos.runFieldBoss0 = true;
-        enemy = curData[row.phase];
-        hpBefore = enemy.curHp ? enemy.curHp : enemy.stat.maxHp;
+      curData = JSON.parse(row.monsters);
+      enemy = curData[row.phase];
+      hpBefore = enemy.curHp ? enemy.curHp : enemy.stat.maxHp;
+      if (char.dungeonInfos.runFieldBoss0 && (row.open == 'O')) {
         if (charRow.actionPoint <= 0) {
           client.release();
           res.redirect('/');
@@ -1732,14 +1780,19 @@ async function procEnterDungeon(req, res) {
         }
       }
     } else if (body.option == 6) {
-      if (!char.dungeonInfos.runFieldBoss1) {
-        char.dungeonInfos.runFieldBoss1 = true;
-        enemy = monster.rTimeStorm;
+      enemy = monster.rTimeStorm;
+      if (char.dungeonInfos.runFieldBoss1) {
         if (charRow.actionPoint <= 0) {
           client.release();
           res.redirect('/');
           return;
         }
+      }
+    } else if (body.option == 7) {
+      if (!char.dungeonInfos.runBlacklight && char.dungeonInfos.enterBlacklight > 0 && (char.rank <= 6 || (char.rank == 7 && char.level >= 10))) {
+        char.dungeonInfos.runBlacklight = true;
+        char.dungeonInfos.enterBlacklight--;
+        enemy = monster.d7Knight;
       }
     }
     if (enemy) {
@@ -1759,7 +1812,7 @@ async function procEnterDungeon(req, res) {
         if (body.option == 1) {
           req.session.dungeonProgress.taurus = 0;
         }
-      } else if (body.option == 3) {
+      } else if (body.option == 3 || body.option == 7) {
         var roomNum = curRoom++;
         trades[roomNum] = {};
         trades[roomNum].leftUid = charRow.uid;
@@ -1815,9 +1868,12 @@ async function procEnterDungeon(req, res) {
               reward += '누적 피해량 보상으로 움직이는 요새의 파편 1개를 획득했습니다.<br>';
             }  
           }
-          await client.query('update characters set actionPoint = $1 where uid = $2', [charRow.actionPoint - 1, charRow.uid]);
+          if (char.dungeonInfos.runFieldBoss0) {
+            await client.query('update characters set actionPoint = $1 where uid = $2', [charRow.actionPoint - 1, charRow.uid]);
+          }
           await client.query('update raids set phase = $1, monsters = $2 where rindex = 4', [row.phase + (re.winnerLeft ? 0 : 1), JSON.stringify(curData)]);
-          
+
+          char.dungeonInfos.runFieldBoss0 = true;
         }
         if (!re.winnerLeft) {
           if (body.option == 4) {
@@ -1944,10 +2000,8 @@ async function procNextPhaseDungeon(req, res) {
         var re = trades[sess.dungeonProgress.roomNum].result;
         if (req.session.dungeonProgress.phase == (10 - char.rank) && re.winnerLeft) {
           var reward = '';
-          if (re.winnerLeft) {
-            reward += '승급 심사를 통과했습니다!<br>';
-           char.rankReq = true;
-          } 
+          reward += '승급 심사를 통과했습니다!<br>';
+          char.rankReq = true;
           delete trades[sess.dungeonProgress.roomNum];
           await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
           res.render('pages/dungeonResult', {result: re.result, resultList: [], isFinished : true, reward : reward, stop : false});
@@ -1964,20 +2018,68 @@ async function procNextPhaseDungeon(req, res) {
           curData = JSON.parse(row.monsters);
           enemy = curData[row.phase];
           hpBefore = enemy.curHp ? enemy.curHp : enemy.stat.maxHp;
-          if (charRow.actionPoint <= 0) {
+          if (char.dungeonInfos.runFieldBoss1 && charRow.actionPoint <= 0) {
             client.release();
             res.redirect('/');
             return;
           }
         }
+      } else if (sess.dungeonProgress.code == 7) {
+        if (trades[sess.dungeonProgress.roomNum]) {
+          var re = trades[sess.dungeonProgress.roomNum].result;
+          if (re.winnerLeft) {
+            var reward = '';
+            var enterNext = true;
+            if (!char.dungeonInfos['rewardBlacklight' + sess.dungeonProgress.phase]) {
+              char.dungeonInfos['rewardBlacklight' + sess.dungeonProgress.phase] = true;
+              var minVal = sess.dungeonProgress.phase == 1 ? 1 : (sess.dungeonProgress.phase == 2 ? 2 : 4);
+              var varVal = sess.dungeonProgress.phase == 1 ? 1 : (sess.dungeonProgress.phase == 2 ? 1 : 2);
+              var train = minVal + Math.floor(varVal * Math.random());
+              req.session.dungeonProgress.charData = re.leftInfo;
+              reward += '수련의 결실 ' + train + '개를 획득했습니다!<br>';
+              char.currencies.train += train;
+            }
+            if (!char.dungeonInfos.clearBlacklight && req.session.dungeonProgress.phase == 2) {
+              char.dungeonInfos.clearBlacklight = true;
+              char.statPoint += 5;
+              reward += '첫 번째 [메모리얼 게이트 - 검은 빛의 수련장] 2페이즈 돌파!<br>스탯 포인트 5를 획득했습니다.<br>';
+              //await client.query('insert into news(content, date) values ($1, $2)', 
+              //    [char.name + getIga(char.nameType) + ' [메모리얼 게이트 - 검은 빛의 수련장]을 돌파했습니다!', new Date()]);
+            }
+            if (req.session.dungeonProgress.phase == 2) {
+              enterNext = false;
+              if (re.leftInfo.curHp / re.leftInfo.stat.maxHp > 0.65) {
+                enterNext = true;
+                reward += '<br>"압도적인 실력에 경의를 표하지. 다음 상대는 나, 단장 로엔그린이다."<br>';
+              }
+              if (!enterNext && Math.random() < 0.15) {
+                enterNext = true;
+                reward += '<br>"잠깐의 여흥도 나쁘지 않지. 준비는 되었나?"<br>';
+              }
+            }
+            if (req.session.dungeonProgress.phase == 3) {
+              enterNext = false;
+            }
+            delete trades[sess.dungeonProgress.roomNum];
+            await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
+            res.render('pages/dungeonResult', {result: re.result, resultList: [], isFinished : enterNext, reward : reward, stop : false});
+          }
+        } else {
+          sess.dungeonProgress.charData.curHp += (sess.dungeonProgress.charData.stat.maxHp - sess.dungeonProgress.charData.curHp) * 0.15;
+          enemy = sess.dungeonProgress.phase == 1 ? monster.d7EliteKnight : monster.d7Lohengrin;
+        }
       }
     }
     if (enemy) {
-      if (req.session.dungeonProgress.code == 3) {
+      if (req.session.dungeonProgress.code == 3 || req.session.dungeonProgress.code == 7) {
         var roomNum = curRoom++;
         trades[roomNum] = {};
         trades[roomNum].leftUid = charRow.uid;
-        trades[roomNum].leftChr = JSON.parse(JSON.stringify(char));
+        if (req.session.dungeonProgress.code == 3) {
+          trades[roomNum].leftChr = JSON.parse(JSON.stringify(char));
+        } else {
+          trades[roomNum].leftChr = JSON.parse(JSON.stringify(req.session.dungeonProgress.charData));
+        }
         trades[roomNum].rightChr = JSON.parse(JSON.stringify(enemy));
         req.session.dungeonProgress.phase = req.session.dungeonProgress.phase + 1;
         req.session.dungeonProgress.tgtList = req.session.dungeonProgress.list;
@@ -2149,9 +2251,12 @@ async function procNextPhaseDungeon(req, res) {
               reward += '누적 피해량 보상으로 조작된 시간의 파편 1개를 획득했습니다.<br>';
             }  
           }
-          await client.query('update characters set actionPoint = $1 where uid = $2', [charRow.actionPoint - 1, charRow.uid]);
+          if (char.dungeonInfos.runFieldBoss1) {
+            await client.query('update characters set actionPoint = $1 where uid = $2', [charRow.actionPoint - 1, charRow.uid]);
+          }
           await client.query('update raids set phase = $1, monsters = $2 where rindex = 5', [row.phase + (re.winnerLeft ? 0 : 1), JSON.stringify(curData)]);
-          
+
+          char.dungeonInfos.runFieldBoss1 = true;
         }
         if (!re.winnerLeft) {
           if (req.session.dungeonProgress.code == 6) {
@@ -2961,7 +3066,7 @@ function makeDayStone(dayIn, rank, levelIn) {
 }
 
 function addResultGauge(chara, rg) {
-  if (chara.resultMaxGauge >= 2000) {
+  if (chara.resultMaxGauge >= 2500) {
     rg *= 0.5;
   }
   chara.resultGauge += rg;
