@@ -368,12 +368,9 @@ async function procInit2 () {
     for (val of result.rows) {
       var char = JSON.parse(val.char_data);
       
-      char.currencies.train = 0;
-      char.dungeonInfos.enterBlacklight = 3;
-      char.dungeonInfos.buyBlacklight = 0;
       if (val.uid == '02') {
         char.rank =  7;
-        //char.inventory.push({name : '레이드 소환권 - 매버릭 타임 코더', type : 90005, rarity : cons.ITEM_RARITY_PREMIUM, value : 1});
+        char.inventory.push({name : '레이드 소환권 - 매버릭 타임 코더', type : 90005, rarity : cons.ITEM_RARITY_PREMIUM, value : 1});
       }
       /*if (char.items.trinket.id == 432) {
         char.items.trinket.effectDesc = item.list[432].effectDesc;
