@@ -133,7 +133,8 @@ io.on('connection', (socket) => {
     }
     
     if (trades[room].left && trades[room].right) {
-      const result = battlemodule2.procBattleStart(chara[trades[room].leftChr], chara[trades[room].rightChr]);
+      trades[room].bmod = (new battlemodule.bmodule());
+      const result = trades[room].bmod.procBattleStart(chara[trades[room].leftChr], chara[trades[room].rightChr]);
       trades[room].left.emit('manualAck', result, getNames(chara[trades[room].leftChr]), getNames(chara[trades[room].rightChr]));
       trades[room].right.emit('manualAck', result, getNames(chara[trades[room].rightChr]), getNames(chara[trades[room].leftChr]));
       for (sock of trades[room].obv) {
@@ -159,7 +160,7 @@ io.on('connection', (socket) => {
       trades[room].rightSel = key;
     }
     if (trades[room].leftSel !== undefined && trades[room].rightSel !== undefined) {
-      const result = battlemodule2.procBattleTurn(trades[room].leftSel, trades[room].rightSel);
+      const result = trades[room].bmod.procBattleTurn(trades[room].leftSel, trades[room].rightSel);
       trades[room].left.emit('manualSelectAck', result.result);
       trades[room].right.emit('manualSelectAck', result.result);
       for (sock of trades[room].obv) {
