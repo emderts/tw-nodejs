@@ -2030,14 +2030,14 @@ async function procNextPhaseDungeon(req, res) {
           if (re.winnerLeft) {
             var reward = '';
             var enterNext = true;
+            re.leftInfo.buffs = [];
+            re.leftInfo.items = char.items;
+            req.session.dungeonProgress.charData = re.leftInfo;
             if (!char.dungeonInfos['rewardBlacklight' + sess.dungeonProgress.phase]) {
               char.dungeonInfos['rewardBlacklight' + sess.dungeonProgress.phase] = true;
               var minVal = sess.dungeonProgress.phase == 1 ? 1 : (sess.dungeonProgress.phase == 2 ? 2 : 4);
               var varVal = sess.dungeonProgress.phase == 1 ? 1 : (sess.dungeonProgress.phase == 2 ? 1 : 2);
               var train = minVal + Math.floor(varVal * Math.random());
-              re.leftInfo.buffs = [];
-              re.leftInfo.items = char.items;
-              req.session.dungeonProgress.charData = re.leftInfo;
               reward += '수련의 결실 ' + train + '개를 획득했습니다!<br>';
               char.currencies.train += train;
             }
