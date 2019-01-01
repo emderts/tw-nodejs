@@ -2024,6 +2024,47 @@ module.exports.getBuffData = function(eff) {
     effectObj.value = 3;
     retObj.effect.push(effectObj);
     break;
+  case 10100 : 
+    retObj.name = '하늘과 바람과 별과 시';
+    retObj.nameType = cons.NAME_KOR_NO_END_CONS;
+    retObj.stackType = 1;
+    retObj.durOff = null;
+    retObj.isDebuff = false;
+    effectObj = {};
+    effectObj.code = cons.EFFECT_TYPE_PREVENT_DEBUFF;
+    effectObj.standard = true;
+    effectObj.setTurnCooldown = 10;
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_PREVENT_DEBUFF;
+    effectObj.code = cons.EFFECT_TYPE_SELF_BUFF;
+    effectObj.buffCode = 10101;
+    effectObj.buffDur = 1;
+    retObj.effect.push(effectObj);
+    break;
+  case 10101 : 
+    retObj.name = '스치우는 별';
+    retObj.nameType = cons.NAME_KOR_END_CONS;
+    retObj.stackType = 1;
+    retObj.durOff = cons.DURATION_TYPE_TURN_END;
+    retObj.isDebuff = false;
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_STAT_ADD;
+    effectObj.key = 'phyReduce';
+    effectObj.value = 0.28;
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_STAT_ADD;
+    effectObj.key = 'magReduce';
+    effectObj.value = 0.28;
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.code = cons.EFFECT_TYPE_PREVENT_DEBUFF;
+    effectObj.standard = true;
+    retObj.effect.push(effectObj);
+    break;
   case 20101 : 
     retObj.name = '혼돈의 힘';
     retObj.nameType = cons.NAME_KOR_END_CONS;

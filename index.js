@@ -2028,7 +2028,7 @@ async function procNextPhaseDungeon(req, res) {
           }
         }
       } else if (sess.dungeonProgress.code == 7) {
-        if (trades[sess.dungeonProgress.roomNum]) {
+        if (trades[sess.dungeonProgress.roomNum] && trades[sess.dungeonProgress.roomNum].result) {
           var re = trades[sess.dungeonProgress.roomNum].result;
           if (re.winnerLeft) {
             var reward = '';

@@ -1549,6 +1549,9 @@ Battlemodule.prototype.giveBuff = function(src, recv, buffObj, printFlag, name) 
     }
   }
   for (eff of findBuffByCode(recv, cons.EFFECT_TYPE_PREVENT_DEBUFF)) {
+    if (eff.turnCooldown && eff.turnCooldown > 0) {
+      continue;
+    }
     if (eff.standard && ![0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].includes(buffObj.id)) {
       continue;
     }
@@ -1556,6 +1559,7 @@ Battlemodule.prototype.giveBuff = function(src, recv, buffObj, printFlag, name) 
       this.result += srcText + '[ ' + buffObj.name + ' ] 효과가 무효화되었다!<br>';
       this.resolveEffects(recv, src, getBuffEffects(recv, cons.ACTIVE_TYPE_PREVENT_DEBUFF), buffObj);
       this.resolveEffects(recv, src, getItemEffects(recv, cons.ACTIVE_TYPE_PREVENT_DEBUFF), buffObj);
+      this.resolveEffects(recv, src, [eff], buffObj);
       return;
     }
   }

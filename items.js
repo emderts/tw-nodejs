@@ -1081,8 +1081,8 @@ itemList[479] = { id : 479, name : '불타는 과수원 방패', nameType : cons
               {code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_ATTACK, chance : 0.05, buffCode : 90011, buffDur : null, chkEquip : 505}] };
 itemList[480] = { id : 480, name : '하늘과 바람과 별과 시', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '성찰을 향한 간결한 울림으로, 청년의 천명은 이곳에서 빛난다. "오늘 밤에도 별이 바람에 스치운다."', rank : 6, rarity : cons.ITEM_RARITY_UNIQUE, stat : { maxHp : 114, evasion : 0.05 }, 
     effectDesc : '표준 상태이상 피격 시 해당 턴 동안 받게 되는 모든 표준 상태이상을 무효화하고, 다음 턴의 시작까지 저항+28% (쿨타임 10턴)', 
-    effect : [] };
-itemList[481] = { id : 481, name : '빙판 위의 발레리나', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '', rank : 6, rarity : cons.ITEM_RARITY_UNIQUE, stat : { maxHp : 114, evasion : 0.05 }, 
+    effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_BATTLE_START, buffCode : 10100, buffDur : null}] };
+itemList[481] = { id : 481, name : '빙판 위의 발레리나', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '제 점수는요', rank : 6, rarity : cons.ITEM_RARITY_UNIQUE, stat : { maxHp : 114, evasion : 0.05 }, 
     effectDesc : '', effect : [] };
 itemList[482] = { id : 482, name : '검은색 절연 장갑', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '어디에선가는 \'정점\'의 상징 같은 물건이라는 모양이다.', rank : 6, rarity : cons.ITEM_RARITY_UNIQUE, stat : { maxHp : 114, hit : 0.075 }, 
     effectDesc : '', effect : [] };
