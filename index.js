@@ -1412,14 +1412,15 @@ async function procGivePoint(req, res) {
     const result = await client.query('select * from characters where uid = $1', [body.charUid]);
     const charRow2 = result.rows[0];
     const charTgt = JSON.parse(charRow2.char_data);
-    if (body.point <= char.premiumPoint) {
-      char.premiumPoint -= body.point;
-      charTgt.premiumPoint += Number(body.point);
+    var usedPoint = Math.floor(Number(body.point));
+    if (usedPoint <= char.premiumPoint) {
+      char.premiumPoint -= usedPoint;
+      charTgt.premiumPoint += usedPoint;
+      await client.query('insert into personal(uid, content, date) values ($1, $2, $3)', 
+          [charRow2.uid, char.name + '에게 프리미엄 포인트 ' + usedPoint + '점을 받았습니다.', new Date()]);
     }
     await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
     await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(charTgt), charRow2.uid]);
-    await client.query('insert into personal(uid, content, date) values ($1, $2, $3)', 
-        [charRow2.uid, char.name + '에게 프리미엄 포인트 ' + body.point + '점을 받았습니다.', new Date()]);
     if (!res.headersSent) {
       res.render('pages/selectItem', {title : '아이템 주기', premiumPoint : char.premiumPoint, inv : char.inventory, mode : 3, name : charTgt.name, uid : req.body.charUid, usedItem : null});
     }
