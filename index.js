@@ -2999,7 +2999,7 @@ function addExp(chara, exp) {
     exp = chara.maxExp;
   }
   chara.exp += exp;
-  if (chara.rank >= 8 || chara.level > 10) {
+  if (chara.rank <= 8 || chara.level > 10) {
     chara.maxExp -= exp;
   }
   while (chara.level < 50 && chara.exp >= chara.reqExp) {
