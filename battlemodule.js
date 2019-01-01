@@ -585,6 +585,7 @@ Battlemodule.prototype._doBattleTurn = function() {
     if (damage.crit) {
       this.result += ' (치명타)';
       this.resolveEffects(winner, loser, getBuffEffects(winner, cons.ACTIVE_TYPE_ATTACK_CRIT), damage);
+      this.resolveEffects(winner, loser, getItemEffects(winner, cons.ACTIVE_TYPE_ATTACK_CRIT), damage);
     }
     this.result += '</span><br>';
 
