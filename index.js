@@ -2069,12 +2069,14 @@ async function procNextPhaseDungeon(req, res) {
               }
             }
             delete trades[sess.dungeonProgress.roomNum];
+            sess.dungeonProgress.nextPhase = sess.dungeonProgress.phase + 1;
             await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
             res.render('pages/dungeonResult', {result: re.result, resultList: [], isFinished : !enterNext, reward : reward, stop : false});
           }
-        } else {
+        } else if (sess.dungeonProgress.nextPhase <= 3) {
           sess.dungeonProgress.charData.curHp += (sess.dungeonProgress.charData.stat.maxHp - sess.dungeonProgress.charData.curHp) * 0.15;
-          enemy = sess.dungeonProgress.phase == 1 ? monster.d7EliteKnight : monster.d7Lohengrin;
+          enemy = sess.dungeonProgress.nextPhase == 2 ? monster.d7EliteKnight : monster.d7Lohengrin;
+          delete sess.dungeonProgress.nextPhase;
         }
       }
     }

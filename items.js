@@ -1083,16 +1083,26 @@ itemList[480] = { id : 480, name : '하늘과 바람과 별과 시', nameType : 
     effectDesc : '표준 상태이상 피격 시 해당 턴 동안 받게 되는 모든 표준 상태이상을 무효화하고, 다음 턴의 시작까지 저항+28% (쿨타임 10턴)', 
     effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_BATTLE_START, buffCode : 10100, buffDur : null}] };
 itemList[481] = { id : 481, name : '빙판 위의 발레리나', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '제 점수는요', rank : 6, rarity : cons.ITEM_RARITY_UNIQUE, stat : { maxHp : 114, evasion : 0.05 }, 
-    effectDesc : '', 
-    effect : [] };
+    effectDesc : '공격 시 자신에게 [기술 점수] 1중첩 부여<br><br>[기술 점수] : 3중첩 시 소거되고 3턴 간 자신 회피 +40%', 
+    effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_ATTACK, buffCode : 10102, buffDur : null}] };
 itemList[482] = { id : 482, name : '검은색 절연 장갑', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '어디에선가는 \'정점\'의 상징 같은 물건이라는 모양이다.', rank : 6, rarity : cons.ITEM_RARITY_UNIQUE, stat : { maxHp : 114, hit : 0.075 }, 
-    effectDesc : '', effect : [] };
+    effectDesc : '[마비] 상태이상 지속 2턴 감소, 공격 시 0.1 마법 추가 피해', 
+    effect : [{code : cons.EFFECT_TYPE_REDUCE_BUFF_DURATION, active : cons.ACTIVE_TYPE_RECEIVE_BUFF, value : 2, buffCode : 9},
+              {code : cons.EFFECT_TYPE_ADD_HIT, active : cons.ACTIVE_TYPE_ATTACK, type : cons.DAMAGE_TYPE_MAGICAL, value : 0.1}] };
 itemList[483] = { id : 483, name : '트리플 버스터', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '거대한 파괴력을 가진 건틀릿. 세번정도 사용하고 나면 한동안은 사용할 수 없다.', rank : 6, rarity : cons.ITEM_RARITY_UNIQUE, stat : { phyAtkMin : 4, phyAtkMax : 4, magAtkMin : 4, magAtkMax : 4, maxHp : 114, hit : 0.075 }, 
-    effectDesc : '', effect : [] };
+    effectDesc : '자신의 각 일반 스킬이 처음으로 타격할 때 치명 +60%', 
+    effect : [{code : cons.EFFECT_TYPE_ADD_DAMAGE_OBJECT, key : 'crit', value : 0.6, anySkill : true, chkSkillNum : 0, removeEffect : true},
+              {code : cons.EFFECT_TYPE_ADD_DAMAGE_OBJECT, key : 'crit', value : 0.6, anySkill : true, chkSkillNum : 1, removeEffect : true},
+              {code : cons.EFFECT_TYPE_ADD_DAMAGE_OBJECT, key : 'crit', value : 0.6, anySkill : true, chkSkillNum : 2, removeEffect : true}] };
 itemList[484] = { id : 484, name : '레비테이션 망토', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '자아를 가지고 스스로 움직이는 망토이다. 자유자재로 날아다닐 수 있으며, 사각에서 날아오는 공격을 알아서 회피한다.', rank : 6, rarity : cons.ITEM_RARITY_UNIQUE, stat : { maxHp : 60, spCharge : 2, evasion : 0.08 }, 
-    effectDesc : '', effect : [] };
+    effectDesc : '공격 시 10% 확률로 20의 추가 마법 피해, 피격 시 6% 확률로 피해 무효화', 
+    effect : [{code : cons.EFFECT_TYPE_ADD_HIT, active : cons.ACTIVE_TYPE_ATTACK, chance : 0.1, type : cons.DAMAGE_TYPE_MAGICAL_FIXED, value : 20},
+              {code : cons.EFFECT_TYPE_CANCEL_DAMAGE, active : cons.ACTIVE_TYPE_TAKE_HIT, chance : 0.06, value : 1}] };
 itemList[485] = { id : 485, name : '잠행하는 성자', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '세상에 빛을 쐬어 줄 사명을 지닌 성자가 잠행을 위해 두른 로브. 수수한 인상의 로브이지만 신성한 아우라가 느껴진다.', rank : 6, rarity : cons.ITEM_RARITY_UNIQUE, stat : { maxHp : 114, spCharge : 2 }, 
-    effectDesc : '<br><br>[신실한 가호] : 물리,마법저항+5%', effect : [] };
+    effectDesc : '피격 시 3% 확률로 SP 75를 회복하고 자신에게 [신실한 가호] 버프 부여<br><br>[신실한 가호] : 물리/마법저항 +5%', 
+    effect : [{code : cons.EFFECT_TYPE_MULTIPLE, active : cons.ACTIVE_TYPE_TAKE_HIT, chance : 0.03,
+      target : [{code : cons.EFFECT_TYPE_SELF_SP, value : 75},
+                {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 10104, buffDur : null}]}] };
 itemList[486] = { id : 486, name : '고대 병기 조각', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '고대병기 \'제펄린\'의 기운이 담긴 조각. 사용자에게 강력한 고대의 힘을 부여하나 그 힘의 성질이 너무나 방대하고 이질적이어서 다루기가 매우 어렵다.', rank : 6, rarity : cons.ITEM_RARITY_EPIC, stat : { phyReduce : 0.05, magReduce : 0.05, maxHp : 333, hit : -0.1, evasion : -0.4, dmgReduce : 22 }, 
     effectDesc : '', effect : [] };
 itemList[487] = { id : 487, name : '바람추적자 - 고대 왕의 비보', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '동부 대륙의 고대 왕이 사용했다고 알려진 장화. 그는 바람과 같은 속도와 물과 같은 몸눌림으로 전장을 유린했다고 전해진다.', rank : 6, rarity : cons.ITEM_RARITY_EPIC, stat : { maxHp : 104, spCharge : 2, evasion : 0.05 }, 
@@ -1150,7 +1160,7 @@ itemList[511] = { id : 511, name : '타임 코더', nameType : cons.NAME_KOR_NO_
               {active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_SP_COST_PERCENTAGE, key : 'special', value : -0.04},
               {code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_USE_SPECIAL, buffCode : 201715, buffDur : null}] };
 itemList[512] = { id : 512, name : '흑색의 기사', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SKILL_ARTIFACT, flavor : '', rank : 7, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 30, crit : 0.02, critDmg : 0.1 }, 
-    effectDesc : '', effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_SKILL_WIN, buffCode : 10081, buffDur : 2, chkSkillNum : 0}] };
+    effectDesc : '', effect : [] };
 itemList[513] = { id : 513, name : '섬광의 기사', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SKILL_ARTIFACT, flavor : '', rank : 7, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 30 }, 
     effectDesc : '공격 시 6% 확률로 2턴 간 적에게 [실명] 상태이상 부여', 
     effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 8, buffDur : 2}] };

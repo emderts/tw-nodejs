@@ -341,8 +341,9 @@ Battlemodule.prototype._doBattleTurnManual = function(left, right) {
       return;
     }
   } 
-  this.resolveEffects(winner, loser, getBuffEffects(winner, cons.ACTIVE_TYPE_SKILL_WIN), skillUsed, skillNum);
-  this.resolveEffects(winner, loser, getItemEffects(winner, cons.ACTIVE_TYPE_SKILL_WIN), skillUsed, skillNum);
+  skillUsed.skillNum = skillNum;
+  this.resolveEffects(winner, loser, getBuffEffects(winner, cons.ACTIVE_TYPE_SKILL_WIN), skillUsed, skillUsed);
+  this.resolveEffects(winner, loser, getItemEffects(winner, cons.ACTIVE_TYPE_SKILL_WIN), skillUsed, skillUsed);
   this.resolveEffects(loser, winner, getBuffEffects(loser, cons.ACTIVE_TYPE_SKILL_LOSE), skillUsed);
   this.resolveEffects(loser, winner, getItemEffects(loser, cons.ACTIVE_TYPE_SKILL_LOSE), skillUsed);
 
@@ -547,8 +548,9 @@ Battlemodule.prototype._doBattleTurn = function() {
       return;
     }
   } 
-  this.resolveEffects(winner, loser, getBuffEffects(winner, cons.ACTIVE_TYPE_SKILL_WIN), skillUsed, skillNum);
-  this.resolveEffects(winner, loser, getItemEffects(winner, cons.ACTIVE_TYPE_SKILL_WIN), skillUsed, skillNum);
+  skillUsed.skillNum = skillNum;
+  this.resolveEffects(winner, loser, getBuffEffects(winner, cons.ACTIVE_TYPE_SKILL_WIN), skillUsed, skillUsed);
+  this.resolveEffects(winner, loser, getItemEffects(winner, cons.ACTIVE_TYPE_SKILL_WIN), skillUsed, skillUsed);
   this.resolveEffects(loser, winner, getBuffEffects(loser, cons.ACTIVE_TYPE_SKILL_LOSE), skillUsed);
   this.resolveEffects(loser, winner, getItemEffects(loser, cons.ACTIVE_TYPE_SKILL_LOSE), skillUsed);
 
@@ -928,7 +930,7 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
     if (eff.chkLoseLast && winner.winLast) {
       continue;
     }
-    if (eff.chkSkillNum !== undefined && skill !== eff.chkSkillNum) {
+    if (eff.chkSkillNum !== undefined && skill.skillNum !== eff.chkSkillNum) {
       continue;
     }
     if (eff.code === cons.EFFECT_TYPE_SELF_BUFF || eff.code === cons.EFFECT_TYPE_OPP_BUFF) {
@@ -1385,7 +1387,7 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
         continue;
       }
     } else if (eff.code === cons.EFFECT_TYPE_MULTIPLY_DAMAGE_OBJECT || eff.code === cons.EFFECT_TYPE_ADD_DAMAGE_OBJECT) {
-      if (eff.skillCode && eff.skillCode === skill.code) {
+      if ((eff.skillCode && eff.skillCode === skill.code) || eff.anySkill) {
         if (eff.code === cons.EFFECT_TYPE_MULTIPLY_DAMAGE_OBJECT) {
           damage[eff.key] *= (eff.value * stackMpl);
           this.result += '[ ' + eff.name + ' ] 효과로 ' + printName[eff.key] + ' ' + (eff.value * stackMpl) + '배 증가합니다!<br>';

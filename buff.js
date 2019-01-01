@@ -2065,6 +2065,53 @@ module.exports.getBuffData = function(eff) {
     effectObj.standard = true;
     retObj.effect.push(effectObj);
     break;
+  case 10102 : 
+    retObj.name = '기술 점수';
+    retObj.nameType = cons.NAME_KOR_NO_END_CONS;
+    retObj.stackType = 2;
+    retObj.stack = 1;
+    retObj.isDebuff = false;
+    retObj.durOff = null;
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_TURN_END;
+    effectObj.code = cons.EFFECT_TYPE_SELF_BUFF;
+    effectObj.buffCode = 10103;
+    effectObj.buffDur = 3;
+    effectObj.chkStack = 3;
+    effectObj.removeBuff = true;
+    retObj.effect.push(effectObj);
+    break;
+  case 10103 : 
+    retObj.name = '빙판 위의 발레리나';
+    retObj.nameType = cons.NAME_KOR_NO_END_CONS;
+    retObj.stackType = 1;
+    retObj.isDebuff = false;
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_STAT_ADD;
+    effectObj.key = 'evasion';
+    effectObj.value = 0.4;
+    retObj.effect.push(effectObj);
+    break;
+  case 10104 : 
+    retObj.name = '신실한 가호';
+    retObj.nameType = cons.NAME_KOR_NO_END_CONS;
+    retObj.stackType = 1;
+    retObj.isDebuff = false;
+    retObj.durOff = null;
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_STAT_ADD;
+    effectObj.key = 'phyReduce';
+    effectObj.value = 0.05;
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_STAT_ADD;
+    effectObj.key = 'magReduce';
+    effectObj.value = 0.05;
+    retObj.effect.push(effectObj);
+    break;
   case 20101 : 
     retObj.name = '혼돈의 힘';
     retObj.nameType = cons.NAME_KOR_END_CONS;
