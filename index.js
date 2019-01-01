@@ -50,7 +50,7 @@ const app = express()
 .post('/battleLog', procBattleLog)
 .get('/viewList', procViewList)
 .post('/viewChar', procView)
-.get('/viewItem', procViewItem)
+.get('/viewItem', procViewItemInit)
 .post('/viewItem', procViewItem)
 .get('/tradeList', procTradeList)
 .post('/doTrade', procTrade)
@@ -1269,6 +1269,10 @@ async function procView(req, res) {
   }
 }
 
+async function procViewItemInit(req, res) {
+  res.render('pages/viewItem', {items : []});
+}
+
 async function procViewItem(req, res) {
   const body = req.body;
   var list = item.list.slice();
@@ -1921,8 +1925,8 @@ async function procEnterDungeon(req, res) {
             } else {
               const charRow2 = await getCharacterByUid(globals.fieldBossSummon0);
               const char2 = JSON.parse(charRow2.char_data);
-              char.currencies.aeika++;
-              char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '에이카의 예비 부품 상자', resultType : 90006, value : 0});
+              char2.currencies.aeika++;
+              char2.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '에이카의 예비 부품 상자', resultType : 90006, value : 0});
               await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char2), charRow2.uid]);
             }
             if (charRow.uid == leaderboard[0].key) {
@@ -1935,8 +1939,8 @@ async function procEnterDungeon(req, res) {
             } else {
               const charRow2 = await getCharacterByUid(leaderboard[0].key);
               const char2 = JSON.parse(charRow2.char_data);
-              char.currencies.aeika++;
-              char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '에이카의 예비 부품 상자', resultType : 90006, value : 0});
+              char2.currencies.aeika++;
+              char2.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '에이카의 예비 부품 상자', resultType : 90006, value : 0});
               if (!char2.achievement[36]) {
                 await giveAchievement(charRow2.uid, char2, 36);
               }
@@ -2278,8 +2282,8 @@ async function procNextPhaseDungeon(req, res) {
             } else {
               const charRow2 = await getCharacterByUid(globals.fieldBossSummon1);
               const char2 = JSON.parse(charRow2.char_data);
-              char.currencies.julius++;
-              char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '조작된 시간의 잠금 상자', resultType : 90006, value : 1});
+              char2.currencies.julius++;
+              char2.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '조작된 시간의 잠금 상자', resultType : 90006, value : 1});
               await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char2), charRow2.uid]);
             }
             if (charRow.uid == leaderboard[0].key) {
@@ -2292,8 +2296,8 @@ async function procNextPhaseDungeon(req, res) {
             } else {
               const charRow2 = await getCharacterByUid(leaderboard[0].key);
               const char2 = JSON.parse(charRow2.char_data);
-              char.currencies.julius++;
-              char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '조작된 시간의 잠금 상자', resultType : 90006, value : 1});
+              char2.currencies.julius++;
+              char2.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '조작된 시간의 잠금 상자', resultType : 90006, value : 1});
               if (!char2.achievement[38]) {
                 await giveAchievement(charRow2.uid, char2, 38);
               }
