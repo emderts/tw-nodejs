@@ -1413,7 +1413,7 @@ async function procGivePoint(req, res) {
     const charRow2 = result.rows[0];
     const charTgt = JSON.parse(charRow2.char_data);
     var usedPoint = Math.floor(Number(body.point));
-    if (usedPoint <= char.premiumPoint) {
+    if (usedPoint <= char.premiumPoint && usedPoint > 0) {
       char.premiumPoint -= usedPoint;
       charTgt.premiumPoint += usedPoint;
       await client.query('insert into personal(uid, content, date) values ($1, $2, $3)', 
