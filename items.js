@@ -1083,7 +1083,8 @@ itemList[480] = { id : 480, name : '하늘과 바람과 별과 시', nameType : 
     effectDesc : '표준 상태이상 피격 시 해당 턴 동안 받게 되는 모든 표준 상태이상을 무효화하고, 다음 턴의 시작까지 저항+28% (쿨타임 10턴)', 
     effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_BATTLE_START, buffCode : 10100, buffDur : null}] };
 itemList[481] = { id : 481, name : '빙판 위의 발레리나', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '제 점수는요', rank : 6, rarity : cons.ITEM_RARITY_UNIQUE, stat : { maxHp : 114, evasion : 0.05 }, 
-    effectDesc : '', effect : [] };
+    effectDesc : '', 
+    effect : [] };
 itemList[482] = { id : 482, name : '검은색 절연 장갑', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '어디에선가는 \'정점\'의 상징 같은 물건이라는 모양이다.', rank : 6, rarity : cons.ITEM_RARITY_UNIQUE, stat : { maxHp : 114, hit : 0.075 }, 
     effectDesc : '', effect : [] };
 itemList[483] = { id : 483, name : '트리플 버스터', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '거대한 파괴력을 가진 건틀릿. 세번정도 사용하고 나면 한동안은 사용할 수 없다.', rank : 6, rarity : cons.ITEM_RARITY_UNIQUE, stat : { phyAtkMin : 4, phyAtkMax : 4, magAtkMin : 4, magAtkMax : 4, maxHp : 114, hit : 0.075 }, 

@@ -2030,7 +2030,7 @@ async function procNextPhaseDungeon(req, res) {
       } else if (sess.dungeonProgress.code == 7) {
         if (trades[sess.dungeonProgress.roomNum] && trades[sess.dungeonProgress.roomNum].result) {
           var re = trades[sess.dungeonProgress.roomNum].result;
-          if (re.winnerLeft) {
+          if (re.winnerLeft && sess.dungeonProgress.phase <= 3) {
             var reward = '';
             var enterNext = true;
             re.leftInfo.buffs = [];
@@ -2062,7 +2062,7 @@ async function procNextPhaseDungeon(req, res) {
                 reward += '<br>"잠깐의 여흥도 나쁘지 않지. 준비는 되었나?"<br>';
               }
             }
-            if (req.session.dungeonProgress.phase == 3) {
+            if (req.session.dungeonProgress.phase >= 3) {
               enterNext = false;
               if (!char.achievement[39]) {
                 await giveAchievement(charRow.uid, char, 39);
