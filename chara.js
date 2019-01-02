@@ -1686,13 +1686,13 @@ const item = require('./items');
         cardUsed : 0, dustAmt : 0, premiumAmt : 0, maxHpStat : 0, phyAtkStat : 0, magAtkStat : 0};
     char.matchCount = 10;
     char.winChain = 0;
-    char.stat.maxHp = 908;
-    char.stat.phyAtk = 71.25;
-    char.stat.magAtk = 71.25;
+    char.stat.maxHp = 1202;
+    char.stat.phyAtk = 105;
+    char.stat.magAtk = 105;
     char.items.weapon = item.list[11];//[0];
     char.items.armor = item.list[143];//[114];
-    char.items.subarmor = item.list[187];
-    char.items.trinket = item.list[244];
+    char.items.subarmor = item.list[170];
+    char.items.trinket = item.list[245];
     char.base = JSON.parse(JSON.stringify(char.stat));
   }
 

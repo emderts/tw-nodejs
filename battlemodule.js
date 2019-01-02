@@ -1849,7 +1849,7 @@ function calcStats(chara, opp) {
       }
     } else if (val.code === cons.EFFECT_TYPE_ADD_SKILL_VALUE) {
       if (val.type == 'base') {
-        if (val.effIndex !== undefined) {
+        if (val.effIndex !== undefined && chara.skill.base[val.skillKey].effect[val.effIndex]) {
           chara.skill.base[val.skillKey].effect[val.effIndex][val.key] += val.value * stackMpl;
         } else if (val.set) {
           chara.skill.base[val.skillKey][val.key] = val.value;
