@@ -77,7 +77,7 @@ const app = express()
 .post('/doRankup', procRankup)
 .post('/getCard', procGetCard)
 .post('/actionAccel', procActionAccel)
-.get('/test', (req, res) => res.render('pages/battle', {result: (new battlemodule.bmodule()).doBattle(JSON.parse(JSON.stringify(chara.lunisha)), JSON.parse(JSON.stringify(chara.gabi)), 1).result}))
+.get('/test', (req, res) => res.render('pages/battle', {result: (new battlemodule.bmodule()).doBattle(JSON.parse(JSON.stringify(chara.illun)), JSON.parse(JSON.stringify(chara.nux)), 1).result}))
 .get('/test2', (req, res) => res.render('pages/trade', {room : '1', uid : '03'}))
 .get('/test3', (req, res) => res.render('pages/trade', {room : '1', uid : '06'}))
 .get('/test4', (req, res) => res.send(procInit2()))
@@ -368,7 +368,6 @@ async function procInit2 () {
     for (val of result.rows) {
       var char = JSON.parse(val.char_data);
 
-      char.dungeonInfos.enterBlacklight += 1;
       if (val.uid == '02') {
         char.inventory.push(item.list[392]);
       }
@@ -388,28 +387,6 @@ async function procInit2 () {
         char.skill = chara.jay.skill;
       }
       
-      _patchItem('armor', 360);
-      _patchItem('armor', 361);
-      _patchItem('armor', 358);
-      _patchItem('subarmor', 376);
-      _patchItem('trinket', 398);
-      _patchItem('trinket', 399);
-      _patchItem('trinket', 400);
-      _patchItem('trinket', 401);
-      _patchItem('trinket', 402);
-      _patchItem('trinket', 403);
-      _patchItem('weapon', 353);
-      _patchItem('weapon', 350);
-      _patchItem('trinket', 406);
-      _patchItem('trinket', 407);
-      for (itm of char.inventory) {
-        if (itm.id == 392) {
-          itm.effectDesc = item.list[392].effectDesc;
-          itm.dustMod = 3;
-          itm.stat = item.list[392].stat;
-        }
-      }
-      _patchItem('trinket', 410);
       function _patchItem(type, id) {
         if (char.items[type].id == id) {
           char.items[type].effectDesc = item.list[id].effectDesc;
@@ -2070,7 +2047,6 @@ async function procNextPhaseDungeon(req, res) {
           }
         }
       } else if (sess.dungeonProgress.code == 7) {
-        console.log(sess.dungeonProgress);
         if (trades[sess.dungeonProgress.roomNum] && trades[sess.dungeonProgress.roomNum].result) {
           console.log(sess.userUid + '/' + sess.dungeonProgress.phase);
           var re = trades[sess.dungeonProgress.roomNum].result;
@@ -2121,7 +2097,7 @@ async function procNextPhaseDungeon(req, res) {
           console.log(sess.userUid + '//' + sess.dungeonProgress.nextPhase);
           sess.dungeonProgress.charData.curHp += (sess.dungeonProgress.charData.stat.maxHp - sess.dungeonProgress.charData.curHp) * 0.15;
           enemy = sess.dungeonProgress.nextPhase == 2 ? monster.d7EliteKnight : monster.d7Lohengrin;
-          delete sess.dungeonProgress.nextPhase;
+          //delete sess.dungeonProgress.nextPhase;
         }
       }
     }

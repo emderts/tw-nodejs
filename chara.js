@@ -1633,7 +1633,7 @@ const item = require('./items');
   charJay.skill.special = skillObj;
 
   charDekais.items = {weapon : item.list[11], armor : item.list[125], subarmor : item.list[169], trinket : item.list[253]};
-  
+    
   function _initChar(char) {
     char.stat = {};
     char.stat.maxHp = 400;

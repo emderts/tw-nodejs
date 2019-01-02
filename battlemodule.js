@@ -90,7 +90,7 @@ Battlemodule.prototype._doBattleStart = function (flag) {
     return (ens.length == 0 || ens[0].stack < 12) && (data.leftWin == data.rightWin);
   }
   this.modFunc[2] = function (chara, opp, data) {
-    var ens = getShieldValue(chara);
+    var ens = getShieldValue2(chara);
     return (opp.curHp * 0.3 <= ens) && (opp.stat.maxHp * 0.05 <= ens);
   }
 
@@ -898,14 +898,14 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
     }
     if (eff.chkInventories) {
       var checkVal = true;
-      for (itmChk of eff.checkInventories) {
+      for (itmChk of eff.chkInventories) {
         checkVal = checkVal && winner.inventory.some(checkInv.bind(this, itmChk));
       }
       if (!checkVal) {
         continue;
       }
     }
-    if (eff.chkEquip && !winner.items.values().some(checkInv.bind(this, eff.chkEquip))) {
+    if (eff.chkEquip && !Object.values(winner.items).some(checkInv.bind(this, eff.chkEquip))) {
       continue;
     }
     if (eff.chkPercentDamage && damage.value < winner.stat.maxHp * eff.chkPercentDamage) {
@@ -976,10 +976,13 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
         buffObj.effect[0].value *= winner.lastDamage;
       } else if (buffObj.id === 201781) {
         buffObj.effect[0].value = Math.round(buffObj.effect[0].value * winner.stat.maxHp * stackMpl);
+        this.result += winner.name + getUnnun(winner.nameType) + ' 보호막을 ' + buffObj.effect[0].value + ' 획득했다!<br>';
       } else if (buffObj.id === 2017105) {
         buffObj.effect[0].value = Math.round(buffObj.effect[0].value * (winner.stat.maxHp - winner.curHp) * stackMpl);
+        this.result += winner.name + getUnnun(winner.nameType) + ' 보호막을 ' + buffObj.effect[0].value + ' 획득했다!<br>';
       } else if (buffObj.id === 2017106) {
         buffObj.effect[0].value = Math.round(buffObj.effect[0].value * (winner.stat.phyAtk + winner.stat.magAtk) * stackMpl);
+        this.result += winner.name + getUnnun(winner.nameType) + ' 보호막을 ' + buffObj.effect[0].value + ' 획득했다!<br>';
       } else if (buffObj.id === 10107) {
         buffObj.effect[0].value = Math.round(buffObj.effect[0].value * (winner.stat.maxHp) * stackMpl);
       }
@@ -1770,6 +1773,9 @@ function calcStats(chara, opp) {
     if (val.isPercentStat) {
       stackMpl *= chara.stat[val.percentKey];
     }
+    if (val.isPercentItem) {
+      stackMpl *= chara.items[val.itemKey].stat[val.percentKey];
+    }
     
     if (val.chk && findBuffByIds(chara, val.chk).length === 0) {
       continue;
@@ -1955,6 +1961,12 @@ function _initChar(char, flag) {
 
 function getShieldValue (chara) {
   var ret = findBuffByCode(chara, cons.EFFECT_TYPE_SHIELD).map(x => x.value);
+  ret.push(0);
+  return ret.reduce((acc, val) => acc + val);
+}
+
+function getShieldValue2 (chara) {
+  var ret = findBuffByCode(chara, cons.EFFECT_TYPE_SHIELD).filter(x => x.name == '전자기 보호막').map(x => x.value);
   ret.push(0);
   return ret.reduce((acc, val) => acc + val);
 }
