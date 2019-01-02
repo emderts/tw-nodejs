@@ -77,7 +77,7 @@ const app = express()
 .post('/doRankup', procRankup)
 .post('/getCard', procGetCard)
 .post('/actionAccel', procActionAccel)
-.get('/test', (req, res) => res.render('pages/battle', {result: (new battlemodule.bmodule()).doBattle(JSON.parse(JSON.stringify(chara.julius)), JSON.parse(JSON.stringify(monster.d7Lohengrin)), 1).result}))
+.get('/test', (req, res) => res.render('pages/battle', {result: (new battlemodule.bmodule()).doBattle(JSON.parse(JSON.stringify(chara.lunisha)), JSON.parse(JSON.stringify(chara.gabi)), 1).result}))
 .get('/test2', (req, res) => res.render('pages/trade', {room : '1', uid : '03'}))
 .get('/test3', (req, res) => res.render('pages/trade', {room : '1', uid : '06'}))
 .get('/test4', (req, res) => res.send(procInit2()))
@@ -367,21 +367,63 @@ async function procInit2 () {
     const result = await client.query('select * from characters');
     for (val of result.rows) {
       var char = JSON.parse(val.char_data);
-      
+
+      char.dungeonInfos.enterBlacklight += 1;
       if (val.uid == '02') {
-        char.rank =  7;
-        char.inventory.push({name : '레이드 소환권 - 매버릭 타임 코더', type : 90005, rarity : cons.ITEM_RARITY_PREMIUM, value : 1});
+        char.inventory.push(item.list[392]);
       }
-      /*if (char.items.trinket.id == 432) {
-        char.items.trinket.effectDesc = item.list[432].effectDesc;
-        char.items.trinket.effect = item.list[432].effect;
+      if (val.uid == '04') {
+        char.skill = chara.lunisha.skill;
       }
+      if (val.uid == '05') {
+        char.skill = chara.ruisun.skill;
+      }
+      if (val.uid == '11') {
+        char.skill = chara.marang.skill;
+      }
+      if (val.uid == '12') {
+        char.skill = chara.gabi.skill;
+      }
+      if (val.uid == '13') {
+        char.skill = chara.jay.skill;
+      }
+      
+      _patchItem('armor', 360);
+      _patchItem('armor', 361);
+      _patchItem('armor', 358);
+      _patchItem('subarmor', 376);
+      _patchItem('trinket', 398);
+      _patchItem('trinket', 399);
+      _patchItem('trinket', 400);
+      _patchItem('trinket', 401);
+      _patchItem('trinket', 402);
+      _patchItem('trinket', 403);
+      _patchItem('weapon', 353);
+      _patchItem('weapon', 350);
+      _patchItem('trinket', 406);
+      _patchItem('trinket', 407);
       for (itm of char.inventory) {
-        if (itm.id == 432) {
-          itm.effectDesc = item.list[432].effectDesc;
-          itm.effect = item.list[432].effect;
+        if (itm.id == 392) {
+          itm.effectDesc = item.list[392].effectDesc;
+          itm.dustMod = 3;
+          itm.stat = item.list[392].stat;
         }
-      }*/
+      }
+      _patchItem('trinket', 410);
+      function _patchItem(type, id) {
+        if (char.items[type].id == id) {
+          char.items[type].effectDesc = item.list[id].effectDesc;
+          char.items[type].effect = item.list[id].effect;
+          char.items[type].stat = item.list[id].stat;
+        }
+        for (itm of char.inventory) {
+          if (itm.id == id) {
+            itm.effectDesc = item.list[id].effectDesc;
+            itm.effect = item.list[id].effect;
+            itm.stat = item.list[id].stat;
+          }
+        }
+      }
       
       await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), val.uid]);
     } 
@@ -1692,9 +1734,9 @@ async function procDungeon(req, res) {
     dungeonList.push({name : '메모리얼 게이트 - 메비우스 섬멸 [9급 20레벨 이상]', code : 1, remain : char.dungeonInfos.enterMevious, active : !char.dungeonInfos.runMevious && char.dungeonInfos.enterMevious > 0 && (char.rank <= 8 || char.level >= 20)});
     dungeonList.push({name : '어나더 게이트 - 재의 묘소 [9급 20레벨 이상]', code : 2, remain : char.dungeonInfos.enterEmberCrypt, active : !char.dungeonInfos.runEmberCrypt && char.dungeonInfos.enterEmberCrypt > 0 && (char.rank <= 8 || char.level >= 20)});
     dungeonList.push({name : '승급 심사장 [20레벨 이상]', code : 3, active : !char.dungeonInfos.runRankup && char.level >= 20});
-    dungeonList.push({name : '필드 보스 - 고대 흑마법사 출현', code : 4, active : false});
-    dungeonList.push({name : '필드 보스 - 움직이는 요새', code : 5, active : false, additional : char.dungeonInfos.runFieldBoss0});
-    dungeonList.push({name : '필드 보스 - 매버릭 타임 코더', code : 6, active : false, additional : char.dungeonInfos.runFieldBoss1});
+    dungeonList.push({name : '필드 보스 - 고대 흑마법사 출현', code : 4, active : false, tooltip : '매 30분/정각마다 도전 가능'});
+    dungeonList.push({name : '필드 보스 - 움직이는 요새', code : 5, active : false, additional : char.dungeonInfos.runFieldBoss0, tooltip : '매 10분마다 무료로 도전 가능, 이후 피로도 1 소모'});
+    dungeonList.push({name : '필드 보스 - 매버릭 타임 코더', code : 6, active : false, additional : char.dungeonInfos.runFieldBoss1, tooltip : '매 10분마다 무료로 도전 가능, 이후 피로도 1 소모'});
     dungeonList.push({name : '메모리얼 게이트 - 검은 빛의 수련장 [7급 10레벨 이상]', code : 7, remain : char.dungeonInfos.enterBlacklight, active : !char.dungeonInfos.runBlacklight && char.dungeonInfos.enterBlacklight > 0 && (char.rank <= 6 || (char.rank == 7 && char.level >= 10))});
     if (result && result.rows) {
       for (row of result.rows) {
@@ -2028,7 +2070,9 @@ async function procNextPhaseDungeon(req, res) {
           }
         }
       } else if (sess.dungeonProgress.code == 7) {
+        console.log(sess.dungeonProgress);
         if (trades[sess.dungeonProgress.roomNum] && trades[sess.dungeonProgress.roomNum].result) {
+          console.log(sess.userUid + '/' + sess.dungeonProgress.phase);
           var re = trades[sess.dungeonProgress.roomNum].result;
           if (re.winnerLeft && sess.dungeonProgress.phase <= 3) {
             var reward = '';
@@ -2074,6 +2118,7 @@ async function procNextPhaseDungeon(req, res) {
             res.render('pages/dungeonResult', {result: re.result, resultList: [], isFinished : !enterNext, reward : reward, stop : false});
           }
         } else if (sess.dungeonProgress.nextPhase <= 3) {
+          console.log(sess.userUid + '//' + sess.dungeonProgress.nextPhase);
           sess.dungeonProgress.charData.curHp += (sess.dungeonProgress.charData.stat.maxHp - sess.dungeonProgress.charData.curHp) * 0.15;
           enemy = sess.dungeonProgress.nextPhase == 2 ? monster.d7EliteKnight : monster.d7Lohengrin;
           delete sess.dungeonProgress.nextPhase;
@@ -2326,7 +2371,9 @@ async function procNextPhaseDungeon(req, res) {
       await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
       res.render('pages/dungeonResult', {result: re.result, resultList: req.session.dungeonProgress.resultList, isFinished : isFinished, reward : reward, stop : false});
     } else {
-      res.redirect('/');
+      if (!res.headersSent) {
+        res.redirect('/');
+      }
     }
   } catch (err) {
     console.error(err);
@@ -2583,6 +2630,9 @@ async function procDismantleItem (req, res) {
     if (tgt.type <= 4) {
       char.inventory.splice(body.itemNum, 1);
       var dustVal = Math.round(dustInfo[tgt.rarity] * Math.pow(2, 9 - tgt.rank));
+      if (tgt.dustMod) {
+        dustVal *= tgt.dustMod;
+      }
       char.dust += dustVal;
       if (char.quest[6]) {
         char.quest[6].progress += 1;
@@ -3102,6 +3152,13 @@ function addSpecialResultCard(chara, type) {
   item.name = chara.rank + '급 ' + typePrefix[type] + ' 리설트 카드';
   item.rank = chara.rank;
   item.resultType = type;
+  if (type <= 4) {
+    item.tooltip = '60.5% : 언커먼 장비<br>27.6% : 레어 장비<br>5.55% : 유니크 장비<br>5.3% : 한 등급이 높은 커먼&언커먼 장비<br>1.05% : 에픽 장비';
+  } else if (type == 5) {
+    item.tooltip = '97% : 레어 장비<br>2% : 유니크 장비<br>1% : 에픽 장비';
+  } else if (type == 6) {
+    item.tooltip = '96% : 유니크 장비<br>4% : 에픽 장비';
+  }
   chara.inventory.push(item);
 }
 

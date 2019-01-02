@@ -1268,9 +1268,10 @@ const item = require('./items');
 
   skillObj = {code : 201749, name : '마랑의 검은 코트', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.SKILL_TYPE_DRIVE, 
       active : cons.ACTIVE_TYPE_RECEIVE_BUFF, cost : 5, chance : 1, setCooldown : 6, chk : [1, 4, 6, 12],
-      effect : [{code : cons.EFFECT_TYPE_REMOVE_BUFF, buffTarget : [1, 4, 6, 12]},
+      effect : [{code : cons.EFFECT_TYPE_REMOVE_BUFF, buffTarget : [1, 6, 12]},
+                {code : cons.EFFECT_TYPE_REDUCE_BUFF_DURATION, value : 1, buffCode : 4},
                 {code : cons.EFFECT_TYPE_SELF_HP, value : 0.05, isPercentStat : true, percentKey : 'maxHp'}],
-      tooltip : '자신에게 [화상], [기절], [탈진], [빙결] 상태이상이 걸릴 경우, 해당 상태이상을 즉시 해제하고 최대 생명력의 5%만큼 회복 (쿨타임 5턴)',
+      tooltip : '자신에게 [화상], [기절], [탈진], [빙결] 상태이상이 걸릴 경우, 해당 상태이상을 즉시 해제(기절의 경우 1턴 감소)하고 최대 생명력의 5%만큼 회복 (쿨타임 5턴)',
       flavor : '그녀가 두른 검은 늑대 코트는 불과 얼음의 시련을 극복할 수 있도록 돕는다.'};
   charMarang.skill.drive = skillObj;
 
@@ -1335,9 +1336,9 @@ const item = require('./items');
   charLunisha.skill.base = [];
 
   var skillObj = {code : 201756, name : '방패 밀쳐내기', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 0.8, 
-      effect : [{code : cons.EFFECT_TYPE_OPP_SP, value : -100, isPercentStat : true, percentKey : 'phyReduce'},
-                {code : cons.EFFECT_TYPE_OPP_SP, value : -100, isPercentStat : true, percentKey : 'magReduce'}],
-      tooltip : '루니샤의 현재 (물리저항+마법저항)만큼 상대의 SP 감소',
+      effect : [{code : cons.EFFECT_TYPE_OPP_SP, maxApply : 25,
+        factors : [{value : -5}, {value : -50, isPercentStat : true, percentKey : 'phyReduce'}, {value : -50, isPercentStat : true, percentKey : 'magReduce'}]}],
+      tooltip : '5+0.5*(물리저항+마법저항)만큼 상대의 SP 감소',
       flavor : '거대한 방패로 적을 크게 밀쳐내거나, 부드럽고 날렵한 검무를 구사합니다.'};  
   charLunisha.skill.base.push(skillObj);
 
@@ -1405,8 +1406,8 @@ const item = require('./items');
   skillObj = {code : 201769, name : '반복 숙달', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_DRIVE, 
       active : cons.ACTIVE_TYPE_SKILL_WIN, cost : 0, chance : 1, chkSameAttack : true,
       effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201775, buffDur : null},
-                {code : cons.EFFECT_TYPE_SELF_SP, value : 5}],
-      tooltip : '지난 턴에 사용했던 스킬을 이번 턴에도 사용하여 공격 시, 스킬의 피해량이 12.5% 상승하고 SP 5를 회복하며 각 스킬 별 특수 효과가 강화된다.',
+                {code : cons.EFFECT_TYPE_SELF_SP, value : 20}],
+      tooltip : '지난 턴에 사용했던 스킬을 이번 턴에도 사용하여 공격 시, 스킬의 피해량이 12.5% 상승하고 SP 20을 회복하며 각 스킬 별 특수 효과가 강화된다.',
       flavor : '어렸을 때부터 해 오던 불법 아르바이트 경험의 산실. 반복할수록, 숙달된다.'};
   charGabi.skill.drive = skillObj;
 
@@ -1548,10 +1549,10 @@ const item = require('./items');
   charRuisun.skill.base.push(skillObj);
 
   skillObj = {code : 201784, name : '징병 공고', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.SKILL_TYPE_DRIVE,
-      active : cons.ACTIVE_TYPE_TURN_START, cost : 10, chance : 0.1, chanceModFunc : 0, setCooldown : 3,
+      active : cons.ACTIVE_TYPE_TURN_START, cost : 10, chance : 0.05, chanceModFunc : 0, setCooldown : 3,
       effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : [201791, 201788, 201789], buffDur : null, multiple : true, setStack : 35, 
-        addDamage : [{value : 0.6, type : cons.DAMAGE_TYPE_MAGICAL}, {value : 0.6, type : cons.DAMAGE_TYPE_PHYSICAL}]}],
-      tooltip : '턴 시작 시 10% 확률 ((상대의 현재생명력% - 자신의 현재생명력%)%만큼 증가)로 자신에게 [쇠뇌대], [기마대], [철갑군] 중 하나를 (35 + 물리 0.6 + 마법 0.6) 중첩 부여',
+        addDamage : [{value : 0.5, type : cons.DAMAGE_TYPE_MAGICAL}, {value : 0.5, type : cons.DAMAGE_TYPE_PHYSICAL}]}],
+      tooltip : '턴 시작 시 5% 확률 ((상대의 현재생명력% - 자신의 현재생명력%)%만큼 증가)로 자신에게 [쇠뇌대], [기마대], [철갑군] 중 하나를 (35 + 물리 0.5 + 마법 0.5) 중첩 부여',
       flavor : '열세를 메꾸기 위해 더 많은 병사를 징집합니다.'};
   charRuisun.skill.drive = skillObj;
 
@@ -1607,7 +1608,7 @@ const item = require('./items');
       calcEffect : [{code : cons.EFFECT_TYPE_SELF_SP, value : 0.35, isPercentSkill : true, skillKey : 'special', percentKey : 'cost', chk : [201792]}],
       effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201792, buffDur : null},
                 {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201793, buffDur : null, chkBuffStack : {id : [201793], stack : 1}}],
-      tooltip : '자신의 [앙상블] 중첩이 1 미만이면 자신에게 [앙상블] 1중첩을 부여하고 현재 자신이 보유한 버프에 따라 다음 1회의 공격까지 추가 능력치를 부여한다. 추가 능력치가 부여된 상태에서 이 스킬을 재사용 시, 스페셜 스킬이 요구하는 SP의 35%를 회복한다.<br>[선셋 라이더] : 자신의 캐릭터 컬러가 황금색으로 변경. 순수 물리,마법공격력 +35%<br>[로드 오브 레인저] : 치명+10%, [앙상블]*5% 만큼 스킬 피해량 증가<br>[블러디 카니발] : HP재생 2배, [앙상블]*5% 만큼 흡혈<br>[티켓 투 헤븐] : SP재생 2배, [앙상블]*5% 만큼 치명피해 증가<br>[마지막 호흡] : 치명+10%, 명중+60%',
+      tooltip : '자신의 [앙상블] 중첩이 1 미만이면 자신에게 [앙상블] 1중첩을 부여하고 현재 자신이 보유한 버프에 따라 다음 1회의 공격까지 추가 능력치를 부여한다. 추가 능력치가 부여된 상태에서 이 스킬을 재사용 시, 스페셜 스킬이 요구하는 SP의 35%를 회복한다.<br>[선셋 라이더] : 자신의 캐릭터 컬러가 황금색으로 변경. 순수 물리,마법공격력 +35%<br>[로드 오브 레인저] : 치명+10%, [앙상블]*5% 만큼 스킬 피해량 증가<br>[블러디 카니발] : HP재생 5배, [앙상블]*5% 만큼 흡혈<br>[티켓 투 헤븐] : SP충전 5배, [앙상블]*5% 만큼 치명피해 증가<br>[마지막 호흡] : 치명+20%, 명중+60%',
       flavor : '악상에 심취하는 방법론.'};  
   charJay.skill.base.push(skillObj);
 

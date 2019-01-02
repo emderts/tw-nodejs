@@ -125,5 +125,7 @@ module.exports = {
     ITEM_RARITY_RARE : 2,
     ITEM_RARITY_PREMIUM : 3,
     ITEM_RARITY_UNIQUE : 4,
-    ITEM_RARITY_EPIC : 5
+    ITEM_RARITY_EPIC : 5,
+    
+    STANDARD_STATUS : [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
 }

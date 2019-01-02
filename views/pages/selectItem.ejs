@@ -165,7 +165,7 @@
       }
       const dustInfo = [10, 14, 26, 26, 62, 170];
       if (mode == 2) {
-        rtext += '<br><br>가루 양 : ' + Math.round(dustInfo[item.rarity] * Math.pow(2, 9 - item.rank));
+        rtext += '<br><br>가루 양 : ' + Math.round(dustInfo[item.rarity] * Math.pow(2, 9 - item.rank) * (item.dustMod ? item.dustMod : 1));
       }
     } else if (item.type == 999 && item.tooltip) {
       rtext += '<br>' + item.tooltip;

@@ -8,6 +8,7 @@ const chara = require('./chara');
   
   charLeft.items = {};
   charLeft.image = 'https://i.imgur.com/8dFfCSW.png';
+  charLeft.boss = 0.5;
 
   charLeft.skill = {
       base : [
@@ -24,6 +25,7 @@ const chara = require('./chara');
   
   charLeft.items = {weapon : item.list[34]};
   charLeft.image = 'https://i.imgur.com/OUFhWjw.png';
+  charLeft.boss = 0.5;
 
   charLeft.skill = {
       base : [
@@ -42,6 +44,8 @@ const chara = require('./chara');
   
   charLeft.items = {weapon : item.list[58]};
   charLeft.image = 'https://i.imgur.com/gVfJIio.png';
+  charLeft.boss = 0.8;
+  charLeft.bossStatus = 0.1;
 
   charLeft.skill = {
       base : [
@@ -61,6 +65,7 @@ const chara = require('./chara');
   
   charLeft.items = {weapon : item.list[1], armor : item.list[115], subarmor : item.list[167]};
   charLeft.image = '';
+  charLeft.boss = 0.5;
 
   charLeft.skill = {
       base : [
@@ -80,6 +85,7 @@ const chara = require('./chara');
   
   charLeft.items = {weapon : item.list[19], armor : item.list[115], subarmor : item.list[185]};
   charLeft.image = '';
+  charLeft.boss = 0.5;
 
   charLeft.skill = {
       base : [
@@ -99,6 +105,8 @@ const chara = require('./chara');
   
   charLeft.items = {weapon : item.list[42], armor : item.list[286], skillArtifact : item.list[418]};
   charLeft.image = 'http://www.microsoftinsider.es/wp-content/uploads/2016/02/dark-souls-3-1.jpg';
+  charLeft.boss = 0.8;
+  charLeft.bossStatus = 0.1;
 
   charLeft.skill = {
       base : [
@@ -123,6 +131,7 @@ const chara = require('./chara');
   _initChar(charLeft);
   
   charLeft.items = {};
+  charLeft.boss = 0.5;
 
   charLeft.skill = {
       base : [
@@ -145,7 +154,7 @@ const chara = require('./chara');
   
   charLeft.items = {weapon : item.list[342], armor : item.list[369], subarmor : item.list[376], trinket : item.list[395]};
   charLeft.image = 'https://i.imgur.com/nuGyBWu.png';
-  charLeft.boss = 0.9;
+  charLeft.boss = 0.95;
   charLeft.bossStatus = 0.2;
 
   charLeft.skill = {
@@ -171,7 +180,7 @@ const chara = require('./chara');
   
   charLeft.items = {weapon : item.list[344], armor : item.list[372], subarmor : item.list[383], trinket : item.list[405]};
   charLeft.image = 'https://i.imgur.com/CvvNpto.png';
-  charLeft.boss = 0.9;
+  charLeft.boss = 0.95;
   charLeft.bossStatus = 0.2;
 
   charLeft.skill = {
@@ -199,7 +208,7 @@ const chara = require('./chara');
   
   charLeft.items = {weapon : item.list[350], armor : item.list[375], subarmor : item.list[376], trinket : item.list[397]};
   charLeft.image = 'https://i.imgur.com/9ciU9QK.png';
-  charLeft.boss = 0.9;
+  charLeft.boss = 0.95;
   charLeft.bossStatus = 0.2;
 
   charLeft.skill = {
@@ -259,8 +268,8 @@ const chara = require('./chara');
   
   charLeft.items = {weapon : item.list[355], armor : item.list[296], subarmor : item.list[241], trinket : item.list[335]};
   charLeft.image = 'https://i.imgur.com/IabA7Am.png';
-  charLeft.boss = 0.8;
-  charLeft.bossStatus = 0.1;
+  charLeft.boss = 0.95;
+  charLeft.bossStatus = 0.2;
 
   charLeft.skill = {};
   charLeft.skill.base = [];
@@ -300,8 +309,8 @@ const chara = require('./chara');
   
   charLeft.items = {weapon : item.list[351], armor : item.list[294], subarmor : item.list[305], trinket : item.list[333]};
   charLeft.image = 'https://i.imgur.com/DySw4QI.png';
-  charLeft.boss = 0.8;
-  charLeft.bossStatus = 0.1;
+  charLeft.boss = 0.95;
+  charLeft.bossStatus = 0.2;
 
   charLeft.skill = {
       base : [
@@ -325,8 +334,8 @@ const chara = require('./chara');
   
   charLeft.items = {weapon : item.list[355], armor : item.list[296], subarmor : item.list[241], trinket : item.list[335]};
   charLeft.image = 'https://i.imgur.com/IabA7Am.png';
-  charLeft.boss = 0.8;
-  charLeft.bossStatus = 0.1;
+  charLeft.boss = 0.95;
+  charLeft.bossStatus = 0.2;
 
   charLeft.skill = {};
   charLeft.skill.base = [];
@@ -380,8 +389,8 @@ const chara = require('./chara');
   _initChar(charLeft);
   
   charLeft.items = {weapon : item.list[352], armor : item.list[370], subarmor : item.list[307], trinket : item.list[333], skillArtifact : item.list[437]};
-  charLeft.boss = 0.85;
-  charLeft.bossStatus = 0.15;
+  charLeft.boss = 0.95;
+  charLeft.bossStatus = 0.2;
 
   charLeft.skill = chara.aeika.skill;
   module.exports.rAeika = charLeft;
@@ -391,8 +400,8 @@ const chara = require('./chara');
   _initChar(charLeft);
   
   charLeft.items = {weapon : item.list[203], armor : item.list[219], subarmor : item.list[228], trinket : item.list[261]};
-  charLeft.boss = 0.85;
-  charLeft.bossStatus = 0.15;
+  charLeft.boss = 0.95;
+  charLeft.bossStatus = 0.2;
   charLeft.startEffects = [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 13, buffDur : 999999}];
 
   charLeft.skill = {
@@ -413,8 +422,8 @@ const chara = require('./chara');
   _initChar(charLeft);
   
   charLeft.items = {weapon : item.list[356], armor : item.list[372], subarmor : item.list[391], trinket : item.list[411]};
-  charLeft.boss = 0.85;
-  charLeft.bossStatus = 0.15;
+  charLeft.boss = 0.95;
+  charLeft.bossStatus = 0.2;
 
   charLeft.skill = chara.julius.skill;
   module.exports.rJulius = charLeft;
@@ -425,11 +434,12 @@ const chara = require('./chara');
   
   charLeft.items = {weapon : item.list[11], armor : item.list[143], subarmor : item.list[178]};
   charLeft.image = '';
+  charLeft.boss = 0.5;
 
   charLeft.skill = {
       base : [
-              {code : 90015, name : '물리 공격', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1.0, effect : []},
-              {code : 90016, name : '물리 공격', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1.0, effect : []},
+              {code : 90015, name : '물리 공격 I', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1.0, effect : []},
+              {code : 90016, name : '물리 공격 II', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1.0, effect : []},
               {code : 90017, name : '마법 공격', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 1.0, effect : []}
              ],
       drive : {code : 90041, name : '긴급 회피', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.SKILL_TYPE_DRIVE, 
@@ -448,11 +458,13 @@ const chara = require('./chara');
   
   charLeft.items = {weapon : item.list[341], armor : item.list[143], subarmor : item.list[178], trinket : item.list[398]};
   charLeft.image = '';
+  charLeft.boss = 0.8;
+  charLeft.bossStatus = 0.1;
 
   charLeft.skill = {
       base : [
-              {code : 90015, name : '물리 공격', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1.0, effect : []},
-              {code : 90016, name : '물리 공격', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1.0, effect : []},
+              {code : 90015, name : '물리 공격 I', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1.0, effect : []},
+              {code : 90016, name : '물리 공격 II', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1.0, effect : []},
               {code : 90017, name : '마법 공격', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 1.0, effect : []}
              ],
       drive : {code : 90041, name : '향상된 긴급 회피', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.SKILL_TYPE_DRIVE, 
@@ -471,6 +483,8 @@ const chara = require('./chara');
   
   charLeft.items = {weapon : item.list[357], armor : item.list[143], subarmor : item.list[389], trinket : item.list[396], skillArtifact : item.list[514]};
   charLeft.image = '';
+  charLeft.boss = 0.8;
+  charLeft.bossStatus = 0.1;
 
   charLeft.skill = {
       base : [

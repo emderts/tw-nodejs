@@ -896,6 +896,15 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
     if (eff.chkInventory && !winner.inventory.some(checkInv.bind(this, eff.chkInventory))) {
       continue;
     }
+    if (eff.chkInventories) {
+      var checkVal = true;
+      for (itmChk of eff.checkInventories) {
+        checkVal = checkVal && winner.inventory.some(checkInv.bind(this, itmChk));
+      }
+      if (!checkVal) {
+        continue;
+      }
+    }
     if (eff.chkEquip && !winner.items.values().some(checkInv.bind(this, eff.chkEquip))) {
       continue;
     }
@@ -971,6 +980,8 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
         buffObj.effect[0].value = Math.round(buffObj.effect[0].value * (winner.stat.maxHp - winner.curHp) * stackMpl);
       } else if (buffObj.id === 2017106) {
         buffObj.effect[0].value = Math.round(buffObj.effect[0].value * (winner.stat.phyAtk + winner.stat.magAtk) * stackMpl);
+      } else if (buffObj.id === 10107) {
+        buffObj.effect[0].value = Math.round(buffObj.effect[0].value * (winner.stat.maxHp) * stackMpl);
       }
 
       if (eff.setStack) {        
@@ -995,41 +1006,55 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
       this.giveBuff(winner, recv, buffObj, true, eff.name);
 
     } else if (eff.code === cons.EFFECT_TYPE_SELF_SP || eff.code === cons.EFFECT_TYPE_SELF_HP || eff.code === cons.EFFECT_TYPE_OPP_SP || eff.code === cons.EFFECT_TYPE_OPP_HP) {
-      var valueUsed = eff.isPercentMax ? eff.value * winner.stat.maxHp : eff.value;
+      var valueUsed;
       var dst = eff.code === cons.EFFECT_TYPE_OPP_SP || eff.code === cons.EFFECT_TYPE_OPP_HP ? loser : winner;
-      if (eff.buffTarget) {
-        valueUsed *= findBuffByIds(winner, eff.buffTarget).length;
-      }
-      if (eff.isPercentChar) {
-        valueUsed *= winner[eff.percentKey];
-      } else if (eff.isPercentStat) {
-        valueUsed *= winner.stat[eff.percentKey];
-      } else if (eff.isPercentBase) {
-        valueUsed *= winner.base[eff.percentKey];
-      } else if (eff.isPercentDamage) {
-        valueUsed *= damage.value;
-      } else if (eff.isPercentOpp) {
-        valueUsed *= loser[eff.percentKey];
-      } else if (eff.isPercentOppStat) {
-        valueUsed *= loser.stat[eff.percentKey];
-      } else if (eff.isPercentSkillUsed) {
-        valueUsed *= skill[eff.percentKey];
-      } else if (eff.isPercentHpLost) {
-        valueUsed *= (winner.stat.maxHp - winner.curHp);
-      } else if (eff.isPercentBuffValue) {
-        valueUsed *= damage.effect[0].value;
-      } else if (eff.isPercentSkill) {
-        valueUsed *= winner.skill[eff.skillKey][eff.percentKey];
+      
+      function _setupValue(eff, valueUsed) {
+        if (eff.buffTarget) {
+          valueUsed *= findBuffByIds(winner, eff.buffTarget).length;
+        }
+        if (eff.isPercentChar) {
+          valueUsed *= winner[eff.percentKey];
+        } else if (eff.isPercentStat) {
+          valueUsed *= winner.stat[eff.percentKey];
+        } else if (eff.isPercentBase) {
+          valueUsed *= winner.base[eff.percentKey];
+        } else if (eff.isPercentDamage) {
+          valueUsed *= damage.value;
+        } else if (eff.isPercentOpp) {
+          valueUsed *= loser[eff.percentKey];
+        } else if (eff.isPercentOppStat) {
+          valueUsed *= loser.stat[eff.percentKey];
+        } else if (eff.isPercentSkillUsed) {
+          valueUsed *= skill[eff.percentKey];
+        } else if (eff.isPercentHpLost) {
+          valueUsed *= (winner.stat.maxHp - winner.curHp);
+        } else if (eff.isPercentBuffValue) {
+          valueUsed *= damage.effect[0].value;
+        } else if (eff.isPercentSkill) {
+          valueUsed *= winner.skill[eff.skillKey][eff.percentKey];
+        }
+        
+        if ((eff.percentKey == 'maxHp' || eff.percentKey == 'curHp') && dst.boss) {
+          valueUsed *= (1 - dst.boss);
+        }
+        
+        if (eff.addAttackCount) {
+          const atkCnt = (isLeft ? this.leftWin : this.rightWin);
+          valueUsed *= (atkCnt - (this.atkCntBefore ? this.atkCntBefore : 0));
+          this.atkCntBefore = atkCnt;
+        }
+        
+        return valueUsed;
       }
       
-      if ((eff.percentKey == 'maxHp' || eff.percentKey == 'curHp') && dst.boss) {
-        valueUsed *= (1 - dst.boss);
-      }
-      
-      if (eff.addAttackCount) {
-        const atkCnt = (isLeft ? this.leftWin : this.rightWin);
-        valueUsed *= (atkCnt - (this.atkCntBefore ? this.atkCntBefore : 0));
-        this.atkCntBefore = atkCnt;
+      if (eff.value) {
+        valueUsed = _setupValue(eff, eff.value);
+      } else if (eff.factors) {
+        valueUsed = 0;
+        for (fact of eff.factors) {
+          valueUsed += _setupValue(fact, fact.value);
+        }
       }
       valueUsed = Math.round(valueUsed * stackMpl);
       if (valueUsed > eff.maxApply) {

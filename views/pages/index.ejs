@@ -240,17 +240,22 @@
       if (item.effectDesc && item.effectDesc.length > 0) {
         rtext += ', ' + item.effectDesc;
       }
-    if (item.socket) {
-      for (sock of item.socket) {
-        if (sock) {
-          rtext += '<br><br>[' + sock.name + '] ' + sock.effectDesc;
+      if (item.socket) {
+        for (sock of item.socket) {
+          if (sock) {
+            rtext += '<br><br>[' + sock.name + '] ' + sock.effectDesc;
+          }
         }
       }
-    }
       if (item.flavor && item.flavor.length > 0) {
         rtext += '<br><br><span class="tooltipFlavor">' + item.flavor + '</span>';
       }
     } else if (item.type == 999 && item.tooltip) {
+      if (item.tradeCnt !== undefined) {
+        rtext += '<br>거래횟수 : ' + item.tradeCnt;
+      }
+      rtext += '<br>' + item.tooltip + '<br>' + item.name[item.name.length - 2] + '요일에 일반 리설트 카드를 개봉했을 때 일정 확률로 획득할 수 있다.';
+    } else if (item.type == 100 && item.tooltip) {
       rtext += '<br>' + item.tooltip;
     }
     return rtext;
@@ -290,7 +295,10 @@
         </tr>
         <tr>
           <td class="charViewTitle"><%= char.rank %>급 <%= char.level %>레벨</td>
-          <td class="charViewContent"><%= char.exp + '/' + char.reqExp + ' (' + char.maxExp + ')' + (char.expBoost ? ' / Boost ' + char.expBoost : '')  %></td>
+          <td class="charViewContent">
+          <%= char.exp + '/' + char.reqExp + ' (' + char.maxExp + ')' + (char.expBoost ? ' / Boost ' + char.expBoost : '')  %>
+          <div class="itemTooltip">현재 경험치 / 요구 경험치 (오늘 획득할 수 있는 잔여 경험치)</div>
+          </td>
           <td class="charViewContent">
           <% if (char.level >= 20 && char.rank > 6) { %>
             <form action="/doRankup" method="post">
@@ -304,13 +312,16 @@
           <td class="charViewContent"><%= actionPoint %>/100</td>
           <td class="charViewContent">
           <form action="/actionAccel" method="post">
-            <button type="submit">가속 <%= char.actionAccel ? '끄기' : '켜기' %></button>
+            <button onclick="invClick(this, event)" type="button"><div class="itemTooltip">가속을 켰을 때, PVP 전투에서 2배의 피로도를 소모하게 되며, 획득 리설트 카드 게이지가 2배로 증가하고, 경험치 획득량이 +100%p 증가합니다. (경험치 부스트 등에 의한 추가 경험치 효과는 2배가 되지 않습니다)</div>가속 <%= char.actionAccel ? '끄기' : '켜기' %></button>
           </form>
           </td>
         </tr>
         <tr>
           <td class="charViewTitle">카드 게이지</td>
-          <td class="charViewContent"><%= char.resultGauge + '/500 (' + char.resultMaxGauge + ')' %></td>
+          <td class="charViewContent">
+          <%= char.resultGauge + '/500 (' + char.resultMaxGauge + ')' %>
+          <div class="itemTooltip">현재 경험치 /리설트 카드 게이지는 한 번에 최대 500까지 충전되며, 하루에 2,500의 게이지를 초과할 경우 획득량이 절반으로 감소합니다. 프리미엄 상점에서 오늘의 누적 게이지를 초기화할 수 있습니다.</div>
+          </td>
           <td class="charViewContent">
           <% if (char.resultGauge >= 100) { %>
             <form action="/getCard" method="post">

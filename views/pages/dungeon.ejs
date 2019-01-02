@@ -11,8 +11,22 @@
       div {width: 450px; max-width: 100%; margin: 0 auto; }
       .charItem button {width: 450px; max-width: 100%; background-color: #ffffea; }
       .charItem button:hover {background-color: #ffffcc; }
+      .itemTooltip {font-family: "Nanum Gothic", sans-serif; visibility: hidden; width: 250px; background-color: black; color: #fff; text-align: center; font-size: 13.3333px; border-radius: 6px; padding: 5px 0; position: absolute; z-index: 1; }
+      .charItem:hover .itemTooltip {visibility: visible; }
       .backLink {text-align: center; width: 60%; margin: 10px auto; overflow: hidden; }
     </style>
+    <script>
+      
+  function invClick(thisNode, event) {
+    if (thisNode.type !== 'submit') {
+      event.preventDefault();
+      for (item of document.getElementsByClassName('inventoryButton')) {
+        item.type = 'button';
+      }
+      thisNode.setAttribute('type', 'submit');
+    }
+  }
+    </script>
 </head>
 <body>
 <%
@@ -25,7 +39,12 @@
   <% for (dun of dungeonList) { %>
   <div class="charItem">
     <form action="/enterDungeon" method="post">
-      <button type="submit"<%= dun.active ? '' : ' disabled' %>><%= dun.name %><%= dun.remain ? ' (' + dun.remain + '회 남음)' : '' %><%= dun.additional ? ' [1 피로도]' : '' %></button>
+      <button onclick="invClick(this, event)" type="button"<%= dun.active ? '' : ' disabled' %>>
+      <%= dun.name %><%= dun.remain ? ' (' + dun.remain + '회 남음)' : '' %><%= dun.additional ? ' [1 피로도]' : '' %>
+      <% if (dun.tooltip) { %>
+      <div class="itemTooltip"><%- dun.tooltip %></div>
+      <% } %>
+      </button>
       <input type="hidden" name="option" value="<%= dun.code %>">
     </form>
     <% if (dun.phase) { 

@@ -12,6 +12,24 @@ const hour = new Date().getHours();
 const min = new Date().getMinutes();
 doWork();
 
+
+const typePrefix = ['무기', '방어구', '보조방어구', '장신구', '장비', '레어 장비', '유니크 장비'];
+function addSpecialResultCard(chara, type) {
+  var item = {};
+  item.type = cons.ITEM_TYPE_RESULT_CARD;
+  item.name = chara.rank + '급 ' + typePrefix[type] + ' 리설트 카드';
+  item.rank = chara.rank;
+  item.resultType = type;
+  if (type <= 4) {
+    item.tooltip = '60.5% : 언커먼 장비<br>27.6% : 레어 장비<br>5.55% : 유니크 장비<br>5.3% : 한 등급이 높은 커먼&언커먼 장비<br>1.05% : 에픽 장비';
+  } else if (type == 5) {
+    item.tooltip = '97% : 레어 장비<br>2% : 유니크 장비<br>1% : 에픽 장비';
+  } else if (type == 6) {
+    item.tooltip = '96% : 유니크 장비<br>4% : 에픽 장비';
+  }
+  chara.inventory.push(item);
+}
+
 async function doWork() {
 try {
   const client = await pool.connect();
@@ -91,7 +109,7 @@ try {
         charData.dayStoneBought = 0;
         delete charData.actionBought;
       }
-      if (val.uid != '02' && val.uid != '12') {
+      if (val.uid != '02') {
         if (charData.battleCnt < minBattle) {
           minBattle = charData.battleCnt;
           minBattleUid = val.uid;
@@ -99,6 +117,12 @@ try {
         if (charData.battleCnt && charData.winCnt / charData.battleCnt < minRate) {
           minRate = charData.winCnt / charData.battleCnt;
           minRateUid = val.uid;
+        }
+        if (charData.battleCnt > 200 && charData.winCnt / charData.battleCnt < 0.4) {
+          addSpecialResultCard(charData, 5);
+        }
+        if (charData.battleCnt > 200 && charData.winCnt / charData.battleCnt < 0.35) {
+          addSpecialResultCard(charData, 6);
         }
       }
       charData.maxExp = 5 * charData.reqExp;
@@ -186,6 +210,7 @@ try {
         var charData = JSON.parse(val.char_data);
         charData.expBoost = charData.expBoost ? charData.expBoost + 3 : 3;
         charData.maxExp += charData.reqExp;
+        addSpecialResultCard(charData, 5);
         await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(charData), val.uid]);
         await client.query('insert into news(content, date) values ($1, $2)', 
           ['전투 횟수가 가장 적은 ' + charData.name + '에게 경험치 보정이 주어졌습니다!', new Date()]);
