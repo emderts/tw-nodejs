@@ -2251,6 +2251,30 @@ module.exports.getBuffData = function(eff) {
     effectObj.value = 0.1;
     retObj.effect.push(effectObj);
     break;
+  case 10110 : 
+    retObj.name = '<span class="colorLeft">뜨거운 감자</span>';
+    retObj.nameType = cons.NAME_KOR_NO_END_CONS;
+    retObj.stackType = 1;
+    retObj.isDebuff = false;
+    retObj.dispellable = false;
+    retObj.durOff = null;
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_TURN_START;
+    effectObj.code = cons.EFFECT_TYPE_SELF_HP;
+    effectObj.isPercentStat = true;
+    effectObj.percentKey = 'maxHp';
+    effectObj.value = -0.03;
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_TURN_START;
+    effectObj.code = cons.EFFECT_TYPE_OPP_BUFF;
+    effectObj.buffCode = 10110;
+    effectObj.buffDur = null;
+    effectObj.removeBuff = true;
+    effectObj.chkNot = [4, 5];
+    effectObj.cooldown = 2;
+    retObj.effect.push(effectObj);
+    break;
   case 20101 : 
     retObj.name = '혼돈의 힘';
     retObj.nameType = cons.NAME_KOR_END_CONS;
@@ -3656,7 +3680,9 @@ module.exports.getBuffData = function(eff) {
     effectObj.value = 0;
     effectObj.chkNot = [201771];
     effectObj.target = {code : 201761, name : '연', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 0.8, 
-        effect : []};
+        effect : [{code : cons.EFFECT_TYPE_MULTIPLE, chance : 0.38,  
+          target : [{code : cons.EFFECT_TYPE_RESOLVE_SKILL, value : 0, noEffect : true, reduceDmg : 0.625},
+                    {code : cons.EFFECT_TYPE_RESOLVE_SKILL, value : 0, noEffect : true}]}]};
     retObj.effect.push(effectObj);
     effectObj = {};
     effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
@@ -3691,13 +3717,6 @@ module.exports.getBuffData = function(eff) {
     effectObj.buffCode = 201764;
     effectObj.buffDur = null;
     effectObj.removeBuff = true;
-    retObj.effect.push(effectObj);
-    effectObj = {};
-    effectObj.active = cons.ACTIVE_TYPE_TURN_END;
-    effectObj.code = cons.EFFECT_TYPE_SELF_BUFF;
-    effectObj.buffCode = 201771;
-    effectObj.buffDur = 2;
-    effectObj.chance = 0.38;
     retObj.effect.push(effectObj);
     break;
   case 201766 : 
@@ -3804,8 +3823,7 @@ module.exports.getBuffData = function(eff) {
     effectObj.key = 'base';
     effectObj.value = 0;
     effectObj.target = {code : 201761, name : '연', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 0.45, 
-        effect : [{code : cons.EFFECT_TYPE_RESOLVE_SKILL, value : 0, noEffect : true},
-                  {code : cons.EFFECT_TYPE_RESOLVE_SKILL, value : 0, noEffect : true}]};
+        effect : []};
     retObj.effect.push(effectObj);
     break;
   case 201772 : 

@@ -1151,42 +1151,46 @@ itemList[494] = { id : 494, name : '불의 군주 카드', nameType : cons.NAME_
 itemList[495] = { id : 495, name : '고여버린 무지개 여섯', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '고이면 세진다. 스타터는 사지 말자.', rank : 6, rarity : cons.ITEM_RARITY_RARE, stat : {  }, 
     effectDesc : '6턴 시작 시 자신에게 [고인물] 버프 부여<br><br>[고인물] : 치명+6%, 치명피해+6%, 명중+6%, 회피+6%, 피해감소 6, 관통+6%', 
     effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_TURN_START, buffCode : 10108, buffDur : null, chkTurn : 6}] };
-itemList[496] = { id : 496, name : '봉인된 자의 몸통', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '무언가 강력한 마력으로 봉인되어 있는 존재의 신체 일부. 신체 부위를 모두다 모으면 신비한 힘을 얻을 수 있을지도...?', rank : 6, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 40 }, 
+itemList[496] = { id : 496, name : '봉인된 자의 몸통', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '무언가 강력한 마력으로 봉인되어 있는 존재의 신체 일부. 신체 부위를 모두 다 모으면 신비한 힘을 얻을 수 있을지도...?', rank : 6, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 40 }, 
     effectDesc : '[출혈], [빙결] 상태이상 지속 턴 1턴 감소, \'봉인된 자의\' 아이템을 모두 소지한 상태이면 게임 시작 시 자신에게 [봉인 해제] 버프 부여<br><br>[봉인 해제] : 물리공격력+12, 마법공격력+12, 스페셜 스킬 사용 시 사용한 SP의 10%를 회복', 
     effect : [{code : cons.EFFECT_TYPE_REDUCE_BUFF_DURATION, active : cons.ACTIVE_TYPE_RECEIVE_BUFF, value : 1, buffCode : 3},
               {code : cons.EFFECT_TYPE_REDUCE_BUFF_DURATION, active : cons.ACTIVE_TYPE_RECEIVE_BUFF, value : 1, buffCode : 12},
               {code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_BATTLE_START, buffCode : 10109, buffDur : null, chkInventories : [497, 498, 499, 500, 501]}] };
-itemList[497] = { id : 497, name : '봉인된 자의 머리', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '무언가 강력한 마력으로 봉인되어 있는 존재의 신체 일부. 신체 부위를 모두다 모으면 신비한 힘을 얻을 수 있을지도...?', rank : 6, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 40 }, 
+itemList[497] = { id : 497, name : '봉인된 자의 머리', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '무언가 강력한 마력으로 봉인되어 있는 존재의 신체 일부. 신체 부위를 모두 다 모으면 신비한 힘을 얻을 수 있을지도...?', rank : 6, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 40 }, 
     effectDesc : '[기절], [실명] 상태이상 지속 턴 1턴 감소, \'봉인된 자의\' 아이템을 모두 소지한 상태이면 게임 시작 시 자신에게 [봉인 해제] 버프 부여<br><br>[봉인 해제] : 물리공격력+12, 마법공격력+12, 스페셜 스킬 사용 시 사용한 SP의 10%를 회복', 
     effect : [{code : cons.EFFECT_TYPE_REDUCE_BUFF_DURATION, active : cons.ACTIVE_TYPE_RECEIVE_BUFF, value : 1, buffCode : 4},
               {code : cons.EFFECT_TYPE_REDUCE_BUFF_DURATION, active : cons.ACTIVE_TYPE_RECEIVE_BUFF, value : 1, buffCode : 8},
               {code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_BATTLE_START, buffCode : 10109, buffDur : null, chkInventories : [496, 498, 499, 500, 501]}] };
-itemList[498] = { id : 498, name : '봉인된 자의 오른팔', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '무언가 강력한 마력으로 봉인되어 있는 존재의 신체 일부. 신체 부위를 모두다 모으면 신비한 힘을 얻을 수 있을지도...?', rank : 6, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 40 }, 
+itemList[498] = { id : 498, name : '봉인된 자의 오른팔', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '무언가 강력한 마력으로 봉인되어 있는 존재의 신체 일부. 신체 부위를 모두 다 모으면 신비한 힘을 얻을 수 있을지도...?', rank : 6, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 40 }, 
     effectDesc : '[중독], [마비] 상태이상 지속 턴 1턴 감소, \'봉인된 자의\' 아이템을 모두 소지한 상태이면 게임 시작 시 자신에게 [봉인 해제] 버프 부여<br><br>[봉인 해제] : 물리공격력+12, 마법공격력+12, 스페셜 스킬 사용 시 사용한 SP의 10%를 회복', 
     effect : [{code : cons.EFFECT_TYPE_REDUCE_BUFF_DURATION, active : cons.ACTIVE_TYPE_RECEIVE_BUFF, value : 1, buffCode : 2},
               {code : cons.EFFECT_TYPE_REDUCE_BUFF_DURATION, active : cons.ACTIVE_TYPE_RECEIVE_BUFF, value : 1, buffCode : 9},
               {code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_BATTLE_START, buffCode : 10109, buffDur : null, chkInventories : [496, 497, 499, 500, 501]}] };
-itemList[499] = { id : 499, name : '봉인된 자의 왼팔', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '무언가 강력한 마력으로 봉인되어 있는 존재의 신체 일부. 신체 부위를 모두다 모으면 신비한 힘을 얻을 수 있을지도...?', rank : 6, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 40 }, 
+itemList[499] = { id : 499, name : '봉인된 자의 왼팔', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '무언가 강력한 마력으로 봉인되어 있는 존재의 신체 일부. 신체 부위를 모두 다 모으면 신비한 힘을 얻을 수 있을지도...?', rank : 6, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 40 }, 
     effectDesc : '[화상], [봉인] 상태이상 지속 턴 1턴 감소, \'봉인된 자의\' 아이템을 모두 소지한 상태이면 게임 시작 시 자신에게 [봉인 해제] 버프 부여<br><br>[봉인 해제] : 물리공격력+12, 마법공격력+12, 스페셜 스킬 사용 시 사용한 SP의 10%를 회복', 
     effect : [{code : cons.EFFECT_TYPE_REDUCE_BUFF_DURATION, active : cons.ACTIVE_TYPE_RECEIVE_BUFF, value : 1, buffCode : 1},
               {code : cons.EFFECT_TYPE_REDUCE_BUFF_DURATION, active : cons.ACTIVE_TYPE_RECEIVE_BUFF, value : 1, buffCode : 10},
               {code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_BATTLE_START, buffCode : 10109, buffDur : null, chkInventories : [497, 498, 496, 500, 501]}] };
-itemList[500] = { id : 500, name : '봉인된 자의 오른다리', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '무언가 강력한 마력으로 봉인되어 있는 존재의 신체 일부. 신체 부위를 모두다 모으면 신비한 힘을 얻을 수 있을지도...?', rank : 6, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 40 }, 
+itemList[500] = { id : 500, name : '봉인된 자의 오른다리', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '무언가 강력한 마력으로 봉인되어 있는 존재의 신체 일부. 신체 부위를 모두 다 모으면 신비한 힘을 얻을 수 있을지도...?', rank : 6, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 40 }, 
     effectDesc : '[혼란], [수면] 상태이상 지속 턴 1턴 감소, \'봉인된 자의\' 아이템을 모두 소지한 상태이면 게임 시작 시 자신에게 [봉인 해제] 버프 부여<br><br>[봉인 해제] : 물리공격력+12, 마법공격력+12, 스페셜 스킬 사용 시 사용한 SP의 10%를 회복', 
     effect : [{code : cons.EFFECT_TYPE_REDUCE_BUFF_DURATION, active : cons.ACTIVE_TYPE_RECEIVE_BUFF, value : 1, buffCode : 5},
               {code : cons.EFFECT_TYPE_REDUCE_BUFF_DURATION, active : cons.ACTIVE_TYPE_RECEIVE_BUFF, value : 1, buffCode : 11},
               {code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_BATTLE_START, buffCode : 10109, buffDur : null, chkInventories : [497, 498, 499, 496, 501]}] };
-itemList[501] = { id : 501, name : '봉인된 자의 왼다리', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '무언가 강력한 마력으로 봉인되어 있는 존재의 신체 일부. 신체 부위를 모두다 모으면 신비한 힘을 얻을 수 있을지도...?', rank : 6, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 40 }, 
+itemList[501] = { id : 501, name : '봉인된 자의 왼다리', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '무언가 강력한 마력으로 봉인되어 있는 존재의 신체 일부. 신체 부위를 모두 다 모으면 신비한 힘을 얻을 수 있을지도...?', rank : 6, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 40 }, 
     effectDesc : '[탈진], [침묵] 상태이상 지속 턴 1턴 감소, \'봉인된 자의\' 아이템을 모두 소지한 상태이면 게임 시작 시 자신에게 [봉인 해제] 버프 부여<br><br>[봉인 해제] : 물리공격력+12, 마법공격력+12, 스페셜 스킬 사용 시 사용한 SP의 10%를 회복', 
     effect : [{code : cons.EFFECT_TYPE_REDUCE_BUFF_DURATION, active : cons.ACTIVE_TYPE_RECEIVE_BUFF, value : 1, buffCode : 6},
               {code : cons.EFFECT_TYPE_REDUCE_BUFF_DURATION, active : cons.ACTIVE_TYPE_RECEIVE_BUFF, value : 1, buffCode : 7},
               {code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_BATTLE_START, buffCode : 10109, buffDur : null, chkInventories : [497, 498, 499, 500, 496]}] };
 itemList[502] = { id : 502, name : '뜨거운 감자', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '악! 너무너무 뜨겁다! 얼른 상대에게 넘겨주자!', rank : 6, rarity : cons.ITEM_RARITY_UNIQUE, stat : { spCharge : 3, hit : 0.06 }, 
-    effectDesc : '<br><br>[object Object]', effect : [] };
+    effectDesc : '전투 시작 시 적에게 <span class="colorLeft">[뜨거운 감자]</span> 디버프 부여<br><br><span class="colorLeft">[뜨거운 감자]</span> : 턴 시작 시 최대 생명력의 3%를 잃음, 3턴 후 상대에게 넘어감 ([기절], [수면] 상태일 경우 넘길 수 없음)', 
+    effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, active : cons.ACTIVE_TYPE_BATTLE_START, buffCode : 10110, buffDur : null}] };
 itemList[503] = { id : 503, name : '무형의 작은 결정', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '그 어떤 형태로도 확정할 수 없는 조각. 계속 변이하는 듯하다..', rank : 6, rarity : cons.ITEM_RARITY_UNIQUE, stat : {  }, 
-    effectDesc : '', effect : [] };
+    effectDesc : '전투 시작 시 무작위 6급 아이템 하나가 선택된다. 그 전투 동안 이 아이템은 그 아이템의 능력을 발휘한다.', 
+    effect : [{code : cons.EFFECT_TYPE_CONVERT_ITEM, active : cons.ACTIVE_TYPE_BATTLE_START, key : 'trinket', randomItem : 6}] };
 itemList[504] = { id : 504, name : '쌍장총 개', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '귀여운 개. 등에 총 두 자루가 묶여 있다.', rank : 6, rarity : cons.ITEM_RARITY_UNIQUE, stat : { crit : 0.03, critDmg : 0.25 }, 
-    effectDesc : '', effect : [] };
+    effectDesc : '턴 시작 시 20% 확률로 적에게 10의 고정 물리 피해, 피격 시 30% 확률로 적에게 물리 0.1 피해', 
+    effect : [{code : cons.EFFECT_TYPE_ADD_HIT, active : cons.ACTIVE_TYPE_TURN_START, chance : 0.1, type : cons.DAMAGE_TYPE_MAGICAL_FIXED, value : 20},
+              {code : cons.EFFECT_TYPE_ADD_HIT, active : cons.ACTIVE_TYPE_TAKE_HIT, chance : 0.1, type : cons.DAMAGE_TYPE_MAGICAL_FIXED, value : 20}] };
 itemList[505] = { id : 505, name : '불타는 과수원 인장', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '기이한 문양들이 잔뜩 새겨진 인장. 그 의미는 해석할 수가 없다.', rank : 6, rarity : cons.ITEM_RARITY_UNIQUE, stat : {  }, 
     effectDesc : '', effect : [] };
 itemList[506] = { id : 506, name : '불렛푸르프 노키아', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '다른 세계에서 넘어온 정체불명의 물건. 매우 단단하며, 주머니 속에 넣어두면 방어력이 증가한다.', rank : 6, rarity : cons.ITEM_RARITY_UNIQUE, stat : {  }, 

@@ -1039,16 +1039,17 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
           valueUsed *= (1 - dst.boss);
         }
         
+        return valueUsed;
+      }
+      
+      if (eff.value) {
+        
         if (eff.addAttackCount) {
           const atkCnt = (isLeft ? this.leftWin : this.rightWin);
           valueUsed *= (atkCnt - (this.atkCntBefore ? this.atkCntBefore : 0));
           this.atkCntBefore = atkCnt;
         }
         
-        return valueUsed;
-      }
-      
-      if (eff.value) {
         valueUsed = _setupValue(eff, eff.value);
       } else if (eff.factors) {
         valueUsed = 0;

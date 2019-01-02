@@ -177,7 +177,7 @@ io.on('connection', (socket) => {
     } else if (trades[room].leftUid == uid) {
       trades[room].left = socket;
       var charRow = await getCharacterByUid(uid);
-      trades[room].leftChr = JSON.parse(charRow.char_data);
+      //trades[room].leftChr = JSON.parse(charRow.char_data);
       trades[room].bmod = (new battlemodule.bmodule());
     }
     
