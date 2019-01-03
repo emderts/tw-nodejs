@@ -2092,7 +2092,7 @@ async function procNextPhaseDungeon(req, res) {
           enemy = sess.dungeonProgress.nextPhase == 2 ? monster.d7EliteKnight : monster.d7Lohengrin;
           delete sess.dungeonProgress.nextPhase;
         } else if (trades[sess.dungeonProgress.roomNum]) {
-          res.render('pages/trade', {room: roomNum, uid: charRow.uid});
+          res.render('pages/trade', {room: sess.dungeonProgress.roomNum, uid: charRow.uid});
           return;
         }
       }
