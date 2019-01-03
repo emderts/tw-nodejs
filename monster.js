@@ -503,7 +503,8 @@ const chara = require('./chara');
                active : cons.ACTIVE_TYPE_TAKE_HIT, cost : 10, chance : 0.25,
                effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 90014, buffDur : 1}]}
   };
-  charLeft.skillSelect = 0;
+  charLeft.skillSelect = 2;
+  charLeft.rating = [0.35, 0.3, 0.35];
   module.exports.d7Lohengrin = charLeft;
   
   charLeft = {name : '프사이', nameType : cons.NAME_KOR_NO_END_CONS, title : '승급 시험관', rank : 9, level : 40, 
@@ -572,6 +573,20 @@ const chara = require('./chara');
   }, function() {
     var rand = Math.random();
     return rand < 0.4 ? 0 : (rand < 0.8 ? 2 : 1);
+  }, function(chara, key) {
+    chara.rating = chara.rating.map(x => x * 0.95);
+    chara.rating[(key + 1) % 3] += 0.1;
+    chara.rating[(key + 2) % 3] -= 0.1;
+    
+    var expRate = chara.rating.map(x => Math.exp(x));
+    var rand = Math.random() * (expRate[0] + expRate[1] + expRate[2]);
+    if (rand < expRate[0]) {
+      return 0;
+    } else if (rand < expRate[0] + expRate[1]) {
+      return 1;
+    } else {
+      return 2;
+    }
   }];
   
   function _initChar(char) {

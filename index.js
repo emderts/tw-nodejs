@@ -2025,7 +2025,7 @@ async function procNextPhaseDungeon(req, res) {
           enemy = list[idx];
           list.splice(idx, 1);
         }
-      } else if (sess.dungeonProgress.code == 6) {
+      } else if (sess.dungeonProgress.code == 6 && sess.dungeonProgress.phase == 2) {
         const result = await client.query('select * from raids where rindex = 5');
         row = result.rows[0];
         if ((row.open == 'O')) {
@@ -2250,9 +2250,8 @@ async function procNextPhaseDungeon(req, res) {
             await giveAchievement(charRow.uid, char, 32);
           }
         }
-      } else if (req.session.dungeonProgress.code == 6 && req.session.dungeonProgress.phase >= 2) {
+      } else if (req.session.dungeonProgress.code == 6 && req.session.dungeonProgress.phase == 2) {
 
-        char.dungeonInfos.runFieldBoss1 = true;
         var re = (new battlemodule.bmodule()).doBattle(JSON.parse(JSON.stringify(enemy)), JSON.parse(JSON.stringify(char)), 1);
         var resultList = [{phase : 1, monImage : enemy.image, monName : enemy.name, 
           result : re.winnerRight ? '승리' : '패배', hpLeft : re.leftInfo.curHp}];
