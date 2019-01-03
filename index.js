@@ -172,6 +172,7 @@ io.on('connection', (socket) => {
   });
   
   socket.on('rankupDungeonInit', async function(room, uid) {
+    console.log(room + ';' + uid + 'rdinit' + trades[room]);
     if (!trades[room]) {
       return;
     } else if (trades[room].leftUid == uid) {
@@ -199,7 +200,7 @@ io.on('connection', (socket) => {
   socket.on('rankupDungeonSelect', function(room, uid, key) {
     if (trades[room].leftUid == uid) {
       trades[room].leftSel = key;
-      trades[room].rightSel = monster.selectFunc[trades[room].rightChr.skillSelect]();
+      trades[room].rightSel = monster.selectFunc[trades[room].rightChr.skillSelect](trades[room].rightChr, key);
     }
     
     if (trades[room].leftSel !== undefined && trades[room].rightSel !== undefined) {
