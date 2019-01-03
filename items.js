@@ -1215,7 +1215,7 @@ itemList[509] = { id : 509, name : '황금의 대도서관 열쇠', nameType : c
     effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_USE_SPECIAL, chance : 0.51, buffCode : 10117, buffDur : 4}] };
 itemList[510] = { id : 510, name : '다중 선택 시계', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SKILL_ARTIFACT, flavor : '', rank : 6, rarity : cons.ITEM_RARITY_RARE, stat : {  }, 
     effectDesc : '상성 패배 시 3.5% 확률로 스킬 재선택', 
-    effect : [{code : cons.EFFECT_TYPE_SKILL_RESELECT, active : cons.ACTIVE_TYPE_SKILL_RESELECT, chance : 0.35}] };
+    effect : [{code : cons.EFFECT_TYPE_SKILL_RESELECT, active : cons.ACTIVE_TYPE_SKILL_RESELECT, chance : 0.035}] };
 itemList[511] = { id : 511, name : '타임 코더', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SKILL_ARTIFACT, flavor : '', rank : 6, rarity : cons.ITEM_RARITY_UNIQUE, stat : { maxHp : 50 }, 
     effectDesc : 'SP 소모량 4% 감소, 스페셜 스킬 사용 시 자신에게 [시간 왜곡] 버프 부여', 
     effect : [{active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_SP_COST_PERCENTAGE, key : 'special', value : -0.04},

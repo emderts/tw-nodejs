@@ -387,6 +387,7 @@ async function procInit2 () {
         char.skill = chara.jay.skill;
       }
       
+      _patchItem('skillArtifact', 510);
       function _patchItem(type, id) {
         if (char.items[type].id == id) {
           char.items[type].effectDesc = item.list[id].effectDesc;
@@ -1802,7 +1803,6 @@ async function procEnterDungeon(req, res) {
       }
     } else if (body.option == 6) {
       enemy = monster.rTimeStorm;
-      char.dungeonInfos.runFieldBoss1 = true;
       if (char.dungeonInfos.runFieldBoss1) {
         if (charRow.actionPoint <= 0) {
           client.release();
@@ -1829,6 +1829,9 @@ async function procEnterDungeon(req, res) {
         if (!re.winnerLeft) {
           isFinished = true;
           reward += '패배했습니다..';
+          if (body.option == 6) {
+            char.dungeonInfos.runFieldBoss1 = true;
+          }
         }
         req.session.dungeonProgress = {code : body.option, phase : 1, resultList : resultList, charData : re.leftInfo};
         if (body.option == 1) {
@@ -1852,6 +1855,7 @@ async function procEnterDungeon(req, res) {
         const damageDealt = hpBefore - re.leftInfo.curHp;
         re.leftInfo.buffs = [];
         re.leftInfo.items = enemy.items;
+        re.leftInfo.skill = enemy.skill;
         var isFinished = true;
         curData[row.phase] = re.leftInfo;
         curData[row.phase].battleRecord[charRow.uid] = curData[row.phase].battleRecord[charRow.uid] ? curData[row.phase].battleRecord[charRow.uid] + damageDealt : damageDealt;
@@ -2055,6 +2059,7 @@ async function procNextPhaseDungeon(req, res) {
             var enterNext = true;
             re.leftInfo.buffs = [];
             re.leftInfo.items = char.items;
+            re.leftInfo.skill = char.skill;
             req.session.dungeonProgress.charData = re.leftInfo;
             if (!char.dungeonInfos['rewardBlacklight' + sess.dungeonProgress.phase]) {
               char.dungeonInfos['rewardBlacklight' + sess.dungeonProgress.phase] = true;
@@ -2255,6 +2260,8 @@ async function procNextPhaseDungeon(req, res) {
           }
         }
       } else if (req.session.dungeonProgress.code == 6 && req.session.dungeonProgress.phase >= 2) {
+
+        char.dungeonInfos.runFieldBoss1 = true;
         var re = (new battlemodule.bmodule()).doBattle(JSON.parse(JSON.stringify(enemy)), JSON.parse(JSON.stringify(char)), 1);
         var resultList = [{phase : 1, monImage : enemy.image, monName : enemy.name, 
           result : re.winnerRight ? '승리' : '패배', hpLeft : re.leftInfo.curHp}];
