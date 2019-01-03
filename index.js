@@ -367,24 +367,11 @@ async function procInit2 () {
     const result = await client.query('select * from characters');
     for (val of result.rows) {
       var char = JSON.parse(val.char_data);
+      
+      char.dungeonInfos.enterBlacklight++;
 
       if (val.uid == '02') {
         char.inventory.push(item.list[392]);
-      }
-      if (val.uid == '04') {
-        char.skill = chara.lunisha.skill;
-      }
-      if (val.uid == '05') {
-        char.skill = chara.ruisun.skill;
-      }
-      if (val.uid == '11') {
-        char.skill = chara.marang.skill;
-      }
-      if (val.uid == '12') {
-        char.skill = chara.gabi.skill;
-      }
-      if (val.uid == '13') {
-        char.skill = chara.jay.skill;
       }
       
       _patchItem('skillArtifact', 510);
@@ -2103,6 +2090,9 @@ async function procNextPhaseDungeon(req, res) {
           sess.dungeonProgress.charData.curHp += (sess.dungeonProgress.charData.stat.maxHp - sess.dungeonProgress.charData.curHp) * 0.15;
           enemy = sess.dungeonProgress.nextPhase == 2 ? monster.d7EliteKnight : monster.d7Lohengrin;
           delete sess.dungeonProgress.nextPhase;
+        } else if (trades[sess.dungeonProgress.roomNum]) {
+          res.render('pages/trade', {room: roomNum, uid: charRow.uid});
+          return;
         }
       }
     }
