@@ -16,7 +16,7 @@ doWork();
 const typePrefix = ['무기', '방어구', '보조방어구', '장신구', '장비', '레어 장비', '유니크 장비'];
 function addSpecialResultCard(chara, type) {
   var item = {};
-  item.type = cons.ITEM_TYPE_RESULT_CARD;
+  item.type = 100;
   item.name = chara.rank + '급 ' + typePrefix[type] + ' 리설트 카드';
   item.rank = chara.rank;
   item.resultType = type;
@@ -185,5 +185,6 @@ try {
   }
   client.release();  
   } catch (err) {
+    console.log(err);
   }
   }

@@ -2102,7 +2102,7 @@ async function procNextPhaseDungeon(req, res) {
           console.log(sess.userUid + '//' + sess.dungeonProgress.nextPhase);
           sess.dungeonProgress.charData.curHp += (sess.dungeonProgress.charData.stat.maxHp - sess.dungeonProgress.charData.curHp) * 0.15;
           enemy = sess.dungeonProgress.nextPhase == 2 ? monster.d7EliteKnight : monster.d7Lohengrin;
-          //delete sess.dungeonProgress.nextPhase;
+          delete sess.dungeonProgress.nextPhase;
         }
       }
     }
