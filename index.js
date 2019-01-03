@@ -376,7 +376,7 @@ async function procInit2 () {
       
       _patchItem('skillArtifact', 510);
       function _patchItem(type, id) {
-        if (char.items[type].id == id) {
+        if (char.items[type] && char.items[type].id == id) {
           char.items[type].effectDesc = item.list[id].effectDesc;
           char.items[type].effect = item.list[id].effect;
           char.items[type].stat = item.list[id].stat;
