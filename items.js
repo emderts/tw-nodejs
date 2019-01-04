@@ -996,7 +996,7 @@ itemList[450] = { id : 450, name : '스타라이트 스틱', nameType : cons.NAM
     effectDesc : '자신이 공격한 마법 피해량의 12%를 에너지로 저장한다. 저장된 에너지는 자신의 스페셜 스킬 발동 시 전부 소진되어 상대에게 저장량만큼 고정 마법 피해를 입힌다. (최대 150)', 
     effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_ATTACK, buffCode : 10084, buffDur : null, setStack : 0.12, isPercentDamage : true, chkDmgType : cons.DAMAGE_TYPE_MAGICAL}] };
 itemList[451] = { id : 451, name : '불타는 과수원의 검', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_WEAPON, flavor : '어떤 정령왕의 기운이 깃든 검. 정령계와 연결이 남아 있는 듯하다.', rank : 6, rarity : cons.ITEM_RARITY_UNIQUE, stat : { phyAtkMin : 33, phyAtkMax : 45, magAtkMin : 33, magAtkMax : 45, crit : 0.03 }, 
-    effectDesc : '공격 시 10% 확률로 자신에게 [불의 정령] 버프 부여, [불타는 과수원 경갑] 착용 시 공격 시 10% 확률로 적에게 1턴 간 [화상] 상태이상 부여', 
+    effectDesc : '공격 시 10% 확률로 자신에게 [불의 정령] 버프 부여, [불타는 과수원 경갑] 착용 시 공격 시 10% 확률로 적에게 1턴 간 [화상] 상태이상 부여<br><br>[불의 정령] : 보호막 60, 마법 0.2 피해, 2회 공격 시 버프 추가', 
     effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_ATTACK, chance : 0.1, buffCode : 90003, buffDur : null},
               {code : cons.EFFECT_TYPE_OPP_BUFF, active : cons.ACTIVE_TYPE_ATTACK, chance : 0.1, buffCode : 1, buffDur : 1, chkEquip : 464}] };
 itemList[452] = { id : 452, name : '광란의 맹독채찍', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_WEAPON, flavor : '마계의 대영주, 리서드의 채찍. 정체를 알 수 없는 수많은 종류의 맹독으로 끈적거린다.', rank : 6, rarity : cons.ITEM_RARITY_EPIC, stat : { phyAtkMin : 34, phyAtkMax : 42, magAtkMin : 42, magAtkMax : 50, crit : 0.04 }, 
@@ -1039,7 +1039,7 @@ itemList[463] = { id : 463, name : '만크릭의 의지', nameType : cons.NAME_K
     effectDesc : '공격 시 자신에게 1턴 간 [복수의 의지] 버프 부여<br><br>[복수의 의지] : 스킬 피해 +10%', 
     effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_ATTACK, buffCode : 10090, buffDur : 2}] };
 itemList[464] = { id : 464, name : '불타는 과수원 경갑', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_ARMOR, flavor : '다양한 영석들로 장식되어 있는 갑옷이다. 강렬한 온기가 느껴진다.', rank : 6, rarity : cons.ITEM_RARITY_UNIQUE, stat : { phyReduce : 0.065, magReduce : 0.065, maxHp : 286, critDmg : 0.1 }, 
-    effectDesc : '피격 시 10% 확률로 자신에게 [타오르는 영석-악], [타오르는 영석-수호], [타오르는 영석-충전] 중 하나 부여, [불타는 과수원 방패] 착용 시 피격 시 10% 확률로 자신에게 [에너지 파동] 버프 부여', 
+    effectDesc : '피격 시 10% 확률로 자신에게 [타오르는 영석-악], [타오르는 영석-수호], [타오르는 영석-충전] 중 하나 부여, [불타는 과수원 방패] 착용 시 피격 시 10% 확률로 자신에게 [에너지 파동] 버프 부여<br><br>[타오르는 영석-*] : 턴 종료 시 10% 확률로 적 1턴 [화상] 부여, 드라이브 스킬 사용 시 자신에게 [에너지 파동] 버프 부여<br>[-악] : 마법 0.3 피해<br>[-수호] : 피해감소 3<br>[-충전] : SP충전 +4<br>[에너지 파동] : 공격 시 20% 확률로 소거되며 마법 1.1 피해', 
     effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_TAKE_HIT, chance : 0.1, buffCode : [90006, 90007, 90008], buffDur : null, multiple : true},
               {code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_TAKE_HIT, chance : 0.1, buffCode : 90009, buffDur : null, chkEquip : 479}] };
 itemList[465] = { id : 465, name : '영혼을 마시는 자', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_ARMOR, flavor : '매우 탁한 기운이 느껴지는 갑옷. 주위의 생명력을 빨아들이고 있는 것 같다.', rank : 6, rarity : cons.ITEM_RARITY_UNIQUE, stat : { phyReduce : 0.055, magReduce : 0.075, maxHp : 372, hpRegen : 1, evasion : -0.03 }, 
@@ -1090,7 +1090,7 @@ itemList[478] = { id : 478, name : '헥사곤 실드', nameType : cons.NAME_KOR_
     effectDesc : '피격 시 피해량이 6의 배수라면 자신에게 [헥사곤] 버프 부여<br><br>[헥사곤] : 피해감소 4', 
     effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_TAKE_HIT, buffCode : 10099, buffDur : null, chkDmgMultiple : 6}] };
 itemList[479] = { id : 479, name : '불타는 과수원 방패', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '죽음과 그 너머의 불길한 기운이 넘실거린다.', rank : 6, rarity : cons.ITEM_RARITY_UNIQUE, stat : { maxHp : 114, dmgReduce : 12 }, 
-    effectDesc : '공격 시 7% 확률로 적에게 [죽음과 부패] 디버프 부여, [불타는 과수원 인장] 착용 시 공격 시 7% 확률로 자신에게 [가고일] 버프 부여', 
+    effectDesc : '공격 시 7% 확률로 적에게 [죽음과 부패] 디버프 부여, [불타는 과수원 인장] 착용 시 공격 시 7% 확률로 자신에게 [가고일] 버프 부여<br><br>[죽음과 부패] : 물리 0.4 피해 받음, 공격 시 소거<br>[가고일] : 물리공격력 +8, 8% 확률로 적 1턴 [기절]', 
     effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, active : cons.ACTIVE_TYPE_ATTACK, chance : 0.07, buffCode : 90010, buffDur : null},
               {code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_ATTACK, chance : 0.07, buffCode : 90011, buffDur : null, chkEquip : 505}] };
 itemList[480] = { id : 480, name : '하늘과 바람과 별과 시', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '성찰을 향한 간결한 울림으로, 청년의 천명은 이곳에서 빛난다. "오늘 밤에도 별이 바람에 스치운다."', rank : 6, rarity : cons.ITEM_RARITY_UNIQUE, stat : { maxHp : 114, evasion : 0.05 }, 
