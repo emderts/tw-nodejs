@@ -1712,6 +1712,12 @@ module.exports.getBuffData = function(eff) {
     effectObj.key = 'magReduce';
     effectObj.value = 0.3;
     retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_STAT_ADD;
+    effectObj.key = 'dmgReduce';
+    effectObj.value = 5;
+    retObj.effect.push(effectObj);
     break;
   case 10083 : 
     retObj.name = '카운터 소드';
@@ -1837,7 +1843,7 @@ module.exports.getBuffData = function(eff) {
     effectObj = {};
     effectObj.active = cons.ACTIVE_TYPE_TAKE_HIT;
     effectObj.code = cons.EFFECT_TYPE_CANCEL_DAMAGE;
-    effectObj.value = 0.5;
+    effectObj.value = 0.35;
     effectObj.removeBuff = true;
     retObj.effect.push(effectObj);
     break;
@@ -1868,7 +1874,7 @@ module.exports.getBuffData = function(eff) {
     effectObj = {};
     effectObj.active = cons.ACTIVE_TYPE_CALC_DAMAGE;
     effectObj.code = cons.EFFECT_TYPE_MULTIPLY_DAMAGE;
-    effectObj.value = 1.1;
+    effectObj.value = 1.14;
     effectObj.anySkill = true;
     retObj.effect.push(effectObj);
     break;
@@ -1939,7 +1945,7 @@ module.exports.getBuffData = function(eff) {
     effectObj.active = cons.ACTIVE_TYPE_TURN_END;
     effectObj.code = cons.EFFECT_TYPE_ADD_HIT;
     effectObj.type = cons.DAMAGE_TYPE_PHYSICAL;
-    effectObj.value = 1.3;
+    effectObj.value = 0.8;
     retObj.effect.push(effectObj);
     break;
   case 10094 : 
@@ -1964,7 +1970,7 @@ module.exports.getBuffData = function(eff) {
     effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
     effectObj.code = cons.EFFECT_TYPE_STAT_ADD;
     effectObj.key = 'evasion';
-    effectObj.value = -0.07;
+    effectObj.value = -0.05;
     retObj.effect.push(effectObj);
     effectObj = {};
     effectObj.active = cons.ACTIVE_TYPE_ATTACK;
@@ -1980,7 +1986,7 @@ module.exports.getBuffData = function(eff) {
     effectObj = {};
     effectObj.active = cons.ACTIVE_TYPE_DEAL_DAMAGE_RECEIVE;
     effectObj.code = cons.EFFECT_TYPE_SHIELD;
-    effectObj.value = 30;
+    effectObj.value = 40;
     retObj.effect.push(effectObj);
     break;
   case 10096 : 
@@ -2024,7 +2030,7 @@ module.exports.getBuffData = function(eff) {
     effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
     effectObj.code = cons.EFFECT_TYPE_STAT_ADD;
     effectObj.key = 'dmgReduce';
-    effectObj.value = 3;
+    effectObj.value = 4;
     retObj.effect.push(effectObj);
     break;
   case 10100 : 
@@ -2126,8 +2132,8 @@ module.exports.getBuffData = function(eff) {
     effectObj = {};
     effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
     effectObj.code = cons.EFFECT_TYPE_STAT_ADD;
-    effectObj.key = 'crit';
-    effectObj.value = 0.01;
+    effectObj.key = 'evasion';
+    effectObj.value = 0.02;
     retObj.effect.push(effectObj);
     effectObj = {};
     effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
@@ -2158,7 +2164,7 @@ module.exports.getBuffData = function(eff) {
     effectObj.code = cons.EFFECT_TYPE_OPP_BUFF;
     effectObj.buffCode = 6;
     effectObj.buffDur = 2;
-    effectObj.chance = 0.3;
+    effectObj.chance = 0.5;
     effectObj.chkDmgType = cons.DAMAGE_TYPE_PHYSICAL;
     retObj.effect.push(effectObj);
     effectObj = {};
@@ -2176,7 +2182,7 @@ module.exports.getBuffData = function(eff) {
     effectObj = {};
     effectObj.active = cons.ACTIVE_TYPE_DEAL_DAMAGE_RECEIVE;
     effectObj.code = cons.EFFECT_TYPE_SHIELD;
-    effectObj.value = 0.95 * 1.3;
+    effectObj.value = 0.95 * 1.4;
     retObj.effect.push(effectObj);
     effectObj = {};
     effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
@@ -2355,7 +2361,7 @@ module.exports.getBuffData = function(eff) {
   case 10114 : 
     retObj.name = '영석-악';
     retObj.nameType = cons.NAME_KOR_END_CONS;
-    retObj.stackType = 1;
+    retObj.stackType = 3;
     retObj.isDebuff = false;
     effectObj = {};
     effectObj.active = cons.ACTIVE_TYPE_TURN_END;
@@ -2380,7 +2386,7 @@ module.exports.getBuffData = function(eff) {
   case 10115 : 
     retObj.name = '영석-봉인';
     retObj.nameType = cons.NAME_KOR_END_CONS;
-    retObj.stackType = 1;
+    retObj.stackType = 3;
     retObj.isDebuff = false;
     effectObj = {};
     effectObj.active = cons.ACTIVE_TYPE_OPP_CALC_STATS;
@@ -2398,7 +2404,7 @@ module.exports.getBuffData = function(eff) {
   case 10116 : 
     retObj.name = '영석-수호';
     retObj.nameType = cons.NAME_KOR_NO_END_CONS;
-    retObj.stackType = 1;
+    retObj.stackType = 3;
     retObj.isDebuff = false;
     effectObj = {};
     effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;

@@ -769,6 +769,7 @@ Battlemodule.prototype.dealDamage = function(src, dst, damage) {
   }
   if (src !== dst) {
     this.resolveEffects(src, dst, getBuffEffects(src, cons.ACTIVE_TYPE_DEAL_DAMAGE), damage);
+    this.resolveEffects(dst, src, getItemEffects(dst, cons.ACTIVE_TYPE_DEAL_DAMAGE_RECEIVE), damage);
   }
   var damageDealt = shielded ? damageShield : damage.value;
   dst.lastDamage = damageDealt;
@@ -981,7 +982,7 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
         buffObj.effect[0].value = Math.round(buffObj.effect[0].value * (winner.stat.maxHp - winner.curHp) * stackMpl);
         this.result += winner.name + getUnnun(winner.nameType) + ' 보호막을 ' + buffObj.effect[0].value + ' 획득했다!<br>';
       } else if (buffObj.id === 2017106) {
-        buffObj.effect[0].value = Math.round(buffObj.effect[0].value * (winner.stat.phyAtk + winner.stat.magAtk) * stackMpl);
+        buffObj.effect[0].value = Math.round(buffObj.effect[0].value * (winner.stat.phyAtk + winner.stat.magAtk + winner.stat.phyAtkMin + winner.stat.magAtkMin + Math.floor(Math.random() * (winner.stat.magAtkMax - winner.stat.magAtkMin)) + Math.floor(Math.random() * (winner.stat.phyAtkMax - winner.stat.phyAtkMin))) * stackMpl);
         this.result += winner.name + getUnnun(winner.nameType) + ' 보호막을 ' + buffObj.effect[0].value + ' 획득했다!<br>';
       } else if (buffObj.id === 10107) {
         buffObj.effect[0].value = Math.round(buffObj.effect[0].value * (winner.stat.maxHp) * stackMpl);

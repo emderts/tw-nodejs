@@ -567,6 +567,39 @@ const chara = require('./chara');
   charLeft.skillSelect = 0;
   module.exports.ruLozic8 = charLeft;
   
+  charLeft = {name : '프사이', nameType : cons.NAME_KOR_NO_END_CONS, title : '승급 시험관', rank : 7, level : 40, 
+      stat : {maxHp : 1244, phyAtk : 68.75, magAtk : 123.75}};
+  _initChar(charLeft);
+  
+  charLeft.items = {weapon : item.list[341], armor : item.list[369], subarmor : item.list[382], trinket : item.list[395]};
+
+  charLeft.skill = chara.psi.skill;
+  charLeft.skillSelect = 2;
+  charLeft.rating = [0, 0, 0];
+  module.exports.ruPsi7 = charLeft;
+  
+  charLeft = {name : '에오헬름', nameType : cons.NAME_KOR_END_CONS, title : '승급 시험관', rank : 8, level : 40, 
+      stat : {maxHp : 700, phyAtk : 232.5, magAtk : 40}};
+  _initChar(charLeft);
+  
+  charLeft.items = {weapon : item.list[348], armor : item.list[362], subarmor : item.list[385], trinket : item.list[397]};
+
+  charLeft.skill = chara.aeohelm.skill;
+  charLeft.skillSelect = 2;
+  charLeft.rating = [0.35, 0, 0.35];
+  module.exports.ruAeohelm7 = charLeft;
+  
+  charLeft = {name : '세컨드 로직', nameType : cons.NAME_KOR_END_CONS, title : '승급 시험관', rank : 8, level : 40, 
+      stat : {maxHp : 1660, phyAtk : 93, magAtk : 40}};
+  _initChar(charLeft);
+  
+  charLeft.items = {weapon : item.list[346], armor : item.list[365], subarmor : item.list[384], trinket : item.list[397]};
+
+  charLeft.skill = chara.lozic.skill;
+  charLeft.skillSelect = 2;
+  charLeft.rating = [0, 0, 0];
+  module.exports.ruLozic7 = charLeft;
+  
   module.exports.selectFunc = 
     [function() {
     return Math.floor(Math.random() * 3);

@@ -2738,7 +2738,7 @@ async function procRankup (req, res) {
   const sess = req.session; 
   const charRow = await getCharacter(sess.userUid);
   const char = JSON.parse(charRow.char_data);
-  if (char.level >= 20 && char.rank > 6 && char.rankReq) {
+  if (((char.level >= 20 && char.rank > 7) || (char.level >= 25 && char.rank == 7)) && char.rankReq) {
     char.level = 1;
     char.rank--;
     char.reqExp += 90;

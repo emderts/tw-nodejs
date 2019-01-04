@@ -300,7 +300,7 @@
           <div class="itemTooltip">현재 경험치 / 요구 경험치 (오늘 획득할 수 있는 잔여 경험치)</div>
           </td>
           <td class="charViewContent">
-          <% if (char.level >= 20 && char.rank > 6) { %>
+          <% if ((char.level >= 20 && char.rank > 7) || (char.level >= 25 && char.rank == 7)) { %>
             <form action="/doRankup" method="post">
               <button type="submit" <%= !char.rankReq ? 'disabled' : '' %>>랭크업</button>
             </form>
@@ -347,7 +347,8 @@
         </tr>
         <tr>
           <td class="charViewTitle">전적</td>
-          <td class="charViewContent"><%= char.battleCnt %>전 <%= char.winCnt %>승 [최근 <%= char.recentRecord.filter(x => x).length %>승]</td>
+          <td class="charViewContent"><%= char.battleCnt %>전 <%= char.winCnt %>승 (<%= (char.winCnt * 100 / (char.battleCnt ? char.battleCnt : 1)).toFixed(2) %>%)<br>
+          [최근 50전 <%= char.recentRecord.filter(x => x).length %>승]</td>
           <td class="charViewContent"></td>
         </tr>
       <% for ([key, val] of Object.entries(char.stat)) {  
