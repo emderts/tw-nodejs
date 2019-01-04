@@ -2025,7 +2025,7 @@ async function procNextPhaseDungeon(req, res) {
           enemy = list[idx];
           list.splice(idx, 1);
         }
-      } else if (sess.dungeonProgress.code == 6 && sess.dungeonProgress.phase == 2) {
+      } else if (sess.dungeonProgress.code == 6 && sess.dungeonProgress.phase == 1) {
         const result = await client.query('select * from raids where rindex = 5');
         row = result.rows[0];
         if ((row.open == 'O')) {
