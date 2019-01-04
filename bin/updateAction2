@@ -18,7 +18,7 @@ async function doWork() {
         const results = await client.query('select * from characters');
         for (val of results.rows) {
           var charData = JSON.parse(val.char_data);
-          charData.dungeonInfos.runRankup = false;
+          //charData.dungeonInfos.runRankup = false;
           await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(charData), val.uid]);
         } 
       

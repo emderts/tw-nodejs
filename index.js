@@ -2109,7 +2109,7 @@ async function procNextPhaseDungeon(req, res) {
         }
         trades[roomNum].rightChr = JSON.parse(JSON.stringify(enemy));
         req.session.dungeonProgress.phase = req.session.dungeonProgress.phase + 1;
-        req.session.dungeonProgress.tgtList = req.session.dungeonProgress.list;
+        req.session.dungeonProgress.tgtList = req.session.dungeonProgress.tgtList;
         req.session.dungeonProgress.roomNum = roomNum;
 
         res.render('pages/trade', {room: roomNum, uid: charRow.uid});
