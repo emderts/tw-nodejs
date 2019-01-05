@@ -1656,6 +1656,7 @@ const item = require('./items');
     char.stat.magAtkMax = 0;
     char.stat.dmgReduce = 0;
     char.stat.pierce = 0;
+    char.stat.chanceEnh = 0;
     char.inventory = [];
     char.items = {};
     char.items.weapon = item.list[0];

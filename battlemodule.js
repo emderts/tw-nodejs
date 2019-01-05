@@ -820,6 +820,7 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
       stackMpl = eff.maxApply;
     }
     var chance = eff.chance ? eff.chance : 1;
+    chance *= (1 + winner.stat.chanceEnh);
     if (eff.chanceAddKey) {
       var factor = eff.chanceAddKeyFactor ? eff.chanceAddKeyFactor : 1;
       if (eff.chanceAddKey == 'hit') {

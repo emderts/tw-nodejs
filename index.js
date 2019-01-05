@@ -369,7 +369,8 @@ async function procInit2 () {
     for (val of result.rows) {
       var char = JSON.parse(val.char_data);
       
-      char.dungeonInfos.runRankup = false;
+      char.stat.chanceEnh = 0;
+      char.base.chanceEnh = 0;
 
       if (val.uid == '02') {
         char.inventory.push(item.list[392]);
@@ -3034,7 +3035,7 @@ function addExp(chara, exp) {
 }
 
 const dayStoneData = [
-                      [[[15, 45], [20, 70], [25, 100], [30, 140], [40, 180]]], 
+                      [[[15, 50], [20, 85], [30, 120], [40, 160], [50, 200]]], 
                       [[[5, 15], [10, 25], [15, 45], [20, 70], [30, 95]]], 
                       [[[10, 35], [15, 50], [20, 70], [25, 100], [35, 140]]], 
                       [[[10, 35], [15, 50], [20, 70], [25, 100], [35, 140]]], 
@@ -3043,7 +3044,7 @@ const dayStoneData = [
                       [[[10, 35], [15, 50], [20, 70], [25, 95], [35, 125]]]];
 const dayStonePrefix = ['최하급 ', '하급 ', '중급 ', '상급 ', '최상급 '];
 const dayStoneName = ['일석', '월석', '화석', '수석', '목석', '금석', '토석'];
-const dayStoneEffect = ['치명피해', '치명', '물리공격력', '마법공격력', 'SP 소모량 감소', '저항', '생명력'];
+const dayStoneEffect = ['확률강화', '치명', '물리공격력', '마법공격력', 'SP 소모량 감소', '저항', '생명력'];
 function makeDayStone(dayIn, rank, levelIn) {
   var rand = Math.random();
   var item = {};
@@ -3067,7 +3068,7 @@ function makeDayStone(dayIn, rank, levelIn) {
   item.effectDesc = dayStoneEffect[item.day] + ' ' + (Math.round(val*1000)/10) + '%';
   switch (item.day) {
   case 0:
-    item.effect = [{active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'critDmg', value : val}];
+    item.effect = [{active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'chanceEnh', value : val}];
     break;
   case 1:
     item.effect = [{active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'crit', value : val}];
