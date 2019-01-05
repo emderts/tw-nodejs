@@ -1435,7 +1435,7 @@ const item = require('./items');
   var skillObj = {code : 201771, name : '충전', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1.4, 
       effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201777, buffDur : null, setStack : 3},
                 {code : cons.EFFECT_TYPE_SELF_HIT, type : cons.DAMAGE_TYPE_ABSOLUTE, value : 0.12, isPercentStat : true, percentKey : 'maxHp', chkHpOver : 0.18}],
-      tooltip : '생명력이 18% 이상이면 최대 생명력의 12%만큼 피해를 입고, 자신에게 [충전 중] 3중첩 부여<br><br>[충전 중] : 턴 시작 시 최대 생명력의 5%만큼 보호막을 얻고 1중첩 소거, 보호막이 없을 시 저항 +10%',
+      tooltip : '자신에게 [충전 중] 3중첩 부여, 생명력이 18% 이상이면 최대 생명력의 12%만큼 피해를 입음<br><br>[충전 중] : 턴 시작 시 최대 생명력의 5%만큼 보호막을 얻고 1중첩 소거, 보호막이 없을 시 저항 +10%',
       flavor : '지니가 보호막을 충전하기 시작합니다.'};  
   charIllun.skill.base.push(skillObj);
 
@@ -1457,7 +1457,7 @@ const item = require('./items');
       active : cons.ACTIVE_TYPE_TURN_END, cost : 10, chance : 1, checkFunc : 2, setCooldown : 3,
       effect : [{code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_MAGICAL_FIXED, value : 0.2, overPercentShield : true},
                 {code : cons.EFFECT_TYPE_SELF_HIT, type : cons.DAMAGE_TYPE_ABSOLUTE, value : 0.25, overPercentShield2 : true}],
-      tooltip : '보호막 수치가 적 현재 생명력의 30% 및 최대 생명력의 5%를 초과하였을 때 보호막 초과분만큼 마법 피해를 입히고 보호막의 30%를 잃음',
+      tooltip : '보호막 수치가 자신 현재 생명력의 20% 및 최대 생명력의 5%를 초과하였을 때 보호막 초과분만큼 마법 피해를 입히고 보호막 초과분의 25%를 잃음',
       flavor : '보호막을 방전시켜 적에게 피해를 줍니다.'};
   charIllun.skill.drive = skillObj;
 

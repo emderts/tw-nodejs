@@ -374,20 +374,34 @@ async function procInit2 () {
       if (val.uid == '02') {
         char.inventory.push(item.list[392]);
       }
+      if (val.uid == '03') {
+        addSpecialResultCard(char, 4, 7);
+      }
       if (val.uid == '04') {
+        addSpecialResultCard(char, 4, 7);
+        addSpecialResultCard(char, 6, 6);
         char.skill = chara.lunisha.skill;
       }
       if (val.uid == '05') {
-        char.skill = chara.ruisun.skill;
+        addSpecialResultCard(char, 4, 7);
+      }
+      if (val.uid == '06') {
+        addSpecialResultCard(char, 4, 7);
       }
       if (val.uid == '07') {
         char.skill = chara.illun.skill;
+        addSpecialResultCard(char, 4, 7);
+      }
+      if (val.uid == '09') {
+        addSpecialResultCard(char, 4, 7);
+        addSpecialResultCard(char, 4, 6);
+      }
+      if (val.uid == '10') {
+        addSpecialResultCard(char, 4, 7);
       }
       if (val.uid == '11') {
-        char.skill = chara.marang.skill;
-      }
-      if (val.uid == '12') {
-        char.skill = chara.gabi.skill;
+        addSpecialResultCard(char, 4, 7);
+        addSpecialResultCard(char, 5, 6);
       }
       
       function _patchItem(type, id) {
@@ -3133,11 +3147,12 @@ function addResultCard(chara) {
 }
 
 const typePrefix = ['무기', '방어구', '보조방어구', '장신구', '장비', '레어 장비', '유니크 장비'];
-function addSpecialResultCard(chara, type) {
+function addSpecialResultCard(chara, type, rank) {
   var item = {};
+  var rankUsed = rank ? rank : chara.rank;
   item.type = cons.ITEM_TYPE_RESULT_CARD;
-  item.name = chara.rank + '급 ' + typePrefix[type] + ' 리설트 카드';
-  item.rank = chara.rank;
+  item.name = rankUsed + '급 ' + typePrefix[type] + ' 리설트 카드';
+  item.rank = rankUsed;
   item.resultType = type;
   if (type <= 4) {
     item.tooltip = '60.5% : 언커먼 장비<br>27.6% : 레어 장비<br>5.55% : 유니크 장비<br>5.3% : 한 등급이 높은 커먼&언커먼 장비<br>1.05% : 에픽 장비';

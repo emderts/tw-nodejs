@@ -3886,7 +3886,7 @@ module.exports.getBuffData = function(eff) {
     effectObj = {};
     effectObj.active = cons.ACTIVE_TYPE_CALC_DAMAGE;
     effectObj.code = cons.EFFECT_TYPE_MULTIPLY_DAMAGE;
-    effectObj.value = 2;
+    effectObj.value = 1.6;
     effectObj.anySkill = true;
     retObj.effect.push(effectObj);
     effectObj = {};
