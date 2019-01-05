@@ -1050,15 +1050,14 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
         return valueUsed;
       }
       
-      if (eff.value) {
+      if (eff.value) {        
+        valueUsed = _setupValue(eff, eff.value);
         
         if (eff.addAttackCount) {
           const atkCnt = (isLeft ? this.leftWin : this.rightWin);
           valueUsed *= (atkCnt - (this.atkCntBefore ? this.atkCntBefore : 0));
           this.atkCntBefore = atkCnt;
         }
-        
-        valueUsed = _setupValue(eff, eff.value);
       } else if (eff.factors) {
         valueUsed = 0;
         for (fact of eff.factors) {
