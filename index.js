@@ -369,39 +369,10 @@ async function procInit2 () {
     for (val of result.rows) {
       var char = JSON.parse(val.char_data);
       
-      //char.dungeonInfos.enterBlacklight++;
+      char.dungeonInfos.runRankup = false;
 
       if (val.uid == '02') {
         char.inventory.push(item.list[392]);
-      }
-      if (val.uid == '03') {
-        addSpecialResultCard(char, 4, 7);
-      }
-      if (val.uid == '04') {
-        addSpecialResultCard(char, 4, 7);
-        addSpecialResultCard(char, 6, 6);
-        char.skill = chara.lunisha.skill;
-      }
-      if (val.uid == '05') {
-        addSpecialResultCard(char, 4, 7);
-      }
-      if (val.uid == '06') {
-        addSpecialResultCard(char, 4, 7);
-      }
-      if (val.uid == '07') {
-        char.skill = chara.illun.skill;
-        addSpecialResultCard(char, 4, 7);
-      }
-      if (val.uid == '09') {
-        addSpecialResultCard(char, 4, 7);
-        addSpecialResultCard(char, 4, 6);
-      }
-      if (val.uid == '10') {
-        addSpecialResultCard(char, 4, 7);
-      }
-      if (val.uid == '11') {
-        addSpecialResultCard(char, 4, 7);
-        addSpecialResultCard(char, 5, 6);
       }
       
       function _patchItem(type, id) {
