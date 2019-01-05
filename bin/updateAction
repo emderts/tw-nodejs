@@ -61,6 +61,7 @@ try {
       charData.dungeonInfos.runEmberCrypt = false;
       charData.dungeonInfos.runBlacklight = false;
       charData.dungeonInfos.runFieldBoss = false;
+      charData.dungeonInfos.runRankup = false;
       await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(charData), val.uid]);
     } 
   

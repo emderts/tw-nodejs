@@ -1434,8 +1434,8 @@ const item = require('./items');
 
   var skillObj = {code : 201771, name : '충전', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1.4, 
       effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201777, buffDur : null, setStack : 3},
-                {code : cons.EFFECT_TYPE_SELF_HIT, type : cons.DAMAGE_TYPE_ABSOLUTE, value : 0.12, isPercentStat : true, percentKey : 'maxHp', chkHpOver : 0.18}],
-      tooltip : '자신에게 [충전 중] 3중첩 부여, 생명력이 18% 이상이면 최대 생명력의 12%만큼 피해를 입음<br><br>[충전 중] : 턴 시작 시 최대 생명력의 5%만큼 보호막을 얻고 1중첩 소거, 보호막이 없을 시 저항 +10%',
+                {code : cons.EFFECT_TYPE_SELF_HP, value : -0.12, isPercentStat : true, percentKey : 'maxHp', chkHpOver : 0.18}],
+      tooltip : '자신에게 [충전 중] 3중첩 부여, 생명력이 18% 이상이면 최대 생명력의 12%를 잃음<br><br>[충전 중] : 턴 시작 시 최대 생명력의 5%만큼 보호막을 얻고 1중첩 소거, 보호막이 없을 시 저항 +10%',
       flavor : '지니가 보호막을 충전하기 시작합니다.'};  
   charIllun.skill.base.push(skillObj);
 
