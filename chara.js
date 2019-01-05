@@ -1245,24 +1245,25 @@ const item = require('./items');
   charMarang.skill = {};
   charMarang.skill.base = [];
 
-  var skillObj = {code : 201747, name : '설화의 계절', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 0.7, 
+  var skillObj = {code : 201747, name : '설화의 계절', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 0.8, 
       effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201755, buffDur : 4},
                 {code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.15, buffCode : 1, buffDur : 1}],
-      tooltip : '100\% 확률로 자신에게 4턴 간 [설화의 계절] 부여, 15\% 확률로 적에게 1턴 간 [화상] 상태이상 부여<br><br>[설화의 계절] : 명중 +5\%, 물리저항 +5\%',
+      tooltip : '100\% 확률로 자신에게 4턴 간 [설화의 계절] 부여, 15\% 확률로 적에게 1턴 간 [화상] 상태이상 부여<br><br>[설화의 계절] : 명중 +5\%, 물리저항 +15\%',
       flavor : '주변의 기온을 비정상적으로 조작하여 비좁은 공간에 냉기와 열기를 생성한다.'};  
   charMarang.skill.base.push(skillObj);
 
-  skillObj = {code : 201746, name : '삼월참', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1.6, 
+  skillObj = {code : 201746, name : '삼월참', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1.4, 
       calcEffect : [{name : '삼월참', code : cons.EFFECT_TYPE_FORCE_CRIT, chkOpp : [12], skillCode : 201746}],
-      effect : [],
-      tooltip : '자신에게 [설화의 계절], [서리 날개] 버프가 있다면 각각 치명 피해 1.2배, 적에게 [빙결] 상태이상이 있다면 확정 치명 타격',
+      effect : [{code : cons.EFFECT_TYPE_SELF_SP, value : 1, isPercentStat : true, percentKey : 'spCharge', chkNot : [201755]},
+                {code : cons.EFFECT_TYPE_SELF_SP, value : 1, isPercentStat : true, percentKey : 'spCharge', chkNot : [201756]}],
+      tooltip : '자신에게 [설화의 계절], [서리 날개] 버프가 있다면 각각 치명 피해 1.2배, 없다면 각각 SP충전만큼 SP 회복, 적에게 [빙결] 상태이상이 있다면 확정 치명 타격',
       flavor : '서늘한 달빛을 머금고 베어내는 발검술.'};  
   charMarang.skill.base.push(skillObj);
 
-  skillObj = {code : 201748, name : '서리 날개', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 0.7,
+  skillObj = {code : 201748, name : '서리 날개', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 0.8,
       effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201756, buffDur : 4},
                 {code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.15, buffCode : 12, buffDur : 1}],
-      tooltip : '100\% 확률로 자신에게 4턴 간 [서리 날개] 부여, 15\% 확률로 적에게 1턴 간 [빙결] 상태이상 부여<br><br>[서리 날개] : 명중 +5\%, 마법저항 +5\%',
+      tooltip : '100\% 확률로 자신에게 4턴 간 [서리 날개] 부여, 15\% 확률로 적에게 1턴 간 [빙결] 상태이상 부여<br><br>[서리 날개] : 명중 +5\%, 마법저항 +15\%',
       flavor : '주변을 급냉각하여 날개 형태의 서리로 형상화한다.'};  
   charMarang.skill.base.push(skillObj);
 
@@ -1336,7 +1337,7 @@ const item = require('./items');
   charLunisha.skill.base = [];
 
   var skillObj = {code : 201756, name : '방패 밀쳐내기', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 0.8, 
-      effect : [{code : cons.EFFECT_TYPE_OPP_SP, maxApply : 25,
+      effect : [{code : cons.EFFECT_TYPE_OPP_SP, minApply : -25,
         factors : [{value : -5}, {value : -50, isPercentStat : true, percentKey : 'phyReduce'}, {value : -50, isPercentStat : true, percentKey : 'magReduce'}]}],
       tooltip : '5+0.5*(물리저항+마법저항)만큼 상대의 SP 감소',
       flavor : '거대한 방패로 적을 크게 밀쳐내거나, 부드럽고 날렵한 검무를 구사합니다.'};  
@@ -1362,10 +1363,10 @@ const item = require('./items');
       flavor : '상황에 따라 전투 자세를 변경합니다.'};
   charLunisha.skill.drive = skillObj;
 
-  skillObj = {code : 201760, name : '오가스 프로토콜', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 120, 
+  skillObj = {code : 201760, name : '오가스 프로토콜', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 135, 
       effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201766, buffDur : 2},
                 {code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 201767, buffDur : 1}],
-      tooltip : '잃은 체력의 [오버 클락]% 만큼의 체력을 즉시 회복한다. 다음 턴 공격 스킬의 계수가 ([오버 클락]*0.1)만큼 증가하고, 다음 턴 상성에서 무조건 승리하며, 2배의 피해를 입힌다. 그 후 소지한 [오버 클락] 스택의 절반을 잃는다. 만약 루니샤가 수비진 상태라면 [오버 클락] 스택을 잃지 않는다. 루니샤는 그 다음 턴부터 2턴 간 [혼란] 상태이상에 빠진다.',
+      tooltip : '잃은 체력의 [오버 클락]% 만큼의 체력을 즉시 회복한다. 다음 턴 공격 스킬의 계수가 ([오버 클락]*0.1)만큼 증가하고, 다음 턴 상성에서 무조건 승리하며, 1.6배의 피해를 입힌다. 그 후 소지한 [오버 클락] 스택의 절반을 잃는다. 만약 루니샤가 수비진 상태라면 [오버 클락] 스택을 잃지 않는다. 루니샤는 그 다음 턴부터 2턴 간 [혼란] 상태이상에 빠진다.',
       flavor : '어머니가 주신 힘을 모두 개방하여 짧은 시간 동안 손상된 신체를 복구하고 적의 모든 행동을 예측해냅니다. 다만 루니샤의 자아가 불안정해질 수 있습니다.'};
   charLunisha.skill.special = skillObj;
 
@@ -1398,8 +1399,9 @@ const item = require('./items');
   skillObj = {code : 201768, name : '포탈 브레이슬릿', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 0.9,
       calcEffect : [{code : cons.EFFECT_TYPE_ADD_DAMAGE_OBJECT, key : 'crit', value : 0.05, skillCode : 201768, name : '포탈 브레이슬릿'},
                     {code : cons.EFFECT_TYPE_ADD_DAMAGE_OBJECT, key : 'hit', value : 0.05, skillCode : 201768, name : '포탈 브레이슬릿'}],
-      effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201776, buffDur : 1, chk : [201775]}],
-      tooltip : '이 스킬의 치명타와 명중 확률이 10%p 증가한다. 자신과 상대에게 부여된 [재능], [연마된 재능], [이고깽] 스택만큼 치명피해가 증가한다. [반복 숙달] 효과 : 치명타와 명중 확률이 추가로 50%p 증가, 해당 턴 동안 물리 및 마법 저항+95%',
+      effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201776, buffDur : 1, chk : [201775]},
+                {code : cons.EFFECT_TYPE_OPP_SP, value : -5}],
+      tooltip : '이 스킬의 치명타와 명중 확률이 10%p 증가한다. 자신과 상대에게 부여된 [재능], [연마된 재능], [이고깽] 스택만큼 치명피해가 증가한다. 적의 SP 5 감소. [반복 숙달] 효과 : 치명타와 명중 확률이 추가로 50%p 증가, 해당 턴 동안 물리 및 마법 저항+95%',
       flavor : '자유자재로 공간전이를 할 수 있는 사기 팔찌를 다뤄, 이세계 고등학생다운 틈을 노린다.'};  
   charGabi.skill.base.push(skillObj);
 
@@ -1432,8 +1434,8 @@ const item = require('./items');
 
   var skillObj = {code : 201771, name : '충전', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1.4, 
       effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201777, buffDur : null, setStack : 3},
-                {code : cons.EFFECT_TYPE_SELF_HIT, type : cons.DAMAGE_TYPE_ABSOLUTE, value : 0.15, isPercentChar : true, percentKey : 'curHp'}],
-      tooltip : '현재 생명력의 15%만큼 피해를 입고, 자신에게 [충전 중] 3중첩 부여<br><br>[충전 중] : 턴 시작 시 최대 생명력의 5%만큼 보호막을 얻고 1중첩 소거',
+                {code : cons.EFFECT_TYPE_SELF_HIT, type : cons.DAMAGE_TYPE_ABSOLUTE, value : 0.12, isPercentStat : true, percentKey : 'maxHp', chkHpOver : 0.18}],
+      tooltip : '생명력이 18% 이상이면 최대 생명력의 12%만큼 피해를 입고, 자신에게 [충전 중] 3중첩 부여<br><br>[충전 중] : 턴 시작 시 최대 생명력의 5%만큼 보호막을 얻고 1중첩 소거, 보호막이 없을 시 저항 +10%',
       flavor : '지니가 보호막을 충전하기 시작합니다.'};  
   charIllun.skill.base.push(skillObj);
 
@@ -1453,8 +1455,8 @@ const item = require('./items');
 
   skillObj = {code : 201774, name : '방전', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_DRIVE, 
       active : cons.ACTIVE_TYPE_TURN_END, cost : 10, chance : 1, checkFunc : 2, setCooldown : 3,
-      effect : [{code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_MAGICAL_FIXED, value : 0.3, overPercentShield : true},
-                {code : cons.EFFECT_TYPE_SELF_HIT, type : cons.DAMAGE_TYPE_ABSOLUTE, value : 0.3, isPercentShield : true}],
+      effect : [{code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_MAGICAL_FIXED, value : 0.2, overPercentShield : true},
+                {code : cons.EFFECT_TYPE_SELF_HIT, type : cons.DAMAGE_TYPE_ABSOLUTE, value : 0.25, overPercentShield2 : true}],
       tooltip : '보호막 수치가 적 현재 생명력의 30% 및 최대 생명력의 5%를 초과하였을 때 보호막 초과분만큼 마법 피해를 입히고 보호막의 30%를 잃음',
       flavor : '보호막을 방전시켜 적에게 피해를 줍니다.'};
   charIllun.skill.drive = skillObj;
@@ -1527,24 +1529,24 @@ const item = require('./items');
   var skillObj = {code : 201781, name : '쇠뇌대 훈련', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 1.2, 
       calcEffect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201791, buffDur : null, setStack : 1, isPercentDamage : true},
                     {code : cons.EFFECT_TYPE_MULTIPLY_DAMAGE, value : 0, all : true}],
-      effect : [],
-      tooltip : '피해를 주는 대신 피해량만큼 자신에게 [쇠뇌대] 중첩 부여<br><br>[쇠뇌대] : [철갑군], [기마대]가 없을 때 피격 시 피해량만큼 중첩 소거',
+      effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 2017108, buffDur : 3}],
+      tooltip : '피해를 주는 대신 피해량만큼 자신에게 [쇠뇌대] 중첩 부여, 자신에게 3턴 간 [전투의 함성] 버프 부여<br><br>[쇠뇌대] : [철갑군], [기마대]가 없을 때 피격 시 피해량만큼 중첩 소거',
       flavor : '쇠뇌와 연노로 무장한 쇠뇌대를 모집하여 훈련합니다. 강한 공격력을 지닙니다.'};  
   charRuisun.skill.base.push(skillObj);
 
   skillObj = {code : 201782, name : '기마대 훈련', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1, 
       calcEffect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201788, buffDur : null, setStack : 1, isPercentDamage : true},
                     {code : cons.EFFECT_TYPE_MULTIPLY_DAMAGE, value : 0, all : true}],
-      effect : [],
-      tooltip : '피해를 주는 대신 피해량만큼 자신에게 [기마대] 중첩 부여<br><br>[기마대] : [철갑군]이 없을 때 피격 시 피해량의 50%만큼 중첩 소거',
+      effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 2017108, buffDur : 3}],
+      tooltip : '피해를 주는 대신 피해량만큼 자신에게 [기마대] 중첩 부여, 자신에게 3턴 간 [전투의 함성] 버프 부여<br><br>[기마대] : [철갑군]이 없을 때 피격 시 피해량의 50%만큼 중첩 소거',
       flavor : '월도와 장검으로 무장한 기마대를 훈련합니다. 빠른 기동력으로 적을 혼란에 빠트립니다.'};  
   charRuisun.skill.base.push(skillObj);
 
   skillObj = {code : 201783, name : '철갑군 훈련', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 0.8,
       calcEffect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201789, buffDur : null, setStack : 1, isPercentDamage : true},
                     {code : cons.EFFECT_TYPE_MULTIPLY_DAMAGE, value : 0, all : true}],
-      effect : [],
-      tooltip : '피해를 주는 대신 피해량만큼 자신에게 [철갑군] 중첩 부여<br><br>[철갑군] : 물리/마법저항 +0.2%p, 피격 시 피해량의 20%만큼 중첩 소거',
+      effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 2017108, buffDur : 3}],
+      tooltip : '피해를 주는 대신 피해량만큼 자신에게 [철갑군] 중첩 부여, 자신에게 3턴 간 [전투의 함성] 버프 부여<br><br>[철갑군] : 물리/마법저항 +0.2%p, 피격 시 피해량의 20%만큼 중첩 소거',
       flavor : '철갑과 큰 방패로 무장한 철갑군을 훈련합니다. 단단한 진형을 통해 아군을 지킵니다.'};  
   charRuisun.skill.base.push(skillObj);
 
@@ -1556,7 +1558,7 @@ const item = require('./items');
       flavor : '열세를 메꾸기 위해 더 많은 병사를 징집합니다.'};
   charRuisun.skill.drive = skillObj;
 
-  skillObj = {code : 201785, name : '총공격 명령', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 30, 
+  skillObj = {code : 201785, name : '총공격 명령', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 60, 
       effect : [{code : cons.EFFECT_TYPE_SELECTION, selectChances : [0.33, 0.5, 1], chkAll : [201791, 201788, 201789],
         options : [{code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 1, buffDur : 1},
                    {code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 11, buffDur : 2},
@@ -1573,7 +1575,7 @@ const item = require('./items');
                 {code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 1, buffDur : 1, chk : [201791], chkNot : [201788, 201789]},
                 {code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 11, buffDur : 2, chk : [201788], chkNot : [201791, 201789]},
                 {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201790, buffDur : 3, chk : [201789], chkNot : [201791, 201788]}],
-      tooltip : '[쇠뇌대] 중첩 * 1.2 마법 고정 피해, [기마대] 중첩 * 0.8 고정 물리 피해, [철갑군] 중첩 * 0.2 고정 물리 피해를 줍니다. ([쇠뇌대] 존재 시 적 1턴 간 [화상], [기마대] 존재 시 적 2턴 간 [혼란], [철갑군] 존재 시 자신 3턴 간 물리/마법저항 +10%p) 효과 중 하나를 적용합니다.',
+      tooltip : '[쇠뇌대] 중첩 * 1.2 마법 고정 피해, [기마대] 중첩 * 0.9 고정 물리 피해, [철갑군] 중첩 * 0.3 고정 물리 피해를 줍니다. ([쇠뇌대] 존재 시 적 1턴 간 [화상], [기마대] 존재 시 적 2턴 간 [혼란], [철갑군] 존재 시 자신 3턴 간 물리/마법저항 +10%p) 효과 중 하나를 적용합니다.',
       flavor : '뤼순이 병사들에게 총공격 명령을 내립니다.'};
   charRuisun.skill.special = skillObj;
 

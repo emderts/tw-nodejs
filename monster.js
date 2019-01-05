@@ -507,6 +507,36 @@ const chara = require('./chara');
   charLeft.rating = [0.35, 0.3, 0.35];
   module.exports.d7Lohengrin = charLeft;
   
+  charLeft = {name : '사천왕 칸나', nameType : cons.NAME_KOR_NO_END_CONS, title : '전이된 석영 고원', rank : 7, level : 40, 
+      stat : {maxHp : 1680, phyAtk : 127, magAtk : 68}};
+  _initChar(charLeft);
+  
+  charLeft.items = {weapon : item.list[357], armor : item.list[143], subarmor : item.list[389], trinket : item.list[396], skillArtifact : item.list[514]};
+  charLeft.image = '';
+  charLeft.boss = 0.8;
+  charLeft.bossStatus = 0.1;
+
+  charLeft.skill = {
+      base : [
+              {code : 90042, name : '피날레 임팩션', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1.0, 
+                effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : [10068, 10069, 10070, 10071, 10072, 10073], buffDur : 3, multiple : true},
+                          {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : [10068, 10069, 10070, 10071, 10072, 10073], buffDur : 3, multiple : true}]},
+              {code : 90043, name : '전술 지휘', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1.0, 
+                effect : [{code : cons.EFFECT_TYPE_OPP_SP, value : -10},
+                          {code : cons.EFFECT_TYPE_RESOLVE_DRIVE}]},
+              {code : 90044, name : '플레어 캐논', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 1.0, 
+                effect : [{code : cons.EFFECT_TYPE_MULTIPLE, chance : 0.25, 
+                  target : [{code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 8, buffDur : 2},
+                            {code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 11, buffDur : 2}]}]}
+             ],
+      drive : {code : 90045, name : '흑색 유성', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_DRIVE, 
+               active : cons.ACTIVE_TYPE_TAKE_HIT, cost : 10, chance : 0.25,
+               effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 90014, buffDur : 1}]}
+  };
+  charLeft.skillSelect = 2;
+  charLeft.rating = [0.35, 0.3, 0.35];
+  module.exports.d721 = charLeft;
+  
   charLeft = {name : '프사이', nameType : cons.NAME_KOR_NO_END_CONS, title : '승급 시험관', rank : 9, level : 40, 
       stat : {maxHp : 672, phyAtk : 33.75, magAtk : 61.25}};
   _initChar(charLeft);
@@ -628,15 +658,15 @@ const chara = require('./chara');
     char.stat.spRegen = 5;
     char.stat.crit = 0.05;
     char.stat.critDmg = 1.5;
-    char.stat.phyReduce = 0;
-    char.stat.magReduce = 0;
+    char.stat.phyReduce = char.stat.phyReduce ? char.stat.phyReduce : 0;
+    char.stat.magReduce = char.stat.magReduce ? char.stat.magReduce : 0;
     char.stat.hit = char.stat.hit ? char.stat.hit : 1;
     char.stat.evasion = 0;
     char.stat.phyAtkMin = 0;
     char.stat.phyAtkMax = 0;
     char.stat.magAtkMin = 0;
     char.stat.magAtkMax = 0;
-    char.stat.dmgReduce = 0;
+    char.stat.dmgReduce = char.stat.dmgReduce ? char.stat.dmgReduce : 0;
     char.stat.pierce = 0;
     char.base = JSON.parse(JSON.stringify(char.stat));
     char.inventory = [];

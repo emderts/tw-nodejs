@@ -77,7 +77,7 @@ const app = express()
 .post('/doRankup', procRankup)
 .post('/getCard', procGetCard)
 .post('/actionAccel', procActionAccel)
-.get('/test', (req, res) => res.render('pages/battle', {result: (new battlemodule.bmodule()).doBattle(JSON.parse(JSON.stringify(chara.illun)), JSON.parse(JSON.stringify(chara.nux)), 1).result}))
+.get('/test', (req, res) => res.render('pages/battle', {result: (new battlemodule.bmodule()).doBattle(JSON.parse(JSON.stringify(chara.illun)), JSON.parse(JSON.stringify(chara.ruisun)), 1).result}))
 .get('/test2', (req, res) => res.render('pages/trade', {room : '1', uid : '03'}))
 .get('/test3', (req, res) => res.render('pages/trade', {room : '1', uid : '06'}))
 .get('/test4', (req, res) => res.send(procInit2()))
@@ -369,13 +369,27 @@ async function procInit2 () {
     for (val of result.rows) {
       var char = JSON.parse(val.char_data);
       
-      char.dungeonInfos.enterBlacklight++;
+      //char.dungeonInfos.enterBlacklight++;
 
       if (val.uid == '02') {
         char.inventory.push(item.list[392]);
       }
+      if (val.uid == '04') {
+        char.skill = chara.lunisha.skill;
+      }
+      if (val.uid == '05') {
+        char.skill = chara.ruisun.skill;
+      }
+      if (val.uid == '07') {
+        char.skill = chara.illun.skill;
+      }
+      if (val.uid == '11') {
+        char.skill = chara.marang.skill;
+      }
+      if (val.uid == '12') {
+        char.skill = chara.gabi.skill;
+      }
       
-      _patchItem('skillArtifact', 510);
       function _patchItem(type, id) {
         if (char.items[type] && char.items[type].id == id) {
           char.items[type].effectDesc = item.list[id].effectDesc;

@@ -91,7 +91,7 @@ Battlemodule.prototype._doBattleStart = function (flag) {
   }
   this.modFunc[2] = function (chara, opp, data) {
     var ens = getShieldValue2(chara);
-    return (opp.curHp * 0.3 <= ens) && (opp.stat.maxHp * 0.05 <= ens);
+    return (chara.curHp * 0.2 <= ens) && (chara.stat.maxHp * 0.05 <= ens);
   }
 
   _initChar(this.charLeft, flag);
@@ -381,6 +381,7 @@ Battlemodule.prototype._doBattleTurnManual = function(left, right) {
     if (damage.crit) {
       this.result += ' (치명타)';
       this.resolveEffects(winner, loser, getBuffEffects(winner, cons.ACTIVE_TYPE_ATTACK_CRIT), damage);
+      this.resolveEffects(winner, loser, getItemEffects(winner, cons.ACTIVE_TYPE_ATTACK_CRIT), damage);
     }
     this.result += '</span><br>';
 
@@ -870,6 +871,9 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
     if (eff.chkHp && winner.curHp > (winner.stat.maxHp * eff.chkHp)) {
       continue;
     }
+    if (eff.chkHpOver && winner.curHp < (winner.stat.maxHp * eff.chkHpOver)) {
+      continue;
+    }
     if (eff.chkOppHp && loser.curHp > (loser.stat.maxHp * eff.chkOppHp)) {
       continue;
     }
@@ -1065,6 +1069,9 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
       if (valueUsed > eff.maxApply) {
         valueUsed = eff.maxApply;
       }
+      if (valueUsed < eff.minApply) {
+        valueUsed = eff.maxApply;
+      }
       var target = 'SP';
       if (eff.code === cons.EFFECT_TYPE_SELF_SP) {
         winner.curSp += valueUsed;
@@ -1105,7 +1112,9 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
       } else if (eff.isPercentShield) {
         tempObj.damage *= getShieldValue(source);
       } else if (eff.overPercentShield) {
-        tempObj.damage = getShieldValue(source) - tempObj.damage * target.curHp;
+        tempObj.damage = getShieldValue(source) - tempObj.damage * source.curHp;
+      } else if (eff.overPercentShield2) {
+        tempObj.damage *= (getShieldValue(source) - 0.2 * source.curHp);
       }
       
       if ((eff.percentKey == 'maxHp' || eff.percentKey == 'curHp') && target.boss) {
