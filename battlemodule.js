@@ -1070,7 +1070,7 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
         valueUsed = eff.maxApply;
       }
       if (valueUsed < eff.minApply) {
-        valueUsed = eff.maxApply;
+        valueUsed = eff.minApply;
       }
       var target = 'SP';
       if (eff.code === cons.EFFECT_TYPE_SELF_SP) {
