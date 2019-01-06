@@ -1853,9 +1853,9 @@ async function procEnterDungeon(req, res) {
           addInfo.type = 8;
           addInfo.data = [];
           for (let i = 0; i < 3; i++) {
-            var rand = Math.floor(req.session.dungeonProgress.buffs.length * Math.random());
-            addInfo.data.push(req.session.dungeonProgress.buffs[rand]);
-            req.session.dungeonProgress.buffs.splice(rand, 1);
+            var idx = Math.floor(req.session.dungeonProgress.buffs.length * Math.random());
+            addInfo.data.push(req.session.dungeonProgress.buffs[idx]);
+            req.session.dungeonProgress.buffs.splice(idx, 1);
           }
           req.session.dungeonProgress.addInfo = addInfo;
         }
@@ -2391,9 +2391,9 @@ async function procNextPhaseDungeon(req, res) {
         addInfo.type = 8;
         addInfo.data = [];
         for (let i = 0; i < 3; i++) {
-          var rand = Math.floor(req.session.dungeonProgress.buffs.length * Math.random());
-          addInfo.data.push(req.session.dungeonProgress.buffs[rand]);
-          req.session.dungeonProgress.buffs.splice(rand, 1);
+          var idx = Math.floor(req.session.dungeonProgress.buffs.length * Math.random());
+          addInfo.data.push(req.session.dungeonProgress.buffs[idx]);
+          req.session.dungeonProgress.buffs.splice(idx, 1);
         }
         req.session.dungeonProgress.addInfo = addInfo;
         if (req.session.dungeonProgress.phase >= 5) {
