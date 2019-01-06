@@ -2146,6 +2146,9 @@ async function procNextPhaseDungeon(req, res) {
           if (sess.dungeonProgress.phase <= 4) {
             enemy = monster['d72' + sess.dungeonProgress.phase];
           }
+          if (sess.dungeonProgress.phase == 5 && sess.dungeonProgress.redAppear) {
+            enemy = monster['d72' + sess.dungeonProgress.phase];
+          }
         }
       }
     }
@@ -2402,7 +2405,7 @@ async function procNextPhaseDungeon(req, res) {
           req.session.dungeonProgress.buffs.splice(idx, 1);
         }
         req.session.dungeonProgress.addInfo = addInfo.data;
-        if (req.session.dungeonProgress.phase >= 5) {
+        if (req.session.dungeonProgress.phase == 5) {
           isFinished = true;
           if (!char.achievement[40]) {
             await giveAchievement(charRow.uid, char, 40);
@@ -2414,6 +2417,18 @@ async function procNextPhaseDungeon(req, res) {
             await client.query('insert into news(content, date) values ($1, $2)', 
                 [char.name + getIga(char.nameType) + ' [어나더 게이트 - 전이된 석영 고원]을 돌파했습니다!', new Date()]);
           }
+          if (char.dungeonInfos.enterIndigo >= 2) {
+            reward += '<br>"..."<br>';
+            req.session.dungeonProgress.redAppear = true;
+            isFinished = false;
+          }
+        }
+        if (req.session.dungeonProgress.phase >= 6) {
+          isFinished = true;
+          if (!char.achievement[41]) {
+            await giveAchievement(charRow.uid, char, 41);
+          }
+          reward += '<br>"...!"<br>';
         }
         if (!char.dungeonInfos['rewardIndigo' + req.session.dungeonProgress.phase]) {
           char.dungeonInfos['rewardIndigo' + req.session.dungeonProgress.phase] = true;

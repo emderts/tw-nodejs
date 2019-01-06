@@ -155,6 +155,7 @@ try {
       charData.dungeonInfos.rewardIndigo3 = false;
       charData.dungeonInfos.rewardIndigo4 = false;
       charData.dungeonInfos.rewardIndigo5 = false;
+      charData.dungeonInfos.rewardIndigo6 = false;
       charData.dungeonInfos.resetMevious = false;
       charData.dungeonInfos.resetEmberCrypt = false;
       charData.dungeonInfos.rewardFieldBoss01 = false;

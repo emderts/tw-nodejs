@@ -623,6 +623,32 @@ const chara = require('./chara');
   };
   module.exports.d724 = charLeft;
   
+  charLeft = {name : '레드', nameType : cons.NAME_KOR_NO_END_CONS, title : '정점', rank : 7, level : 40, 
+      stat : {maxHp : 4500, phyAtk : 200, magAtk : 200, phyReduce : 0.2, magReduce : 0.2}};
+  _initChar(charLeft);
+  
+  charLeft.items = {trinket : item.list[493]};
+  charLeft.image = '';
+  charLeft.boss = 0.8;
+  charLeft.bossStatus = 0.1;
+  
+  charLeft.startEffects = [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 90054, buffDur : null},
+                           {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 90055, buffDur : null},
+                           {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 90057, buffDur : null},
+                           {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 90059, buffDur : null}];
+
+  charLeft.skill = {
+      base : [
+              {},
+              {},
+              {}
+             ],
+      drive : {code : 90045, name : '회복약', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_DRIVE, 
+               active : cons.ACTIVE_TYPE_TAKE_HIT, cost : 0, chance : 1, fireOnce : true, chkHp : 0.3,
+               effect : [{code : cons.EFFECT_TYPE_SELF_HP, isPercentStat : true, percentKey : 'maxHp', value : 5}]}
+  };
+  module.exports.d725 = charLeft;
+  
   charLeft = {name : '프사이', nameType : cons.NAME_KOR_NO_END_CONS, title : '승급 시험관', rank : 9, level : 40, 
       stat : {maxHp : 672, phyAtk : 33.75, magAtk : 61.25}};
   _initChar(charLeft);

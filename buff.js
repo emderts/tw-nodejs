@@ -5297,7 +5297,7 @@ module.exports.getBuffData = function(eff) {
     effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
     effectObj.code = cons.EFFECT_TYPE_SET_SKILL;
     effectObj.key = 'special';
-    effectObj.target = {code : 90055, name : '눈보라', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 100, 
+    effectObj.target = {code : 90055, name : '눈보라', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 90, 
         effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 12, buffDur : 5}]};
     retObj.effect.push(effectObj);
     break;
@@ -5788,8 +5788,8 @@ module.exports.getBuffData = function(eff) {
     effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
     effectObj.code = cons.EFFECT_TYPE_SET_SKILL;
     effectObj.key = 'special';
-    effectObj.target = {code : 90069, name : '파괴광선', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 75, 
-        effect : [{code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL, value : 3},
+    effectObj.target = {code : 90069, name : '파괴광선', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 70, 
+        effect : [{code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL, value : 4},
                   {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 4, buffDur : 2}]};
     retObj.effect.push(effectObj);
     break;
@@ -5959,8 +5959,8 @@ module.exports.getBuffData = function(eff) {
     effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
     effectObj.code = cons.EFFECT_TYPE_SET_SKILL;
     effectObj.key = 'special';
-    effectObj.target = {code : 90069, name : '파괴광선', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 75, 
-        effect : [{code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL, value : 3},
+    effectObj.target = {code : 90069, name : '파괴광선', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 70, 
+        effect : [{code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL, value : 4},
                   {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 4, buffDur : 2}]};
     retObj.effect.push(effectObj);
     break;
@@ -6201,6 +6201,296 @@ module.exports.getBuffData = function(eff) {
     effectObj.value = 1.4;
     effectObj.chkTitle = '사천왕 목호';
     effectObj.anySkill = true;
+    retObj.effect.push(effectObj);
+    break;
+  case 90054 : 
+    retObj.name = '이상해꽃';
+    retObj.nameType = cons.NAME_KOR_END_CONS;
+    retObj.stackType = 1;
+    retObj.dispellable = false;
+    retObj.isDebuff = false;
+    retObj.durOff = null;
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_STAT_PERCENTAGE;
+    effectObj.key = 'maxHp';
+    effectObj.value = -0.75;
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_SET_NAME;
+    effectObj.value = '이상해꽃';
+    effectObj.type = cons.NAME_KOR_END_CONS;
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_SET_SKILL;
+    effectObj.key = 'base';
+    effectObj.value = 0;
+    effectObj.target = {code : 90060, name : '맹독', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 0.9, 
+        effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 2, buffDur : 2}]};
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_SET_SKILL;
+    effectObj.key = 'base';
+    effectObj.value = 1;
+    effectObj.target = {code : 90071, name : '지진', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1.6, 
+        effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.2, buffCode : 6, buffDur : 2}]};
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_SET_SKILL;
+    effectObj.key = 'base';
+    effectObj.value = 2;
+    effectObj.target = {code : 90073, name : '리프스톰', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1.4, 
+        effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.3, buffCode : 6, buffDur : 2}]};
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_SET_SKILL;
+    effectObj.key = 'special';
+    effectObj.target = {code : 90074, name : '수면가루', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 25, 
+        effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 5, buffDur : 3, chance : 0.6}]};
+    retObj.effect.push(effectObj);
+    break;
+  case 90055 : 
+    retObj.name = '거북왕';
+    retObj.nameType = cons.NAME_KOR_END_CONS;
+    retObj.stackType = 1;
+    retObj.durOff = null;
+    retObj.isDebuff = false;
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_AFTER_TURN_END;
+    effectObj.code = cons.EFFECT_TYPE_REMOVE_BUFF;
+    effectObj.buffTarget = [90054];
+    effectObj.chkHp = 0.001;
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_AFTER_TURN_END;
+    effectObj.code = cons.EFFECT_TYPE_SELF_BUFF;
+    effectObj.buffCode = 90056;
+    effectObj.buffDur = null;
+    effectObj.chkHp = 0.001;
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_AFTER_TURN_END;
+    effectObj.code = cons.EFFECT_TYPE_SELF_HP;
+    effectObj.isPercentHpLost = true;
+    effectObj.value = 1;
+    effectObj.chkHp = 0.001;
+    effectObj.removeBuff = true;
+    retObj.effect.push(effectObj);
+    break;
+  case 90056 : 
+    retObj.name = '거북왕';
+    retObj.nameType = cons.NAME_KOR_END_CONS;
+    retObj.stackType = 1;
+    retObj.dispellable = false;
+    retObj.isDebuff = false;
+    retObj.durOff = null;
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_STAT_PERCENTAGE;
+    effectObj.key = 'maxHp';
+    effectObj.value = -0.75;
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_SET_NAME;
+    effectObj.value = '거북왕';
+    effectObj.type = cons.NAME_KOR_END_CONS;
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_SET_SKILL;
+    effectObj.key = 'base';
+    effectObj.value = 0;
+    effectObj.target = {code : 90077, name : '기합구슬', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1.8, hitMod : 0.8, 
+        effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.3, buffCode : 6, buffDur : 2}]};
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_SET_SKILL;
+    effectObj.key = 'base';
+    effectObj.value = 1;
+    effectObj.target = {code : 90076, name : '해수스파우팅', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 1.4, 
+        effect : [{code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_MAGICAL_FIXED, value : 3, isPercentChar : true, percentKey : 'curHp'}]};
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_SET_SKILL;
+    effectObj.key = 'base';
+    effectObj.value = 2;
+    effectObj.target = {code : 90075, name : '하이드로펌프', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 2.4, hitMod : 0.8,
+        effect : []};
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_SET_SKILL;
+    effectObj.key = 'special';
+    effectObj.target = {code : 90055, name : '눈보라', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 90, 
+        effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 12, buffDur : 5}]};
+    retObj.effect.push(effectObj);
+    break;
+  case 90057 : 
+    retObj.name = '잠만보';
+    retObj.nameType = cons.NAME_KOR_NO_END_CONS;
+    retObj.stackType = 1;
+    retObj.durOff = null;
+    retObj.isDebuff = false;
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_AFTER_TURN_END;
+    effectObj.code = cons.EFFECT_TYPE_REMOVE_BUFF;
+    effectObj.buffTarget = [90056];
+    effectObj.chkHp = 0.001;
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_AFTER_TURN_END;
+    effectObj.code = cons.EFFECT_TYPE_SELF_BUFF;
+    effectObj.buffCode = 90058;
+    effectObj.buffDur = null;
+    effectObj.chkHp = 0.001;
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_AFTER_TURN_END;
+    effectObj.code = cons.EFFECT_TYPE_SELF_HP;
+    effectObj.isPercentHpLost = true;
+    effectObj.value = 1;
+    effectObj.chkHp = 0.001;
+    effectObj.removeBuff = true;
+    retObj.effect.push(effectObj);
+    break;
+  case 90058 : 
+    retObj.name = '잠만보';
+    retObj.nameType = cons.NAME_KOR_NO_END_CONS;
+    retObj.stackType = 1;
+    retObj.dispellable = false;
+    retObj.isDebuff = false;
+    retObj.durOff = null;
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_STAT_PERCENTAGE;
+    effectObj.key = 'maxHp';
+    effectObj.value = -0.75;
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_SET_NAME;
+    effectObj.value = '잠만보';
+    effectObj.type = cons.NAME_KOR_NO_END_CONS;
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_SET_SKILL;
+    effectObj.key = 'base';
+    effectObj.value = 0;
+    effectObj.target = {code : 90078, name : '누르기', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1.2, 
+        effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 9, buffDur : 2}]};
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_SET_SKILL;
+    effectObj.key = 'base';
+    effectObj.value = 1;
+    effectObj.target = {code : 90071, name : '지진', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1.6, 
+        effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.2, buffCode : 6, buffDur : 2}]};
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_SET_SKILL;
+    effectObj.key = 'base';
+    effectObj.value = 2;
+    effectObj.target = {code : 90063, name : '깨물어부수기', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 1.6, 
+        effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.25, buffCode : 4, buffDur : 1}]};
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_SET_SKILL;
+    effectObj.key = 'special';
+    effectObj.target = {code : 90079, name : '기가임팩트', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 70, 
+        effect : [{code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_MAGICAL, value : 4},
+                  {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 4, buffDur : 2}]};
+    retObj.effect.push(effectObj);
+    break;
+  case 90059 : 
+    retObj.name = '피카츄';
+    retObj.nameType = cons.NAME_KOR_NO_END_CONS;
+    retObj.stackType = 1;
+    retObj.durOff = null;
+    retObj.isDebuff = false;
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_AFTER_TURN_END;
+    effectObj.code = cons.EFFECT_TYPE_REMOVE_BUFF;
+    effectObj.buffTarget = [90058];
+    effectObj.chkHp = 0.001;
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_AFTER_TURN_END;
+    effectObj.code = cons.EFFECT_TYPE_SELF_BUFF;
+    effectObj.buffCode = 90060;
+    effectObj.buffDur = null;
+    effectObj.chkHp = 0.001;
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_AFTER_TURN_END;
+    effectObj.code = cons.EFFECT_TYPE_SELF_HP;
+    effectObj.isPercentHpLost = true;
+    effectObj.value = 1;
+    effectObj.chkHp = 0.001;
+    effectObj.removeBuff = true;
+    retObj.effect.push(effectObj);
+    break;
+  case 90060 : 
+    retObj.name = '피카츄';
+    retObj.nameType = cons.NAME_KOR_NO_END_CONS;
+    retObj.stackType = 1;
+    retObj.dispellable = false;
+    retObj.isDebuff = false;
+    retObj.durOff = null;
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_STAT_PERCENTAGE;
+    effectObj.key = 'maxHp';
+    effectObj.value = -0.75;
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_SET_NAME;
+    effectObj.value = '피카츄';
+    effectObj.type = cons.NAME_KOR_NO_END_CONS;
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_SET_SKILL;
+    effectObj.key = 'base';
+    effectObj.value = 0;
+    effectObj.target = {code : 90081, name : '볼트태클', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 2.4, 
+        effect : [{code : cons.EFFECT_TYPE_SELF_HP, value : -0.25, isPercentDamage : true}]};
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_SET_SKILL;
+    effectObj.key = 'base';
+    effectObj.value = 1;
+    effectObj.target = {code : 90054, name : '번개', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 1.6, 
+        effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.7, buffCode : 9, buffDur : 2}]};
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_SET_SKILL;
+    effectObj.key = 'base';
+    effectObj.value = 2;
+    effectObj.target = {code : 90082, name : '풀묶기', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 1.4, 
+        effect : [{code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_MAGICAL_FIXED, value : 0.1, isPercentOppStat : true, percentKey : 'maxHp'}]};
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_SET_SKILL;
+    effectObj.key = 'special';
+    effectObj.target = {code : 90080, name : '속이다', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 40, 
+        effect : [{code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL, value : 0.6},
+                  {code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 4, buffDur : 1}]};
     retObj.effect.push(effectObj);
     break;
   }
