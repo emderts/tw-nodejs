@@ -6315,7 +6315,7 @@ module.exports.getBuffData = function(eff) {
     effectObj.key = 'base';
     effectObj.value = 1;
     effectObj.target = {code : 90076, name : '해수스파우팅', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 1.4, 
-        effect : [{code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_MAGICAL_FIXED, value : 3, isPercentChar : true, percentKey : 'curHp'}]};
+        effect : [{code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_MAGICAL_FIXED, value : 0.4, isPercentChar : true, percentKey : 'curHp'}]};
     retObj.effect.push(effectObj);
     effectObj = {};
     effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
