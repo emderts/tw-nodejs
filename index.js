@@ -2141,10 +2141,12 @@ async function procNextPhaseDungeon(req, res) {
         }
         sess.dungeonProgress.charData.startEffects.push({code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : sess.dungeonProgress.addInfo[req.body.option].buff, buffDur : null})
         sess.dungeonProgress.curBuffs = sess.dungeonProgress.charData.startEffects;
-        sess.dungeonProgress.charData.curHp = sess.dungeonProgress.charData.stat.maxHp;
-        if (sess.dungeonProgress.phase <= 4) {
-          enemy = monster['d72' + sess.dungeonProgress.phase];
-        } 
+        if (sess.dungeonProgress.charData.curHp >= 0) {
+          sess.dungeonProgress.charData.curHp = sess.dungeonProgress.charData.stat.maxHp;
+          if (sess.dungeonProgress.phase <= 4) {
+            enemy = monster['d72' + sess.dungeonProgress.phase];
+          }
+        }
       }
     }
     if (enemy) {
