@@ -2035,7 +2035,7 @@ async function procNextPhaseDungeon(req, res) {
     var enemy, curData, hpBefore, row, list;
     // check entering cond
     const rand = Math.random();
-    if (sess.dungeonProgress) {
+    if (sess.dungeonProgress && !sess.dungeonProgress.isFinished) {
       if (sess.dungeonProgress.code == 1) {
         if (sess.dungeonProgress.phase < 10) {
           sess.dungeonProgress.charData.curHp += (sess.dungeonProgress.charData.stat.maxHp - sess.dungeonProgress.charData.curHp) * 0.15;
@@ -2422,7 +2422,7 @@ async function procNextPhaseDungeon(req, res) {
       }
       await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
       res.render('pages/dungeonResult', {result: re.result, resultList: req.session.dungeonProgress.resultList, isFinished : isFinished, reward : reward, stop : false, addInfo : addInfo});
-      if (!re.winnerLeft && req.session.dungeonProgress.code != 6) {
+      if (isFinished) {
         delete req.session.dungeonProgress;
       }
     } else {
