@@ -1847,6 +1847,7 @@ async function procEnterDungeon(req, res) {
                                                {idx : 6, name : 'X Speed', desc : '회피 10%p 증가', buff : 90045},
                                                {idx : 7, name : '가드 렌즈', desc : '치명 10%p 증가', buff : 90046},
                                                {idx : 8, name : '회복약', desc : '전투 중 한 번 생명력 25% 회복', buff : 90047},
+                                               {idx : 14, name : '회복약', desc : '전투 중 한 번 생명력 25% 회복', buff : 90047},
                                                {idx : 9, name : '열매 더미', desc : '받는 상태이상 무효화 (쿨다운 4턴)', buff : 90048},
                                                {idx : 10, name : '생명의 구슬', desc : '스킬 계수 50% 증가, 공격 시 최대 생명력의 10%만큼 절대 피해', buff : 90049},
                                                {idx : 11, name : '목탄', desc : '칸나에게 스킬 계수 40% 증가', buff : 90050},
