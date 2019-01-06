@@ -1840,13 +1840,13 @@ async function procEnterDungeon(req, res) {
         if (body.option == 8) {
           req.session.dungeonProgress.buffs = [{idx : 0, name : 'X Attack', desc : '물리공격력 20% 증가', buff : 90039},
                                                {idx : 1, name : 'X Special Attack', desc : '마법공격력 20% 증가', buff : 90040},
-                                               {idx : 2, name : 'X Defense', desc : '물리저항 20%p 증가', buff : 90041},
-                                               {idx : 3, name : 'X Special Defense', desc : '마법저항 20%p 증가', buff : 90042},
+                                               {idx : 2, name : 'X Defense', desc : '물리저항 12%p 증가', buff : 90041},
+                                               {idx : 3, name : 'X Special Defense', desc : '마법저항 12%p 증가', buff : 90042},
                                                {idx : 4, name : '녹지 않는 얼음', desc : '목호에게 스킬 계수 40% 증가', buff : 90053},
                                                {idx : 5, name : 'X Accuracy', desc : '명중/치명피해 20%p 증가', buff : 90044},
                                                {idx : 6, name : 'X Speed', desc : '회피 10%p 증가', buff : 90045},
                                                {idx : 7, name : '가드 렌즈', desc : '치명 10%p 증가', buff : 90046},
-                                               {idx : 8, name : '회복약', desc : '전투 중 한 번 생명력 30% 회복', buff : 90047},
+                                               {idx : 8, name : '회복약', desc : '전투 중 한 번 생명력 25% 회복', buff : 90047},
                                                {idx : 9, name : '열매 더미', desc : '받는 상태이상 무효화 (쿨다운 4턴)', buff : 90048},
                                                {idx : 10, name : '생명의 구슬', desc : '스킬 계수 50% 증가, 공격 시 최대 생명력의 10%만큼 절대 피해', buff : 90049},
                                                {idx : 11, name : '목탄', desc : '칸나에게 스킬 계수 40% 증가', buff : 90050},
@@ -2422,6 +2422,9 @@ async function procNextPhaseDungeon(req, res) {
       }
       await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
       res.render('pages/dungeonResult', {result: re.result, resultList: req.session.dungeonProgress.resultList, isFinished : isFinished, reward : reward, stop : false, addInfo : addInfo});
+      if (!re.winnerLeft && req.session.dungeonProgress.code != 6) {
+        req.session.dungeonProgress = {};
+      }
     } else {
       if (!res.headersSent) {
         res.redirect('/');

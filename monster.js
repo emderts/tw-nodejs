@@ -599,7 +599,7 @@ const chara = require('./chara');
   module.exports.d723 = charLeft;
   
   charLeft = {name : '사천왕 목호', nameType : cons.NAME_KOR_NO_END_CONS, title : '사천왕 목호', rank : 7, level : 40, 
-      stat : {maxHp : 3000, phyAtk : 155, magAtk : 50, magReduce : 0.35}};
+      stat : {maxHp : 3200, phyAtk : 180, magAtk : 50, magReduce : 0.35}};
   _initChar(charLeft);
   
   charLeft.items = {trinket : item.list[493]};

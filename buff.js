@@ -6027,7 +6027,7 @@ module.exports.getBuffData = function(eff) {
     effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
     effectObj.code = cons.EFFECT_TYPE_STAT_ADD;
     effectObj.key = 'phyReduce';
-    effectObj.value = 0.2;
+    effectObj.value = 0.12;
     retObj.effect.push(effectObj);
     break;
   case 90042 : 
@@ -6041,7 +6041,7 @@ module.exports.getBuffData = function(eff) {
     effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
     effectObj.code = cons.EFFECT_TYPE_STAT_ADD;
     effectObj.key = 'magReduce';
-    effectObj.value = 0.2;
+    effectObj.value = 0.12;
     retObj.effect.push(effectObj);
     break;
   case 90044 : 
@@ -6104,7 +6104,7 @@ module.exports.getBuffData = function(eff) {
     effectObj.code = cons.EFFECT_TYPE_SELF_HP;
     effectObj.isPercentStat = true;
     effectObj.percentKey = 'maxHp';
-    effectObj.value = 0.3;
+    effectObj.value = 0.25;
     effectObj.removeBuff = true;
     effectObj.chkHp = 0.5;
     retObj.effect.push(effectObj);
