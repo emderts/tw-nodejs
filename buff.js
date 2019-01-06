@@ -6095,7 +6095,7 @@ module.exports.getBuffData = function(eff) {
   case 90047 : 
     retObj.name = '회복약';
     retObj.nameType = cons.NAME_KOR_END_CONS;
-    retObj.stackType = 1;
+    retObj.stackType = 3;
     retObj.dispellable = false;
     retObj.isDebuff = false;
     retObj.durOff = null;

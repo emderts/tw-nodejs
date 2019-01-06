@@ -2427,7 +2427,7 @@ async function procNextPhaseDungeon(req, res) {
         if (req.session.dungeonProgress.phase >= 6) {
           isFinished = true;
           if (!char.achievement[41]) {
-            await giveAchievement(charRow.uid, char, 41);
+            //await giveAchievement(charRow.uid, char, 41);
           }
           reward += '<br>"...!"<br>';
         }
