@@ -2055,7 +2055,7 @@ async function procNextPhaseDungeon(req, res) {
           char.rankReq = true;
           delete trades[sess.dungeonProgress.roomNum];
           await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
-          res.render('pages/dungeonResult', {result: re.result, resultList: [], isFinished : true, reward : reward, stop : false});
+          res.render('pages/dungeonResult', {result: re.result, resultList: [], isFinished : true, reward : reward, stop : false, addInfo : {}});
         } else if (re.winnerLeft) {
           list = req.session.dungeonProgress.tgtList;
           const idx = Math.floor(Math.random() * list.length);
@@ -2121,7 +2121,7 @@ async function procNextPhaseDungeon(req, res) {
             delete trades[sess.dungeonProgress.roomNum];
             sess.dungeonProgress.nextPhase = sess.dungeonProgress.phase + 1;
             await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
-            res.render('pages/dungeonResult', {result: re.result, resultList: [], isFinished : !enterNext, reward : reward, stop : false});
+            res.render('pages/dungeonResult', {result: re.result, resultList: [], isFinished : !enterNext, reward : reward, stop : false, addInfo : {}});
           }
         } else if (sess.dungeonProgress.nextPhase <= 3) {
           console.log(sess.userUid + '//' + sess.dungeonProgress.nextPhase);
@@ -2465,7 +2465,7 @@ async function procStopDungeon(req, res) {
         reward += '잔불 ' + curr + '개를 획득했습니다.<br>';
       }
       await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
-      res.render('pages/dungeonResult', {result: '', resultList: req.session.dungeonProgress.resultList, isFinished : true, reward : reward});
+      res.render('pages/dungeonResult', {result: '', resultList: req.session.dungeonProgress.resultList, isFinished : true, reward : reward, addInfo : {}});
     } else {
       if (!res.headersSent) {
         res.redirect('/');
