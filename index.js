@@ -2423,7 +2423,7 @@ async function procNextPhaseDungeon(req, res) {
       await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
       res.render('pages/dungeonResult', {result: re.result, resultList: req.session.dungeonProgress.resultList, isFinished : isFinished, reward : reward, stop : false, addInfo : addInfo});
       if (!re.winnerLeft && req.session.dungeonProgress.code != 6) {
-        req.session.dungeonProgress = {};
+        delete req.session.dungeonProgress;
       }
     } else {
       if (!res.headersSent) {
