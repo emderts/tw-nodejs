@@ -371,6 +371,7 @@ async function procInit2 () {
       var char = JSON.parse(val.char_data);
       
       char.dungeonInfos.enterIndigo = 3;
+      char.dungeonInfos.runIndigo = false;
       char.currencies.indigo = 0;
 
       if (val.uid == '02') {
