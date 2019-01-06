@@ -142,6 +142,7 @@
   printName.evasion = '회피';
   printName.dmgReduce = '피해감소';
   printName.pierce = '관통';
+  printName.chanceEnh = '확률강화';
   printName[0] = '무기';
   printName[1] = '갑옷';
   printName[2] = '보조방어구';
@@ -361,7 +362,7 @@
             <% if (key === 'phyAtk' || key === 'magAtk') { %>
               <%= (val + char.stat[key + 'Min']).toFixed(2) %>-<%= (val + char.stat[key + 'Max']).toFixed(2) %>
             <% } else { 
-                 if (key == 'phyReduce' || key == 'magReduce' || key == 'crit' || key == 'critDmg' || key == 'crit' || key == 'hit' || key == 'evasion' || key == 'pierce') {
+                 if (key == 'phyReduce' || key == 'magReduce' || key == 'crit' || key == 'critDmg' || key == 'crit' || key == 'hit' || key == 'evasion' || key == 'pierce' || key == 'chanceEnh') {
                    val = (val * 100).toFixed(2) + '%'; 
                  } %>
               <%= val %>
@@ -613,9 +614,6 @@
     </div>
     
     <div class="menuWrap">
-      <div class="menuItem">
-        <a href="/event">이벤트장</a>
-      </div>
       <div class="menuItem">
         <a href="/doBattle">전투 신청</a>
       </div>

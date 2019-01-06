@@ -1117,9 +1117,9 @@ itemList[485] = { id : 485, name : '잠행하는 성자', nameType : cons.NAME_K
     effect : [{code : cons.EFFECT_TYPE_MULTIPLE, active : cons.ACTIVE_TYPE_TAKE_HIT, chance : 0.05,
       target : [{code : cons.EFFECT_TYPE_SELF_SP, value : 75},
                 {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 10104, buffDur : null}]}] };
-itemList[486] = { id : 486, name : '고대 병기 조각', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '고대병기 \'제펄린\'의 기운이 담긴 조각. 사용자에게 강력한 고대의 힘을 부여하나 그 힘의 성질이 너무나 방대하고 이질적이어서 다루기가 매우 어렵다.', rank : 6, rarity : cons.ITEM_RARITY_EPIC, stat : { phyReduce : 0.05, magReduce : 0.05, maxHp : 333, hit : -0.1, evasion : -0.1, dmgReduce : 22 }, 
-    effectDesc : '전투 시작 시 자신에게 2턴 간 [기절] 상태이상 부여', 
-    effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_BATTLE_START, buffCode : 4, buffDur : 3}] };
+itemList[486] = { id : 486, name : '고대 병기 조각', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '고대병기 \'제펄린\'의 기운이 담긴 조각. 사용자에게 강력한 고대의 힘을 부여하나 그 힘의 성질이 너무나 방대하고 이질적이어서 다루기가 매우 어렵다.', rank : 6, rarity : cons.ITEM_RARITY_EPIC, stat : { phyReduce : 0.05, magReduce : 0.05, maxHp : 333, hit : -0.1, evasion : -0.1, dmgReduce : 28 }, 
+    effectDesc : '전투 시작 시 자신에게 1턴 간 [기절] 상태이상 부여', 
+    effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_BATTLE_START, buffCode : 4, buffDur : 1}] };
 itemList[487] = { id : 487, name : '바람추적자 - 고대 왕의 비보', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '동부 대륙의 고대 왕이 사용했다고 알려진 장화. 그는 바람과 같은 속도와 물과 같은 몸눌림으로 전장을 유린했다고 전해진다.', rank : 6, rarity : cons.ITEM_RARITY_EPIC, stat : { maxHp : 104, spCharge : 2, evasion : 0.05 }, 
     effectDesc : '공격 시 자신에게 [심안] 1중첩 부여<br><br>[심안] : 회피+2%, 치명피해+3%, 피격 시 40% 확률로 1중첩 소거 (최대 20중첩)', 
     effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_ATTACK, buffCode : 10105, buffDur : null}] };

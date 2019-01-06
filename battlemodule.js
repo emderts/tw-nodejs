@@ -1773,6 +1773,7 @@ function calcStats(chara, opp) {
     }
   }
   chara.name = chara.nameOri;
+  chara.nameType = chara.nameTypeOri;
   chara.skill = JSON.parse(JSON.stringify(chara.skillOri));
 
   for (val of getBuffEffects(chara, cons.ACTIVE_TYPE_CALC_STATS)) {
@@ -1798,6 +1799,7 @@ function calcStats(chara, opp) {
       chara.stat[val.key] += val.value * stackMpl;
     } else if (val.code === cons.EFFECT_TYPE_SET_NAME) {
       chara.name = val.value;
+      chara.nameType = val.type;
     } 
   }
   for (val of getBuffEffects(opp, cons.ACTIVE_TYPE_OPP_CALC_STATS)) {
@@ -1936,6 +1938,7 @@ function _initChar(char, flag) {
   char.curSp = char.curSp ? char.curSp : 0;
   char.buffs = [];
   char.nameOri = char.name;
+  char.nameTypeOri = char.nameType;
   char.skillOri = JSON.parse(JSON.stringify(char.skill));
   char.lastDamage = 0;
   char.damageDone = 0;
