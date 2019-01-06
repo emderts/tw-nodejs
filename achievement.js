@@ -38,6 +38,7 @@ const item = require('./items');
   ach[31] = {name : '재의 귀인', nameType : cons.NAME_KOR_END_CONS, desc : '어나더 게이트 - 재의 묘소에서 군다 처치', hidden : true};
   ach[32] = {name : '전문 봉인가', nameType : cons.NAME_KOR_NO_END_CONS, desc : '어나더 게이트 - 재의 묘소에서 각성 상태가 아닌 군다 처치', hidden : true};
   ach[39] = {name : '검은 빛의 검무', nameType : cons.NAME_KOR_END_CONS, desc : '메모리얼 게이트 - 검은 빛의 수련장에서 로엔그린에게 승리', hidden : true};
+  ach[40] = {name : '석영 리그 챔피언', nameType : cons.NAME_KOR_END_CONS, desc : '어나더 게이트 - 전이된 석영 고원에서 사천왕 목호에게 승리', hidden : true};
   
   module.exports.achData = ach;
   

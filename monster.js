@@ -507,8 +507,24 @@ const chara = require('./chara');
   charLeft.rating = [0.35, 0.3, 0.35];
   module.exports.d7Lohengrin = charLeft;
   
-  charLeft = {name : '사천왕 칸나', nameType : cons.NAME_KOR_NO_END_CONS, title : '전이된 석영 고원', rank : 7, level : 40, 
-      stat : {maxHp : 2400, phyAtk : 50, magAtk : 140, phyReduce : 0.35}};
+  charLeft = {name : '석영 차원문', nameType : cons.NAME_KOR_END_CONS, title : '전이된 석영 고원', rank : 7, level : 50, 
+      stat : {maxHp : 10, phyAtk : 44, magAtk : 44}};
+  _initChar(charLeft);
+  
+  charLeft.items = {};
+  charLeft.boss = 0.5;
+
+  charLeft.skill = {
+      base : [
+              {code : 90001, name : '시간의 폭풍', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1.0, effect : []}, 
+              {code : 90002, name : '시간의 폭풍', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1.0, effect : []}, 
+              {code : 90003, name : '시간의 폭풍', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 1.0, effect : []}
+             ]
+  };
+  module.exports.d720 = charLeft;
+  
+  charLeft = {name : '사천왕 칸나', nameType : cons.NAME_KOR_NO_END_CONS, title : '사천왕 칸나', rank : 7, level : 40, 
+      stat : {maxHp : 2100, phyAtk : 50, magAtk : 140, phyReduce : 0.35}};
   _initChar(charLeft);
   
   charLeft.items = {trinket : item.list[493]};
@@ -527,10 +543,85 @@ const chara = require('./chara');
               {}
              ],
       drive : {code : 90045, name : '회복약', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_DRIVE, 
-               active : cons.ACTIVE_TYPE_TAKE_HIT, cost : 10, chance : 1, fireOnce : true, chkHp : 0.3,
-               effect : [{code : cons.EFFECT_TYPE_SELF_HP, isPercentStat : true, percentKey : 'maxHp', value : 1}]}
+               active : cons.ACTIVE_TYPE_TAKE_HIT, cost : 0, chance : 0.5, fireOnce : true, chkHp : 0.3,
+               effect : [{code : cons.EFFECT_TYPE_SELF_HP, isPercentStat : true, percentKey : 'maxHp', value : 5}]}
   };
   module.exports.d721 = charLeft;
+  
+  charLeft = {name : '사천왕 시바', nameType : cons.NAME_KOR_NO_END_CONS, title : '사천왕 시바', rank : 7, level : 40, 
+      stat : {maxHp : 2400, phyAtk : 195, magAtk : 50}};
+  _initChar(charLeft);
+  
+  charLeft.items = {trinket : item.list[493]};
+  charLeft.image = '';
+  charLeft.boss = 0.8;
+  charLeft.bossStatus = 0.1;
+  
+  charLeft.startEffects = [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 90021, buffDur : null},
+                           {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 90023, buffDur : null},
+                           {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 90025, buffDur : null}];
+
+  charLeft.skill = {
+      base : [
+              {},
+              {},
+              {}
+             ],
+      drive : {code : 90045, name : '회복약', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_DRIVE, 
+               active : cons.ACTIVE_TYPE_TAKE_HIT, cost : 0, chance : 0.65, fireOnce : true, chkHp : 0.3,
+               effect : [{code : cons.EFFECT_TYPE_SELF_HP, isPercentStat : true, percentKey : 'maxHp', value : 5}]}
+  };
+  module.exports.d722 = charLeft;
+  
+  charLeft = {name : '사천왕 국화', nameType : cons.NAME_KOR_END_CONS, title : '사천왕 국화', rank : 7, level : 40, 
+      stat : {maxHp : 2700, phyAtk : 50, magAtk : 200}};
+  _initChar(charLeft);
+  
+  charLeft.items = {trinket : item.list[493]};
+  charLeft.image = '';
+  charLeft.boss = 0.8;
+  charLeft.bossStatus = 0.1;
+  
+  charLeft.startEffects = [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 90027, buffDur : null},
+                           {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 90029, buffDur : null},
+                           {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 90031, buffDur : null}];
+
+  charLeft.skill = {
+      base : [
+              {},
+              {},
+              {}
+             ],
+      drive : {code : 90045, name : '회복약', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_DRIVE, 
+               active : cons.ACTIVE_TYPE_TAKE_HIT, cost : 0, chance : 0.8, fireOnce : true, chkHp : 0.3,
+               effect : [{code : cons.EFFECT_TYPE_SELF_HP, isPercentStat : true, percentKey : 'maxHp', value : 5}]}
+  };
+  module.exports.d723 = charLeft;
+  
+  charLeft = {name : '사천왕 목호', nameType : cons.NAME_KOR_NO_END_CONS, title : '사천왕 목호', rank : 7, level : 40, 
+      stat : {maxHp : 3000, phyAtk : 155, magAtk : 50, magReduce : 0.35}};
+  _initChar(charLeft);
+  
+  charLeft.items = {trinket : item.list[493]};
+  charLeft.image = '';
+  charLeft.boss = 0.8;
+  charLeft.bossStatus = 0.1;
+  
+  charLeft.startEffects = [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 90033, buffDur : null},
+                           {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 90035, buffDur : null},
+                           {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 90037, buffDur : null}];
+
+  charLeft.skill = {
+      base : [
+              {},
+              {},
+              {}
+             ],
+      drive : {code : 90045, name : '회복약', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_DRIVE, 
+               active : cons.ACTIVE_TYPE_TAKE_HIT, cost : 0, chance : 1, fireOnce : true, chkHp : 0.3,
+               effect : [{code : cons.EFFECT_TYPE_SELF_HP, isPercentStat : true, percentKey : 'maxHp', value : 5}]}
+  };
+  module.exports.d724 = charLeft;
   
   charLeft = {name : '프사이', nameType : cons.NAME_KOR_NO_END_CONS, title : '승급 시험관', rank : 9, level : 40, 
       stat : {maxHp : 672, phyAtk : 33.75, magAtk : 61.25}};

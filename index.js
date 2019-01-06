@@ -77,7 +77,7 @@ const app = express()
 .post('/doRankup', procRankup)
 .post('/getCard', procGetCard)
 .post('/actionAccel', procActionAccel)
-.get('/test', (req, res) => res.render('pages/battle', {result: (new battlemodule.bmodule()).doBattle(JSON.parse(JSON.stringify(monster.d721)), JSON.parse(JSON.stringify(chara.ruisun)), 1).result}))
+.get('/test', (req, res) => res.render('pages/battle', {result: (new battlemodule.bmodule()).doBattle(JSON.parse(JSON.stringify(monster.d723)), JSON.parse(JSON.stringify(chara.gaius)), 1).result}))
 .get('/test2', (req, res) => res.render('pages/trade', {room : '1', uid : '03'}))
 .get('/test3', (req, res) => res.render('pages/trade', {room : '1', uid : '06'}))
 .get('/test4', (req, res) => res.send(procInit2()))
@@ -369,13 +369,15 @@ async function procInit2 () {
     for (val of result.rows) {
       var char = JSON.parse(val.char_data);
       
-      char.stat.chanceEnh = 0;
-      char.base.chanceEnh = 0;
+      char.dungeonInfos.enterIndigo = 3;
+      char.currencies.indigo = 0;
 
       if (val.uid == '02') {
+        char.rank--;
         char.inventory.push(item.list[392]);
       }
       
+      _patchItem('skillArtifact', 511);
       function _patchItem(type, id) {
         if (char.items[type] && char.items[type].id == id) {
           char.items[type].effectDesc = item.list[id].effectDesc;
@@ -1038,7 +1040,7 @@ async function procBattle(req, res) {
         right = JSON.parse(val.char_data);
       }
     } 
-    if (left && right && (randBattle || left.lastBattle != body.charUid) && (randBattle || left.matchCount > 0)) {
+    if (left && right && left.lastBattle != body.charUid && (randBattle || left.matchCount > 0)) {
       var re = (new battlemodule.bmodule()).doBattle(JSON.parse(JSON.stringify(left)), JSON.parse(JSON.stringify(right)));
       var globalObj = {actionUsed : {type : 'add', value : 1}};
       if (!randBattle) {
@@ -1704,6 +1706,7 @@ async function procDungeon(req, res) {
     dungeonList.push({name : '필드 보스 - 움직이는 요새', code : 5, active : false, additional : char.dungeonInfos.runFieldBoss0, tooltip : '매 10분마다 무료로 도전 가능, 이후 피로도 1 소모'});
     dungeonList.push({name : '필드 보스 - 매버릭 타임 코더', code : 6, active : false, additional : char.dungeonInfos.runFieldBoss1, tooltip : '매 10분마다 무료로 도전 가능, 이후 피로도 1 소모'});
     dungeonList.push({name : '메모리얼 게이트 - 검은 빛의 수련장 [7급 10레벨 이상]', code : 7, remain : char.dungeonInfos.enterBlacklight, active : !char.dungeonInfos.runBlacklight && char.dungeonInfos.enterBlacklight > 0 && (char.rank <= 6 || (char.rank == 7 && char.level >= 10))});
+    dungeonList.push({name : '어나더 게이트 - 전이된 석영 고원 [6급 이상]', code : 8, remain : char.dungeonInfos.enterIndigo, active : !char.dungeonInfos.runIndigo && char.dungeonInfos.enterIndigo > 0 && (char.rank == 6 && char.level >= 20)});
     if (result && result.rows) {
       for (row of result.rows) {
         var tgt = dungeonList[row.rindex];
@@ -1804,9 +1807,16 @@ async function procEnterDungeon(req, res) {
         char.dungeonInfos.enterBlacklight--;
         enemy = monster.d7Knight;
       }
+    } else if (body.option == 8) {
+      if (!char.dungeonInfos.runIndigo && char.dungeonInfos.enterIndigo > 0 && char.rank <= 6) {
+        char.dungeonInfos.runIndigo = true;
+        char.dungeonInfos.enterIndigo--;
+        enemy = monster.d720;
+      }
     }
     if (enemy) {
-      if (body.option == 1 || body.option == 2 || body.option == 6) {
+      var addInfo = {};
+      if (body.option == 1 || body.option == 2 || body.option == 6 || body.option == 8) {
         var re = (new battlemodule.bmodule()).doBattle(JSON.parse(JSON.stringify(char)), JSON.parse(JSON.stringify(enemy)), 1);
         var resultList = [{phase : 1, monImage : enemy.image, monName : enemy.name, 
           result : re.winnerLeft ? '승리' : '패배', hpLeft : re.winnerLeft ? re.leftInfo.curHp : re.rightInfo.curHp}];
@@ -1824,6 +1834,30 @@ async function procEnterDungeon(req, res) {
         req.session.dungeonProgress = {code : body.option, phase : 1, resultList : resultList, charData : re.leftInfo};
         if (body.option == 1) {
           req.session.dungeonProgress.taurus = 0;
+        }
+        if (body.option == 8) {
+          req.session.dungeonProgress.buffs = [{idx : 0, name : 'X Attack', desc : '물리공격력 20% 증가', buff : 90039},
+                                               {idx : 1, name : 'X Special Attack', desc : '마법공격력 20% 증가', buff : 90040},
+                                               {idx : 2, name : 'X Defense', desc : '물리저항 20%p 증가', buff : 90041},
+                                               {idx : 3, name : 'X Special Defense', desc : '마법저항 20%p 증가', buff : 90042},
+                                               {idx : 4, name : '녹지 않는 얼음', desc : '목호에게 스킬 계수 40% 증가', buff : 90053},
+                                               {idx : 5, name : 'X Accuracy', desc : '명중/치명피해 20%p 증가', buff : 90044},
+                                               {idx : 6, name : 'X Speed', desc : '회피 10%p 증가', buff : 90045},
+                                               {idx : 7, name : '가드 렌즈', desc : '치명 10%p 증가', buff : 90046},
+                                               {idx : 8, name : '회복약', desc : '전투 중 한 번 생명력 30% 회복', buff : 90047},
+                                               {idx : 9, name : '열매 더미', desc : '받는 상태이상 무효화 (쿨다운 4턴)', buff : 90048},
+                                               {idx : 10, name : '생명의 구슬', desc : '스킬 계수 50% 증가, 공격 시 최대 생명력의 10%만큼 절대 피해', buff : 90049},
+                                               {idx : 11, name : '목탄', desc : '칸나에게 스킬 계수 40% 증가', buff : 90050},
+                                               {idx : 12, name : '휘어진 스푼', desc : '시바에게 스킬 계수 40% 증가', buff : 90051},
+                                               {idx : 13, name : '저주의 부적', desc : '국화에게 스킬 계수 40% 증가', buff : 90052}];
+          addInfo.type = 8;
+          addInfo.data = [];
+          for (let i = 0; i < 3; i++) {
+            var rand = Math.floor(req.session.dungeonProgress.buffs.length * Math.random());
+            addInfo.data.push(req.session.dungeonProgress.buffs[rand]);
+            req.session.dungeonProgress.buffs.splice(rand, 1);
+          }
+          req.session.dungeonProgress.addInfo = addInfo;
         }
       } else if (body.option == 3 || body.option == 7) {
         var roomNum = curRoom++;
@@ -1976,7 +2010,7 @@ async function procEnterDungeon(req, res) {
         } 
       }
       await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
-      res.render('pages/dungeonResult', {result: re.result, resultList: resultList, isFinished : isFinished, reward : reward, stop : (body.option == 2)});
+      res.render('pages/dungeonResult', {result: re.result, resultList: resultList, isFinished : isFinished, reward : reward, stop : (body.option == 2), addInfo : addInfo});
     } else {
       res.redirect('/');
     }
@@ -2095,6 +2129,18 @@ async function procNextPhaseDungeon(req, res) {
           res.render('pages/trade', {room: sess.dungeonProgress.roomNum, uid: charRow.uid});
           return;
         }
+      } else if (sess.dungeonProgress.code == 8) {
+        if (!sess.dungeonProgress.charData.startEffects) {
+          sess.dungeonProgress.charData.startEffects = [];
+        } else if (sess.dungeonProgress.curBuffs) {
+          sess.dungeonProgress.charData.startEffects = sess.dungeonProgress.curBuffs;
+        }
+        sess.dungeonProgress.charData.startEffects.push({code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : sess.dungeonProgress.addInfo[body.option].buff, buffDur : null})
+        sess.dungeonProgress.curBuffs = sess.dungeonProgress.charData.startEffects;
+        sess.dungeonProgress.charData.curHp = sess.dungeonProgress.charData.stat.maxHp;
+        if (sess.dungeonProgress.phase <= 4) {
+          enemy = monster['d72' + sess.dungeonProgress.phase];
+        } 
       }
     }
     if (enemy) {
@@ -2125,6 +2171,7 @@ async function procNextPhaseDungeon(req, res) {
       
       var isFinished = false;
       var reward = '';
+      var addInfo = {};
       if (req.session.dungeonProgress.code == 3 && req.session.dungeonProgress.phase == 2) {
         const damageDealt = hpBefore - re.rightInfo.curHp;
         re.rightInfo.buffs = [];
@@ -2340,9 +2387,37 @@ async function procNextPhaseDungeon(req, res) {
             } 
           }
         } 
+      } else if (req.session.dungeonProgress.code == 8) {
+        addInfo.type = 8;
+        addInfo.data = [];
+        for (let i = 0; i < 3; i++) {
+          var rand = Math.floor(req.session.dungeonProgress.buffs.length * Math.random());
+          addInfo.data.push(req.session.dungeonProgress.buffs[rand]);
+          req.session.dungeonProgress.buffs.splice(rand, 1);
+        }
+        req.session.dungeonProgress.addInfo = addInfo;
+        if (req.session.dungeonProgress.phase >= 5) {
+          isFinished = true;
+          if (!char.achievement[40]) {
+            await giveAchievement(charRow.uid, char, 40);
+          }
+          if (!char.dungeonInfos.clearIndigo) {
+            char.dungeonInfos.clearIndigo = true;
+            char.statPoint += 5;
+            reward += '첫 번째 [어나더 게이트 - 전이된 석영 고원] 클리어!<br>스탯 포인트 5를 획득했습니다.<br>';
+            //await client.query('insert into news(content, date) values ($1, $2)', 
+            //    [char.name + getIga(char.nameType) + ' [어나더 게이트 - 전이된 석영 고원]을 돌파했습니다!', new Date()]);
+          }
+        }
+        if (!char.dungeonInfos['rewardIndigo' + req.session.dungeonProgress.phase]) {
+          char.dungeonInfos['rewardIndigo' + req.session.dungeonProgress.phase] = true;
+          const curr = req.session.dungeonProgress.phase - 1;
+          char.currencies.indigo += curr;
+          reward += '석영 고원 증표 ' + curr + '개를 획득했습니다.<br>';
+        }
       }
       await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
-      res.render('pages/dungeonResult', {result: re.result, resultList: req.session.dungeonProgress.resultList, isFinished : isFinished, reward : reward, stop : false});
+      res.render('pages/dungeonResult', {result: re.result, resultList: req.session.dungeonProgress.resultList, isFinished : isFinished, reward : reward, stop : false, addInfo : addInfo});
     } else {
       if (!res.headersSent) {
         res.redirect('/');

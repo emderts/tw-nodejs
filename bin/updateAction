@@ -60,6 +60,7 @@ try {
       charData.dungeonInfos.runMevious = false;
       charData.dungeonInfos.runEmberCrypt = false;
       charData.dungeonInfos.runBlacklight = false;
+      charData.dungeonInfos.runIndigo = false;
       charData.dungeonInfos.runFieldBoss = false;
       charData.dungeonInfos.runRankup = false;
       await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(charData), val.uid]);
@@ -149,6 +150,11 @@ try {
       charData.dungeonInfos.rewardBlacklight1 = false;
       charData.dungeonInfos.rewardBlacklight2 = false;
       charData.dungeonInfos.rewardBlacklight3 = false;
+      charData.dungeonInfos.enterIndigo = 3;
+      charData.dungeonInfos.rewardIndigo2 = false;
+      charData.dungeonInfos.rewardIndigo3 = false;
+      charData.dungeonInfos.rewardIndigo4 = false;
+      charData.dungeonInfos.rewardIndigo5 = false;
       charData.dungeonInfos.resetMevious = false;
       charData.dungeonInfos.resetEmberCrypt = false;
       charData.dungeonInfos.rewardFieldBoss01 = false;

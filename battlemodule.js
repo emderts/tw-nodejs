@@ -971,7 +971,7 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
         this.bpRight = JSON.stringify(this.charRight);
         this.bpTurn = this.turnCount;
         buffObj.name += this.turnCount + '턴';
-      } else if (buffObj.id === 201715) {
+      } else if (buffObj.id === 201715 && !eff.noStack) {
         this.timeCrash++;
         buffObj.stack = this.timeCrash; 
       } else if (buffObj.id === 201719) {
