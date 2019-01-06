@@ -1707,7 +1707,7 @@ async function procDungeon(req, res) {
     dungeonList.push({name : '필드 보스 - 움직이는 요새', code : 5, active : false, additional : char.dungeonInfos.runFieldBoss0, tooltip : '매 10분마다 무료로 도전 가능, 이후 피로도 1 소모'});
     dungeonList.push({name : '필드 보스 - 매버릭 타임 코더', code : 6, active : false, additional : char.dungeonInfos.runFieldBoss1, tooltip : '매 10분마다 무료로 도전 가능, 이후 피로도 1 소모'});
     dungeonList.push({name : '메모리얼 게이트 - 검은 빛의 수련장 [7급 10레벨 이상]', code : 7, remain : char.dungeonInfos.enterBlacklight, active : !char.dungeonInfos.runBlacklight && char.dungeonInfos.enterBlacklight > 0 && (char.rank <= 6 || (char.rank == 7 && char.level >= 10))});
-    dungeonList.push({name : '어나더 게이트 - 전이된 석영 고원 [6급 이상]', code : 8, remain : char.dungeonInfos.enterIndigo, active : !char.dungeonInfos.runIndigo && char.dungeonInfos.enterIndigo > 0 && (char.rank == 6 && char.level >= 20)});
+    dungeonList.push({name : '어나더 게이트 - 전이된 석영 고원 [6급 이상]', code : 8, remain : char.dungeonInfos.enterIndigo, active : !char.dungeonInfos.runIndigo && char.dungeonInfos.enterIndigo > 0 && char.rank == 6});
     if (result && result.rows) {
       for (row of result.rows) {
         var tgt = dungeonList[row.rindex];
@@ -2402,14 +2402,14 @@ async function procNextPhaseDungeon(req, res) {
         if (req.session.dungeonProgress.phase >= 5) {
           isFinished = true;
           if (!char.achievement[40]) {
-            //await giveAchievement(charRow.uid, char, 40);
+            await giveAchievement(charRow.uid, char, 40);
           }
           if (!char.dungeonInfos.clearIndigo) {
             char.dungeonInfos.clearIndigo = true;
             char.statPoint += 5;
             reward += '첫 번째 [어나더 게이트 - 전이된 석영 고원] 클리어!<br>스탯 포인트 5를 획득했습니다.<br>';
-            //await client.query('insert into news(content, date) values ($1, $2)', 
-            //    [char.name + getIga(char.nameType) + ' [어나더 게이트 - 전이된 석영 고원]을 돌파했습니다!', new Date()]);
+            await client.query('insert into news(content, date) values ($1, $2)', 
+                [char.name + getIga(char.nameType) + ' [어나더 게이트 - 전이된 석영 고원]을 돌파했습니다!', new Date()]);
           }
         }
         if (!char.dungeonInfos['rewardIndigo' + req.session.dungeonProgress.phase]) {

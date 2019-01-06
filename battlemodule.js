@@ -1542,6 +1542,10 @@ Battlemodule.prototype.resolveTurnEnd = function(winner, loser) {
   if (loser.curHp > loser.stat.maxHp) {
     loser.curHp = loser.stat.maxHp;
   }
+  this.resolveEffects(winner, loser, getBuffEffects(chara, cons.ACTIVE_TYPE_AFTER_TURN_END));
+  this.resolveEffects(winner, loser, getItemEffects(chara, cons.ACTIVE_TYPE_AFTER_TURN_END));
+  this.resolveEffects(loser, winner, getBuffEffects(chara, cons.ACTIVE_TYPE_AFTER_TURN_END));
+  this.resolveEffects(loser, winner, getItemEffects(chara, cons.ACTIVE_TYPE_AFTER_TURN_END));
 }
 
 Battlemodule.prototype.resolveTurnEndChar = function(chara, opp, flag) {
