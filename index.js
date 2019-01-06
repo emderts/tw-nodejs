@@ -61,6 +61,7 @@ const app = express()
 .get('/dungeon', procDungeon)
 .post('/enterDungeon', procEnterDungeon)
 .get('/nextPhaseDungeon', procNextPhaseDungeon)
+.post('/nextPhaseDungeon', procNextPhaseDungeon)
 .get('/stopDungeon', procStopDungeon)
 .get('/sortInventory', procSortInventory)
 .get('/viewAch', procViewAchievement)
@@ -2012,7 +2013,9 @@ async function procEnterDungeon(req, res) {
       await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
       res.render('pages/dungeonResult', {result: re.result, resultList: resultList, isFinished : isFinished, reward : reward, stop : (body.option == 2), addInfo : addInfo});
     } else {
-      res.redirect('/');
+      if (!res.headersSent) {
+        res.redirect('/');
+      }
     }
   } catch (err) {
     console.error(err);
