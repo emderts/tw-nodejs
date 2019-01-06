@@ -2138,7 +2138,7 @@ async function procNextPhaseDungeon(req, res) {
         } else if (sess.dungeonProgress.curBuffs) {
           sess.dungeonProgress.charData.startEffects = sess.dungeonProgress.curBuffs;
         }
-        sess.dungeonProgress.charData.startEffects.push({code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : sess.dungeonProgress.addInfo[body.option].buff, buffDur : null})
+        sess.dungeonProgress.charData.startEffects.push({code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : sess.dungeonProgress.addInfo[req.body.option].buff, buffDur : null})
         sess.dungeonProgress.curBuffs = sess.dungeonProgress.charData.startEffects;
         sess.dungeonProgress.charData.curHp = sess.dungeonProgress.charData.stat.maxHp;
         if (sess.dungeonProgress.phase <= 4) {
