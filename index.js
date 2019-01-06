@@ -1858,7 +1858,7 @@ async function procEnterDungeon(req, res) {
             addInfo.data.push(req.session.dungeonProgress.buffs[idx]);
             req.session.dungeonProgress.buffs.splice(idx, 1);
           }
-          req.session.dungeonProgress.addInfo = addInfo;
+          req.session.dungeonProgress.addInfo = addInfo.data;
         }
       } else if (body.option == 3 || body.option == 7) {
         var roomNum = curRoom++;
@@ -2398,11 +2398,11 @@ async function procNextPhaseDungeon(req, res) {
           addInfo.data.push(req.session.dungeonProgress.buffs[idx]);
           req.session.dungeonProgress.buffs.splice(idx, 1);
         }
-        req.session.dungeonProgress.addInfo = addInfo;
+        req.session.dungeonProgress.addInfo = addInfo.data;
         if (req.session.dungeonProgress.phase >= 5) {
           isFinished = true;
           if (!char.achievement[40]) {
-            await giveAchievement(charRow.uid, char, 40);
+            //await giveAchievement(charRow.uid, char, 40);
           }
           if (!char.dungeonInfos.clearIndigo) {
             char.dungeonInfos.clearIndigo = true;
