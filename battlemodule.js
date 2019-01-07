@@ -1303,6 +1303,7 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
         this.result += '[ ' + eff.name + ' ] 효과로 공격력이 ' + Math.round((eff.value - 1) * 100) + '\% 올랐습니다!<br>';    
       } else if (eff.all) {
         damage.skillRat *= eff.value;
+        damage.value *= eff.value;
       } else {
         continue;
       }
