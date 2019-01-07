@@ -2036,7 +2036,7 @@ async function procNextPhaseDungeon(req, res) {
     var enemy, curData, hpBefore, row, list;
     // check entering cond
     const rand = Math.random();
-    if (sess.dungeonProgress && (!sess.dungeonProgress.isFinished || sess.dungeonProgress.stop)) {
+    if (sess.dungeonProgress && (!sess.dungeonProgress.isFinished || sess.dungeonProgress.code == 2)) {
       if (sess.dungeonProgress.code == 1) {
         if (sess.dungeonProgress.phase < 10) {
           sess.dungeonProgress.charData.curHp += (sess.dungeonProgress.charData.stat.maxHp - sess.dungeonProgress.charData.curHp) * 0.15;
