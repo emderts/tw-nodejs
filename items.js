@@ -1197,7 +1197,7 @@ itemList[505] = { id : 505, name : '불타는 과수원 인장', nameType : cons
               {code : cons.EFFECT_TYPE_OPP_BUFF, active : cons.ACTIVE_TYPE_USE_SPECIAL, buffCode : 8, buffDur : 3, chkEquip : 451}] };
 itemList[506] = { id : 506, name : '불렛푸르프 노키아', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '다른 세계에서 넘어온 정체불명의 물건. 매우 단단하며, 주머니 속에 넣어두면 방어력이 증가한다.', rank : 6, rarity : cons.ITEM_RARITY_UNIQUE, stat : {  }, 
     effectDesc : '턴 시작 시 현재 생명력의 0.7%만큼 생명력 회복, 전투 시작 시 자신에게 [방탄] 버프 부여<br><br>[방탄] : 방어구가 지닌 저항력만큼 저항력 상승', 
-    effect : [{code : cons.EFFECT_TYPE_SELF_HP, active : cons.ACTIVE_TYPE_TURN_START, isPercentStat : true, value : 0.007, percentKey : 'maxHp'},
+    effect : [{code : cons.EFFECT_TYPE_SELF_HP, active : cons.ACTIVE_TYPE_TURN_START, isPercentChar : true, value : 0.007, percentKey : 'curHp'},
               {code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_BATTLE_START, buffCode : 10111, buffDur : null}] };
 itemList[507] = { id : 507, name : '플람베르그의 모자', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '플람베르그 가문의 깃털 모자. 계약한 불사조를 불러낼 수 있는 힘이 있었지만, 세계를 건너오며 링크가 깨져버렸다.', rank : 6, rarity : cons.ITEM_RARITY_EPIC, stat : { maxHp : 60, hpRegen : 1, spRegen : 1 }, 
     effectDesc : '턴 시작 시 SP가 30 이상이면 SP 30을 소비하고 자신에게 12턴 간 [지크프리드의 불꽃] 또는 영구적인 [얀닉스의 영원] 버프 부여 (전투 당 1회)<br><br>[지크프리드의 불꽃] : 물리/마법공격력+40, 치명+6%, SP충전+2<br>[얀닉스의 영원] : 매 턴 종료에 잃은 생명력의 1% 회복, SP재생+2', 
