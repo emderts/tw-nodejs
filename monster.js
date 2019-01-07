@@ -64,7 +64,7 @@ const chara = require('./chara');
   _initChar(charLeft);
   
   charLeft.items = {weapon : item.list[1], armor : item.list[115], subarmor : item.list[167]};
-  charLeft.image = '';
+  charLeft.image = 'https://i.imgur.com/WcCqnzE.png';
   charLeft.boss = 0.5;
 
   charLeft.skill = {
@@ -84,7 +84,7 @@ const chara = require('./chara');
   _initChar(charLeft);
   
   charLeft.items = {weapon : item.list[19], armor : item.list[115], subarmor : item.list[185]};
-  charLeft.image = '';
+  charLeft.image = 'https://i.imgur.com/w7hyYXb.png';
   charLeft.boss = 0.5;
 
   charLeft.skill = {
@@ -528,7 +528,7 @@ const chara = require('./chara');
   _initChar(charLeft);
   
   charLeft.items = {trinket : item.list[493]};
-  charLeft.image = '';
+  charLeft.image = 'https://i.imgur.com/MY23fZT.png';
   charLeft.boss = 0.8;
   charLeft.bossStatus = 0.1;
   
@@ -553,7 +553,7 @@ const chara = require('./chara');
   _initChar(charLeft);
   
   charLeft.items = {trinket : item.list[493]};
-  charLeft.image = '';
+  charLeft.image = 'https://i.imgur.com/stlIqKO.png';
   charLeft.boss = 0.8;
   charLeft.bossStatus = 0.1;
   
@@ -573,12 +573,12 @@ const chara = require('./chara');
   };
   module.exports.d722 = charLeft;
   
-  charLeft = {name : '사천왕 국화', nameType : cons.NAME_KOR_END_CONS, title : '사천왕 국화', rank : 7, level : 40, 
+  charLeft = {name : '사천왕 국화', nameType : cons.NAME_KOR_NO_END_CONS, title : '사천왕 국화', rank : 7, level : 40, 
       stat : {maxHp : 2700, phyAtk : 50, magAtk : 200}};
   _initChar(charLeft);
   
   charLeft.items = {trinket : item.list[493]};
-  charLeft.image = '';
+  charLeft.image = 'https://i.imgur.com/OaqAo1i.png';
   charLeft.boss = 0.8;
   charLeft.bossStatus = 0.1;
   
@@ -603,7 +603,7 @@ const chara = require('./chara');
   _initChar(charLeft);
   
   charLeft.items = {trinket : item.list[493]};
-  charLeft.image = '';
+  charLeft.image = 'https://i.imgur.com/fbbG1QX.png';
   charLeft.boss = 0.8;
   charLeft.bossStatus = 0.1;
   
@@ -628,7 +628,7 @@ const chara = require('./chara');
   _initChar(charLeft);
   
   charLeft.items = {trinket : item.list[493]};
-  charLeft.image = '';
+  charLeft.image = 'https://i.imgur.com/9JdAG3q.png';
   charLeft.boss = 0.8;
   charLeft.bossStatus = 0.1;
   
