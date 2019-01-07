@@ -741,6 +741,8 @@ Battlemodule.prototype.calcDamage = function(winner, loser, skill) {
     damage *= retObj.randDmg;
   }
   retObj.value = damage > 0 ? Math.round(damage) : 0;
+  this.resolveEffects(winner, loser, getBuffEffects(winner, cons.ACTIVE_TYPE_AFTER_CALC_DAMAGE), retObj, skill);
+  this.resolveEffects(winner, loser, getItemEffects(winner, cons.ACTIVE_TYPE_AFTER_CALC_DAMAGE), retObj, skill);
 
   return retObj;
 }
@@ -1903,6 +1905,9 @@ function calcStats(chara, opp) {
   }
   
   chara.stat.maxHp = Math.round(chara.stat.maxHp);
+  if (chara.curHp > chara.stat.maxHp) {
+    chara.curHp = chara.stat.maxHp;
+  }
   chara.stat.hpRegen = Math.round(10 * chara.stat.hpRegen) / 10;
   chara.stat.spRegen = Math.round(10 * chara.stat.spRegen) / 10;
   if (chara.skill.special) {

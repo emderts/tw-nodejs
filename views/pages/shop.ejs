@@ -460,6 +460,36 @@
     </form>
   </div>
   <% } %>
+  <% if (currencies.indigo) { %>
+  <div class="backLink">
+    석영 고원 상인 (현재 석영 고원 증표 : <%= currencies.indigo %>)
+  </div>
+  <div class="charItem">
+    <form action="/useShop" method="post">
+      <button onclick="invClick(this, event)" type="button">기력의 조각 (피로도 +3) [5 석영 증표]</button>
+      <input type="hidden" name="option" value="90026">
+    </form>
+  </div>
+  <div class="charItem">
+    <form action="/useShop" method="post">
+      <button onclick="invClick(this, event)" type="button">레어 장비 리설트 카드 [10 석영 증표]</button>
+      <input type="hidden" name="option" value="90027">
+    </form>
+  </div>
+  <div class="charItem">
+    <form action="/useShop" method="post">
+      <button onclick="invClick(this, event)" type="button">오늘의 중급 이상 요일석 [15 석영 증표]</button>
+      <input type="hidden" name="option" value="90028">
+    </form>
+  </div>
+  <div class="charItem">
+    <form action="/useShop" method="post">
+      <button onclick="invClick(this, event)" type="button">몬스터 볼 [35 석영 증표]</button>
+      <div class="itemTooltip"><%- makeTooltip(item.indigo[0]) %></div> 
+      <input type="hidden" name="option" value="90029">
+    </form>
+  </div>
+  <% } %>
   <div class="backLink">
     <a href="/">돌아가기</a>
   </div>

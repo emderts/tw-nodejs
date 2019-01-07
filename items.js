@@ -871,10 +871,10 @@ itemList[403] = { id : 403, name : '음이온 방석', nameType : cons.NAME_KOR_
               {code : cons.EFFECT_TYPE_REDUCE_BUFF_DURATION, active : cons.ACTIVE_TYPE_RECEIVE_BUFF, value : 1, buffCode : 7}] };
 itemList[404] = { id : 404, name : '붉은색 하트 모양 브로치', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '간단한 하트 모양의 브로치다. 착용하자, 왠지 모르게 당신은 의지가 충만해진다.', rank : 7, rarity : cons.ITEM_RARITY_UNIQUE, stat : { maxHp : 40, hpRegen : 2 }, 
     effectDesc : '공격 시 12% 확률로 피해를 주는 대신 피해량의 2배만큼 자신의 체력 회복', 
-    effect : [{code : cons.EFFECT_TYPE_MULTIPLE, active : cons.ACTIVE_TYPE_CALC_DAMAGE, chance : 0.12, chkDmgType : cons.DAMAGE_TYPE_PHYSICAL,
+    effect : [{code : cons.EFFECT_TYPE_MULTIPLE, active : cons.ACTIVE_TYPE_AFTER_CALC_DAMAGE, chance : 0.12, chkDmgType : cons.DAMAGE_TYPE_PHYSICAL,
       target : [{code : cons.EFFECT_TYPE_SELF_HP, value : 2, isPercentDamage : true},
                 {code : cons.EFFECT_TYPE_MULTIPLY_DAMAGE, value : 0, all : true}]},
-                {code : cons.EFFECT_TYPE_MULTIPLE, active : cons.ACTIVE_TYPE_CALC_DAMAGE, chance : 0.12, chkDmgType : cons.DAMAGE_TYPE_MAGICAL,
+                {code : cons.EFFECT_TYPE_MULTIPLE, active : cons.ACTIVE_TYPE_AFTER_CALC_DAMAGE, chance : 0.12, chkDmgType : cons.DAMAGE_TYPE_MAGICAL,
                   target : [{code : cons.EFFECT_TYPE_SELF_HP, value : 2, isPercentDamage : true},
                             {code : cons.EFFECT_TYPE_MULTIPLY_DAMAGE, value : 0, all : true}]}] };
 itemList[405] = { id : 405, name : '스트라이크 벨', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '"시간의 굴레여, 깨져라!"', rank : 7, rarity : cons.ITEM_RARITY_UNIQUE, stat : { hit : 0.04 }, 
@@ -1226,12 +1226,15 @@ itemList[512] = { id : 512, name : '흑색의 기사', nameType : cons.NAME_KOR_
     effectDesc : '', effect : [] };
 itemList[513] = { id : 513, name : '섬광의 기사', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SKILL_ARTIFACT, flavor : '', rank : 7, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 30 }, 
     effectDesc : '공격 시 6% 확률로 2턴 간 적에게 [실명] 상태이상 부여', 
-    effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 8, buffDur : 2}] };
+    effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 8, active : cons.ACTIVE_TYPE_ATTACK, buffDur : 2}] };
 itemList[514] = { id : 514, name : '로엔그린의 무위', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SKILL_ARTIFACT, flavor : '', rank : 7, rarity : cons.ITEM_RARITY_UNIQUE, stat : {  }, 
     effectDesc : '연속 공격 시 스킬 피해량 +13%', 
     effect : [{active : cons.ACTIVE_TYPE_CALC_DAMAGE, code : cons.EFFECT_TYPE_MULTIPLY_DAMAGE, value : 1.13, anySkill : true, chkWinLast : true}] };
 itemList[515] = { id : 515, name : '엎어진 콜라', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '그 중에는 카드를 닦는 이도 있었다..', rank : 6, rarity : cons.ITEM_RARITY_UNIQUE, stat : { phyReduce : -0.2, magReduce : -0.2, spCharge : 7 }, dustMod : 3, 
     effectDesc : '해체 시 가루 3배', effect : [] };
+itemList[516] = { id : 516, name : '석영 고원 몬스터 볼', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_SKILL_ARTIFACT, flavor : '', rank : 6, rarity : cons.ITEM_RARITY_RARE, stat : { }, 
+    effectDesc : '75% 생명력으로 떨어질 때까지 피카츄가 전투에 참여', 
+    effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_BATTLE_START, buffCode : 90062, buffDur : null}] };
 
 
 itemList.forEach(function(tgt) {

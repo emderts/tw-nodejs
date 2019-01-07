@@ -369,17 +369,12 @@ async function procInit2 () {
     const result = await client.query('select * from characters');
     for (val of result.rows) {
       var char = JSON.parse(val.char_data);
-      
-      char.dungeonInfos.enterIndigo = 3;
-      char.dungeonInfos.runIndigo = false;
-      char.currencies.indigo = 0;
 
       if (val.uid == '02') {
-        char.rank--;
         char.inventory.push(item.list[392]);
       }
       
-      _patchItem('skillArtifact', 511);
+      _patchItem('trinket', 404);
       function _patchItem(type, id) {
         if (char.items[type] && char.items[type].id == id) {
           char.items[type].effectDesc = item.list[id].effectDesc;
@@ -1454,7 +1449,8 @@ async function procShop(req, res) {
       item : {mevious : [item.list[412], item.list[413], item.list[414], item.list[415]], 
               ember : [item.list[416], item.list[417], item.list[418], item.list[419]],
               burntMark : [item.list[420], item.list[421], item.list[422], item.list[423]],
-              train : [item.list[512], item.list[513], item.list[514], char.dungeonInfos.buyBlacklight]}});
+              train : [item.list[512], item.list[513], item.list[514], char.dungeonInfos.buyBlacklight],
+              indigo : [item.list[516]]}});
   } catch (err) {
     console.error(err);
     res.send('내부 오류');
@@ -1678,6 +1674,23 @@ async function procUseShop (req, res) {
             char.dungeonInfos.buyBlacklight++;
             char.statPoint += 2;
           }
+        }
+      }
+    } else if (body.option >= 90026 && body.option < 90030) {
+      var cost = (body.option == 90026) ? 5 : (body.option == 90027 ? 10 : (body.option == 90028 ? 15 : 35));
+      if (char.currencies.indigo < cost) {
+        res.send('석영 증표가 부족합니다.');
+      } else {
+        char.currencies.indigo -= cost;
+        if (body.option == 90029) {
+          char.inventory.push(JSON.parse(JSON.stringify(item.list[516])));
+        } else if (body.option == 90026) {
+          char.inventory.push({name : '기력의 조각', type : 90001, value : 3, rarity : cons.ITEM_RARITY_PREMIUM});
+        } else if (body.option == 90027) {
+          addSpecialResultCard(char, 5);
+        } else if (body.option == 90028) {
+          var randl = Math.random();
+          char.inventory.push(makeDayStone(null, null, randl < 0.62 ? 2 : (randl < 0.93 ? 3 : 4)));
         }
       }
     }

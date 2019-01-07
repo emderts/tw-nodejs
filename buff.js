@@ -4405,7 +4405,7 @@ module.exports.getBuffData = function(eff) {
     retObj.name = '기마대';
     retObj.nameType = cons.NAME_KOR_NO_END_CONS;
     retObj.stackType = 4;
-    retObj.maxStack = 600;
+    retObj.maxStack = 800;
     retObj.durOff = null;
     retObj.isDebuff = false;
     effectObj = {};
@@ -4421,7 +4421,7 @@ module.exports.getBuffData = function(eff) {
     retObj.name = '철갑군';
     retObj.nameType = cons.NAME_KOR_END_CONS;
     retObj.stackType = 4;
-    retObj.maxStack = 600;
+    retObj.maxStack = 800;
     retObj.durOff = null;
     retObj.isDebuff = false;
     effectObj = {};
@@ -4469,7 +4469,7 @@ module.exports.getBuffData = function(eff) {
     retObj.name = '쇠뇌대';
     retObj.nameType = cons.NAME_KOR_NO_END_CONS;
     retObj.stackType = 4;
-    retObj.maxStack = 600;
+    retObj.maxStack = 800;
     retObj.durOff = null;
     retObj.isDebuff = false;
     effectObj = {};
@@ -6491,6 +6491,71 @@ module.exports.getBuffData = function(eff) {
     effectObj.target = {code : 90080, name : '속이다', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 40, 
         effect : [{code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL, value : 0.6},
                   {code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 4, buffDur : 1}]};
+    retObj.effect.push(effectObj);
+    break;
+  case 90062 : 
+    retObj.name = '피카츄';
+    retObj.nameType = cons.NAME_KOR_NO_END_CONS;
+    retObj.stackType = 1;
+    retObj.dispellable = false;
+    retObj.isDebuff = false;
+    retObj.durOff = null;
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_SET_NAME;
+    effectObj.value = '피카츄';
+    effectObj.type = cons.NAME_KOR_NO_END_CONS;
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_SET_SKILL;
+    effectObj.key = 'base';
+    effectObj.value = 0;
+    effectObj.target = {code : 90081, name : '볼트태클', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 2.4, 
+        effect : [{code : cons.EFFECT_TYPE_SELF_HP, value : -0.25, isPercentDamage : true}]};
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_SET_SKILL;
+    effectObj.key = 'base';
+    effectObj.value = 1;
+    effectObj.target = {code : 90054, name : '번개', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 1.6, 
+        effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.7, buffCode : 9, buffDur : 2}]};
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_SET_SKILL;
+    effectObj.key = 'base';
+    effectObj.value = 2;
+    effectObj.target = {code : 90082, name : '풀묶기', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 1.4, 
+        effect : [{code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_MAGICAL_FIXED, value : 0.1, isPercentOppStat : true, percentKey : 'maxHp'}]};
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_SET_SKILL;
+    effectObj.key = 'special';
+    effectObj.target = {code : 90080, name : '속이다', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 40, 
+        effect : [{code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL, value : 0.6},
+                  {code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 4, buffDur : 1}]};
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_AFTER_TURN_END;
+    effectObj.chkHp = 0.75;
+    effectObj.removeBuff = true;
+    retObj.effect.push(effectObj);
+    break;
+  case 90061 : 
+    retObj.name = '피카츄';
+    retObj.nameType = cons.NAME_KOR_NO_END_CONS;
+    retObj.stackType = 1;
+    retObj.durOff = null;
+    retObj.isDebuff = false;
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_AFTER_TURN_END;
+    effectObj.code = cons.EFFECT_TYPE_SELF_HP;
+    effectObj.isPercentHpLost = true;
+    effectObj.value = 1;
+    effectObj.chkHp = 0.001;
     retObj.effect.push(effectObj);
     break;
   }
