@@ -374,7 +374,7 @@ async function procInit2 () {
         char.inventory.push(item.list[392]);
       }
       
-      _patchItem('trinket', 404);
+      _patchItem('trinket', 506);
       function _patchItem(type, id) {
         if (char.items[type] && char.items[type].id == id) {
           char.items[type].effectDesc = item.list[id].effectDesc;
