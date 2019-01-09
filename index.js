@@ -1770,6 +1770,13 @@ async function procEnterRaid(req, res) {
     if (body.option == 1 || body.option == 2) {
       if (char.dungeonInfos.enterRaid1 > 0) {
         enemy = rand < 0.5 ? monster.mCrawler : monster.mHeadHunter;
+        if (char.dungeonInfos.runRaid1) {
+          if (charRow.actionPoint <= 0) {
+            client.release();
+            res.redirect('/');
+            return;
+          }
+        }
       }
     } else if (body.option == 6) {
       const result = await client.query('select * from raids where rindex = 4');
@@ -1777,13 +1784,6 @@ async function procEnterRaid(req, res) {
       curData = JSON.parse(row.monsters);
       enemy = curData[row.phase];
       hpBefore = enemy.curHp ? enemy.curHp : enemy.stat.maxHp;
-      if (char.dungeonInfos.runFieldBoss0 && (row.open == 'O')) {
-        if (charRow.actionPoint <= 0) {
-          client.release();
-          res.redirect('/');
-          return;
-        }
-      }
       enemy = monster.rTimeStorm;
       if (char.dungeonInfos.runFieldBoss1) {
         if (charRow.actionPoint <= 0) {
@@ -1813,19 +1813,27 @@ async function procEnterRaid(req, res) {
           result : re.winnerLeft ? '승리' : '패배', hpLeft : re.winnerLeft ? re.leftInfo.curHp : re.rightInfo.curHp}];
         var isFinished = true;
         var reward = ''; 
-        if (!re.winnerLeft) {
-          reward += '패배했습니다..';
-        } else {
-
-          await setGlobals({achievement : {type : 'achievement', idx : idx, holder : chara.name}});
-        }
         if (char.dungeonInfos.runRaid1) {
           char.dungeonInfos.enterRaid1--;
           await client.query('update characters set actionPoint = $1 where uid = $2', [charRow.actionPoint - 1, charRow.uid]);
         }
 
         char.dungeonInfos.runRaid1 = true;
-        req.session.dungeonProgress = {code : body.option, phase : 1, resultList : resultList, charData : re.leftInfo};
+        if (!re.winnerLeft) {
+          reward += '패배했습니다..';
+        } else {
+          reward += '공헌도 20을 얻었습니다!';
+          char.raidEffort += 20;
+
+          await setGlobals({raid : {type : 'raid', name : 'progress', idx : body.option, mode : 'add', value : 20}});
+          if (globals.raid.progress[body.option] >= 80) {
+            await setGlobals({raid : {type : 'raid', name : 'left', idx : body.option, mode : 'set', value : 72}});
+            await setGlobals({raid : {type : 'raid', name : 'open', idx : body.option, mode : 'set', value : false}});
+            await client.query('insert into news(content, date) values ($1, $2)', 
+                [char.raidSide == 0 ? '아리스란이 메비우스 습격 방어전을 공략했습니다!' : '미네르프가 메비우스 기지 공략전을 공략했습니다!', new Date()]);
+            
+          }
+        }
       } else if (body.option == 3 || body.option == 7) {
         var roomNum = curRoom++;
         trades[roomNum] = {};

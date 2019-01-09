@@ -812,7 +812,9 @@ Battlemodule.prototype.dealDamage = function(src, dst, damage) {
       removeBuff(ruiBuff[0]);
     }
   }
-  dst.curHp -= damageDealt;
+  if (!isNaN(damageDealt)) { 
+    dst.curHp -= damageDealt;
+  }
 }
 
 Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage, skill) {
