@@ -2072,6 +2072,9 @@ async function procEnterDungeon(req, res) {
       if (!char.dungeonInfos.runRankup) {
         char.dungeonInfos.runRankup = true;
         list = [monster['ruPsi' + char.rank], monster['ruAeohelm' + char.rank], monster['ruLozic' + char.rank]];
+        if (char.rank <= 6) {
+          list.push(monster.ruDekaitz6);
+        }
         const idx = Math.floor(Math.random() * 3);
         enemy = list[idx];
         list.splice(idx, 1);

@@ -1636,7 +1636,7 @@ const item = require('./items');
 
   charDekais.items = {weapon : item.list[11], armor : item.list[125], subarmor : item.list[169], trinket : item.list[253]};
     
-  charGaius.items.skillArtifact = item.list[516];
+  charGaius.items.skillArtifact = item.list[280];
   function _initChar(char) {
     char.stat = {};
     char.stat.maxHp = 400;

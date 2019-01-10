@@ -720,7 +720,7 @@ const chara = require('./chara');
   charLeft.rating = [0, 0, 0];
   module.exports.ruPsi7 = charLeft;
   
-  charLeft = {name : '에오헬름', nameType : cons.NAME_KOR_END_CONS, title : '승급 시험관', rank : 8, level : 40, 
+  charLeft = {name : '에오헬름', nameType : cons.NAME_KOR_END_CONS, title : '승급 시험관', rank : 7, level : 40, 
       stat : {maxHp : 700, phyAtk : 232.5, magAtk : 40}};
   _initChar(charLeft);
   
@@ -731,7 +731,7 @@ const chara = require('./chara');
   charLeft.rating = [0.35, 0, 0.35];
   module.exports.ruAeohelm7 = charLeft;
   
-  charLeft = {name : '세컨드 로직', nameType : cons.NAME_KOR_END_CONS, title : '승급 시험관', rank : 8, level : 40, 
+  charLeft = {name : '세컨드 로직', nameType : cons.NAME_KOR_END_CONS, title : '승급 시험관', rank : 7, level : 40, 
       stat : {maxHp : 1660, phyAtk : 93, magAtk : 40}};
   _initChar(charLeft);
   
@@ -741,6 +741,50 @@ const chara = require('./chara');
   charLeft.skillSelect = 2;
   charLeft.rating = [0, 0, 0];
   module.exports.ruLozic7 = charLeft;
+  
+  charLeft = {name : '프사이', nameType : cons.NAME_KOR_NO_END_CONS, title : '승급 시험관', rank : 6, level : 40, 
+      stat : {maxHp : 1528, phyAtk : 86.25, magAtk : 155}};
+  _initChar(charLeft);
+  
+  charLeft.items = {weapon : item.list[451], armor : item.list[464], subarmor : item.list[479], trinket : item.list[505]};
+
+  charLeft.skill = chara.psi.skill;
+  charLeft.skillSelect = 2;
+  charLeft.rating = [0, 0, 0];
+  module.exports.ruPsi6 = charLeft;
+  
+  charLeft = {name : '에오헬름', nameType : cons.NAME_KOR_END_CONS, title : '승급 시험관', rank : 6, level : 40, 
+      stat : {maxHp : 700, phyAtk : 290, magAtk : 50}};
+  _initChar(charLeft);
+  
+  charLeft.items = {weapon : item.list[445], armor : item.list[469], subarmor : item.list[385], trinket : item.list[507]};
+
+  charLeft.skill = chara.aeohelm.skill;
+  charLeft.skillSelect = 2;
+  charLeft.rating = [0.35, 0, 0.35];
+  module.exports.ruAeohelm6 = charLeft;
+  
+  charLeft = {name : '세컨드 로직', nameType : cons.NAME_KOR_END_CONS, title : '승급 시험관', rank : 8, level : 40, 
+      stat : {maxHp : 2050, phyAtk : 118.25, magAtk : 50}};
+  _initChar(charLeft);
+  
+  charLeft.items = {weapon : item.list[454], armor : item.list[468], subarmor : item.list[488], trinket : item.list[509]};
+
+  charLeft.skill = chara.lozic.skill;
+  charLeft.skillSelect = 2;
+  charLeft.rating = [0, 0, 0];
+  module.exports.ruLozic6 = charLeft;
+  
+  charLeft = {name : '데 카이츠', nameType : cons.NAME_KOR_END_CONS, title : '승급 시험관', rank : 8, level : 40, 
+      stat : {maxHp : 1528, phyAtk : 121, magAtk : 121}};
+  _initChar(charLeft);
+  
+  charLeft.items = {weapon : item.list[452], armor : item.list[467], subarmor : item.list[486], trinket : item.list[508]};
+
+  charLeft.skill = chara.dekaitz.skill;
+  charLeft.skillSelect = 2;
+  charLeft.rating = [0, 0, 0];
+  module.exports.ruDekaitz6 = charLeft;
   
   module.exports.selectFunc = 
     [function() {

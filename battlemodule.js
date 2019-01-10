@@ -1261,7 +1261,8 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
     } else if (eff.code === cons.EFFECT_TYPE_OPP_RESOLVE_DRIVE) {
       this.resolveDrive(loser, winner, damage);
     } else if (eff.code === cons.EFFECT_TYPE_MULTIPLE) {
-      this.resolveEffects(winner, loser, eff.target, damage);
+      eff.target.forEach(x => x.name = eff.name);
+      this.resolveEffects(winner, loser, eff.target, damage, skill);
     } else if (eff.code === cons.EFFECT_TYPE_ADD_RESOLUTION) {
       this.resolveEffects(winner, loser, skill.effect, damage);
     } else if (eff.code === cons.EFFECT_TYPE_CONVERT_ITEM) {
@@ -1314,12 +1315,12 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
         continue;
       }
       damage.diffDmg = damage.atkMax;
-      this.result += '최대 공격력이 발휘됩니다!<br>';
+      this.result += '[ ' + eff.name + ' ] 효과로 최대 공격력이 발휘됩니다!<br>';
     } else if (eff.code === cons.EFFECT_TYPE_CHANGE_ATTACK_TYPE) {
-      if (eff.anySkill && !skill.code) {
+      if (eff.anySkill && !skill && !skill.code) {
         continue;
       }
-      this.result += 'n 공격력이 적용됩니다!<br>';
+      this.result += '[ ' + eff.name + ' ] 효과로' + (eff.type === cons.DAMAGE_TYPE_PHYSICAL ? '물리' : '마법') + ' 공격력이 적용됩니다!<br>';
       damage.type = eff.type;
       damage.atkRat = eff.type === cons.DAMAGE_TYPE_PHYSICAL ? winner.stat.phyAtk : winner.stat.magAtk;
     } else if (eff.code === cons.EFFECT_TYPE_MULTIPLY_HEAL) {
