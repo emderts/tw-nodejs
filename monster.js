@@ -549,7 +549,7 @@ const chara = require('./chara');
   module.exports.d721 = charLeft;
   
   charLeft = {name : '사천왕 시바', nameType : cons.NAME_KOR_NO_END_CONS, title : '사천왕 시바', rank : 7, level : 40, 
-      stat : {maxHp : 2400, phyAtk : 195, magAtk : 50}};
+      stat : {maxHp : 2400, phyAtk : 180, magAtk : 50}};
   _initChar(charLeft);
   
   charLeft.items = {trinket : item.list[493]};
@@ -574,7 +574,7 @@ const chara = require('./chara');
   module.exports.d722 = charLeft;
   
   charLeft = {name : '사천왕 국화', nameType : cons.NAME_KOR_NO_END_CONS, title : '사천왕 국화', rank : 7, level : 40, 
-      stat : {maxHp : 2700, phyAtk : 50, magAtk : 200}};
+      stat : {maxHp : 2700, phyAtk : 50, magAtk : 205}};
   _initChar(charLeft);
   
   charLeft.items = {trinket : item.list[493]};
@@ -599,7 +599,7 @@ const chara = require('./chara');
   module.exports.d723 = charLeft;
   
   charLeft = {name : '사천왕 목호', nameType : cons.NAME_KOR_NO_END_CONS, title : '사천왕 목호', rank : 7, level : 40, 
-      stat : {maxHp : 3200, phyAtk : 180, magAtk : 50, magReduce : 0.35}};
+      stat : {maxHp : 3200, phyAtk : 195, magAtk : 50, magReduce : 0.35}};
   _initChar(charLeft);
   
   charLeft.items = {trinket : item.list[493]};
@@ -624,7 +624,7 @@ const chara = require('./chara');
   module.exports.d724 = charLeft;
   
   charLeft = {name : '레드', nameType : cons.NAME_KOR_NO_END_CONS, title : '정점', rank : 7, level : 40, 
-      stat : {maxHp : 4500, phyAtk : 200, magAtk : 200, phyReduce : 0.2, magReduce : 0.2}};
+      stat : {maxHp : 4500, phyAtk : 210, magAtk : 210, phyReduce : 0.2, magReduce : 0.2}};
   _initChar(charLeft);
   
   charLeft.items = {trinket : item.list[493]};

@@ -5348,7 +5348,7 @@ module.exports.getBuffData = function(eff) {
     effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
     effectObj.code = cons.EFFECT_TYPE_SET_SKILL;
     effectObj.key = 'special';
-    effectObj.target = {code : 90056, name : '불릿펀치', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 20, 
+    effectObj.target = {code : 90056, name : '불릿펀치', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 25, 
         effect : [{code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL, value : 0.7}]};
     retObj.effect.push(effectObj);
     break;
@@ -5517,7 +5517,7 @@ module.exports.getBuffData = function(eff) {
     effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
     effectObj.code = cons.EFFECT_TYPE_SET_SKILL;
     effectObj.key = 'special';
-    effectObj.target = {code : 90056, name : '불릿펀치', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 20, 
+    effectObj.target = {code : 90056, name : '불릿펀치', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 25, 
         effect : [{code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL, value : 0.7}]};
     retObj.effect.push(effectObj);
     break;
@@ -5765,7 +5765,7 @@ module.exports.getBuffData = function(eff) {
     effectObj.code = cons.EFFECT_TYPE_SET_SKILL;
     effectObj.key = 'base';
     effectObj.value = 0;
-    effectObj.target = {code : 90066, name : '역린', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 2, 
+    effectObj.target = {code : 90066, name : '역린', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 2.3, 
         effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 11, buffDur : 2}]};
     retObj.effect.push(effectObj);
     effectObj = {};
@@ -5788,7 +5788,7 @@ module.exports.getBuffData = function(eff) {
     effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
     effectObj.code = cons.EFFECT_TYPE_SET_SKILL;
     effectObj.key = 'special';
-    effectObj.target = {code : 90069, name : '파괴광선', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 70, 
+    effectObj.target = {code : 90069, name : '파괴광선', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 55, 
         effect : [{code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL, value : 4},
                   {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 4, buffDur : 2}]};
     retObj.effect.push(effectObj);
@@ -5873,14 +5873,14 @@ module.exports.getBuffData = function(eff) {
     effectObj.code = cons.EFFECT_TYPE_SET_SKILL;
     effectObj.key = 'base';
     effectObj.value = 2;
-    effectObj.target = {code : 90066, name : '역린', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 2, 
+    effectObj.target = {code : 90066, name : '역린', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 2.3, 
         effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 11, buffDur : 2}]};
     retObj.effect.push(effectObj);
     effectObj = {};
     effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
     effectObj.code = cons.EFFECT_TYPE_SET_SKILL;
     effectObj.key = 'special';
-    effectObj.target = {code : 90072, name : '용의춤', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 60, 
+    effectObj.target = {code : 90072, name : '용의춤', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 40, 
         effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 90034, buffDur : null}]};
     retObj.effect.push(effectObj);
     break;
@@ -5944,7 +5944,7 @@ module.exports.getBuffData = function(eff) {
     effectObj.code = cons.EFFECT_TYPE_SET_SKILL;
     effectObj.key = 'base';
     effectObj.value = 1;
-    effectObj.target = {code : 90066, name : '역린', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 2, 
+    effectObj.target = {code : 90066, name : '역린', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 2.3, 
         effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 11, buffDur : 2}]};
     retObj.effect.push(effectObj);
     effectObj = {};
@@ -5959,7 +5959,7 @@ module.exports.getBuffData = function(eff) {
     effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
     effectObj.code = cons.EFFECT_TYPE_SET_SKILL;
     effectObj.key = 'special';
-    effectObj.target = {code : 90069, name : '파괴광선', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 70, 
+    effectObj.target = {code : 90069, name : '파괴광선', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 55, 
         effect : [{code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL, value : 4},
                   {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 4, buffDur : 2}]};
     retObj.effect.push(effectObj);
