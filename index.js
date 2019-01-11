@@ -366,7 +366,9 @@ async function procInit () {
 }
 
 async function procInit2 () {
+  return;
     const client = await pool.connect();
+            await client.query('delete from raids where rindex > 100');
             await client.query('insert into raids(rindex, open, phase, monsters) values (103, \'O\', 1, $1)', 
         [JSON.stringify({1 : monster.rsInzeal})]);
             await client.query('insert into raids(rindex, open, phase, monsters) values (104, \'O\', 1, $1)', 
@@ -379,54 +381,46 @@ async function procInit2 () {
                 [JSON.stringify({1 : monster.rsDeci})]);
   try {
     const result = await client.query('select * from characters');
+    var sorted = [];
+    for (val of result.rows) {
+      var char = JSON.parse(val.char_data);
+      if (val.uid == '02') {
+        continue;
+      }
+      sorted.push({damage : char.rank * 100, key : val.uid, name : char.name});
+    } 
+    sorted.sort(function(a, b) {
+      if (a.damage > b.damage) {
+        return -1;
+      } else if (a.damage == b.damage) {
+        return 0;
+      } else {
+        return 1;
+      }
+    }); 
+    var reward = '<table>';
+    var aris = [sorted[0].name, sorted[3].name, sorted[4].name, sorted[7].name, sorted[8].name];
+    var mine = [sorted[1].name, sorted[2].name, sorted[5].name, sorted[6].name, sorted[9].name, sorted[10].name];
+    reward += '<tr><td>아리스란</td><td>미네르프</td></tr>';
+    reward += '<tr><td>' + aris.join(', ') + '</td>';
+    reward += '<td>' + mine.join(', ') + '</td></tr>';
+    reward += '</table>';
+    await client.query('insert into news(content, date) values ($1, $2)', 
+        ['공격대가 구성되었습니다!<div class="itemTooltip longWidth">' + reward + '</div>', new Date()]);
+    
     for (val of result.rows) {
       var char = JSON.parse(val.char_data);
 
       char.raidEffort = 0;
       if (val.uid == '02') {
         char.inventory.push(item.list[392]);
+        char.raidSide = null;
+      } else if (aris.includes(char.name)) {
         char.raidSide = 0;
-        char.raidEffort = 1;
-        char.dungeonInfos.runRaid1 = false;
-        char.dungeonInfos.runRaid2 = false;
-        char.dungeonInfos.runRaid3 = false;
-        char.dungeonInfos.runRaid4 = false;
-        char.dungeonInfos.enterRaid1 = 3;
-        char.dungeonInfos.enterRaid2 = 3;
-        char.dungeonInfos.enterRaid3 = 3;
-        char.dungeonInfos.enterRaid4 = 3;
+      } else {
+        char.raidSide = 1;
       }
-      if (val.uid == '06') {
-        char.skill = chara.seriers.skill;
-      }
-      if (val.uid == '07') {
-        char.skill = chara.illun.skill;
-      }
-      if (val.uid == '11') {
-        char.skill = chara.marang.skill;
-      }
-
-      _patchItem('weapon', 445);
-      _patchItem('weapon', 448);
-      _patchItem('weapon', 449);
-      _patchItem('weapon', 450);
-      _patchItem('weapon', 453);
-      _patchItem('armor', 290);
-      _patchItem('armor', 465);
-      _patchItem('subarmor', 309);
-      _patchItem('subarmor', 472);
-      _patchItem('subarmor', 473);
-      _patchItem('subarmor', 475);
-      _patchItem('subarmor', 477);
-      _patchItem('subarmor', 486);
-      _patchItem('trinket', 404);
-      _patchItem('trinket', 496);
-      _patchItem('trinket', 497);
-      _patchItem('trinket', 498);
-      _patchItem('trinket', 499);
-      _patchItem('trinket', 500);
-      _patchItem('trinket', 501);
-      _patchItem('trinket', 505);
+      //_patchItem('trinket', 505);
       function _patchItem(type, id) {
         if (char.items[type] && char.items[type].id == id) {
           char.items[type].effectDesc = item.list[id].effectDesc;
@@ -1900,8 +1894,8 @@ async function procEnterRaid(req, res) {
           if (globals.raid.progress[body.option] >= 80) {
             await setGlobals({raid : {type : 'raid', name : 'left', idx : body.option, mode : 'set', value : 72}});
             await setGlobals({raid : {type : 'raid', name : 'open', idx : body.option, mode : 'set', value : false}});
-            //await client.query('insert into news(content, date) values ($1, $2)', 
-          //      [char.raidSide == 0 ? '아리스란이 메비우스 습격 방어전을 공략했습니다!' : '미네르프가 메비우스 기지 공략전을 공략했습니다!', new Date()]);            
+            await client.query('insert into news(content, date) values ($1, $2)', 
+                [char.raidSide == 0 ? '아리스란이 메비우스 습격 방어전을 공략했습니다!' : '미네르프가 메비우스 기지 공략전을 공략했습니다!', new Date()]);            
           }
         }
       } else {
@@ -1933,6 +1927,7 @@ async function procEnterRaid(req, res) {
         re.leftInfo.buffs = [];
         re.leftInfo.items = enemy.items;
         re.leftInfo.skill = enemy.skill;
+        re.leftInfo.startEffects = enemy.startEffects;
         if (body.option == 3 || body.option == 4) {
           re.leftInfo.turnCount = re.leftInfo.turnCount ? re.leftInfo.turnCount : 0;
           re.leftInfo.turnCount += re.turnCount;
@@ -1963,26 +1958,26 @@ async function procEnterRaid(req, res) {
           if (!re.winnerLeft) {
             await setGlobals({raid : {type : 'raid', name : 'left', idx : body.option, mode : 'set', value : 288}});
             await setGlobals({raid : {type : 'raid', name : 'open', idx : body.option, mode : 'set', value : false}});
-          //  await client.query('insert into news(content, date) values ($1, $2)', 
-          //      [char.raidSide == 0 ? '아리스란이 파멸의 표식 해체를 공략했습니다!' : '미네르프가 봉인석 확보전을 공략했습니다!', new Date()]); 
+            await client.query('insert into news(content, date) values ($1, $2)', 
+                [char.raidSide == 0 ? '아리스란이 파멸의 표식 해체를 공략했습니다!' : '미네르프가 봉인석 확보전을 공략했습니다!', new Date()]); 
             
             if (!globals.raid.open[2 + Number(body.option)] && globals.raid.left[2 + Number(body.option)] == undefined) {
               await setGlobals({raid : {type : 'raid', name : 'open', idx : 2 + Number(body.option), mode : 'set', value : true}});
-          //    await client.query('insert into news(content, date) values ($1, $2)', 
-          //        [char.raidSide == 0 ? '아리스란이 내부 봉인 활성화 작전을 시작합니다!' : '미네르프가 외부 봉인 활성화 작전을 시작합니다!', new Date()]);             
+              await client.query('insert into news(content, date) values ($1, $2)', 
+                  [char.raidSide == 0 ? '아리스란이 내부 봉인 활성화 작전을 시작합니다!' : '미네르프가 외부 봉인 활성화 작전을 시작합니다!', new Date()]);             
             }
             
             var otherOption = body.option == 3 ? 4 : 3;
             if (!globals.raid.open[otherOption] && !globals.raid.open[7]) {
               await setGlobals({raid : {type : 'raid', name : 'open', idx : 7, mode : 'set', value : true}});
-          //    await client.query('insert into news(content, date) values ($1, $2)', 
-          //        ['최종 작전 - 데시메이트 봉인이 시작됩니다!', new Date()]);             
+              await client.query('insert into news(content, date) values ($1, $2)', 
+                  ['최종 작전 - 데시메이트 봉인이 시작됩니다!', new Date()]);             
             }
             
             char.raidEffort += 10;
             addSpecialResultCard(char, 4, 6);
             reward += re.leftInfo.name + getUlrul(re.leftInfo.nameType) + ' 처치했습니다!<br>공헌도 10, 6급 장비 리설트 카드 1개를 획득했습니다.<br>';
-            //var leaderboard = await createRaidResults(100 + Number(body.option), 1, char);
+            var leaderboard = await createRaidResults(100 + Number(body.option), 1, char);
             
             const results = await client.query('select * from characters');
             for (val of results.rows) {
@@ -1998,7 +1993,7 @@ async function procEnterRaid(req, res) {
             
           }
         } else if (body.option == 5 || body.option == 6) {
-          var raidEffort = Math.floor(hpBefore / 20) - Math.floor(re.leftInfo.curHp / 20);
+          var raidEffort = Math.floor(hpBefore / 5000) - Math.floor(re.leftInfo.curHp / 5000);
           if (raidEffort > 0) {
             char.raidEffort += raidEffort;
             reward += raidEffort + ' 공헌도를 획득했습니다.<br>';
@@ -2019,9 +2014,9 @@ async function procEnterRaid(req, res) {
             if (row.phase >= 5) { 
               await setGlobals({raid : {type : 'raid', name : 'left', idx : body.option, mode : 'set', value : 18}});
               await setGlobals({raid : {type : 'raid', name : 'open', idx : body.option, mode : 'set', value : false}});
-         //     await client.query('insert into news(content, date) values ($1, $2)', 
-         //         [char.raidSide == 0 ? '아리스란이 내부 봉인 활성화 작전을 완료했습니다!' : '미네르프가 외부 봉인 활성화 작전을 완료했습니다!', new Date()]);
-         //     var leaderboard = await createRaidResults(100 + Number(body.option), 5, char);
+              await client.query('insert into news(content, date) values ($1, $2)', 
+                  [char.raidSide == 0 ? '아리스란이 내부 봉인 활성화 작전을 완료했습니다!' : '미네르프가 외부 봉인 활성화 작전을 완료했습니다!', new Date()]);
+              var leaderboard = await createRaidResults(100 + Number(body.option), 5, char);
             }
             
             char.raidEffort += 10;
@@ -2093,7 +2088,7 @@ async function procDungeon(req, res) {
         } else if (row.rindex <= 5 && row.phase <= 1) {
           tgt.active = row.open == 'O';
         }
-        if (row.open == 'O') {
+        if (row.open == 'O' && row.rindex < 100) {
           tgt.phase = row.phase;
           const curData = JSON.parse(row.monsters);
           if (!curData[row.phase]) {
