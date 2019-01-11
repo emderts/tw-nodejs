@@ -60,6 +60,8 @@ const app = express()
 .post('/useShop', procUseShop)
 .get('/dungeon', procDungeon)
 .post('/enterDungeon', procEnterDungeon)
+.get('/raid', procRaid)
+.post('/enterRaid', procEnterRaid)
 .get('/nextPhaseDungeon', procNextPhaseDungeon)
 .post('/nextPhaseDungeon', procNextPhaseDungeon)
 .get('/stopDungeon', procStopDungeon)
@@ -78,7 +80,7 @@ const app = express()
 .post('/doRankup', procRankup)
 .post('/getCard', procGetCard)
 .post('/actionAccel', procActionAccel)
-.get('/test', (req, res) => res.render('pages/battle', {result: (new battlemodule.bmodule()).doBattle(JSON.parse(JSON.stringify(monster.d723)), JSON.parse(JSON.stringify(chara.gaius)), 1).result}))
+.get('/test', (req, res) => res.render('pages/battle', {result: (new battlemodule.bmodule()).doBattle(JSON.parse(JSON.stringify(monster.rsDeci)), JSON.parse(JSON.stringify(monster.mMegaTaurus)), 1).result}))
 .get('/test2', (req, res) => res.render('pages/trade', {room : '1', uid : '03'}))
 .get('/test3', (req, res) => res.render('pages/trade', {room : '1', uid : '06'}))
 .get('/test4', (req, res) => res.send(procInit2()))
@@ -365,16 +367,66 @@ async function procInit () {
 
 async function procInit2 () {
     const client = await pool.connect();
+            await client.query('insert into raids(rindex, open, phase, monsters) values (103, \'O\', 1, $1)', 
+        [JSON.stringify({1 : monster.rsInzeal})]);
+            await client.query('insert into raids(rindex, open, phase, monsters) values (104, \'O\', 1, $1)', 
+        [JSON.stringify({1 : monster.rsNagpa})]);
+            await client.query('insert into raids(rindex, open, phase, monsters) values (105, \'O\', 1, $1)', 
+        [JSON.stringify({1 : monster.rsStar1, 2 : monster.rsStar2, 3 : monster.rsStar3, 4 : monster.rsStar4, 5 : monster.rsStar5})]);
+            await client.query('insert into raids(rindex, open, phase, monsters) values (106, \'O\', 1, $1)', 
+        [JSON.stringify({1 : monster.rsStar1, 2 : monster.rsStar2, 3 : monster.rsStar3, 4 : monster.rsStar4, 5 : monster.rsStar5})]);
+            await client.query('insert into raids(rindex, open, phase, monsters) values (107, \'O\', 1, $1)', 
+                [JSON.stringify({1 : monster.rsDeci})]);
   try {
     const result = await client.query('select * from characters');
     for (val of result.rows) {
       var char = JSON.parse(val.char_data);
 
+      char.raidEffort = 0;
       if (val.uid == '02') {
         char.inventory.push(item.list[392]);
+        char.raidSide = 0;
+        char.raidEffort = 1;
+        char.dungeonInfos.runRaid1 = false;
+        char.dungeonInfos.runRaid2 = false;
+        char.dungeonInfos.runRaid3 = false;
+        char.dungeonInfos.runRaid4 = false;
+        char.dungeonInfos.enterRaid1 = 3;
+        char.dungeonInfos.enterRaid2 = 3;
+        char.dungeonInfos.enterRaid3 = 3;
+        char.dungeonInfos.enterRaid4 = 3;
       }
-      
-      _patchItem('trinket', 506);
+      if (val.uid == '06') {
+        char.skill = chara.seriers.skill;
+      }
+      if (val.uid == '07') {
+        char.skill = chara.illun.skill;
+      }
+      if (val.uid == '11') {
+        char.skill = chara.marang.skill;
+      }
+
+      _patchItem('weapon', 445);
+      _patchItem('weapon', 448);
+      _patchItem('weapon', 449);
+      _patchItem('weapon', 450);
+      _patchItem('weapon', 453);
+      _patchItem('armor', 290);
+      _patchItem('armor', 465);
+      _patchItem('subarmor', 309);
+      _patchItem('subarmor', 472);
+      _patchItem('subarmor', 473);
+      _patchItem('subarmor', 475);
+      _patchItem('subarmor', 477);
+      _patchItem('subarmor', 486);
+      _patchItem('trinket', 404);
+      _patchItem('trinket', 496);
+      _patchItem('trinket', 497);
+      _patchItem('trinket', 498);
+      _patchItem('trinket', 499);
+      _patchItem('trinket', 500);
+      _patchItem('trinket', 501);
+      _patchItem('trinket', 505);
       function _patchItem(type, id) {
         if (char.items[type] && char.items[type].id == id) {
           char.items[type].effectDesc = item.list[id].effectDesc;
@@ -1720,28 +1772,28 @@ async function procRaid(req, res) {
       dungeonList.push({name : '메비우스 습격 방어전', code : 1, progress : globals.raid.progress[1], additional : char.dungeonInfos.runRaid1, 
         active : globals.raid.open[1], left : globals.raid.left[1], remain : char.dungeonInfos.enterRaid1,
         tooltip : '파멸자는 자신의 힘으로 과거에 사라진 메비우스 괴물들을 다시 만들어내고 있습니다. 아리스란 대륙, 그의 은신처에서 끝없이 나타나는 메비우스로부터 버텨낸다면, 약 12시간 동안 다른 던전에서 추가적인 능력치를 얻습니다.'});
-      dungeonList.push({name : '파멸의 표식 해체', code : 3, progress : globals.raid.progress[3], additional : char.dungeonInfos.runRaid2, 
+      dungeonList.push({name : '파멸의 표식 해체', code : 3, additional : char.dungeonInfos.runRaid2, 
         active : globals.raid.open[3], left : globals.raid.left[3], remain : char.dungeonInfos.enterRaid2,
         tooltip : '파멸자 데시메이트는 자신의 에너지를 통해 자신의 추종자를 되살려 냈습니다. 파멸의 사도 인-질이 파멸자의 봉인을 일깨우는 마법진을 그려냈다는 정보가 확인되었습니다. 아리스란의 공격대는 그를 처치하고 봉인을 푸는 술식을 부숴야만 합니다. 다행히, 싸움이 길어질수록 남아있는 봉인이 그의 힘을 약화시킬 것입니다. 이 던전은 클리어하면 48시간 동안 비활성화되며, 동시간대 미네르프 공격대가 봉인석 확보전을 완료했다면 최종 보스 던전이 해금됩니다.'});
       dungeonList.push({name : '봉인 활성화 작전(내부)', code : 5, progress : globals.raid.progress[5], additional : char.dungeonInfos.runRaid3, 
         active : globals.raid.open[5], left : globals.raid.left[5], remain : char.dungeonInfos.enterRaid3,
-        tooltip : ''});
+        tooltip : '파멸자 데시메이트의 힘을 약화하기 위해, 아리스란 공격대의 작전지역인 봉인실 내부의 봉인을 활성화해야 합니다. 봉인석을 오망성진에 배치해야 하지만, 파멸에 힘에 의한 피해로 한 번에 마법진을 모두 그리는 것은 불가능에 가깝습니다. 그 동안 다져온 대원들의 체력만이 봉인을 활성화하는 유일한 방법입니다. 내부 봉인을 활성화할 경우, 3시간 동안 아리스란 공격대가 데시메이트를 상대할 때 그의 힘을 약화시킬 수 있습니다.'});
       
     } else {
       dungeonList.push({name : '메비우스 기지 공략전', code : 2, progress : globals.raid.progress[2], additional : !char.dungeonInfos.runRaid1, 
         active : globals.raid.open[2], left : globals.raid.left[2], remain : char.dungeonInfos.enterRaid1,
         tooltip : '파멸자는 자신의 힘으로 과거에 사라진 메비우스 괴물들을 다시 만들어내고 있습니다. 미네르프 대륙의 공격대는 그들의 숨겨진 거점을 찾아 공략하여, 전세를 뒤집어야만 합니다. 이 작전에 성공한다면, 약 12시간 동안 다른 던전에서 추가적인 능력치를 얻습니다.'});
-      dungeonList.push({name : '봉인석 확보전', code : 4, progress : globals.raid.progress[4], additional : char.dungeonInfos.runRaid2, 
+      dungeonList.push({name : '봉인석 확보전', code : 4, additional : char.dungeonInfos.runRaid2, 
         active : globals.raid.open[4], left : globals.raid.left[4], remain : char.dungeonInfos.enterRaid2,
         tooltip : '고대의 봉인에 금이 가고 있어, 대체할 수 있는 새로운 봉인석을 확보해야 합니다. 하지만 쉽지 않습니다. 파멸의 사도 나그파가 세력을 이끌고 봉인석의 재료가 되는 아말레이트 광산을 점거하고 있습니다. 그를 처치하고 봉인석을 확보하십시오. 다행히, 싸움이 길어질수록 파멸의 기운이 약화될 것입니다. 이 던전은 클리어하면 48시간 동안 비활성화되며, 동시간대 아리스란 공격대가 파멸의 표식을 해체했다면 최종 보스 던전이 해금됩니다.'});
       dungeonList.push({name : '봉인 활성화 작전(외부)', code : 6, progress : globals.raid.progress[6], additional : char.dungeonInfos.runRaid3, 
         active : globals.raid.open[6], left : globals.raid.left[6], remain : char.dungeonInfos.enterRaid3,
-        tooltip : ''});
+        tooltip : '파멸자 데시메이트의 힘을 약화하기 위해, 미네르프 공격대의 작전지역인 봉인실 외부의 봉인을 활성화해야 합니다. 봉인석을 오망성진에 배치해야 하지만, 파멸에 힘에 의한 피해로 한 번에 마법진을 모두 그리는 것은 불가능에 가깝습니다. 그 동안 다져온 대원들의 체력만이 봉인을 활성화하는 유일한 방법입니다. 외부 봉인을 활성화할 경우, 3시간 동안 미네르프 공격대가 데시메이트를 상대할 때 그의 힘을 약화시킬 수 있습니다.'});
       
     }
-    dungeonList.push({name : '어나더 게이트 - 재의 묘소 [9급 20레벨 이상]', code : 2, remain : char.dungeonInfos.enterEmberCrypt, active : !char.dungeonInfos.runEmberCrypt && char.dungeonInfos.enterEmberCrypt > 0 && (char.rank <= 8 || char.level >= 20)});
-    if (result && result.rows) {
-    }
+    dungeonList.push({name : '최종 작전 - 데시메이트 봉인', code : 7, additional : char.dungeonInfos.runRaid4, 
+      active : globals.raid.open[7], remain : char.dungeonInfos.enterRaid4,
+      tooltip : '날뛰는 파멸의 기운을 잠재우고, 거대한 에너지체인 데시메이트를 공략할 시간입니다. 모든 준비를 마쳐야만, 데시메이트를 상대할 때 어려움을 덜 수 있을 것입니다. 주의하십시오. 그의 봉인이 조금이라도 깨어난다면, 당신은 순식간에 소멸할 것입니다.'});
     res.render('pages/raids', {dungeonList : dungeonList, nameIn : char.name});
   } catch (err) {
     console.error(err);
@@ -1769,7 +1821,7 @@ async function procEnterRaid(req, res) {
     const rand = Math.random();
     if (body.option == 1 || body.option == 2) {
       if (char.dungeonInfos.enterRaid1 > 0) {
-        enemy = rand < 0.5 ? monster.mCrawler : monster.mHeadHunter;
+        enemy = rand < 0.33 ? monster.mMassCrawler : (rand < 0.67 ? monster.mDestoryer : monster.mMegaTaurus);
         if (char.dungeonInfos.runRaid1) {
           if (charRow.actionPoint <= 0) {
             client.release();
@@ -1778,31 +1830,50 @@ async function procEnterRaid(req, res) {
           }
         }
       }
-    } else if (body.option == 6) {
-      const result = await client.query('select * from raids where rindex = 4');
-      row = result.rows[0];
-      curData = JSON.parse(row.monsters);
-      enemy = curData[row.phase];
-      hpBefore = enemy.curHp ? enemy.curHp : enemy.stat.maxHp;
-      enemy = monster.rTimeStorm;
-      if (char.dungeonInfos.runFieldBoss1) {
-        if (charRow.actionPoint <= 0) {
-          client.release();
-          res.redirect('/');
-          return;
+    } else if (body.option == 3 || body.option == 4) {
+      if (char.dungeonInfos.enterRaid2 > 0) {
+        const result = await client.query('select * from raids where rindex = $1', [100 + Number(body.option)]);
+        row = result.rows[0];
+        curData = JSON.parse(row.monsters);
+        enemy = curData[row.phase];
+        hpBefore = enemy.curHp ? enemy.curHp : enemy.stat.maxHp;
+        if (char.dungeonInfos.runRaid2) {
+          if (charRow.actionPoint <= 0) {
+            client.release();
+            res.redirect('/');
+            return;
+          }
+        }
+      }
+    } else if (body.option == 5 || body.option == 6) {
+      if (char.dungeonInfos.enterRaid3 > 0) {
+        const result = await client.query('select * from raids where rindex = $1', [100 + Number(body.option)]);
+        row = result.rows[0];
+        curData = JSON.parse(row.monsters);
+        enemy = curData[row.phase];
+        hpBefore = enemy.curHp ? enemy.curHp : enemy.stat.maxHp;
+        if (char.dungeonInfos.runRaid3) {
+          if (charRow.actionPoint <= 0) {
+            client.release();
+            res.redirect('/');
+            return;
+          }
         }
       }
     } else if (body.option == 7) {
-      if (!char.dungeonInfos.runBlacklight && char.dungeonInfos.enterBlacklight > 0 && (char.rank <= 6 || (char.rank == 7 && char.level >= 10))) {
-        char.dungeonInfos.runBlacklight = true;
-        char.dungeonInfos.enterBlacklight--;
-        enemy = monster.d7Knight;
-      }
-    } else if (body.option == 8) {
-      if (!char.dungeonInfos.runIndigo && char.dungeonInfos.enterIndigo > 0 && char.rank <= 6) {
-        char.dungeonInfos.runIndigo = true;
-        char.dungeonInfos.enterIndigo--;
-        enemy = monster.d720;
+      if (char.dungeonInfos.enterRaid4 > 0) {
+        const result = await client.query('select * from raids where rindex = $1', [100 + Number(body.option)]);
+        row = result.rows[0];
+        curData = JSON.parse(row.monsters);
+        enemy = curData[row.phase];
+        hpBefore = enemy.curHp ? enemy.curHp : enemy.stat.maxHp;
+        if (char.dungeonInfos.runRaid4) {
+          if (charRow.actionPoint <= 0) {
+            client.release();
+            res.redirect('/');
+            return;
+          }
+        }
       }
     }
     if (enemy) {
@@ -1829,160 +1900,159 @@ async function procEnterRaid(req, res) {
           if (globals.raid.progress[body.option] >= 80) {
             await setGlobals({raid : {type : 'raid', name : 'left', idx : body.option, mode : 'set', value : 72}});
             await setGlobals({raid : {type : 'raid', name : 'open', idx : body.option, mode : 'set', value : false}});
-            await client.query('insert into news(content, date) values ($1, $2)', 
-                [char.raidSide == 0 ? '아리스란이 메비우스 습격 방어전을 공략했습니다!' : '미네르프가 메비우스 기지 공략전을 공략했습니다!', new Date()]);
-            
+            //await client.query('insert into news(content, date) values ($1, $2)', 
+          //      [char.raidSide == 0 ? '아리스란이 메비우스 습격 방어전을 공략했습니다!' : '미네르프가 메비우스 기지 공략전을 공략했습니다!', new Date()]);            
           }
         }
-      } else if (body.option == 3 || body.option == 7) {
-        var roomNum = curRoom++;
-        trades[roomNum] = {};
-        trades[roomNum].leftUid = charRow.uid;
-        trades[roomNum].leftChr = JSON.parse(JSON.stringify(char));
-        trades[roomNum].rightChr = JSON.parse(JSON.stringify(enemy));
-        req.session.dungeonProgress = {code : body.option, phase : 1, resultList : [], roomNum : roomNum, tgtList : list};
-
-        await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
-        res.render('pages/trade', {room: roomNum, uid: charRow.uid});
-        return;
       } else {
-        var re = (new battlemodule.bmodule()).doBattle(JSON.parse(JSON.stringify(enemy)), JSON.parse(JSON.stringify(char)), 1);
+        var charUsed = JSON.parse(JSON.stringify(char));
+        if (!charUsed.startEffects) {
+          charUsed.startEffects = [];
+        }
+        if (!globals.raid.open[charUsed.raidSide + 1]) {
+          charUsed.startEffects.push({code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 90072, buffDur : null});
+        }
+        var enemyUsed = JSON.parse(JSON.stringify(enemy));
+        if (body.option == 7) {
+          if (globals.raid.open[3]) {
+            enemyUsed.startEffects.push({code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 90073, buffDur : null});
+          }
+          if (globals.raid.open[4]) {
+            enemyUsed.startEffects.push({code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 90074, buffDur : null});
+          }
+          if (!globals.raid.open[charUsed.raidSide + 5]) {
+            enemyUsed.startEffects.push({code : cons.EFFECT_TYPE_REMOVE_BUFF, buffTarget : [90069], buffDur : null});
+            enemyUsed.startEffects.push({code : cons.EFFECT_TYPE_SET_ALL_BUFF_DURATION, value : 500, buffCode : 10});
+          }
+          
+        }
+        var re = (new battlemodule.bmodule()).doBattle(enemyUsed, charUsed, 1);
         var resultList = [{phase : 1, monImage : enemy.image, monName : enemy.name, 
           result : re.winnerRight ? '승리' : '패배', hpLeft : re.leftInfo.curHp}];
         const damageDealt = hpBefore - re.leftInfo.curHp;
         re.leftInfo.buffs = [];
         re.leftInfo.items = enemy.items;
         re.leftInfo.skill = enemy.skill;
+        if (body.option == 3 || body.option == 4) {
+          re.leftInfo.turnCount = re.leftInfo.turnCount ? re.leftInfo.turnCount : 0;
+          re.leftInfo.turnCount += re.turnCount;
+        }
         var isFinished = true;
         curData[row.phase] = re.leftInfo;
         curData[row.phase].battleRecord[charRow.uid] = curData[row.phase].battleRecord[charRow.uid] ? curData[row.phase].battleRecord[charRow.uid] + damageDealt : damageDealt;
         curData[row.phase].winRecord[charRow.uid] = curData[row.phase].winRecord[charRow.uid] ? curData[row.phase].winRecord[charRow.uid] + 1 : 1;
         var reward = damageDealt + ' 피해를 입혔습니다! (누적 피해 : ' + curData[row.phase].battleRecord[charRow.uid] + ')<br>';
         
-        if (body.option == 4) {
-          var maxHpTotal = curData[1].stat.maxHp + curData[2].stat.maxHp + curData[3].stat.maxHp;
-          var dust = 10 * Math.floor(damageDealt * 100 / maxHpTotal);
-          if (dust > 0) {
-            char.dust += dust;
-            reward += dust + ' 가루를 획득했습니다.<br>';
+        if (body.option == 3 || body.option == 4) {
+          var maxHpTotal = curData[row.phase].stat.maxHp;
+          var raidEffort = Math.floor(damageDealt * 100 / maxHpTotal);
+          if (raidEffort > 0) {
+            char.raidEffort += raidEffort;
+            reward += raidEffort + ' 공헌도를 획득했습니다.<br>';
           }
-          if (curData[row.phase].battleRecord[charRow.uid] >= maxHpTotal / 10) {
-            if (!char.dungeonInfos['rewardFieldBoss' + row.phase]) {
-              char.dungeonInfos['rewardFieldBoss' + row.phase] = true;
-              char.currencies.warlock++;
-              char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '고대 장비 카드', rank : 8, resultType : 4});
-              reward += '누적 피해량 보상으로 고대 장비 카드 1개, 흑마술의 파편 1개를 획득했습니다.<br>';
-            }  
-          }
-          await client.query('update raids set phase = $1, monsters = $2 where rindex = 3', [row.phase + (re.winnerLeft ? 0 : 1), JSON.stringify(curData)]);
           
-        } else if (body.option == 5) {
-          var maxHpTotal = curData[1].stat.maxHp;
-          var dust = 11 * Math.floor(damageDealt * 100 / maxHpTotal);
-          if (dust > 0) {
-            char.dust += dust;
-            reward += dust + ' 가루를 획득했습니다.<br>';
-          }
-          if (curData[row.phase].battleRecord[charRow.uid] >= maxHpTotal / 10) {
-            var perNum = Math.floor(curData[row.phase].battleRecord[charRow.uid] * 10 / maxHpTotal);
-            if (!char.dungeonInfos['rewardFieldBoss0' + perNum]) {
-              char.dungeonInfos['rewardFieldBoss0' + perNum] = true;
-              char.currencies.aeika++;
-              reward += '누적 피해량 보상으로 움직이는 요새의 파편 1개를 획득했습니다.<br>';
-            }  
-          }
-          if (char.dungeonInfos.runFieldBoss0) {
+          if (char.dungeonInfos.runRaid2) {
+            char.dungeonInfos.enterRaid2--;
             await client.query('update characters set actionPoint = $1 where uid = $2', [charRow.actionPoint - 1, charRow.uid]);
           }
-          await client.query('update raids set phase = $1, monsters = $2 where rindex = 4', [row.phase + (re.winnerLeft ? 0 : 1), JSON.stringify(curData)]);
 
-          char.dungeonInfos.runFieldBoss0 = true;
-        }
-        if (!re.winnerLeft) {
-          if (body.option == 4) {
-            if (row.phase <= 2) {
-              char.currencies.warlock++;
-              char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '고대 장비 카드', rank : 8, resultType : 4});
-              reward += '페이즈 종료 보상으로 고대 장비 카드 1개, 흑마술의 파편 1개를 획득했습니다.<br>';
-            } else {
-              char.currencies.warlock += 3;
-              char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '고대 흑마법사의 선물', rank : 8, resultType : 6});
-              reward += re.leftInfo.name + getUlrul(re.leftInfo.nameType) + ' 처치했습니다!<br>고대 흑마법사의 선물 1개, 흑마술의 파편 3개를 획득했습니다.<br>';
-              if (!char.achievement[28]) {
-                await giveAchievement(charRow.uid, char, 28);
-              }
-              var leaderboard = await createRaidResults(3, 3, char);
-              if (charRow.uid == leaderboard[0].key) {
-                char.currencies.warlock += 3;
-                char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '고대 흑마법사의 선물', rank : 8, resultType : 6});
-                reward += '누적 피해 보상으로 고대 흑마법사의 선물 1개, 흑마술의 파편 3개를 획득했습니다.<br>';
-                if (!char.achievement[35]) {
-                  await giveAchievement(charRow.uid, char, 35);
-                }                
-              } else {
-                const charRow2 = await getCharacterByUid(leaderboard[0].key);
-                const char2 = JSON.parse(charRow2.char_data);
-                char2.currencies.warlock += 3;
-                char2.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '고대 흑마법사의 선물', rank : 8, resultType : 6});
-                if (!char2.achievement[35]) {
-                  await giveAchievement(charRow2.uid, char2, 35);
-                }
-                await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char2), charRow2.uid]);
-              }
+          char.dungeonInfos.runRaid2 = true;
+
+          await client.query('update raids set phase = $1, monsters = $2 where rindex = $3', [row.phase + (re.winnerLeft ? 0 : 1), JSON.stringify(curData), 100 + Number(body.option)]);
+
+          if (!re.winnerLeft) {
+            await setGlobals({raid : {type : 'raid', name : 'left', idx : body.option, mode : 'set', value : 288}});
+            await setGlobals({raid : {type : 'raid', name : 'open', idx : body.option, mode : 'set', value : false}});
+          //  await client.query('insert into news(content, date) values ($1, $2)', 
+          //      [char.raidSide == 0 ? '아리스란이 파멸의 표식 해체를 공략했습니다!' : '미네르프가 봉인석 확보전을 공략했습니다!', new Date()]); 
+            
+            if (!globals.raid.open[2 + Number(body.option)] && globals.raid.left[2 + Number(body.option)] == undefined) {
+              await setGlobals({raid : {type : 'raid', name : 'open', idx : 2 + Number(body.option), mode : 'set', value : true}});
+          //    await client.query('insert into news(content, date) values ($1, $2)', 
+          //        [char.raidSide == 0 ? '아리스란이 내부 봉인 활성화 작전을 시작합니다!' : '미네르프가 외부 봉인 활성화 작전을 시작합니다!', new Date()]);             
             }
-          } else if (body.option == 5) {
-            char.currencies.aeika += 2;
-            char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '에이카의 예비 부품 상자', resultType : 90006, value : 0});
-            reward += re.leftInfo.name + getUlrul(re.leftInfo.nameType) + ' 처치했습니다!<br>에이카의 예비 부품 상자 1개, 움직이는 요새의 파편 2개를 획득했습니다.<br>';
-            if (!char.achievement[34]) {
-              await giveAchievement(charRow.uid, char, 34);
+            
+            var otherOption = body.option == 3 ? 4 : 3;
+            if (!globals.raid.open[otherOption] && !globals.raid.open[7]) {
+              await setGlobals({raid : {type : 'raid', name : 'open', idx : 7, mode : 'set', value : true}});
+          //    await client.query('insert into news(content, date) values ($1, $2)', 
+          //        ['최종 작전 - 데시메이트 봉인이 시작됩니다!', new Date()]);             
             }
-            const globals = await getGlobals();
-            var leaderboard = await createRaidResults(4, 1, char);
-            if (charRow.uid == globals.fieldBossSummon0) {
-              char.currencies.aeika++;
-              char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '에이카의 예비 부품 상자', resultType : 90006, value : 0});
-              reward += '소환 보상으로 에이카의 예비 부품 상자 1개, 움직이는 요새의 파편 1개를 획득했습니다.<br>';
-            } else {
-              const charRow2 = await getCharacterByUid(globals.fieldBossSummon0);
-              const char2 = JSON.parse(charRow2.char_data);
-              char2.currencies.aeika++;
-              char2.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '에이카의 예비 부품 상자', resultType : 90006, value : 0});
-              await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char2), charRow2.uid]);
-            }
-            if (charRow.uid == leaderboard[0].key) {
-              char.currencies.aeika++;
-              char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '에이카의 예비 부품 상자', resultType : 90006, value : 0});
-              reward += '누적 피해 보상으로 에이카의 예비 부품 상자 1개, 움직이는 요새의 파편 1개를 획득했습니다.<br>';
-              if (!char.achievement[36]) {
-                await giveAchievement(charRow.uid, char, 36);
-              }                
-            } else {
-              const charRow2 = await getCharacterByUid(leaderboard[0].key);
-              const char2 = JSON.parse(charRow2.char_data);
-              char2.currencies.aeika++;
-              char2.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '에이카의 예비 부품 상자', resultType : 90006, value : 0});
-              if (!char2.achievement[36]) {
-                await giveAchievement(charRow2.uid, char2, 36);
-              }
-              await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char2), charRow2.uid]);
-            }
+            
+            char.raidEffort += 10;
+            addSpecialResultCard(char, 4, 6);
+            reward += re.leftInfo.name + getUlrul(re.leftInfo.nameType) + ' 처치했습니다!<br>공헌도 10, 6급 장비 리설트 카드 1개를 획득했습니다.<br>';
+            //var leaderboard = await createRaidResults(100 + Number(body.option), 1, char);
+            
             const results = await client.query('select * from characters');
-            const partList = leaderboard.map(x => x.key);
             for (val of results.rows) {
-              if (val.uid == charRow.uid) {
-                continue;
-              } 
-              if (!partList.includes(val.uid)) {
+              const charx = JSON.parse(val.char_data);
+              if (charx.raidSide != char.raidSide) {
                 continue;
               }
-              const charx = JSON.parse(val.char_data);
-              charx.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '에이카의 예비 부품 상자', resultType : 90006, value : 0});
+              charx.raidEffort += 10;
+              addSpecialResultCard(charx, 4, 6);
               
               await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(charx), val.uid]);
             } 
+            
           }
-        } 
+        } else if (body.option == 5 || body.option == 6) {
+          var raidEffort = Math.floor(hpBefore / 20) - Math.floor(re.leftInfo.curHp / 20);
+          if (raidEffort > 0) {
+            char.raidEffort += raidEffort;
+            reward += raidEffort + ' 공헌도를 획득했습니다.<br>';
+            await setGlobals({raid : {type : 'raid', name : 'progress', idx : body.option, mode : 'add', value : raidEffort}});
+          }
+          
+          if (char.dungeonInfos.runRaid3) {
+            char.dungeonInfos.enterRaid3--;
+            await client.query('update characters set actionPoint = $1 where uid = $2', [charRow.actionPoint - 1, charRow.uid]);
+          }
+
+          char.dungeonInfos.runRaid3 = true;
+
+          await client.query('update raids set phase = $1, monsters = $2 where rindex = $3', [row.phase + (re.winnerLeft ? 0 : 1), JSON.stringify(curData), 100 + Number(body.option)]);
+
+          if (!re.winnerLeft) {
+            
+            if (row.phase >= 5) { 
+              await setGlobals({raid : {type : 'raid', name : 'left', idx : body.option, mode : 'set', value : 18}});
+              await setGlobals({raid : {type : 'raid', name : 'open', idx : body.option, mode : 'set', value : false}});
+         //     await client.query('insert into news(content, date) values ($1, $2)', 
+         //         [char.raidSide == 0 ? '아리스란이 내부 봉인 활성화 작전을 완료했습니다!' : '미네르프가 외부 봉인 활성화 작전을 완료했습니다!', new Date()]);
+         //     var leaderboard = await createRaidResults(100 + Number(body.option), 5, char);
+            }
+            
+            char.raidEffort += 10;
+            addSpecialResultCard(char, 4, 6);
+            reward += re.leftInfo.name + getUlrul(re.leftInfo.nameType) + ' 처치했습니다!<br>공헌도 10, 6급 장비 리설트 카드 1개를 획득했습니다.<br>';
+            
+          }
+        } else if (body.option == 7) {
+          addResultGauge(char, 35);
+          reward += '리설트 게이지를 35만큼 획득했습니다.<br>';
+          var raidEffort = Math.floor(hpBefore / 20) - Math.floor(re.leftInfo.curHp / 20);
+          if (curData[row.phase].battleRecord[charRow.uid] >= 10000 && !char.dungeonInfos['rewardRaid' + (curData[row.phase].battleRecord[charRow.uid] / 10000)]) {
+            char.dungeonInfos['rewardRaid' + (curData[row.phase].battleRecord[charRow.uid] / 10000)] = true;
+            char.raidEffort += 10;
+            reward += '10 공헌도를 획득했습니다.<br>';
+          }
+          
+          if (char.dungeonInfos.runRaid4) {
+            char.dungeonInfos.enterRaid4--;
+            await client.query('update characters set actionPoint = $1 where uid = $2', [charRow.actionPoint - 1, charRow.uid]);
+          }
+
+          char.dungeonInfos.runRaid4 = true;
+
+          await client.query('update raids set phase = $1, monsters = $2 where rindex = $3', [row.phase + (re.winnerLeft ? 0 : 1), JSON.stringify(curData), 100 + Number(body.option)]);
+
+          if (!re.winnerLeft) {
+            
+            
+          }
+        }
       }
       await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
       res.render('pages/dungeonResult', {result: re.result, resultList: resultList, isFinished : isFinished, reward : reward, stop : (body.option == 2), addInfo : addInfo});

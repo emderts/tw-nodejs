@@ -332,6 +332,16 @@
           </td>
         </tr>
         <tr>
+          <td class="charViewTitle">소속 공격대</td>
+          <td class="charViewContent"><%= char.raidSide == 0 ? '아리스란' : (char.raidSide == 1 ? '미네르프' : '') %></td>
+          <td class="charViewContent"></td>
+        </tr>
+        <tr>
+          <td class="charViewTitle">공헌도</td>
+          <td class="charViewContent"><%= char.raidEffort %></td>
+          <td class="charViewContent"></td>
+        </tr>
+        <tr>
           <td class="charViewTitle">스탯 포인트</td>
           <td class="charViewContent"><%= char.statPoint %></td>
           <td class="charViewContent"></td>

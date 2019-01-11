@@ -548,7 +548,7 @@ module.exports.getBuffData = function(eff) {
     effectObj.isPercentStat = true;
     effectObj.percentKey = 'magReduce';
     effectObj.value = 200;
-    effectObj.maxApply = 50;
+    effectObj.maxApply = 30;
     retObj.effect.push(effectObj);
     break;
   case 10024 : 
@@ -1747,7 +1747,7 @@ module.exports.getBuffData = function(eff) {
     retObj.name = '매직 스크류!';
     retObj.nameType = cons.NAME_KOR_NO_END_CONS;
     retObj.stackType = 4;
-    retObj.maxStack = 150;
+    retObj.maxStack = 250;
     retObj.durOff = null;
     retObj.isDebuff = false;
     effectObj = {};
@@ -1788,6 +1788,18 @@ module.exports.getBuffData = function(eff) {
     effectObj.set = true;
     effectObj.key = 'effect';
     effectObj.value = [];
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_STAT_ADD;
+    effectObj.key = 'spRegen';
+    effectObj.value = -5;
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_STAT_ADD;
+    effectObj.key = 'spCharge';
+    effectObj.value = -5;
     retObj.effect.push(effectObj);
     break;
   case 10086 : 
@@ -2009,7 +2021,7 @@ module.exports.getBuffData = function(eff) {
     effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
     effectObj.code = cons.EFFECT_TYPE_STAT_ADD;
     effectObj.key = 'evasion';
-    effectObj.value = 0.05;
+    effectObj.value = 0.07;
     retObj.effect.push(effectObj);
     break;
   case 10098 : 
@@ -4546,7 +4558,7 @@ module.exports.getBuffData = function(eff) {
     effectObj.code = cons.EFFECT_TYPE_SET_SKILL;
     effectObj.key = 'special';
     effectObj.target = {code : 201791, name : '도입 - 선셋 라이더', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 35, 
-        effect : [{code : cons.EFFECT_TYPE_SELF_HP, value : 0.2, isPercentHpLost : true},
+        effect : [{code : cons.EFFECT_TYPE_SELF_HP, value : 0.15, isPercentHpLost : true},
                   {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 2017100, buffDur : null}]};
     retObj.effect.push(effectObj);
     effectObj = {};
@@ -4566,7 +4578,7 @@ module.exports.getBuffData = function(eff) {
     effectObj.code = cons.EFFECT_TYPE_SET_SKILL;
     effectObj.key = 'special';
     effectObj.target = {code : 201792, name : '상승 - 로드 오브 레인저', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 50, 
-        effect : [{code : cons.EFFECT_TYPE_SELF_HP, value : 0.25, isPercentHpLost : true},
+        effect : [{code : cons.EFFECT_TYPE_SELF_HP, value : 0.2, isPercentHpLost : true},
                   {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 2017101, buffDur : null}]};
     retObj.effect.push(effectObj);
     effectObj = {};
@@ -4586,7 +4598,7 @@ module.exports.getBuffData = function(eff) {
     effectObj.code = cons.EFFECT_TYPE_SET_SKILL;
     effectObj.key = 'special';
     effectObj.target = {code : 201793, name : '절정 - 블러디 카니발', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 65, 
-        effect : [{code : cons.EFFECT_TYPE_SELF_HP, value : 0.3, isPercentHpLost : true},
+        effect : [{code : cons.EFFECT_TYPE_SELF_HP, value : 0.25, isPercentHpLost : true},
                   {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 2017102, buffDur : null}]};
     retObj.effect.push(effectObj);
     effectObj = {};
@@ -4606,7 +4618,7 @@ module.exports.getBuffData = function(eff) {
     effectObj.code = cons.EFFECT_TYPE_SET_SKILL;
     effectObj.key = 'special';
     effectObj.target = {code : 201794, name : '반전 - 티켓 투 헤븐', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 90, 
-        effect : [{code : cons.EFFECT_TYPE_SELF_HP, value : 0.35, isPercentHpLost : true},
+        effect : [{code : cons.EFFECT_TYPE_SELF_HP, value : 0.3, isPercentHpLost : true},
                   {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 2017103, buffDur : null}]};
     retObj.effect.push(effectObj);
     effectObj = {};
@@ -4626,7 +4638,7 @@ module.exports.getBuffData = function(eff) {
     effectObj.code = cons.EFFECT_TYPE_SET_SKILL;
     effectObj.key = 'special';
     effectObj.target = {code : 201795, name : '파국 - 마지막 호흡', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 105, 
-        effect : [{code : cons.EFFECT_TYPE_SELF_HP, value : 0.4, isPercentHpLost : true},
+        effect : [{code : cons.EFFECT_TYPE_SELF_HP, value : 0.35, isPercentHpLost : true},
                   {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 2017104, buffDur : null},
                   {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201799, buffDur : null}]};
     retObj.effect.push(effectObj);
@@ -6560,6 +6572,167 @@ module.exports.getBuffData = function(eff) {
     effectObj.isPercentHpLost = true;
     effectObj.value = 1;
     effectObj.chkHp = 0.001;
+    retObj.effect.push(effectObj);
+    break;
+  case 90064 : 
+    retObj.name = '물량 돌격';
+    retObj.nameType = cons.NAME_KOR_END_CONS;
+    retObj.stackType = 1;
+    retObj.durOff = null;
+    retObj.isDebuff = false;
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_STAT_PERCENTAGE;
+    effectObj.key = 'phyAtk';
+    effectObj.value = 0.01;
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_STAT_PERCENTAGE;
+    effectObj.key = 'magAtk';
+    effectObj.value = 0.01;
+    retObj.effect.push(effectObj);
+    break;
+  case 90063 : 
+    retObj.name = '전투의 포효';
+    retObj.nameType = cons.NAME_KOR_NO_END_CONS;
+    retObj.stackType = 1;
+    retObj.durOff = cons.DURATION_TYPE_TURN_END;
+    retObj.isDebuff = false;
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_STAT_ADD;
+    effectObj.key = 'hpRegen';
+    effectObj.value = 200;
+    retObj.effect.push(effectObj);
+    break;
+  case 90065 : 
+    retObj.name = '파멸';
+    retObj.nameType = cons.NAME_KOR_END_CONS;
+    retObj.stackType = 1;
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_TURN_END;
+    effectObj.code = cons.EFFECT_TYPE_SELF_HIT;
+    effectObj.type = cons.DAMAGE_TYPE_ABSOLUTE;
+    effectObj.value = 0.01;
+    effectObj.isPercentChar = true;
+    effectObj.percentKey = 'curHp';
+    retObj.effect.push(effectObj);
+    break;
+  case 90066 : 
+    retObj.name = '파멸의 끝';
+    retObj.nameType = cons.NAME_KOR_END_CONS;
+    retObj.stackType = 1;
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_TURN_END;
+    effectObj.code = cons.EFFECT_TYPE_SELF_HIT;
+    effectObj.type = cons.DAMAGE_TYPE_MAGICAL_FIXED;
+    effectObj.value = 100;
+    retObj.effect.push(effectObj);
+    break;
+  case 90067 : 
+    retObj.name = '에너지 손실';
+    retObj.nameType = cons.NAME_KOR_END_CONS;
+    retObj.stackType = 1;
+    retObj.durOff = null;
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_STAT_ADD;
+    effectObj.key = 'phyReduce';
+    effectObj.value = -0.01;
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_STAT_ADD;
+    effectObj.key = 'magReduce';
+    effectObj.value = -0.01;
+    retObj.effect.push(effectObj);
+    break;
+  case 90068 : 
+    retObj.name = '봉인 면역';
+    retObj.nameType = cons.NAME_KOR_END_CONS;
+    retObj.stackType = 1;
+    retObj.durOff = null;
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_RECEIVE_BUFF;
+    effectObj.code = cons.EFFECT_TYPE_REMOVE_BUFF;
+    effectObj.buffTarget = [10];
+    effectObj.chkBuffCode = 10;
+    retObj.effect.push(effectObj);
+    break;
+  case 90069 : 
+    retObj.name = '넘치는 파멸의 에너지';
+    retObj.nameType = cons.NAME_KOR_NO_END_CONS;
+    retObj.stackType = 3;
+    retObj.durOff = null;
+    retObj.isDebuff = false;
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_DEAL_DAMAGE_RECEIVE;
+    effectObj.code = cons.EFFECT_TYPE_SHIELD;
+    effectObj.value = 10000;
+    retObj.effect.push(effectObj);
+    break;
+  case 90072 : 
+    retObj.name = '메비우스 괴멸';
+    retObj.nameType = cons.NAME_KOR_NO_END_CONS;
+    retObj.stackType = 3;
+    retObj.durOff = null;
+    retObj.isDebuff = false;
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_STAT_PERCENTAGE;
+    effectObj.key = 'phyAtk';
+    effectObj.value = 0.2;
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_STAT_PERCENTAGE;
+    effectObj.key = 'magAtk';
+    effectObj.value = 0.2;
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_STAT_ADD;
+    effectObj.key = 'dmgReduce';
+    effectObj.value = 60;
+    retObj.effect.push(effectObj);
+    break;
+  case 90073 : 
+    retObj.name = '파멸의 표식';
+    retObj.nameType = cons.NAME_KOR_NO_END_CONS;
+    retObj.stackType = 3;
+    retObj.durOff = null;
+    retObj.isDebuff = false;
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_STAT_PERCENTAGE;
+    effectObj.key = 'phyAtk';
+    effectObj.value = 0.3;
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_STAT_PERCENTAGE;
+    effectObj.key = 'magAtk';
+    effectObj.value = 0.3;
+    retObj.effect.push(effectObj);
+    break;
+  case 90074 : 
+    retObj.name = '금이 간 봉인';
+    retObj.nameType = cons.NAME_KOR_NO_END_CONS;
+    retObj.stackType = 3;
+    retObj.durOff = null;
+    retObj.isDebuff = false;
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_STAT_PERCENTAGE;
+    effectObj.key = 'phyAtk';
+    effectObj.value = 0.3;
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_STAT_PERCENTAGE;
+    effectObj.key = 'magAtk';
+    effectObj.value = 0.3;
     retObj.effect.push(effectObj);
     break;
   }

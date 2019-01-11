@@ -394,6 +394,9 @@ Battlemodule.prototype._doBattleTurnManual = function(left, right) {
     this.resolveEffects(loser, winner, getBuffEffects(loser, cons.ACTIVE_TYPE_TAKE_HIT), damage, skillUsed);
     this.resolveEffects(loser, winner, getItemEffects(loser, cons.ACTIVE_TYPE_TAKE_HIT), damage, skillUsed);
     this.resolveEffects(winner, loser, skillUsed.effect, damage);
+    if (skillFailed.loseEffect) {
+      this.resolveEffects(loser, winner, skillFailed.loseEffect, damage);
+    }
     this.resolveEffects(winner, loser, getBuffEffects(winner, cons.ACTIVE_TYPE_AFTER_SKILL), damage, skillUsed);
     this.resolveEffects(winner, loser, getItemEffects(winner, cons.ACTIVE_TYPE_AFTER_SKILL), damage, skillUsed);
     if (this.checkDrive(winner, cons.ACTIVE_TYPE_ATTACK)) {
@@ -420,8 +423,8 @@ Battlemodule.prototype._doBattleTurnManual = function(left, right) {
     this.resolveEffects(loser, winner, getItemEffects(loser, cons.ACTIVE_TYPE_BEFORE_OPP_USE_SPECIAL), damage);
     if (winner.skill.special.cost <= winner.curSp && findBuffByCode(winner, 10004).length == 0 && findBuffByCode(winner, 10005).length == 0) {
       this.result += '<div class="specialSkill">[ ' + winner.name + ' ] Special Skill - [ ' + winner.skill.special.name + ' ] 발동!</div>';
-      winner.curSp = 0;
       this.resolveEffects(winner, loser, winner.skill.special.effect);
+      winner.curSp = 0;
       this.resolveEffects(winner, loser, getBuffEffects(winner, cons.ACTIVE_TYPE_USE_SPECIAL), damage);
       this.resolveEffects(winner, loser, getItemEffects(winner, cons.ACTIVE_TYPE_USE_SPECIAL), damage);
       this.resolveEffects(loser, winner, getBuffEffects(loser, cons.ACTIVE_TYPE_OPP_USE_SPECIAL), damage);
@@ -435,8 +438,8 @@ Battlemodule.prototype._doBattleTurnManual = function(left, right) {
     this.resolveEffects(winner, loser, getItemEffects(winner, cons.ACTIVE_TYPE_BEFORE_OPP_USE_SPECIAL), damage);
     if (loser.skill.special.cost <= loser.curSp && findBuffByCode(loser, 10004).length == 0 && findBuffByCode(loser, 10005).length == 0) {
       this.result += '<div class="specialSkill">[ ' + loser.name + ' ] Special Skill - [ ' + loser.skill.special.name + ' ] 발동!</div>';
-      loser.curSp = 0;
       this.resolveEffects(loser, winner, loser.skill.special.effect);
+      loser.curSp = 0;
       this.resolveEffects(loser, winner, getBuffEffects(loser, cons.ACTIVE_TYPE_USE_SPECIAL), damage);
       this.resolveEffects(loser, winner, getItemEffects(loser, cons.ACTIVE_TYPE_USE_SPECIAL), damage);
       this.resolveEffects(winner, loser, getBuffEffects(winner, cons.ACTIVE_TYPE_OPP_USE_SPECIAL), damage);
@@ -601,6 +604,9 @@ Battlemodule.prototype._doBattleTurn = function() {
     this.resolveEffects(loser, winner, getBuffEffects(loser, cons.ACTIVE_TYPE_TAKE_HIT), damage, skillUsed);
     this.resolveEffects(loser, winner, getItemEffects(loser, cons.ACTIVE_TYPE_TAKE_HIT), damage, skillUsed);
     this.resolveEffects(winner, loser, skillUsed.effect, damage);
+    if (skillFailed.loseEffect) {
+      this.resolveEffects(loser, winner, skillFailed.loseEffect, damage);
+    }
     this.resolveEffects(winner, loser, getBuffEffects(winner, cons.ACTIVE_TYPE_AFTER_SKILL), damage, skillUsed);
     this.resolveEffects(winner, loser, getItemEffects(winner, cons.ACTIVE_TYPE_AFTER_SKILL), damage, skillUsed);
     this.resolveEffects(loser, winner, getBuffEffects(loser, cons.ACTIVE_TYPE_AFTER_SKILL_LOSE), damage, skillUsed);
@@ -629,8 +635,8 @@ Battlemodule.prototype._doBattleTurn = function() {
     this.resolveEffects(loser, winner, getItemEffects(loser, cons.ACTIVE_TYPE_BEFORE_OPP_USE_SPECIAL), damage);
     if (winner.skill.special.cost <= winner.curSp && findBuffByCode(winner, 10004).length == 0 && findBuffByCode(winner, 10005).length == 0) {
       this.result += '<div class="specialSkill">[ ' + winner.name + ' ] Special Skill - [ ' + winner.skill.special.name + ' ] 발동!</div>';
-      winner.curSp = 0;
       this.resolveEffects(winner, loser, winner.skill.special.effect);
+      winner.curSp = 0;
       this.resolveEffects(winner, loser, getBuffEffects(winner, cons.ACTIVE_TYPE_USE_SPECIAL), damage);
       this.resolveEffects(winner, loser, getItemEffects(winner, cons.ACTIVE_TYPE_USE_SPECIAL), damage);
       this.resolveEffects(loser, winner, getBuffEffects(loser, cons.ACTIVE_TYPE_OPP_USE_SPECIAL), damage);
@@ -644,8 +650,8 @@ Battlemodule.prototype._doBattleTurn = function() {
     this.resolveEffects(winner, loser, getItemEffects(winner, cons.ACTIVE_TYPE_BEFORE_OPP_USE_SPECIAL), damage);
     if (loser.skill.special.cost <= loser.curSp && findBuffByCode(loser, 10004).length == 0 && findBuffByCode(loser, 10005).length == 0) {
       this.result += '<div class="specialSkill">[ ' + loser.name + ' ] Special Skill - [ ' + loser.skill.special.name + ' ] 발동!</div>';
-      loser.curSp = 0;
       this.resolveEffects(loser, winner, loser.skill.special.effect);
+      loser.curSp = 0;
       this.resolveEffects(loser, winner, getBuffEffects(loser, cons.ACTIVE_TYPE_USE_SPECIAL), damage);
       this.resolveEffects(loser, winner, getItemEffects(loser, cons.ACTIVE_TYPE_USE_SPECIAL), damage);
       this.resolveEffects(winner, loser, getBuffEffects(winner, cons.ACTIVE_TYPE_OPP_USE_SPECIAL), damage);
@@ -703,6 +709,9 @@ Battlemodule.prototype.calcDamage = function(winner, loser, skill) {
   }
   this.resolveEffects(winner, loser, getBuffEffects(winner, cons.ACTIVE_TYPE_CALC_DAMAGE), retObj, skill);
   this.resolveEffects(winner, loser, getItemEffects(winner, cons.ACTIVE_TYPE_CALC_DAMAGE), retObj, skill);
+  if (this.checkDrive(winner, cons.ACTIVE_TYPE_CALC_DAMAGE, loser) && skill.type != cons.DAMAGE_TYPE_ABSOLUTE) {
+    this.resolveDrive(winner, loser, retObj);
+  }
   this.resolveEffects(loser, winner, getBuffEffects(loser, cons.ACTIVE_TYPE_CALC_DAMAGE_RECEIVE), retObj, skill);
   this.resolveEffects(loser, winner, getItemEffects(loser, cons.ACTIVE_TYPE_CALC_DAMAGE_RECEIVE), retObj, skill);
 
@@ -1009,6 +1018,10 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
             var damageAdd = this.calcDamage(winner, loser, tempObj);
             valueUsed += damageAdd.value;
           }
+        } else if (eff.isHpPercentage) {
+          valueUsed *= (winner.curHp / winner.stat.maxHp);
+        } else if (eff.isTurnCount) {
+          valueUsed *= winner.turnCount;
         }
         if (eff.stackBase) {
           valueUsed += eff.stackBase;
@@ -1081,6 +1094,9 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
         winner.curSp += valueUsed;
       } else if (eff.code === cons.EFFECT_TYPE_OPP_SP) {
         loser.curSp += valueUsed;
+        if (loser.curSp < 0) {
+          loser.curSp = 0;
+        }
       } else if (eff.code === cons.EFFECT_TYPE_OPP_HP) {
         var ret = this.doHeal(loser, winner, valueUsed);
         valueUsed = ret.amount;
@@ -1119,6 +1135,10 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
         tempObj.damage = getShieldValue(source) - tempObj.damage * source.curHp;
       } else if (eff.overPercentShield2) {
         tempObj.damage *= (getShieldValue(source) - 0.2 * source.curHp);
+      }
+      
+      if (eff.doRandomize) {
+        tempObj.damage *= eff.doRandomize[0] + (eff.doRandomize[1] - eff.doRandomize[0]) * Math.random();
       }
       
       if ((eff.percentKey == 'maxHp' || eff.percentKey == 'curHp') && target.boss) {
@@ -1320,7 +1340,7 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
       if (eff.anySkill && !skill && !skill.code) {
         continue;
       }
-      this.result += '[ ' + eff.name + ' ] 효과로' + (eff.type === cons.DAMAGE_TYPE_PHYSICAL ? '물리' : '마법') + ' 공격력이 적용됩니다!<br>';
+      this.result += '[ ' + eff.name + ' ] 효과로 ' + (eff.type === cons.DAMAGE_TYPE_PHYSICAL ? '물리' : '마법') + ' 공격력이 적용됩니다!<br>';
       damage.type = eff.type;
       damage.atkRat = eff.type === cons.DAMAGE_TYPE_PHYSICAL ? winner.stat.phyAtk : winner.stat.magAtk;
     } else if (eff.code === cons.EFFECT_TYPE_MULTIPLY_HEAL) {
@@ -1445,15 +1465,19 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
       }
     } else if (eff.code === cons.EFFECT_TYPE_SET_ALL_BUFF_DURATION || eff.code === cons.EFFECT_TYPE_OPP_SET_ALL_BUFF_DURATION) {
       const recv = (eff.code === cons.EFFECT_TYPE_SET_ALL_BUFF_DURATION) ? winner : loser;
-      const eText = eff.value > 0 ? '증가' : '감소';
+      var valueUsed = eff.value;
+      if (eff.isPercentChar) {
+        valueUsed *= winner[eff.percentKey];
+      } 
+      const eText = valueUsed > 0 ? '증가' : '감소';
       for (buf of recv.buffs) {
         if (eff.buffCode && eff.buffCode !== buf.id) {
           continue;
         } else if (eff.anyDebuff && (!buf.isDebuff || !buf.dispellable || !buf.durOff)) {
           continue;
         }
-        this.result += '[ ' + buf.name + ' ] 효과의 지속시간이 ' + (eff.value > 0 ? eff.value : 0-eff.value) + ' ' + eText + '합니다!<br>';
-        buf.dur += eff.value;
+        this.result += '[ ' + buf.name + ' ] 효과의 지속시간이 ' + (valueUsed > 0 ? valueUsed : 0-valueUsed) + ' ' + eText + '합니다!<br>';
+        buf.dur += valueUsed;
       }
     }
     
@@ -1684,6 +1708,9 @@ Battlemodule.prototype.checkDrive = function(chara, active, arg) {
     return false;
   }
   if (chara.skill.drive.chk && findBuffByIds(chara, chara.skill.drive.chk).length == 0) {
+    return false;
+  }
+  if (chara.skill.drive.chkOpp && findBuffByIds(arg, chara.skill.drive.chkOpp).length == 0) {
     return false;
   }
   if (chara.skill.drive.chkNot && findBuffByIds(chara, chara.skill.drive.chkNot).length > 0) {

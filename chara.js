@@ -208,7 +208,7 @@ const item = require('./items');
   skillObj.name = '광차원 스파크스터';
   skillObj.nameType = cons.NAME_KOR_NO_END_CONS;
   skillObj.type = cons.SKILL_TYPE_SPECIAL;
-  skillObj.cost = 170;
+  skillObj.cost = 165;
   skillObj.effect = [];
   effectObj = {};
   effectObj.code = cons.EFFECT_TYPE_SELF_BUFF;
@@ -1248,7 +1248,8 @@ const item = require('./items');
   var skillObj = {code : 201747, name : '설화의 계절', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 0.8, 
       effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201755, buffDur : 4},
                 {code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.15, buffCode : 1, buffDur : 1}],
-      tooltip : '100\% 확률로 자신에게 4턴 간 [설화의 계절] 부여, 15\% 확률로 적에게 1턴 간 [화상] 상태이상 부여<br><br>[설화의 계절] : 명중 +5\%, 물리저항 +15\%',
+      loseEffect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201755, chance : 0.1, buffDur : 4}],
+      tooltip : '100\% 확률로 자신에게 4턴 간 [설화의 계절] 부여, 15\% 확률로 적에게 1턴 간 [화상] 상태이상 부여, 상성 패배 시 10\% 확률로 자신에게 4턴 간 [설화의 계절] 부여<br><br>[설화의 계절] : 명중 +5\%, 물리저항 +15\%',
       flavor : '주변의 기온을 비정상적으로 조작하여 비좁은 공간에 냉기와 열기를 생성한다.'};  
   charMarang.skill.base.push(skillObj);
 
@@ -1263,7 +1264,8 @@ const item = require('./items');
   skillObj = {code : 201748, name : '서리 날개', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 0.8,
       effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201756, buffDur : 4},
                 {code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.15, buffCode : 12, buffDur : 1}],
-      tooltip : '100\% 확률로 자신에게 4턴 간 [서리 날개] 부여, 15\% 확률로 적에게 1턴 간 [빙결] 상태이상 부여<br><br>[서리 날개] : 명중 +5\%, 마법저항 +15\%',
+      loseEffect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201756, chance : 0.1, buffDur : 4}],
+      tooltip : '100\% 확률로 자신에게 4턴 간 [서리 날개] 부여, 15\% 확률로 적에게 1턴 간 [빙결] 상태이상 부여, 상성 패배 시 10\% 확률로 자신에게 4턴 간 [서리 날개] 부여<br><br>[서리 날개] : 명중 +5\%, 마법저항 +15\%',
       flavor : '주변을 급냉각하여 날개 형태의 서리로 형상화한다.'};  
   charMarang.skill.base.push(skillObj);
 
@@ -1456,8 +1458,8 @@ const item = require('./items');
   skillObj = {code : 201774, name : '방전', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_DRIVE, 
       active : cons.ACTIVE_TYPE_TURN_END, cost : 10, chance : 1, checkFunc : 2, setCooldown : 3,
       effect : [{code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_MAGICAL_FIXED, value : 0.2, overPercentShield : true},
-                {code : cons.EFFECT_TYPE_SELF_HIT, type : cons.DAMAGE_TYPE_ABSOLUTE, value : 0.25, overPercentShield2 : true}],
-      tooltip : '보호막 수치가 자신 현재 생명력의 20% 및 최대 생명력의 5%를 초과하였을 때 보호막 초과분만큼 마법 피해를 입히고 보호막 초과분의 25%를 잃음',
+                {code : cons.EFFECT_TYPE_SELF_HIT, type : cons.DAMAGE_TYPE_ABSOLUTE, value : 0.7, overPercentShield2 : true}],
+      tooltip : '보호막 수치가 자신 현재 생명력의 20% 및 최대 생명력의 5%를 초과하였을 때 보호막 초과분만큼 마법 피해를 입히고 보호막 초과분의 70%를 잃음',
       flavor : '보호막을 방전시켜 적에게 피해를 줍니다.'};
   charIllun.skill.drive = skillObj;
 
