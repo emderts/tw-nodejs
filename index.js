@@ -3416,7 +3416,11 @@ async function setGlobals (setObj) {
           if (!newObj[key]) {
             newObj[key] = {};
           }
-          newObj[key][setObj[key].name][setObj[key].idx] = setObj[key].value;
+          if (setObj[key].mode == 'set') {
+            newObj[key][setObj[key].name][setObj[key].idx] = setObj[key].value;
+          } else {
+            newObj[key][setObj[key].name][setObj[key].idx] += setObj[key].value;            
+          }
         }
       }
       await client.query('update global set globals = $1', [JSON.stringify(newObj)]);
