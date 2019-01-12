@@ -947,7 +947,7 @@ const chara = require('./chara');
   charLeft.boss = 0.95;
   charLeft.bossStatus = 0.2;
   
-  charLeft.startEffects = [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 10, buffDur : 1000},
+  charLeft.startEffects = [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 10, buffDur : 500},
                            {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 90069, buffDur : null}];
 
   charLeft.skill = {

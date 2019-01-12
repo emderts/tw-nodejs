@@ -95,12 +95,6 @@ io.use(function(socket, next) {
 app
 
 var ring = [[], []];
-var chats = await getChat();
-for (ctn of chats) {
-  if (ctn.side) {
-    ring[ctn.side].push(ctn);
-  }
-}
 var people = [];
 var trades = {};
 var curRoom = 1;
@@ -3308,7 +3302,7 @@ async function getPersonalNews (uid) {
   }
 }
 
-async function getChat(uid) {
+async function getChat() {
   try {
     var rval = [];
     const client = await pool.connect();
@@ -3799,4 +3793,13 @@ function getUnnun(type) {
   return (type === cons.NAME_KOR_NO_END_CONS) ? '는' : '은';
 }
 
+async function fillChat() {
+  var chats = await getChat();
+  for (ctn of chats) {
+    if (ctn.side) {
+      ring[ctn.side].push(ctn);
+    }
+  }
+}
+fillChat();
 // }
