@@ -46,6 +46,9 @@
     <% if (dun.progress) { %>
       <div class="backLink">
          공략율 <%= dun.progress %>%<br>
+    <% if (dun.left) { %>
+         재생성 <%= dun.left * 10 %>분<br>
+    <% } %>
       </div>
     <% } %>
   </div>
