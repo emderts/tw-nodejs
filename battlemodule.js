@@ -380,10 +380,12 @@ Battlemodule.prototype._doBattleTurnManual = function(left, right) {
     this.result += loser.name + getUlrul(loser.nameType) + ' 공격해 ' + damage.value + '대미지를 입혔습니다!';
     if (damage.crit) {
       this.result += ' (치명타)';
+    }
+    this.result += '</span><br>';
+    if (damage.crit) {
       this.resolveEffects(winner, loser, getBuffEffects(winner, cons.ACTIVE_TYPE_ATTACK_CRIT), damage);
       this.resolveEffects(winner, loser, getItemEffects(winner, cons.ACTIVE_TYPE_ATTACK_CRIT), damage);
     }
-    this.result += '</span><br>';
 
     if (this.checkDrive(loser, cons.ACTIVE_TYPE_TAKE_HIT)) {
       this.resolveDrive(loser, winner, damage);
@@ -590,10 +592,12 @@ Battlemodule.prototype._doBattleTurn = function() {
     this.result += loser.name + getUlrul(loser.nameType) + ' 공격해 ' + damage.value + '대미지를 입혔습니다!';
     if (damage.crit) {
       this.result += ' (치명타)';
+    }
+    this.result += '</span><br>';
+    if (damage.crit) {
       this.resolveEffects(winner, loser, getBuffEffects(winner, cons.ACTIVE_TYPE_ATTACK_CRIT), damage);
       this.resolveEffects(winner, loser, getItemEffects(winner, cons.ACTIVE_TYPE_ATTACK_CRIT), damage);
     }
-    this.result += '</span><br>';
 
     if (this.checkDrive(loser, cons.ACTIVE_TYPE_TAKE_HIT)) {
       this.resolveDrive(loser, winner, damage);
@@ -715,7 +719,7 @@ Battlemodule.prototype.calcDamage = function(winner, loser, skill) {
   this.resolveEffects(loser, winner, getBuffEffects(loser, cons.ACTIVE_TYPE_CALC_DAMAGE_RECEIVE), retObj, skill);
   this.resolveEffects(loser, winner, getItemEffects(loser, cons.ACTIVE_TYPE_CALC_DAMAGE_RECEIVE), retObj, skill);
 
-  if (skill.type !== cons.DAMAGE_TYPE_ABSOLUTE) {
+  if (skill.type !== cons.DAMAGE_TYPE_ABSOLUTE && skill.code) {
     for (val of findBuffByCode(loser, 10005)) {
       this.result += '[ ' + val.buff.name + ' ] 효과로 치명타가 적용됩니다!<br>';
       this.resolveEffects(winner, loser, getBuffEffects(winner, cons.ACTIVE_TYPE_SLEEP), retObj, skill);

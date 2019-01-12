@@ -69,13 +69,17 @@
   
   socket.on('logged in', function(chatRecord, peopleList) {
     for (const val of chatRecord) {
-      addMessage(val.userName, val.message);
+      if (val.side == <%= char.raidSide %>) {
+        addMessage(val.userName, val.message);
+      }
     }
     addPerson(peopleList);
   });
   
-  socket.on('chat message', function(userName, msg) {
-    addMessage(userName, msg);
+  socket.on('chat message', function(userName, msg, side) {
+    if (side == <%= char.raidSide %>) {
+      addMessage(userName, msg);
+    }
   });
   
   socket.on('person left', function(peopleList) {
@@ -624,6 +628,9 @@
     </div>
     
     <div class="menuWrap">
+      <div class="menuItem">
+        <a href="/raid">시즌 레이드</a>
+      </div>
       <div class="menuItem">
         <a href="/doBattle">전투 신청</a>
       </div>

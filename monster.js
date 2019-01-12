@@ -943,7 +943,7 @@ const chara = require('./chara');
   _initChar(charLeft);
   
   charLeft.items = {};
-  charLeft.image = 'https://i.imgur.com/qZHi0h6.png';
+  charLeft.image = 'https://i.imgur.com/GCQZRoj.png';
   charLeft.boss = 0.95;
   charLeft.bossStatus = 0.2;
   

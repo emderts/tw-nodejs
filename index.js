@@ -94,23 +94,30 @@ io.use(function(socket, next) {
 });
 app
 
-var ring = [];
+var ring = [[], []];
+var chats = await getChat();
+for (ctn of chats) {
+  if (ctn.side) {
+    ring[ctn.side].push(ctn);
+  }
+}
 var people = [];
 var trades = {};
 var curRoom = 1;
 io.on('connection', (socket) => {
-  socket.on('login', function(userName, uid) {
+  socket.on('login', function(userName, uid, side) {
     socket.request.session.userName = userName;
     socket.request.session.charData = chara.julius;//await getCharacter(uid);
+    socket.request.session.side = side;
     people.push(userName);
-    socket.emit('logged in', ring, people);
+    socket.emit('logged in', ring[side], people);
   });
   
   socket.on('chat message', async function(msg) {
-    ring.push({userName : socket.request.session.userName, message : msg });
+    ring[socket.request.session.side].push({userName : socket.request.session.userName, message : msg, side : socket.request.session.side });
     try {
       const client = await pool.connect();
-      await client.query('insert into chat(content, date) values ($1, $2)', [{userName : socket.request.session.userName, message : msg }, new Date()]);
+      await client.query('insert into chat(content, date) values ($1, $2)', [{userName : socket.request.session.userName, message : msg, side : socket.request.session.side }, new Date()]);
 
       client.release();
     } catch (err) {
@@ -119,7 +126,7 @@ io.on('connection', (socket) => {
     if (ring.length > 30) {  
       ring.shift();
     }
-    io.emit('chat message', socket.request.session.userName, msg);
+    io.emit('chat message', socket.request.session.userName, msg, socket.request.session.side);
   });
   
   socket.on('manualInit', function(room, uid) {
@@ -366,7 +373,6 @@ async function procInit () {
 }
 
 async function procInit2 () {
-  return;
     const client = await pool.connect();
             await client.query('delete from raids where rindex > 100');
             await client.query('insert into raids(rindex, open, phase, monsters) values (103, \'O\', 1, $1)', 
@@ -387,7 +393,7 @@ async function procInit2 () {
       if (val.uid == '02') {
         continue;
       }
-      sorted.push({damage : char.rank * 100, key : val.uid, name : char.name});
+      sorted.push({damage : (9 - char.rank) * 100 + char.level, key : val.uid, name : char.name});
     } 
     sorted.sort(function(a, b) {
       if (a.damage > b.damage) {
@@ -3290,6 +3296,25 @@ async function getPersonalNews (uid) {
     const result = await client.query('select * from personal where uid = $1 order by date desc fetch first 10 rows only', [uid]);
     for (const val of result.rows) {
       rval.push(val.content);
+    }
+
+    client.release();
+    return rval;
+  } catch (err) {
+    console.error(err);
+    client.release();
+    return [];
+  } finally {
+  }
+}
+
+async function getChat(uid) {
+  try {
+    var rval = [];
+    const client = await pool.connect();
+    const result = await client.query('select * from chat order by date desc fetch first 20 rows only');
+    for (const val of result.rows) {
+      rval.push(JSON.parse(val.content));
     }
 
     client.release();
