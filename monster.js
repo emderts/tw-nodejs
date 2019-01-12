@@ -44,7 +44,7 @@ const chara = require('./chara');
   
   charLeft.items = {weapon : item.list[58]};
   charLeft.image = 'https://i.imgur.com/gVfJIio.png';
-  charLeft.boss = 0.8;
+  charLeft.boss = 0.95;
   charLeft.bossStatus = 0.1;
 
   charLeft.skill = {
@@ -60,7 +60,7 @@ const chara = require('./chara');
   module.exports.mTaurus = charLeft;
   
   var charLeft = {name : '메비우스 매스 크로울러', nameType : cons.NAME_KOR_NO_END_CONS, title : '메비우스', rank : 6, level : 20, 
-      stat : {maxHp : 5344, phyAtk : 72, magAtk : 70, hit : 1.1}};
+      stat : {maxHp : 5944, phyAtk : 100, magAtk : 100, hit : 1.1}};
   _initChar(charLeft);
   
   charLeft.items = {};
@@ -76,13 +76,13 @@ const chara = require('./chara');
              drive : {code : 90018, name : '물량 돌격', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.SKILL_TYPE_DRIVE, active : cons.ACTIVE_TYPE_TURN_START,
                cost : 0, chance : 1, 
                effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 90064, buffDur : null, setStack : 100, isHpPercentage : true}]},
-             special : {code : 90007, name : '증식', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 100, 
+             special : {code : 90007, name : '증식', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 65, 
                effect : [{code : cons.EFFECT_TYPE_SELF_HP, isPercentStat : true, percentKey : 'maxHp', value : 0.2}]}
   };
   module.exports.mMassCrawler = charLeft;
   
   var charLeft = {name : '메비우스 디스토리어', nameType : cons.NAME_KOR_NO_END_CONS, title : '메비우스', rank : 6, level : 20, 
-      stat : {maxHp : 5016, phyAtk : 160, magAtk : 205}};
+      stat : {maxHp : 5216, phyAtk : 200, magAtk : 245}};
   _initChar(charLeft);
   
   charLeft.items = {};
@@ -99,14 +99,14 @@ const chara = require('./chara');
              drive : {code : 90018, name : '디-스토리', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.SKILL_TYPE_DRIVE, active : cons.ACTIVE_TYPE_ATTACK,
                cost : 0, chance : 1, 
                effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 10049, buffDur : 4}]},
-             special : {code : 90007, name : '글레이브 투척', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 100, 
+             special : {code : 90007, name : '글레이브 투척', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 65, 
                effect : [{code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL, value : 1, doRandomize : [0.01, 3]},
                          {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 4, buffDur : 1}]}
   };
   module.exports.mDestoryer = charLeft;
   
   charLeft = {name : '메비우스 메가 타우러스', nameType : cons.NAME_KOR_NO_END_CONS, title : '메비우스', rank : 6, level : 20, 
-      stat : {maxHp : 5016, phyAtk : 205, magAtk : 160}};
+      stat : {maxHp : 5016, phyAtk : 245, magAtk : 200, phyReduce : 0.3, magReduce : 0.3}};
   _initChar(charLeft);
   
   charLeft.items = {};
@@ -721,12 +721,12 @@ const chara = require('./chara');
   module.exports.d725 = charLeft;
   
   charLeft = {name : '파멸의 사도 - 인-질', nameType : cons.NAME_KOR_END_CONS, title : '파멸의 사도', rank : 6, level : 40, 
-      stat : {maxHp : 60000, phyAtk : 250, magAtk : 250, spCharge : 25}};
+      stat : {maxHp : 300000, phyAtk : 350, magAtk : 350, spCharge : 25, phyReduce : 0.15, magReduce : 0.15}};
   _initChar(charLeft);
   
   charLeft.items = {weapon : item.list[446], armor : item.list[466], subarmor : item.list[197]};
   charLeft.image = 'https://i.imgur.com/qZHi0h6.png';
-  charLeft.boss = 0.95;
+  charLeft.boss = 0.98;
   charLeft.bossStatus = 0.2;
   charLeft.turnCount = 0;
   
@@ -750,12 +750,12 @@ const chara = require('./chara');
   module.exports.rsInzeal = charLeft;
   
   charLeft = {name : '파멸의 사도 - 나그파', nameType : cons.NAME_KOR_NO_END_CONS, title : '파멸의 사도', rank : 6, level : 40, 
-      stat : {maxHp : 60000, phyAtk : 250, magAtk : 250, spCharge : 25}};
+      stat : {maxHp : 300000, phyAtk : 350, magAtk : 350, spCharge : 25, phyReduce : 0.15, magReduce : 0.15}};
   _initChar(charLeft);
   
   charLeft.items = {weapon : item.list[446], armor : item.list[466], subarmor : item.list[197]};
   charLeft.image = 'https://i.imgur.com/qZHi0h6.png';
-  charLeft.boss = 0.95;
+  charLeft.boss = 0.98;
   charLeft.bossStatus = 0.2;
   charLeft.turnCount = 0;
   
@@ -784,29 +784,30 @@ const chara = require('./chara');
   
   charLeft.items = {};
   charLeft.image = '';
-  charLeft.boss = 0.8;
+  charLeft.boss = 0.95;
   charLeft.bossStatus = 0.1;
   
   charLeft.startEffects = [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 90068, buffDur : null}];
 
   charLeft.skill = {
       base : [
-              {code : 90015, name : '봉인의 열쇠', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 0.1, effect : []},
-              {code : 90015, name : '봉인의 열쇠', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 0.1, effect : []},
-              {code : 90015, name : '봉인의 열쇠', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 0.1, effect : []}
+              {code : 90015, name : '봉인의 열쇠', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 0.1, 
+                effect : [{code : cons.EFFECT_TYPE_SELF_SP, value : 4}, {code : cons.EFFECT_TYPE_OPP_SP, value : -4}]},
+              {code : 90015, name : '봉인의 열쇠', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 0.1, effect : [{code : cons.EFFECT_TYPE_SELF_SP, value : 4}, {code : cons.EFFECT_TYPE_OPP_SP, value : -4}]},
+              {code : 90015, name : '봉인의 열쇠', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 0.1, effect : [{code : cons.EFFECT_TYPE_SELF_SP, value : 4}, {code : cons.EFFECT_TYPE_OPP_SP, value : -4}]}
              ],
       drive : {code : 90034, name : '압력', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_DRIVE, active : cons.ACTIVE_TYPE_TURN_START,
                cost : 0, chance : 1, 
-               effect : [{code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL_FIXED, value : 110},
-                         {code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL_FIXED, value : 110},
-                         {code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL_FIXED, value : 110},
-                         {code : cons.EFFECT_TYPE_SELF_HIT, type : cons.DAMAGE_TYPE_PHYSICAL_FIXED, value : 110},
-                         {code : cons.EFFECT_TYPE_SELF_HIT, type : cons.DAMAGE_TYPE_PHYSICAL_FIXED, value : 110},
-                         {code : cons.EFFECT_TYPE_SELF_HIT, type : cons.DAMAGE_TYPE_PHYSICAL_FIXED, value : 110}]},
+               effect : [{code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL_FIXED, value : 200},
+                         {code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL_FIXED, value : 200},
+                         {code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL_FIXED, value : 200},
+                         {code : cons.EFFECT_TYPE_SELF_HIT, type : cons.DAMAGE_TYPE_PHYSICAL_FIXED, value : 200},
+                         {code : cons.EFFECT_TYPE_SELF_HIT, type : cons.DAMAGE_TYPE_PHYSICAL_FIXED, value : 200},
+                         {code : cons.EFFECT_TYPE_SELF_HIT, type : cons.DAMAGE_TYPE_PHYSICAL_FIXED, value : 200}]},
       special : {code : 90040, name : '봉인 활성화', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 100, 
                effect : [{code : cons.EFFECT_TYPE_SELECTION, active : cons.ACTIVE_TYPE_ATTACK, selectChances : [0.5, 1],
                  options : [{code : cons.EFFECT_TYPE_OPP_HP, value : 0.2, isPercentHpLost : true},
-                            {code : cons.EFFECT_TYPE_SELF_HP, value : 10000}]}]}
+                            {code : cons.EFFECT_TYPE_SELF_HP, value : 20000}]}]}
   };
   module.exports.rsStar1 = charLeft;
   
@@ -816,29 +817,29 @@ const chara = require('./chara');
   
   charLeft.items = {};
   charLeft.image = '';
-  charLeft.boss = 0.8;
+  charLeft.boss = 0.95;
   charLeft.bossStatus = 0.1;
   
   charLeft.startEffects = [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 90068, buffDur : null}];
 
   charLeft.skill = {
       base : [
-              {code : 90015, name : '봉인의 열쇠', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 0.1, effect : []},
-              {code : 90015, name : '봉인의 열쇠', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 0.1, effect : []},
-              {code : 90015, name : '봉인의 열쇠', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 0.1, effect : []}
+              {code : 90015, name : '봉인의 열쇠', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 0.1, effect : [{code : cons.EFFECT_TYPE_SELF_SP, value : 4}, {code : cons.EFFECT_TYPE_OPP_SP, value : -4}]},
+              {code : 90015, name : '봉인의 열쇠', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 0.1, effect : [{code : cons.EFFECT_TYPE_SELF_SP, value : 4}, {code : cons.EFFECT_TYPE_OPP_SP, value : -4}]},
+              {code : 90015, name : '봉인의 열쇠', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 0.1, effect : [{code : cons.EFFECT_TYPE_SELF_SP, value : 4}, {code : cons.EFFECT_TYPE_OPP_SP, value : -4}]}
              ],
       drive : {code : 90034, name : '압력', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_DRIVE, active : cons.ACTIVE_TYPE_TURN_START,
                cost : 0, chance : 1, 
-               effect : [{code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_MAGICAL_FIXED, value : 110},
-                         {code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_MAGICAL_FIXED, value : 110},
-                         {code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_MAGICAL_FIXED, value : 110},
-                         {code : cons.EFFECT_TYPE_SELF_HIT, type : cons.DAMAGE_TYPE_MAGICAL_FIXED, value : 110},
-                         {code : cons.EFFECT_TYPE_SELF_HIT, type : cons.DAMAGE_TYPE_MAGICAL_FIXED, value : 110},
-                         {code : cons.EFFECT_TYPE_SELF_HIT, type : cons.DAMAGE_TYPE_MAGICAL_FIXED, value : 110}]},
+               effect : [{code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_MAGICAL_FIXED, value : 200},
+                         {code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_MAGICAL_FIXED, value : 200},
+                         {code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_MAGICAL_FIXED, value : 200},
+                         {code : cons.EFFECT_TYPE_SELF_HIT, type : cons.DAMAGE_TYPE_MAGICAL_FIXED, value : 200},
+                         {code : cons.EFFECT_TYPE_SELF_HIT, type : cons.DAMAGE_TYPE_MAGICAL_FIXED, value : 200},
+                         {code : cons.EFFECT_TYPE_SELF_HIT, type : cons.DAMAGE_TYPE_MAGICAL_FIXED, value : 200}]},
       special : {code : 90040, name : '봉인 활성화', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 100, 
                effect : [{code : cons.EFFECT_TYPE_SELECTION, active : cons.ACTIVE_TYPE_ATTACK, selectChances : [0.5, 1],
                  options : [{code : cons.EFFECT_TYPE_OPP_HP, value : 0.2, isPercentHpLost : true},
-                            {code : cons.EFFECT_TYPE_SELF_HP, value : 10000}]}]}
+                            {code : cons.EFFECT_TYPE_SELF_HP, value : 20000}]}]}
   };
   module.exports.rsStar2 = charLeft;
   
@@ -848,29 +849,29 @@ const chara = require('./chara');
   
   charLeft.items = {};
   charLeft.image = '';
-  charLeft.boss = 0.8;
+  charLeft.boss = 0.95;
   charLeft.bossStatus = 0.1;
   
   charLeft.startEffects = [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 90068, buffDur : null}];
 
   charLeft.skill = {
       base : [
-              {code : 90015, name : '봉인의 열쇠', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 0.1, effect : []},
-              {code : 90015, name : '봉인의 열쇠', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 0.1, effect : []},
-              {code : 90015, name : '봉인의 열쇠', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 0.1, effect : []}
+              {code : 90015, name : '봉인의 열쇠', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 0.1, effect : [{code : cons.EFFECT_TYPE_SELF_SP, value : 4}, {code : cons.EFFECT_TYPE_OPP_SP, value : -4}]},
+              {code : 90015, name : '봉인의 열쇠', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 0.1, effect : [{code : cons.EFFECT_TYPE_SELF_SP, value : 4}, {code : cons.EFFECT_TYPE_OPP_SP, value : -4}]},
+              {code : 90015, name : '봉인의 열쇠', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 0.1, effect : [{code : cons.EFFECT_TYPE_SELF_SP, value : 4}, {code : cons.EFFECT_TYPE_OPP_SP, value : -4}]}
              ],
       drive : {code : 90034, name : '압력', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_DRIVE, active : cons.ACTIVE_TYPE_TURN_START,
                cost : 0, chance : 1, 
-               effect : [{code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL_FIXED, value : 110},
-                         {code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL_FIXED, value : 110},
-                         {code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL_FIXED, value : 110},
-                         {code : cons.EFFECT_TYPE_SELF_HIT, type : cons.DAMAGE_TYPE_PHYSICAL_FIXED, value : 110},
-                         {code : cons.EFFECT_TYPE_SELF_HIT, type : cons.DAMAGE_TYPE_PHYSICAL_FIXED, value : 110},
-                         {code : cons.EFFECT_TYPE_SELF_HIT, type : cons.DAMAGE_TYPE_PHYSICAL_FIXED, value : 110}]},
+               effect : [{code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL_FIXED, value : 200},
+                         {code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL_FIXED, value : 200},
+                         {code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL_FIXED, value : 200},
+                         {code : cons.EFFECT_TYPE_SELF_HIT, type : cons.DAMAGE_TYPE_PHYSICAL_FIXED, value : 200},
+                         {code : cons.EFFECT_TYPE_SELF_HIT, type : cons.DAMAGE_TYPE_PHYSICAL_FIXED, value : 200},
+                         {code : cons.EFFECT_TYPE_SELF_HIT, type : cons.DAMAGE_TYPE_PHYSICAL_FIXED, value : 200}]},
       special : {code : 90040, name : '봉인 활성화', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 100, 
                effect : [{code : cons.EFFECT_TYPE_SELECTION, active : cons.ACTIVE_TYPE_ATTACK, selectChances : [0.5, 1],
                  options : [{code : cons.EFFECT_TYPE_OPP_HP, value : 0.2, isPercentHpLost : true},
-                            {code : cons.EFFECT_TYPE_SELF_HP, value : 10000}]}]}
+                            {code : cons.EFFECT_TYPE_SELF_HP, value : 20000}]}]}
   };
   module.exports.rsStar3 = charLeft;
   
@@ -880,29 +881,29 @@ const chara = require('./chara');
   
   charLeft.items = {};
   charLeft.image = '';
-  charLeft.boss = 0.8;
+  charLeft.boss = 0.95;
   charLeft.bossStatus = 0.1;
   
   charLeft.startEffects = [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 90068, buffDur : null}];
 
   charLeft.skill = {
       base : [
-              {code : 90015, name : '봉인의 열쇠', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 0.1, effect : []},
-              {code : 90015, name : '봉인의 열쇠', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 0.1, effect : []},
-              {code : 90015, name : '봉인의 열쇠', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 0.1, effect : []}
+              {code : 90015, name : '봉인의 열쇠', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 0.1, effect : [{code : cons.EFFECT_TYPE_SELF_SP, value : 4}, {code : cons.EFFECT_TYPE_OPP_SP, value : -4}]},
+              {code : 90015, name : '봉인의 열쇠', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 0.1, effect : [{code : cons.EFFECT_TYPE_SELF_SP, value : 4}, {code : cons.EFFECT_TYPE_OPP_SP, value : -4}]},
+              {code : 90015, name : '봉인의 열쇠', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 0.1, effect : [{code : cons.EFFECT_TYPE_SELF_SP, value : 4}, {code : cons.EFFECT_TYPE_OPP_SP, value : -4}]}
              ],
       drive : {code : 90034, name : '압력', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_DRIVE, active : cons.ACTIVE_TYPE_TURN_START,
                cost : 0, chance : 1, 
-               effect : [{code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_MAGICAL_FIXED, value : 110},
-                         {code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_MAGICAL_FIXED, value : 110},
-                         {code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_MAGICAL_FIXED, value : 110},
-                         {code : cons.EFFECT_TYPE_SELF_HIT, type : cons.DAMAGE_TYPE_MAGICAL_FIXED, value : 110},
-                         {code : cons.EFFECT_TYPE_SELF_HIT, type : cons.DAMAGE_TYPE_MAGICAL_FIXED, value : 110},
-                         {code : cons.EFFECT_TYPE_SELF_HIT, type : cons.DAMAGE_TYPE_MAGICAL_FIXED, value : 110}]},
+               effect : [{code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_MAGICAL_FIXED, value : 200},
+                         {code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_MAGICAL_FIXED, value : 200},
+                         {code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_MAGICAL_FIXED, value : 200},
+                         {code : cons.EFFECT_TYPE_SELF_HIT, type : cons.DAMAGE_TYPE_MAGICAL_FIXED, value : 200},
+                         {code : cons.EFFECT_TYPE_SELF_HIT, type : cons.DAMAGE_TYPE_MAGICAL_FIXED, value : 200},
+                         {code : cons.EFFECT_TYPE_SELF_HIT, type : cons.DAMAGE_TYPE_MAGICAL_FIXED, value : 200}]},
       special : {code : 90040, name : '봉인 활성화', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 100, 
                effect : [{code : cons.EFFECT_TYPE_SELECTION, active : cons.ACTIVE_TYPE_ATTACK, selectChances : [0.5, 1],
                  options : [{code : cons.EFFECT_TYPE_OPP_HP, value : 0.2, isPercentHpLost : true},
-                            {code : cons.EFFECT_TYPE_SELF_HP, value : 10000}]}]}
+                            {code : cons.EFFECT_TYPE_SELF_HP, value : 20000}]}]}
   };
   module.exports.rsStar4 = charLeft;
   
@@ -912,39 +913,39 @@ const chara = require('./chara');
   
   charLeft.items = {};
   charLeft.image = '';
-  charLeft.boss = 0.8;
+  charLeft.boss = 0.95;
   charLeft.bossStatus = 0.1;
   
   charLeft.startEffects = [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 90068, buffDur : null}];
 
   charLeft.skill = {
       base : [
-              {code : 90015, name : '봉인의 열쇠', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 0.1, effect : []},
-              {code : 90015, name : '봉인의 열쇠', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 0.1, effect : []},
-              {code : 90015, name : '봉인의 열쇠', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 0.1, effect : []}
+              {code : 90015, name : '봉인의 열쇠', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 0.1, effect : [{code : cons.EFFECT_TYPE_SELF_SP, value : 4}, {code : cons.EFFECT_TYPE_OPP_SP, value : -4}]},
+              {code : 90015, name : '봉인의 열쇠', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 0.1, effect : [{code : cons.EFFECT_TYPE_SELF_SP, value : 4}, {code : cons.EFFECT_TYPE_OPP_SP, value : -4}]},
+              {code : 90015, name : '봉인의 열쇠', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 0.1, effect : [{code : cons.EFFECT_TYPE_SELF_SP, value : 4}, {code : cons.EFFECT_TYPE_OPP_SP, value : -4}]}
              ],
       drive : {code : 90034, name : '압력', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_DRIVE, active : cons.ACTIVE_TYPE_TURN_START,
                cost : 0, chance : 1, 
-               effect : [{code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL_FIXED, value : 110},
-                         {code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL_FIXED, value : 110},
-                         {code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL_FIXED, value : 110},
-                         {code : cons.EFFECT_TYPE_SELF_HIT, type : cons.DAMAGE_TYPE_PHYSICAL_FIXED, value : 110},
-                         {code : cons.EFFECT_TYPE_SELF_HIT, type : cons.DAMAGE_TYPE_PHYSICAL_FIXED, value : 110},
-                         {code : cons.EFFECT_TYPE_SELF_HIT, type : cons.DAMAGE_TYPE_PHYSICAL_FIXED, value : 110}]},
+               effect : [{code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL_FIXED, value : 200},
+                         {code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL_FIXED, value : 200},
+                         {code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL_FIXED, value : 200},
+                         {code : cons.EFFECT_TYPE_SELF_HIT, type : cons.DAMAGE_TYPE_PHYSICAL_FIXED, value : 200},
+                         {code : cons.EFFECT_TYPE_SELF_HIT, type : cons.DAMAGE_TYPE_PHYSICAL_FIXED, value : 200},
+                         {code : cons.EFFECT_TYPE_SELF_HIT, type : cons.DAMAGE_TYPE_PHYSICAL_FIXED, value : 200}]},
       special : {code : 90040, name : '봉인 활성화', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 100, 
                effect : [{code : cons.EFFECT_TYPE_SELECTION, active : cons.ACTIVE_TYPE_ATTACK, selectChances : [0.5, 1],
                  options : [{code : cons.EFFECT_TYPE_OPP_HP, value : 0.2, isPercentHpLost : true},
-                            {code : cons.EFFECT_TYPE_SELF_HP, value : 10000}]}]}
+                            {code : cons.EFFECT_TYPE_SELF_HP, value : 20000}]}]}
   };
   module.exports.rsStar5 = charLeft;
   
   charLeft = {name : '파멸자 데시메이트', nameType : cons.NAME_KOR_NO_END_CONS, title : '파멸자', rank : 6, level : 40, 
-      stat : {maxHp : 300000, phyAtk : 300, magAtk : 300, spCharge : 25}};
+      stat : {maxHp : 990000, phyAtk : 450, magAtk : 450, spCharge : 25}};
   _initChar(charLeft);
   
   charLeft.items = {};
   charLeft.image = 'https://i.imgur.com/GCQZRoj.png';
-  charLeft.boss = 0.95;
+  charLeft.boss = 0.995;
   charLeft.bossStatus = 0.2;
   
   charLeft.startEffects = [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 10, buffDur : 500},
@@ -965,7 +966,7 @@ const chara = require('./chara');
              ],
       drive : {code : 90034, name : '모든 것의 파멸', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_DRIVE, active : cons.ACTIVE_TYPE_TURN_END, chkNot : [4],
                cost : 0, chance : 1, 
-               effect : [{code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_ABSOLUTE, value : 500}]},
+               effect : [{code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_ABSOLUTE, value : 1000}]},
       special : {code : 90040, name : '풀려나는 봉인', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 1, 
                effect : [{code : cons.EFFECT_TYPE_SET_ALL_BUFF_DURATION, value : -1, buffCode : 10, isPercentChar : true, percentKey : 'curSp'}]}
   };

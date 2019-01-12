@@ -381,45 +381,24 @@ async function procInit2 () {
                 [JSON.stringify({1 : monster.rsDeci})]);
   try {
     const result = await client.query('select * from characters');
-    var sorted = [];
-    for (val of result.rows) {
-      var char = JSON.parse(val.char_data);
-      if (val.uid == '02') {
-        continue;
-      }
-      sorted.push({damage : (9 - char.rank) * 100 + char.level, key : val.uid, name : char.name});
-    } 
-    sorted.sort(function(a, b) {
-      if (a.damage > b.damage) {
-        return -1;
-      } else if (a.damage == b.damage) {
-        return 0;
-      } else {
-        return 1;
-      }
-    }); 
-    var reward = '<table>';
-    var aris = [sorted[0].name, sorted[3].name, sorted[4].name, sorted[7].name, sorted[8].name];
-    var mine = [sorted[1].name, sorted[2].name, sorted[5].name, sorted[6].name, sorted[9].name, sorted[10].name];
-    reward += '<tr><td>아리스란</td><td>미네르프</td></tr>';
-    reward += '<tr><td>' + aris.join(', ') + '</td>';
-    reward += '<td>' + mine.join(', ') + '</td></tr>';
-    reward += '</table>';
-    await client.query('insert into news(content, date) values ($1, $2)', 
-        ['공격대가 구성되었습니다!<div class="itemTooltip longWidth">' + reward + '</div>', new Date()]);
     
     for (val of result.rows) {
       var char = JSON.parse(val.char_data);
 
       char.raidEffort = 0;
+      char.dungeonInfos.runRaid1 = false;
+      char.dungeonInfos.runRaid2 = false;
+      char.dungeonInfos.runRaid3 = false;
+      char.dungeonInfos.runRaid4 = false;
+      char.dungeonInfos.enterRaid1 = 1;
+      char.dungeonInfos.enterRaid2 = 1;
+      char.dungeonInfos.enterRaid3 = 1;
+      char.dungeonInfos.enterRaid4 = 1;
       if (val.uid == '02') {
         char.inventory.push(item.list[392]);
         char.raidSide = null;
-      } else if (aris.includes(char.name)) {
-        char.raidSide = 0;
-      } else {
-        char.raidSide = 1;
       }
+
       //_patchItem('trinket', 505);
       function _patchItem(type, id) {
         if (char.items[type] && char.items[type].id == id) {
@@ -1873,7 +1852,12 @@ async function procEnterRaid(req, res) {
     if (enemy) {
       var addInfo = {};
       if (body.option == 1 || body.option == 2) {
-        var re = (new battlemodule.bmodule()).doBattle(JSON.parse(JSON.stringify(char)), JSON.parse(JSON.stringify(enemy)), 1);
+        var enemyUsed = JSON.parse(JSON.stringify(enemy));
+        if (!enemyUsed.startEffects) {
+          enemyUsed.startEffects = [];
+        }
+        enemyUsed.startEffects.push({code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 90075, buffDur : null});
+        var re = (new battlemodule.bmodule()).doBattle(JSON.parse(JSON.stringify(char)), enemyUsed, 1);
         var resultList = [{phase : 1, monImage : enemy.image, monName : enemy.name, 
           result : re.winnerLeft ? '승리' : '패배', hpLeft : re.winnerLeft ? re.leftInfo.curHp : re.rightInfo.curHp}];
         var isFinished = true;
@@ -1907,6 +1891,10 @@ async function procEnterRaid(req, res) {
           charUsed.startEffects.push({code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 90072, buffDur : null});
         }
         var enemyUsed = JSON.parse(JSON.stringify(enemy));
+        if (!enemyUsed.startEffects) {
+          enemyUsed.startEffects = [];
+        }
+        enemyUsed.startEffects.push({code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 90075, buffDur : null});
         if (body.option == 7) {
           if (globals.raid.open[3]) {
             enemyUsed.startEffects.push({code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 90073, buffDur : null});
@@ -2030,8 +2018,8 @@ async function procEnterRaid(req, res) {
           var raidEffort = Math.floor(hpBefore / 20) - Math.floor(re.leftInfo.curHp / 20);
           if (curData[row.phase].battleRecord[charRow.uid] >= 10000 && !char.dungeonInfos['rewardRaid' + (curData[row.phase].battleRecord[charRow.uid] / 10000)]) {
             char.dungeonInfos['rewardRaid' + (curData[row.phase].battleRecord[charRow.uid] / 10000)] = true;
-            char.raidEffort += 10;
-            reward += '10 공헌도를 획득했습니다.<br>';
+            char.raidEffort += 5;
+            reward += '5 공헌도를 획득했습니다.<br>';
           }
           
           if (char.dungeonInfos.runRaid4) {

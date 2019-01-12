@@ -6627,7 +6627,7 @@ module.exports.getBuffData = function(eff) {
     effectObj.active = cons.ACTIVE_TYPE_TURN_END;
     effectObj.code = cons.EFFECT_TYPE_SELF_HIT;
     effectObj.type = cons.DAMAGE_TYPE_MAGICAL_FIXED;
-    effectObj.value = 100;
+    effectObj.value = 150;
     retObj.effect.push(effectObj);
     break;
   case 90067 : 
@@ -6674,7 +6674,7 @@ module.exports.getBuffData = function(eff) {
     break;
   case 90072 : 
     retObj.name = '메비우스 괴멸';
-    retObj.nameType = cons.NAME_KOR_NO_END_CONS;
+    retObj.nameType = cons.NAME_KOR_END_CONS;
     retObj.stackType = 3;
     retObj.durOff = null;
     retObj.isDebuff = false;
@@ -6699,7 +6699,7 @@ module.exports.getBuffData = function(eff) {
     break;
   case 90073 : 
     retObj.name = '파멸의 표식';
-    retObj.nameType = cons.NAME_KOR_NO_END_CONS;
+    retObj.nameType = cons.NAME_KOR_END_CONS;
     retObj.stackType = 3;
     retObj.durOff = null;
     retObj.isDebuff = false;
@@ -6718,7 +6718,7 @@ module.exports.getBuffData = function(eff) {
     break;
   case 90074 : 
     retObj.name = '금이 간 봉인';
-    retObj.nameType = cons.NAME_KOR_NO_END_CONS;
+    retObj.nameType = cons.NAME_KOR_END_CONS;
     retObj.stackType = 3;
     retObj.durOff = null;
     retObj.isDebuff = false;
@@ -6733,6 +6733,32 @@ module.exports.getBuffData = function(eff) {
     effectObj.code = cons.EFFECT_TYPE_STAT_PERCENTAGE;
     effectObj.key = 'magAtk';
     effectObj.value = 0.3;
+    retObj.effect.push(effectObj);
+    break;
+  case 90075 : 
+    retObj.name = '광폭화';
+    retObj.nameType = cons.NAME_KOR_NO_END_CONS;
+    retObj.stackType = 2;
+    retObj.stack = 1;
+    retObj.durOff = null;
+    retObj.isDebuff = false;
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_STAT_PERCENTAGE;
+    effectObj.key = 'phyAtk';
+    effectObj.value = 0.05;
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_STAT_PERCENTAGE;
+    effectObj.key = 'magAtk';
+    effectObj.value = 0.05;
+    retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_TURN_END;
+    effectObj.chkTurn = 5;
+    effectObj.setCooldown = 4;
+    effectObj.stackReduce = -1;
     retObj.effect.push(effectObj);
     break;
   }
