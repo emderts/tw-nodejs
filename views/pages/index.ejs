@@ -59,7 +59,7 @@
   }
   
   var socket = io();
-  socket.emit('login', '<%= user.name %>', '<%= user.uid %>');
+  socket.emit('login', '<%= user.name %>', '<%= user.uid %>', '<%= char.raidSide %>');
   
   function sendMessage() {
     socket.emit('chat message', document.getElementById('msg').value);
