@@ -1745,7 +1745,7 @@ async function procRaid(req, res) {
       dungeonList.push({name : '메비우스 습격 방어전', code : 1, progress : globals.raid.progress[1], additional : char.dungeonInfos.runRaid1, 
         active : globals.raid.open[1], left : globals.raid.left[1], remain : char.dungeonInfos.enterRaid1,
         tooltip : '파멸자는 자신의 힘으로 과거에 사라진 메비우스 괴물들을 다시 만들어내고 있습니다. 아리스란 대륙, 그의 은신처에서 끝없이 나타나는 메비우스로부터 버텨낸다면, 약 12시간 동안 다른 던전에서 추가적인 능력치를 얻습니다.'});
-      dungeonList.push({name : '파멸의 표식 해체', code : 3, additional : char.dungeonInfos.runRaid2, 
+      dungeonList.push({name : '파멸의 표식 해체', code : 3, progress : globals.raid.progress[3], additional : char.dungeonInfos.runRaid2, 
         active : globals.raid.open[3], left : globals.raid.left[3], remain : char.dungeonInfos.enterRaid2,
         tooltip : '파멸자 데시메이트는 자신의 에너지를 통해 자신의 추종자를 되살려 냈습니다. 파멸의 사도 인-질이 파멸자의 봉인을 일깨우는 마법진을 그려냈다는 정보가 확인되었습니다. 아리스란의 공격대는 그를 처치하고 봉인을 푸는 술식을 부숴야만 합니다. 다행히, 싸움이 길어질수록 남아있는 봉인이 그의 힘을 약화시킬 것입니다. 이 던전은 클리어하면 48시간 동안 비활성화되며, 동시간대 미네르프 공격대가 봉인석 확보전을 완료했다면 최종 보스 던전이 해금됩니다.'});
       dungeonList.push({name : '봉인 활성화 작전(내부)', code : 5, progress : globals.raid.progress[5], additional : char.dungeonInfos.runRaid3, 
@@ -1756,7 +1756,7 @@ async function procRaid(req, res) {
       dungeonList.push({name : '메비우스 기지 공략전', code : 2, progress : globals.raid.progress[2], additional : !char.dungeonInfos.runRaid1, 
         active : globals.raid.open[2], left : globals.raid.left[2], remain : char.dungeonInfos.enterRaid1,
         tooltip : '파멸자는 자신의 힘으로 과거에 사라진 메비우스 괴물들을 다시 만들어내고 있습니다. 미네르프 대륙의 공격대는 그들의 숨겨진 거점을 찾아 공략하여, 전세를 뒤집어야만 합니다. 이 작전에 성공한다면, 약 12시간 동안 다른 던전에서 추가적인 능력치를 얻습니다.'});
-      dungeonList.push({name : '봉인석 확보전', code : 4, additional : char.dungeonInfos.runRaid2, 
+      dungeonList.push({name : '봉인석 확보전', code : 4, progress : globals.raid.progress[4], additional : char.dungeonInfos.runRaid2, 
         active : globals.raid.open[4], left : globals.raid.left[4], remain : char.dungeonInfos.enterRaid2,
         tooltip : '고대의 봉인에 금이 가고 있어, 대체할 수 있는 새로운 봉인석을 확보해야 합니다. 하지만 쉽지 않습니다. 파멸의 사도 나그파가 세력을 이끌고 봉인석의 재료가 되는 아말레이트 광산을 점거하고 있습니다. 그를 처치하고 봉인석을 확보하십시오. 다행히, 싸움이 길어질수록 파멸의 기운이 약화될 것입니다. 이 던전은 클리어하면 48시간 동안 비활성화되며, 동시간대 아리스란 공격대가 파멸의 표식을 해체했다면 최종 보스 던전이 해금됩니다.'});
       dungeonList.push({name : '봉인 활성화 작전(외부)', code : 6, progress : globals.raid.progress[6], additional : char.dungeonInfos.runRaid3, 
@@ -1933,6 +1933,7 @@ async function procEnterRaid(req, res) {
             char.raidEffort += raidEffort;
             reward += raidEffort + ' 공헌도를 획득했습니다.<br>';
           }
+          await setGlobals({raid : {type : 'raid', name : 'progress', idx : body.option, mode : 'set', value : 100 - Math.ceil((re.leftInfo.curHp / re.leftInfo.stat.maxHp) * 100)}});
           
           if (char.dungeonInfos.runRaid2) {
             char.dungeonInfos.enterRaid2--;
