@@ -375,6 +375,7 @@ async function procInit2 () {
                       chara.lozic, chara.marang, chara.gaius, chara.lunisha, chara.gabi, chara.illun, chara.kasien, chara.ruisun, chara.jay];
     var sidePool = [0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1];
     for (val of result.rows) {
+      var char = JSON.parse(val.char_data);
       if (val.uid == '02') {
         char.inventory.push(item.list[392]);
         char.raidSide = null;
