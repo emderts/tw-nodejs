@@ -380,7 +380,9 @@ async function procInit2 () {
         char.raidSide = null;
         continue;
       }
-      var idx = Math.floor(Math.random() * charPool.length);
+      char.rank--;
+      char.statPoint += 38;
+      /*var idx = Math.floor(Math.random() * charPool.length);
       var char = charPool[idx];
       charPool.splice(idx, 1);
 
@@ -405,7 +407,7 @@ async function procInit2 () {
       char.inventory.push({name : '요일석 더미', type : 90004, rarity : cons.ITEM_RARITY_PREMIUM});
       char.inventory.push({name : '요일석 더미', type : 90004, rarity : cons.ITEM_RARITY_PREMIUM});
       char.inventory.push({name : '요일석 더미', type : 90004, rarity : cons.ITEM_RARITY_PREMIUM});
-      char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '부서진 세계의 조각', rank : 6, resultType : 90005});
+      char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '부서진 세계의 조각', rank : 6, resultType : 90005});*/
 
       //_patchItem('trinket', 505);
       function _patchItem(type, id) {
