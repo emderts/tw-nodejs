@@ -380,20 +380,22 @@ async function procInit2 () {
             await client.query('insert into raids(rindex, open, phase, monsters) values (107, \'O\', 1, $1)', 
                 [JSON.stringify({1 : monster.rsDeci})]);
   try {
+    const resultx = await client.query('select * from raids where rindex >= 105 and rindex <= 106');
+    
+    for (val of resultx.rows) {
+      var char = JSON.parse(val.monsters);
+
+      char[1].skill = monster.rsStar1.skill;
+      char[2].skill = monster.rsStar2.skill;
+      char[3].skill = monster.rsStar3.skill;
+      char[4].skill = monster.rsStar4.skill;
+      char[5].skill = monster.rsStar5.skill;
+      
+      await client.query('update raids set monsters = $1 where rindex = $2', [JSON.stringify(char), val.rindex]);
+    } 
     const result = await client.query('select * from characters');
     
     for (val of result.rows) {
-      var char = JSON.parse(val.char_data);
-
-      char.raidEffort = 0;
-      char.dungeonInfos.runRaid1 = false;
-      char.dungeonInfos.runRaid2 = false;
-      char.dungeonInfos.runRaid3 = false;
-      char.dungeonInfos.runRaid4 = false;
-      char.dungeonInfos.enterRaid1 = 1;
-      char.dungeonInfos.enterRaid2 = 1;
-      char.dungeonInfos.enterRaid3 = 1;
-      char.dungeonInfos.enterRaid4 = 1;
       if (val.uid == '02') {
         char.inventory.push(item.list[392]);
         char.raidSide = null;
