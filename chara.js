@@ -1635,18 +1635,14 @@ const item = require('./items');
       tooltip : '최대 생명력의 1%를 회복하고, 순서대로 스페셜 스킬을 전환한다. [도입 - 선셋 라이더] [상승 - 로드 오브 레인저] [절정 - 블러디 카니발] [반전 - 티켓 투 헤븐] [파국 - 마지막 호흡]',
       flavor : '건블레이드의 움직임으로 연주를 시작한다.'};
   charJay.skill.special = skillObj;
-
-  charDekais.items = {weapon : item.list[11], armor : item.list[125], subarmor : item.list[169], trinket : item.list[253]};
-    
-  charGaius.items.skillArtifact = item.list[280];
   function _initChar(char) {
     char.stat = {};
-    char.stat.maxHp = 400;
+    char.stat.maxHp = 700;
     char.stat.spCharge = 5;
     char.stat.hpRegen = 0;
     char.stat.spRegen = 5;
-    char.stat.phyAtk = 20;
-    char.stat.magAtk = 20;
+    char.stat.phyAtk = 40;
+    char.stat.magAtk = 40;
     char.stat.crit = 0.05;
     char.stat.critDmg = 1.5;
     char.stat.phyReduce = 0;
@@ -1664,12 +1660,12 @@ const item = require('./items');
     char.items = {};
     char.items.weapon = item.list[0];
     char.items.armor = item.list[114];
-    char.rank = 9;
-    char.level = 1;
+    char.rank = 7;
+    char.level = 40;
     char.exp = 0;
-    char.reqExp = 450;
+    char.reqExp = 650;
     char.maxExp = 2250;
-    char.statPoint = 0;
+    char.statPoint = 154;
     char.premiumPoint = 20;
     char.resultGauge = 0;
     char.resultMaxGauge = 0;
@@ -1692,13 +1688,6 @@ const item = require('./items');
         cardUsed : 0, dustAmt : 0, premiumAmt : 0, maxHpStat : 0, phyAtkStat : 0, magAtkStat : 0};
     char.matchCount = 10;
     char.winChain = 0;
-    char.stat.maxHp = 1202;
-    char.stat.phyAtk = 105;
-    char.stat.magAtk = 105;
-    char.items.weapon = item.list[12];//[0];
-    char.items.armor = item.list[144];//[114];
-    char.items.subarmor = item.list[170];
-    char.items.trinket = item.list[245];
     char.base = JSON.parse(JSON.stringify(char.stat));
   }
 

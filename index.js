@@ -368,38 +368,43 @@ async function procInit () {
 
 async function procInit2 () {
     const client = await pool.connect();
-            await client.query('delete from raids where rindex > 100');
-            await client.query('insert into raids(rindex, open, phase, monsters) values (103, \'O\', 1, $1)', 
-        [JSON.stringify({1 : monster.rsInzeal})]);
-            await client.query('insert into raids(rindex, open, phase, monsters) values (104, \'O\', 1, $1)', 
-        [JSON.stringify({1 : monster.rsNagpa})]);
-            await client.query('insert into raids(rindex, open, phase, monsters) values (105, \'O\', 1, $1)', 
-        [JSON.stringify({1 : monster.rsStar1, 2 : monster.rsStar2, 3 : monster.rsStar3, 4 : monster.rsStar4, 5 : monster.rsStar5})]);
-            await client.query('insert into raids(rindex, open, phase, monsters) values (106, \'O\', 1, $1)', 
-        [JSON.stringify({1 : monster.rsStar1, 2 : monster.rsStar2, 3 : monster.rsStar3, 4 : monster.rsStar4, 5 : monster.rsStar5})]);
-            await client.query('insert into raids(rindex, open, phase, monsters) values (107, \'O\', 1, $1)', 
-                [JSON.stringify({1 : monster.rsDeci})]);
-  try {
-    const resultx = await client.query('select * from raids where rindex >= 105 and rindex <= 106');
-    
-    for (val of resultx.rows) {
-      var char = JSON.parse(val.monsters);
-
-      char[1].skill = monster.rsStar1.skill;
-      char[2].skill = monster.rsStar2.skill;
-      char[3].skill = monster.rsStar3.skill;
-      char[4].skill = monster.rsStar4.skill;
-      char[5].skill = monster.rsStar5.skill;
-      
-      await client.query('update raids set monsters = $1 where rindex = $2', [JSON.stringify(char), val.rindex]);
-    } 
     const result = await client.query('select * from characters');
     
+    var charPool = [chara.kines, chara.seriers, chara.psi, chara.julius, chara.aeika, chara.aeohelm, chara.bks, chara.nux, chara.dekaitz, 
+                      chara.lozic, chara.marang, chara.gaius, chara.lunisha, chara.gabi, chara.illun, chara.kasien, chara.ruisun, chara.jay];
+    var sidePool = [0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1];
     for (val of result.rows) {
       if (val.uid == '02') {
         char.inventory.push(item.list[392]);
         char.raidSide = null;
+        continue;
       }
+      var idx = Math.floor(Math.random() * charPool.length);
+      var char = charPool[idx];
+      charPool.splice(idx, 1);
+
+      char.raidEffort = 0;
+      idx = Math.floor(Math.random() * sidePool.length);
+      char.raidSide = sidePool[idx];
+      sidePool.splice(idx, 1);
+      char.dungeonInfos.runRaid1 = false;
+      char.dungeonInfos.runRaid2 = false;
+      char.dungeonInfos.runRaid3 = false;
+      char.dungeonInfos.runRaid4 = false;
+      char.dungeonInfos.enterRaid1 = 1;
+      char.dungeonInfos.enterRaid2 = 1;
+      char.dungeonInfos.enterRaid3 = 1;
+      char.dungeonInfos.enterRaid4 = 1;
+
+      var tgtList = item.list.filter(x => x.rank === 6 && x.rarity == 4 && x.type <= 3);    
+      for (itm of tgtList) {
+        char.inventory.push(itm);
+      }
+      char.inventory.push({name : '요일석 더미', type : 90004, rarity : cons.ITEM_RARITY_PREMIUM});
+      char.inventory.push({name : '요일석 더미', type : 90004, rarity : cons.ITEM_RARITY_PREMIUM});
+      char.inventory.push({name : '요일석 더미', type : 90004, rarity : cons.ITEM_RARITY_PREMIUM});
+      char.inventory.push({name : '요일석 더미', type : 90004, rarity : cons.ITEM_RARITY_PREMIUM});
+      char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '부서진 세계의 조각', rank : 6, resultType : 90005});
 
       //_patchItem('trinket', 505);
       function _patchItem(type, id) {
