@@ -6761,6 +6761,51 @@ module.exports.getBuffData = function(eff) {
     effectObj.stackReduce = -1;
     retObj.effect.push(effectObj);
     break;
+  case 90076 : 
+    retObj.name = '봉인';
+    retObj.nameType = cons.NAME_KOR_END_CONS;
+    retObj.stackType = 1;
+    effectObj = {};
+    effectObj.code = 10010;
+    effectObj.buff = retObj;
+    retObj.effect.push(effectObj);
+    break;
+  case 90077 : 
+    retObj.name = '약화되는 파멸';
+    retObj.nameType = cons.NAME_KOR_END_CONS;
+    retObj.stackType = 1;
+    retObj.durOff = null;
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_STAT_ADD;
+    effectObj.key = 'phyReduce';
+    effectObj.value = -0.5;
+    retObj.effect.push(effectObj);
+    break;
+  case 90078 : 
+    retObj.name = '약화되는 파멸';
+    retObj.nameType = cons.NAME_KOR_END_CONS;
+    retObj.stackType = 1;
+    retObj.durOff = null;
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_STAT_ADD;
+    effectObj.key = 'magReduce';
+    effectObj.value = -0.5;
+    retObj.effect.push(effectObj);
+    break;
+  case 90079 : 
+    retObj.name = '강화되는 파멸';
+    retObj.nameType = cons.NAME_KOR_END_CONS;
+    retObj.stackType = 1;
+    retObj.durOff = null;
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_STAT_ADD;
+    effectObj.key = 'hpRegen';
+    effectObj.value = 1500;
+    retObj.effect.push(effectObj);
+    break;
   }
 
   return retObj;

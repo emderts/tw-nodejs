@@ -110,6 +110,8 @@ Battlemodule.prototype._doBattleStart = function (flag) {
   } else {
     this.charRight.curHp = this.charRight.curHp ? this.charRight.curHp : this.charRight.stat.maxHp;
   }  
+  this.charLeft.startHp = this.charLeft.curHp;
+  this.charRight.startHp = this.charRight.curHp;
 
   this.printCharInfo(0);
   this.result += '<div class="turnWrap">';
@@ -963,6 +965,9 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
       continue;
     }
     if (eff.chkSkillNum !== undefined && skill.skillNum !== eff.chkSkillNum) {
+      continue;
+    }
+    if (eff.chkStartHpOdd !== undefined && winner.startHp % 2 != eff.chkStartHpOdd) {
       continue;
     }
     if (eff.code === cons.EFFECT_TYPE_SELF_BUFF || eff.code === cons.EFFECT_TYPE_OPP_BUFF) {

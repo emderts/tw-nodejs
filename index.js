@@ -1904,7 +1904,7 @@ async function procEnterRaid(req, res) {
           }
           if (!globals.raid.open[charUsed.raidSide + 5]) {
             enemyUsed.startEffects.push({code : cons.EFFECT_TYPE_REMOVE_BUFF, buffTarget : [90069], buffDur : null});
-            enemyUsed.startEffects.push({code : cons.EFFECT_TYPE_SET_ALL_BUFF_DURATION, value : 500, buffCode : 10});
+            enemyUsed.startEffects.push({code : cons.EFFECT_TYPE_SET_ALL_BUFF_DURATION, value : 500, buffCode : 90076});
           }
           
         }

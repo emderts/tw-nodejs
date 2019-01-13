@@ -806,8 +806,8 @@ const chara = require('./chara');
                          {code : cons.EFFECT_TYPE_SELF_HIT, type : cons.DAMAGE_TYPE_PHYSICAL_FIXED, value : 200}]},
       special : {code : 90040, name : '봉인 활성화', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 100, 
                effect : [{code : cons.EFFECT_TYPE_SELECTION, active : cons.ACTIVE_TYPE_ATTACK, selectChances : [0.5, 1],
-                 options : [{code : cons.EFFECT_TYPE_OPP_HP, value : 0.2, isPercentHpLost : true},
-                            {code : cons.EFFECT_TYPE_SELF_HP, value : 20000}]}]}
+                 options : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 90077, buffDur : null, chkStartHpOdd : 1},
+                            {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 90079, buffDur : null, chkStartHpOdd : 0}]}]}
   };
   module.exports.rsStar1 = charLeft;
   
@@ -838,8 +838,8 @@ const chara = require('./chara');
                          {code : cons.EFFECT_TYPE_SELF_HIT, type : cons.DAMAGE_TYPE_MAGICAL_FIXED, value : 200}]},
       special : {code : 90040, name : '봉인 활성화', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 100, 
                effect : [{code : cons.EFFECT_TYPE_SELECTION, active : cons.ACTIVE_TYPE_ATTACK, selectChances : [0.5, 1],
-                 options : [{code : cons.EFFECT_TYPE_OPP_HP, value : 0.2, isPercentHpLost : true},
-                            {code : cons.EFFECT_TYPE_SELF_HP, value : 20000}]}]}
+                 options : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 90078, buffDur : null, chkStartHpOdd : 0},
+                            {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 90079, buffDur : null, chkStartHpOdd : 1}]}]}
   };
   module.exports.rsStar2 = charLeft;
   
@@ -870,8 +870,8 @@ const chara = require('./chara');
                          {code : cons.EFFECT_TYPE_SELF_HIT, type : cons.DAMAGE_TYPE_PHYSICAL_FIXED, value : 200}]},
       special : {code : 90040, name : '봉인 활성화', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 100, 
                effect : [{code : cons.EFFECT_TYPE_SELECTION, active : cons.ACTIVE_TYPE_ATTACK, selectChances : [0.5, 1],
-                 options : [{code : cons.EFFECT_TYPE_OPP_HP, value : 0.2, isPercentHpLost : true},
-                            {code : cons.EFFECT_TYPE_SELF_HP, value : 20000}]}]}
+                 options : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 90077, buffDur : null, chkStartHpOdd : 1},
+                            {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 90079, buffDur : null, chkStartHpOdd : 0}]}]}
   };
   module.exports.rsStar3 = charLeft;
   
@@ -902,8 +902,8 @@ const chara = require('./chara');
                          {code : cons.EFFECT_TYPE_SELF_HIT, type : cons.DAMAGE_TYPE_MAGICAL_FIXED, value : 200}]},
       special : {code : 90040, name : '봉인 활성화', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 100, 
                effect : [{code : cons.EFFECT_TYPE_SELECTION, active : cons.ACTIVE_TYPE_ATTACK, selectChances : [0.5, 1],
-                 options : [{code : cons.EFFECT_TYPE_OPP_HP, value : 0.2, isPercentHpLost : true},
-                            {code : cons.EFFECT_TYPE_SELF_HP, value : 20000}]}]}
+                 options : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 90078, buffDur : null, chkStartHpOdd : 0},
+                            {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 90079, buffDur : null, chkStartHpOdd : 1}]}]}
   };
   module.exports.rsStar4 = charLeft;
   
@@ -934,8 +934,8 @@ const chara = require('./chara');
                          {code : cons.EFFECT_TYPE_SELF_HIT, type : cons.DAMAGE_TYPE_PHYSICAL_FIXED, value : 200}]},
       special : {code : 90040, name : '봉인 활성화', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 100, 
                effect : [{code : cons.EFFECT_TYPE_SELECTION, active : cons.ACTIVE_TYPE_ATTACK, selectChances : [0.5, 1],
-                 options : [{code : cons.EFFECT_TYPE_OPP_HP, value : 0.2, isPercentHpLost : true},
-                            {code : cons.EFFECT_TYPE_SELF_HP, value : 20000}]}]}
+                 options : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 90077, buffDur : null, chkStartHpOdd : 1},
+                            {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 90079, buffDur : null, chkStartHpOdd : 0}]}]}
   };
   module.exports.rsStar5 = charLeft;
   
@@ -948,7 +948,7 @@ const chara = require('./chara');
   charLeft.boss = 0.995;
   charLeft.bossStatus = 0.2;
   
-  charLeft.startEffects = [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 10, buffDur : 500},
+  charLeft.startEffects = [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 90076, buffDur : 500},
                            {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 90069, buffDur : null}];
 
   charLeft.skill = {
@@ -968,7 +968,7 @@ const chara = require('./chara');
                cost : 0, chance : 1, 
                effect : [{code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_ABSOLUTE, value : 1000}]},
       special : {code : 90040, name : '풀려나는 봉인', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 1, 
-               effect : [{code : cons.EFFECT_TYPE_SET_ALL_BUFF_DURATION, value : -1, buffCode : 10, isPercentChar : true, percentKey : 'curSp'}]}
+               effect : [{code : cons.EFFECT_TYPE_SET_ALL_BUFF_DURATION, value : -1, buffCode : 90076, isPercentChar : true, percentKey : 'curSp'}]}
   };
   module.exports.rsDeci = charLeft;
   
