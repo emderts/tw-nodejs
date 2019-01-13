@@ -367,6 +367,7 @@ async function procInit () {
 }
 
 async function procInit2 () {
+  try {
     const client = await pool.connect();
     const result = await client.query('select * from characters');
     
