@@ -1764,7 +1764,7 @@ async function procRaid(req, res) {
         tooltip : '파멸자 데시메이트의 힘을 약화하기 위해, 미네르프 공격대의 작전지역인 봉인실 외부의 봉인을 활성화해야 합니다. 봉인석을 오망성진에 배치해야 하지만, 파멸에 힘에 의한 피해로 한 번에 마법진을 모두 그리는 것은 불가능에 가깝습니다. 그 동안 다져온 대원들의 체력만이 봉인을 활성화하는 유일한 방법입니다. 외부 봉인을 활성화할 경우, 3시간 동안 미네르프 공격대가 데시메이트를 상대할 때 그의 힘을 약화시킬 수 있습니다.'});
       
     }
-    dungeonList.push({name : '최종 작전 - 데시메이트 봉인', code : 7, progress : globals.raid.progress[2], additional : char.dungeonInfos.runRaid4, 
+    dungeonList.push({name : '최종 작전 - 데시메이트 봉인', code : 7, progress : globals.raid.progress[7], additional : char.dungeonInfos.runRaid4, 
       active : globals.raid.open[7], remain : char.dungeonInfos.enterRaid4,
       tooltip : '날뛰는 파멸의 기운을 잠재우고, 거대한 에너지체인 데시메이트를 공략할 시간입니다. 모든 준비를 마쳐야만, 데시메이트를 상대할 때 어려움을 덜 수 있을 것입니다. 주의하십시오. 그의 봉인이 조금이라도 깨어난다면, 당신은 순식간에 소멸할 것입니다.'});
     res.render('pages/raids', {dungeonList : dungeonList, nameIn : char.name});
