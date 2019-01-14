@@ -1764,7 +1764,7 @@ async function procRaid(req, res) {
         tooltip : '파멸자 데시메이트의 힘을 약화하기 위해, 아리스란 공격대의 작전지역인 봉인실 내부의 봉인을 활성화해야 합니다. 봉인석을 오망성진에 배치해야 하지만, 파멸에 힘에 의한 피해로 한 번에 마법진을 모두 그리는 것은 불가능에 가깝습니다. 그 동안 다져온 대원들의 체력만이 봉인을 활성화하는 유일한 방법입니다. 내부 봉인을 활성화할 경우, 3시간 동안 아리스란 공격대가 데시메이트를 상대할 때 그의 힘을 약화시킬 수 있습니다.'});
       
     } else {
-      dungeonList.push({name : '메비우스 기지 공략전', code : 2, progress : globals.raid.progress[2], additional : !char.dungeonInfos.runRaid1, 
+      dungeonList.push({name : '메비우스 기지 공략전', code : 2, progress : globals.raid.progress[2], additional : char.dungeonInfos.runRaid1, 
         active : globals.raid.open[2], left : globals.raid.left[2], remain : char.dungeonInfos.enterRaid1,
         tooltip : '파멸자는 자신의 힘으로 과거에 사라진 메비우스 괴물들을 다시 만들어내고 있습니다. 미네르프 대륙의 공격대는 그들의 숨겨진 거점을 찾아 공략하여, 전세를 뒤집어야만 합니다. 이 작전에 성공한다면, 약 12시간 동안 다른 던전에서 추가적인 능력치를 얻습니다.'});
       dungeonList.push({name : '봉인석 확보전', code : 4, progress : globals.raid.progress[4], additional : char.dungeonInfos.runRaid2, 
@@ -2027,8 +2027,8 @@ async function procEnterRaid(req, res) {
         } else if (body.option == 7) {
           addResultGauge(char, 35);
           reward += '리설트 게이지를 35만큼 획득했습니다.<br>';
-          if (curData[row.phase].battleRecord[charRow.uid] >= 10000 && !char.dungeonInfos['rewardRaid' + (curData[row.phase].battleRecord[charRow.uid] / 10000)]) {
-            char.dungeonInfos['rewardRaid' + (curData[row.phase].battleRecord[charRow.uid] / 10000)] = true;
+          if (curData[row.phase].battleRecord[charRow.uid] >= 10000 && !char.dungeonInfos['rewardRaid' + Math.floor(curData[row.phase].battleRecord[charRow.uid] / 10000)]) {
+            char.dungeonInfos['rewardRaid' + Math.floor(curData[row.phase].battleRecord[charRow.uid] / 10000)] = true;
             char.raidEffort += 5;
             reward += '5 공헌도를 획득했습니다.<br>';
           }
