@@ -381,8 +381,10 @@ async function procInit2 () {
         char.raidSide = null;
         continue;
       }
-      char.rank--;
-      char.statPoint += 38;
+      char.inventory.push({name : '요일석 더미', type : 90004, rarity : cons.ITEM_RARITY_PREMIUM});
+      char.inventory.push({name : '요일석 더미', type : 90004, rarity : cons.ITEM_RARITY_PREMIUM});
+      char.inventory.push({name : '요일석 더미', type : 90004, rarity : cons.ITEM_RARITY_PREMIUM});
+      char.inventory.push({name : '요일석 더미', type : 90004, rarity : cons.ITEM_RARITY_PREMIUM});
       /*var idx = Math.floor(Math.random() * charPool.length);
       var char = charPool[idx];
       charPool.splice(idx, 1);
