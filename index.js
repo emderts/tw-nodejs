@@ -2044,6 +2044,8 @@ async function procEnterRaid(req, res) {
           await client.query('update raids set phase = $1, monsters = $2 where rindex = $3', [row.phase + (re.winnerLeft ? 0 : 1), JSON.stringify(curData), 100 + Number(body.option)]);
 
           if (!re.winnerLeft) {
+            await setGlobals({raid : {type : 'raid', name : 'open', idx : body.option, mode : 'set', value : false}});
+            var leaderboard = await createRaidResults(107, 1, char);
             
             
           }
