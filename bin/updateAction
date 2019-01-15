@@ -63,14 +63,6 @@ try {
       charData.dungeonInfos.runIndigo = false;
       charData.dungeonInfos.runFieldBoss = false;
       charData.dungeonInfos.runRankup = false;
-      charData.dungeonInfos.runRaid1 = false;
-      charData.dungeonInfos.runRaid2 = false;
-      charData.dungeonInfos.runRaid3 = false;
-      charData.dungeonInfos.runRaid4 = false;
-      charData.dungeonInfos.enterRaid1 = 1;
-      charData.dungeonInfos.enterRaid2 = 1;
-      charData.dungeonInfos.enterRaid3 = 1;
-      charData.dungeonInfos.enterRaid4 = 1;
       await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(charData), val.uid]);
     } 
   

@@ -381,9 +381,12 @@ async function procInit2 () {
         char.raidSide = null;
         continue;
       }
-      char.inventory.push({name : '요일석 더미', type : 90004, rarity : cons.ITEM_RARITY_PREMIUM});
-      char.inventory.push({name : '요일석 더미', type : 90004, rarity : cons.ITEM_RARITY_PREMIUM});
-      char.inventory.push({name : '요일석 더미', type : 90004, rarity : cons.ITEM_RARITY_PREMIUM});
+      if (val.uid == '11') {
+        char.name = '마랑';
+        char.nameType = chara.marang.nameType;
+        char.title = '차가운 눈동자 II';
+        char.skill = chara.marang.skill;
+      }
       char.inventory.push({name : '요일석 더미', type : 90004, rarity : cons.ITEM_RARITY_PREMIUM});
       /*var idx = Math.floor(Math.random() * charPool.length);
       var char = charPool[idx];
@@ -648,7 +651,7 @@ async function procUseItem (req, res) {
               _processUnique(chara, tgtObj, picked);
               chara.inventory.push(picked);
               await addItemNews(client, chara, tgtObj, picked);
-            } else if (rand < 0.3) {
+            } else if (rand < 0.3135) {
               picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_EPIC);
               await _processEpic(chara, tgtObj, picked);
               chara.inventory.push(picked);
@@ -688,7 +691,7 @@ async function procUseItem (req, res) {
               _processUnique(chara, tgtObj, picked);
               chara.inventory.push(picked);
               await addItemNews(client, chara, tgtObj, picked);
-            } else if (rand < 0.9895) {
+            } else if (rand < 0.895/*9895*/) {
               picked = _getItem(tgtObj.rank - 1, cons.ITEM_RARITY_COMMON_UNCOMMON, tgtObj.resultType);
               chara.inventory.push(picked);
             } else {
@@ -798,7 +801,7 @@ async function procUseItem (req, res) {
               await addItemNews(client, chara, tgtObj, picked);
             } 
           } else if (tgtObj.resultType == 6) {
-            if (rand < 0.96) {
+            if (rand < 0.6/*96*/) {
               picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_UNIQUE, tgtObj.resultType);
               _processUnique(chara, tgtObj, picked);
               chara.inventory.push(picked);
@@ -1495,6 +1498,8 @@ async function procShop(req, res) {
   }
 }
 
+var charPool = [chara.seriers, chara.julius, chara.aeika, chara.aeohelm, chara.dekaitz, 
+                  chara.lozic, chara.lunisha];
 async function procUseShop (req, res) {
     const client = await pool.connect();
   try {
@@ -1612,6 +1617,49 @@ async function procUseShop (req, res) {
       } else {
         char.premiumPoint -= 10;
         addSpecialResultCard(char, body.option - 4);
+        if (char.quest[8]) {
+          char.quest[8].progress += 1;
+        }
+      }
+    } else if (body.option == 12) {
+      if (char.premiumPoint < 40) {
+        res.send('프리미엄 포인트가 부족합니다.');
+      } else {
+        char.premiumPoint -= 40;
+        char.statPoint = char.statistics.phyAtkStat + char.statistics.magAtkStat + char.statistics.maxHpStat;
+        char.base.phyAtk = 20 + 10 * (9 - char.rank);
+        char.base.magAtk = 20 + 10 * (9 - char.rank);
+        char.base.maxHp = 400 + 150 * (9 - char.rank);
+        char.statistics.phyAtkStat = 0;
+        char.statistics.magAtkStat = 0;
+        char.statistics.maxHpStat = 0;
+        calcStats(char);
+        if (char.quest[8]) {
+          char.quest[8].progress += 1;
+        }
+      }
+    } else if (body.option == 13) {
+      if (char.premiumPoint < 20 || charPool.length == 0) {
+        res.send('프리미엄 포인트가 부족합니다.');
+      } else {
+        char.premiumPoint -= 20;
+        char.statPoint = char.statistics.phyAtkStat + char.statistics.magAtkStat + char.statistics.maxHpStat;
+        char.base.phyAtk = 20 + 10 * (9 - char.rank);
+        char.base.magAtk = 20 + 10 * (9 - char.rank);
+        char.base.maxHp = 400 + 150 * (9 - char.rank);
+        char.statistics.phyAtkStat = 0;
+        char.statistics.magAtkStat = 0;
+        char.statistics.maxHpStat = 0;
+        calcStats(char);
+        var idx = Math.floor(Math.random() * charPool.length);
+        var newChar = charPool[idx];
+        charPool.splice(idx, 1);
+        char.name = newChar.name;
+        char.nameType = newChar.nameType;
+        char.title = newChar.title;
+        char.skill = newChar.skill;
+        char.startEffects = newChar.startEffects;
+        
         if (char.quest[8]) {
           char.quest[8].progress += 1;
         }
@@ -3556,7 +3604,7 @@ function makeDayStone(dayIn, rank, levelIn) {
   var item = {};
   item.type = cons.ITEM_TYPE_DAYSTONE;
   item.rarity = cons.ITEM_RARITY_RARE;
-  item.day = dayIn ? dayIn : new Date().getDay();
+  item.day = dayIn >= 0 ? dayIn : new Date().getDay();
   item.level = (rand < 0.39) ? 0 : ((rand < 0.68) ? 1 : ((rand < 0.88) ? 2 : ((rand < 0.98) ? 3 : 4)));
   if (rank == 9 && item.level > 2) {
     item.level = 2;

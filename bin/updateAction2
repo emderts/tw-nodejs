@@ -94,53 +94,6 @@ async function doWork() {
         }
       }
       
-      glb.raid.left = glb.raid.left.map(x => x > 0 ? x-1 : 0);
-      if (glb.raid.left[1] == 0 && !glb.raid.open[1]) {
-        glb.raid.open[1] = true;
-        glb.raid.progress[1] = 0;
-          await client.query('insert into news(content, date) values ($1, $2)', 
-            ['메비우스 습격 방어전이 재생성됩니다!', new Date()]);
-      }
-      if (glb.raid.left[2] == 0 && !glb.raid.open[2]) {
-        glb.raid.open[2] = true;
-        glb.raid.progress[2] = 0;
-          await client.query('insert into news(content, date) values ($1, $2)', 
-            ['메비우스 기지 공략전이 재생성됩니다!', new Date()]);
-      }
-      if (glb.raid.left[3] == 0 && !glb.raid.open[3]) {
-        glb.raid.open[3] = true;
-            await client.query('delete from raids where rindex = 103');
-            await client.query('insert into raids(rindex, open, phase, monsters) values (103, \'O\', 1, $1)', 
-        [JSON.stringify({1 : monster.rsInzeal})]);
-          await client.query('insert into news(content, date) values ($1, $2)', 
-            ['파멸의 표식 해체가 재생성됩니다!', new Date()]);
-      }
-      if (glb.raid.left[4] == 0 && !glb.raid.open[4]) {
-        glb.raid.open[4] = true;
-            await client.query('delete from raids where rindex = 104');
-            await client.query('insert into raids(rindex, open, phase, monsters) values (104, \'O\', 1, $1)', 
-        [JSON.stringify({1 : monster.rsNagpa})]);
-          await client.query('insert into news(content, date) values ($1, $2)', 
-            ['봉인석 확보전이 재생성됩니다!', new Date()]);
-      }
-      if (glb.raid.left[5] == 0 && !glb.raid.open[5]) {
-        glb.raid.open[5] = true;
-            await client.query('delete from raids where rindex = 105');
-            await client.query('insert into raids(rindex, open, phase, monsters) values (105, \'O\', 1, $1)', 
-        [JSON.stringify({1 : monster.rsStar1, 2 : monster.rsStar2, 3 : monster.rsStar3, 4 : monster.rsStar4, 5 : monster.rsStar5})]);
-        glb.raid.progress[5] = 0;
-          await client.query('insert into news(content, date) values ($1, $2)', 
-            ['내부 봉인 활성화 작전이 재생성됩니다!', new Date()]);
-      }
-      if (glb.raid.left[6] == 0 && !glb.raid.open[6]) {
-        glb.raid.open[6] = true;
-            await client.query('delete from raids where rindex = 106');
-            await client.query('insert into raids(rindex, open, phase, monsters) values (106, \'O\', 1, $1)', 
-        [JSON.stringify({1 : monster.rsStar1, 2 : monster.rsStar2, 3 : monster.rsStar3, 4 : monster.rsStar4, 5 : monster.rsStar5})]);
-        glb.raid.progress[6] = 0;
-          await client.query('insert into news(content, date) values ($1, $2)', 
-            ['외부 봉인 활성화 작전이 재생성됩니다!', new Date()]);
-      }
       await client.query('update global set globals = $1', [JSON.stringify(glb)]);
       
       client.release();  
