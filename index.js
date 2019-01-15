@@ -1498,8 +1498,8 @@ async function procShop(req, res) {
   }
 }
 
-var charPool = [chara.seriers, chara.julius, chara.aeika, chara.aeohelm, chara.dekaitz, 
-                  chara.lozic, chara.lunisha];
+var charPool = [chara.illun, chara.julius, chara.ruisun, chara.aeohelm, chara.dekaitz, 
+                  chara.bks, chara.lunisha];
 async function procUseShop (req, res) {
     const client = await pool.connect();
   try {
@@ -1626,7 +1626,7 @@ async function procUseShop (req, res) {
         res.send('프리미엄 포인트가 부족합니다.');
       } else {
         char.premiumPoint -= 40;
-        char.statPoint = char.statistics.phyAtkStat + char.statistics.magAtkStat + char.statistics.maxHpStat;
+        char.statPoint = char.statPoint + char.statistics.phyAtkStat + char.statistics.magAtkStat + char.statistics.maxHpStat;
         char.base.phyAtk = 20 + 10 * (9 - char.rank);
         char.base.magAtk = 20 + 10 * (9 - char.rank);
         char.base.maxHp = 400 + 150 * (9 - char.rank);
@@ -1643,7 +1643,7 @@ async function procUseShop (req, res) {
         res.send('프리미엄 포인트가 부족합니다.');
       } else {
         char.premiumPoint -= 20;
-        char.statPoint = char.statistics.phyAtkStat + char.statistics.magAtkStat + char.statistics.maxHpStat;
+        char.statPoint = char.statPoint + char.statistics.phyAtkStat + char.statistics.magAtkStat + char.statistics.maxHpStat;
         char.base.phyAtk = 20 + 10 * (9 - char.rank);
         char.base.magAtk = 20 + 10 * (9 - char.rank);
         char.base.maxHp = 400 + 150 * (9 - char.rank);
