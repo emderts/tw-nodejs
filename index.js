@@ -1666,12 +1666,19 @@ async function procUseShop (req, res) {
       }
     } else if (body.option >= 102 && body.option < 90000) {
       var cost = body.option >= 106 ? (body.option == 106 ? 100 : (body.option == 107 ? 300 : 800)) : 120;
+      if (body.option >= 109) {
+        cost /= 2;
+      }
       cost *= Math.pow(2, 9 - char.rank);
       if (char.dust < cost) {
         res.send('가루가 부족합니다.');
       } else {
         char.dust -= cost;
-        addSpecialResultCard(char, body.option - 102);
+        if (body.option >= 109) {
+          addSpecialResultCard(char, 6, 118 - body.option);
+        } else {
+          addSpecialResultCard(char, body.option - 102);
+        }
         if (char.quest[8]) {
           char.quest[8].progress += 1;
         }

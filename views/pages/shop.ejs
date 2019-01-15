@@ -278,6 +278,24 @@
       <input type="hidden" name="option" value="108">
     </form>
   </div>
+  <div class="charItem">
+    <form action="/useShop" method="post">
+      <button onclick="invClick(this, event)" type="button">9급 유니크 장비 리설트 카드 [<%= 400 * rankFactor %> 가루]</button>
+      <input type="hidden" name="option" value="109">
+    </form>
+  </div>
+  <div class="charItem">
+    <form action="/useShop" method="post">
+      <button onclick="invClick(this, event)" type="button">8급 유니크 장비 리설트 카드 [<%= 400 * rankFactor %> 가루]</button>
+      <input type="hidden" name="option" value="110">
+    </form>
+  </div>
+  <div class="charItem">
+    <form action="/useShop" method="post">
+      <button onclick="invClick(this, event)" type="button">7급 유니크 장비 리설트 카드 [<%= 400 * rankFactor %> 가루]</button>
+      <input type="hidden" name="option" value="111">
+    </form>
+  </div>
   <% if (currencies.mevious) { %>
   <div class="backLink">
     메비우스 섬멸 병참장교 (현재 메비우스 섬멸의 증표 : <%= currencies.mevious %>)
