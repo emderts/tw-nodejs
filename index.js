@@ -3611,7 +3611,7 @@ function makeDayStone(dayIn, rank, levelIn) {
   var item = {};
   item.type = cons.ITEM_TYPE_DAYSTONE;
   item.rarity = cons.ITEM_RARITY_RARE;
-  item.day = dayIn >= 0 ? dayIn : new Date().getDay();
+  item.day = (dayIn != null) ? dayIn : new Date().getDay();
   item.level = (rand < 0.39) ? 0 : ((rand < 0.68) ? 1 : ((rand < 0.88) ? 2 : ((rand < 0.98) ? 3 : 4)));
   if (rank == 9 && item.level > 2) {
     item.level = 2;
