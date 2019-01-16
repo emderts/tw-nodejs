@@ -1498,7 +1498,7 @@ async function procShop(req, res) {
   }
 }
 
-var charPool = [chara.illun, chara.julius, chara.ruisun, chara.aeohelm, chara.dekaitz, 
+var charPool = [chara.seriers, chara.julius, chara.ruisun, chara.aeohelm, chara.dekaitz, 
                   chara.bks, chara.lunisha];
 async function procUseShop (req, res) {
     const client = await pool.connect();
