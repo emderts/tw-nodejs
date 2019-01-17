@@ -556,6 +556,7 @@
         </td>
         <td class="charViewContent"><%= getDamageText(char.skill.base[2]) %></td>
       </tr>
+      <% if (char.skill.special) { %>
       <tr>
         <td class="charViewTitle">스페셜</td>
         <td class="charViewContent"><%= char.skill.special.name %>
@@ -565,6 +566,8 @@
         </td>
         <td class="charViewContent">SP<%= char.skill.special.cost %></td>
       </tr>
+      <% } %>
+      <% if (char.skill.drive) { %>
       <tr>
         <td class="charViewTitle">드라이브</td>
         <td class="charViewContent"><%= char.skill.drive.name %>
@@ -574,6 +577,7 @@
         </td>
         <td class="charViewContent">SP<%= char.skill.drive.cost %></td>
       </tr>
+      <% } %>
     </table>
   </div>
     
