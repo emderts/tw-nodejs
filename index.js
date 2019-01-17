@@ -1500,7 +1500,7 @@ async function procShop(req, res) {
 
 var charPool = [chara.seriers, chara.gaius, chara.kines, chara.julius, chara.psi, chara.aeika, chara.ruisun, chara.aeohelm, chara.dekaitz, 
                   chara.bks, chara.lunisha, chara.illun, chara.nux, chara.lozic, chara.kasien, chara.marang, chara.gabi, chara.jay, monster.oEleLord,
-                  monster.oStoneist, monster.oDeathKnight, monster.d721, monster.d722, monster.];
+                  monster.oStoneist, monster.oDeathKnight, monster.d721, monster.d722, monster.mMassCrawler];
 async function procUseShop (req, res) {
     const client = await pool.connect();
   try {
