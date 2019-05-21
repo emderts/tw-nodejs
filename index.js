@@ -72,6 +72,8 @@ const app = express()
 .post('/resetQuest', procResetQuest)
 .get('/dismantlingYard', procDismantlingYard)
 .post('/dismantleItem', procDismantleItem)
+.get('/identifyingHall', procIdentifyingHall)
+.post('/identifyItem', procIdentifyItem)
 .get('/stoneCube', procStoneCube)
 .post('/addCube', procAddCube)
 .post('/removeCube', procRemoveCube)
@@ -3113,6 +3115,54 @@ async function procResetQuest (req, res) {
   }
 }
 
+async function procIdentifyingHall(req, res) {
+  try {
+    const sess = req.session; 
+    const charRow = await getCharacter(sess.userUid);
+    const char = JSON.parse(charRow.char_data);
+    res.render('pages/selectItem', {title : '아이템 감정', inv : char.inventory, mode : 5, dust : char.dust, usedItem : 0});
+  } catch (err) {
+    console.error(err);
+    res.send('내부 오류');
+  }
+}
+
+const setInfo = ['공격', '생명', '치명', '치명피해', '확률강화', '저항', '관통', '명중', '회피'];
+const dustInfo = [10, 14, 26, 26, 62, 170];
+
+function _giveSetBonus(tgt) {
+  tgt.setBonus = {};
+  tgt.setBonus.code = Math.floor(Math.random() * setInfo.length);
+  tgt.setBonus.name = setInfo[tgt.setBonus.code];
+}
+
+async function procIdentifyItem (req, res) {
+  const client = await pool.connect();
+  try {
+    const body = req.body;
+    const sess = req.session; 
+    const charRow = await getCharacter(sess.userUid);
+    const char = JSON.parse(charRow.char_data);
+    var tgt = char.inventory[body.itemNum];
+    if (tgt.type <= 3 && !tgt.setBonus) {
+      var dustVal = Math.round(2 * dustInfo[tgt.rarity] * Math.pow(2, 9 - tgt.rank));
+      if (char.dust >= dustVal) {
+        char.dust -= dustVal;
+        _giveSetBonus(tgt);
+      }
+    }
+    await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
+    if (!res.headersSent) {
+      res.render('pages/selectItem', {title : '아이템 감정', inv : char.inventory, mode : 5, dust : char.dust, usedItem : 0});
+    }
+  } catch (err) {
+    console.error(err);
+    res.send('내부 오류');
+  } finally {
+    client.release();
+  }
+}
+
 async function procDismantlingYard(req, res) {
   try {
     const sess = req.session; 
@@ -3125,7 +3175,6 @@ async function procDismantlingYard(req, res) {
   }
 }
 
-const dustInfo = [10, 14, 26, 26, 62, 170];
 async function procDismantleItem (req, res) {
     const client = await pool.connect();
   try {
@@ -3255,11 +3304,12 @@ async function procUseStatPoint (req, res) {
   const sess = req.session; 
   const charRow = await getCharacter(sess.userUid);
   const char = JSON.parse(charRow.char_data);
-  if (char.statPoint > 0) {
+  if (char.statPoint > 0 && char.lastStat != req.body.keyType) {
     char.statPoint -= 1;
-    var value = (req.body.keyType === 'maxHp') ? 8 : 1.25;
+    var value = (req.body.keyType === 'maxHp') ? 10 : 1.5;
     char.base[req.body.keyType] += value;
     char.statistics[req.body.keyType + 'Stat'] += 1;
+    char.lastStat = req.body.keyType;
     calcStats(char);
   } 
   await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);

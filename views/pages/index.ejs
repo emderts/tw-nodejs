@@ -238,6 +238,9 @@
     rtext += item.name;
     if (item.type < 10) {
       rtext += '<br>' + item.rank + '급 ' + getRarityText(item.rarity) + ' ' + printName[item.type];
+      if (item.setBonus) {
+        rtext += '<br>세트 보너스 : ' + item.setBonus.name;
+      }
       if (item.tradeCnt !== undefined) {
         rtext += '<br>거래횟수 : ' + item.tradeCnt;
       }
@@ -383,7 +386,7 @@
             <% } %>
           </td>
           <td class="charViewContent">
-            <% if ((key === 'maxHp' || key === 'phyAtk' || key === 'magAtk') && char.statPoint > 0) { %>
+            <% if ((key === 'maxHp' || key === 'phyAtk' || key === 'magAtk') && char.statPoint > 0 && char.lastStat != key) { %>
               <form action="/useStatPoint" method="post">
                 <button type="submit">+</button>
                 <input type="hidden" name="keyType" value="<%= key %>">
@@ -655,6 +658,9 @@
       </div>
       <div class="menuItem">
         <a href="/stoneCube">요일석 합성</a>
+      </div>
+      <div class="menuItem">
+        <a href="/identifyingHall">아이템 감정</a>
       </div>
       <div class="menuItem">
         <a href="/dismantlingYard">아이템 해체</a>

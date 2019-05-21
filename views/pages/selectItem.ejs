@@ -146,6 +146,9 @@
     rtext += item.name;
     if (item.type < 10) {
       rtext += '<br>' + item.rank + '급 ' + getRarityText(item.rarity) + ' ' + printName[item.type];
+      if (item.setBonus) {
+        rtext += '<br>세트 보너스 : ' + item.setBonus.name;
+      }
       if (item.tradeCnt !== undefined) {
         rtext += '<br>거래횟수 : ' + item.tradeCnt;
       }
@@ -166,6 +169,9 @@
       const dustInfo = [10, 14, 26, 26, 62, 170];
       if (mode == 2) {
         rtext += '<br><br>가루 양 : ' + Math.round(dustInfo[item.rarity] * Math.pow(2, 9 - item.rank) * (item.dustMod ? item.dustMod : 1));
+      }
+      if (mode == 5) {
+        rtext += '<br><br>가루 요구량 : ' + Math.round(2 * dustInfo[item.rarity] * Math.pow(2, 9 - item.rank));
       }
     } else if (item.type == 999 && item.tooltip) {
       rtext += '<br>' + item.tooltip;
@@ -190,6 +196,10 @@
     var description = '요일석을 합성합니다!';
     var formAction = '/addCube';
     var tgtInv = inv.map(x => (x.type == 999) ? x : {}); 
+  } else if (mode === 5 && inv) { 
+    var description = '아이템을 감정합니다. (현재 가루 보유량 : ' + dust + ')';
+    var formAction = '/identifyItem';
+    var tgtInv = inv.map(x => (x.type <= 3 && !x.setBonus) ? x : {}); 
   }
   %>
   <div>

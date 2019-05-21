@@ -128,6 +128,15 @@ Battlemodule.prototype._doBattleStart = function (flag) {
   this.result += '</div>';
 }
 
+function _applySetBonus(char) {
+  var setBonusList = [];
+  for (val in char.items) {
+    if (val.setBonus) {
+      setBonusList.push(val.setBonus.code);
+    }
+  }
+}
+
 Battlemodule.prototype._doBattleEnd = function(flag) {
   var retObj = {};
   retObj.winnerLeft = (this.charLeft.curHp > 0);
@@ -634,7 +643,7 @@ Battlemodule.prototype._doBattleTurn = function() {
     loser = confused;
   }
 
-  if (winner.skill.special && winner.skill.special.cost <= winner.curSp && findBuffByCode(winner, 10004).length == 0 && findBuffByCode(winner, 10005).length == 0) {
+  if (winner.skill.special && winner.skill.special.cost <= winner.curSp && findBuffByCode(winner, 10004).length == 0 && findBuffByCode(winner, 10005).length == 0 && findBuffByCode(winner, 100102).length == 0) {
     this.resolveEffects(winner, loser, getBuffEffects(winner, cons.ACTIVE_TYPE_BEFORE_USE_SPECIAL), damage);
     this.resolveEffects(winner, loser, getItemEffects(winner, cons.ACTIVE_TYPE_BEFORE_USE_SPECIAL), damage);
     this.resolveEffects(loser, winner, getBuffEffects(loser, cons.ACTIVE_TYPE_BEFORE_OPP_USE_SPECIAL), damage);
@@ -649,7 +658,7 @@ Battlemodule.prototype._doBattleTurn = function() {
       this.resolveEffects(loser, winner, getItemEffects(loser, cons.ACTIVE_TYPE_OPP_USE_SPECIAL), damage);
     }
   }
-  if (loser.skill.special && loser.skill.special.cost <= loser.curSp && findBuffByCode(loser, 10004).length == 0 && findBuffByCode(loser, 10005).length == 0) {
+  if (loser.skill.special && loser.skill.special.cost <= loser.curSp && findBuffByCode(loser, 10004).length == 0 && findBuffByCode(loser, 10005).length == 0 && findBuffByCode(loser, 100102).length == 0) {
     this.resolveEffects(loser, winner, getBuffEffects(loser, cons.ACTIVE_TYPE_BEFORE_USE_SPECIAL), damage);
     this.resolveEffects(loser, winner, getItemEffects(loser, cons.ACTIVE_TYPE_BEFORE_USE_SPECIAL), damage);
     this.resolveEffects(winner, loser, getBuffEffects(winner, cons.ACTIVE_TYPE_BEFORE_OPP_USE_SPECIAL), damage);

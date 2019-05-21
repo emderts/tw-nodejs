@@ -88,7 +88,7 @@ module.exports.getBuffData = function(eff) {
     retObj.effect.push(effectObj);
     break;
   case 6 : 
-    retObj.name = '탈진';
+    retObj.name = '마비';
     retObj.nameType = cons.NAME_KOR_END_CONS;
     retObj.stackType = 1;
     effectObj = {};
@@ -106,7 +106,7 @@ module.exports.getBuffData = function(eff) {
     retObj.effect.push(effectObj);
     break;
   case 8 : 
-    retObj.name = '실명';
+    retObj.name = '암흑';
     retObj.nameType = cons.NAME_KOR_END_CONS;
     retObj.stackType = 1;
     effectObj = {};
@@ -115,9 +115,15 @@ module.exports.getBuffData = function(eff) {
     effectObj.key = 'hit';
     effectObj.value = 0.5;
     retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
+    effectObj.code = cons.EFFECT_TYPE_STAT_MULTIPLY;
+    effectObj.key = 'evasion';
+    effectObj.value = 0.5;
+    retObj.effect.push(effectObj);
     break;
   case 9 : 
-    retObj.name = '마비';
+    retObj.name = 'Unused';
     retObj.nameType = cons.NAME_KOR_NO_END_CONS;
     retObj.stackType = 1;
     effectObj = {};
@@ -135,9 +141,13 @@ module.exports.getBuffData = function(eff) {
     effectObj.code = 10010;
     effectObj.buff = retObj;
     retObj.effect.push(effectObj);
+    effectObj = {};
+    effectObj.code = 100102;
+    effectObj.buff = retObj;
+    retObj.effect.push(effectObj);
     break;
   case 11 : 
-    retObj.name = '혼란';
+    retObj.name = '광란';
     retObj.nameType = cons.NAME_KOR_END_CONS;
     retObj.stackType = 1;
     effectObj = {};
