@@ -472,13 +472,6 @@
 </main>
   <% } %>
   <% } %>
-<script>
-  // 모바일: 툴팁 탭으로 열고 닫기
-  document.addEventListener('click', function (e) {
-    var t = e.target.closest('.has-tip, .inventoryItem button');
-    document.querySelectorAll('.tip-open').forEach(function (el) { if (el !== t) el.classList.remove('tip-open'); });
-    if (t && !e.target.closest('.itemTooltip')) t.classList.toggle('tip-open');
-  });
-</script>
+<script src="/js/ui.js"></script>
 </body>
 </html>

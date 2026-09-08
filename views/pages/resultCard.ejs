@@ -210,12 +210,6 @@
   </div>
 
 </div>
-<script>
-  document.addEventListener('click', function (e) {
-    var t = e.target.closest('.has-tip, .inventoryItem button, .charItem button, .actualContent');
-    document.querySelectorAll('.tip-open').forEach(function (el) { if (el !== t) el.classList.remove('tip-open'); });
-    if (t && !e.target.closest('.itemTooltip') && t.querySelector('.itemTooltip')) t.classList.toggle('tip-open');
-  });
-</script>
+<script src="/js/ui.js"></script>
 </body>
 </html>
