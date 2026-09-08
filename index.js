@@ -85,7 +85,7 @@ const app = express()
 .get('/test', (req, res) => res.render('pages/battle', {result: (new battlemodule.bmodule()).doBattle(JSON.parse(JSON.stringify(monster.rsDeci)), JSON.parse(JSON.stringify(monster.mMegaTaurus)), 1).result}))
 .get('/test2', (req, res) => res.render('pages/trade', {room : '1', uid : '03'}))
 .get('/test3', (req, res) => res.render('pages/trade', {room : '1', uid : '06'}))
-.get('/test4', (req, res) => res.send(procInit2()))
+.get('/test4', (req, res) => res.send(procInit()))
 .get('/test5', (req, res) => res.render('pages/resultCard', {item : {name: 'test', rarity: Math.floor(Math.random() * 6)}}))
 .get('/test6', (req, res) => res.send(procFullTest()))
 .listen(PORT, () => console.log(`Listening on ${ PORT }`));
@@ -285,6 +285,7 @@ function procFullTest() {
 
 async function procInit () {
   await setCharacter('thelichking', 2, chara.lk);
+  await setCharacter('thebmw', 1, chara.julius);
   /*var rc = {name : '계승의 카드 묶음', type : 90003, rarity : cons.ITEM_RARITY_PREMIUM};
   var rc2 = {name : '계승의 요일석 더미', type : 90004, rarity : cons.ITEM_RARITY_PREMIUM};
   var rc3 = item.list[434];
