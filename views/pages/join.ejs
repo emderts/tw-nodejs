@@ -1,30 +1,32 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>ThirdWorld - 회원가입</title>
-    <link href="https://fonts.googleapis.com/css?family=Nanum+Gothic" rel="stylesheet">
-    <style>
-      body {font-family: "Nanum Gothic", sans-serif; }
-      .loginTitle {font-size: 25px; font-weight: bold; text-shadow: 0 0 2px black; }
-      .loginWrap {margin: 15% auto; width: 245px; }
-      .loginInput {padding: 5px; }
-      .loginSubmit {border-radius: 10px; float: right; margin-top: -58px; height: 55px; width: 55px; background-color: #3bbaea; box-shadow: 0 0 3px black; cursor: pointer; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ThirdWorld - 가입</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Noto+Serif+KR:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/stylesheets/main.css">
 </head>
 <body>
-  <div class="loginWrap">
-    <span class="loginTitle">ThirdWorld</span>
-    <form action="/join" method="post">
-      <div><input type="text" class="loginInput" name="userId" placeholder="아이디" /></div>
-      <div><input type="password" class="loginInput" name="userPwd" placeholder="비밀번호" /></div>
-      <div><input type="password" class="loginInput" name="userPwdCheck" placeholder="비밀번호 확인" /></div>
-      <div><input type="text" class="loginInput" name="userName" placeholder="사용자명" /></div>
-      <input type="submit" class="loginSubmit" value="가입" />
-    </form>
-    <p>비밀번호는 기초적으로 단방향 암호화되며 사용자명은 캐릭터와 무관한 사용자 이름입니다.</p>
-  </div>
+  <main class="login-page">
+    <div class="login-card">
+      <div class="brand">
+        <h1>ThirdWorld</h1>
+        <p>새 계정 만들기</p>
+      </div>
+      <form action="/join" method="post">
+        <input type="text" name="userId" placeholder="아이디" autocomplete="username" required />
+        <input type="password" name="userPwd" placeholder="비밀번호" autocomplete="new-password" required />
+        <input type="password" name="userPwdCheck" placeholder="비밀번호 확인" autocomplete="new-password" required />
+        <input type="text" name="userName" placeholder="사용자명" required />
+        <div class="actions">
+          <a class="btn" href="/login">돌아가기</a>
+          <input type="submit" class="btn-primary" value="가입" />
+        </div>
+      </form>
+      <p class="note">비밀번호는 단방향 암호화되어 저장됩니다. 사용자명은 캐릭터와 무관한 계정 이름입니다.</p>
+    </div>
+  </main>
 </body>
-</html> 
+</html>

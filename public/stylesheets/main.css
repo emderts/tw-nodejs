@@ -1,0 +1,269 @@
+/* ThirdWorld — 공통 스타일
+   컨셉: 어두운 슬레이트 위의 공격대 명부. 놋쇠 인장 강조, 진영별 색상 반영. */
+
+:root {
+  --ink: #1b2130;        /* 페이지 배경 */
+  --slate: #262d3f;      /* 패널 */
+  --slate-2: #2f3750;    /* 패널 헤더 / 강조 행 */
+  --line: #3a4359;       /* 경계선 */
+  --parchment: #ece4d2;  /* 본문 글자 */
+  --ash: #9aa2b4;        /* 보조 글자 */
+  --brass: #d4a94f;      /* 강조 */
+  --brass-dim: #8a6f36;
+  --side-aris: #5f8fe0;  /* 아리스란 */
+  --side-mine: #d65a4f;  /* 미네르프 */
+  --side: var(--brass);  /* 현재 진영 색 (body에 data-side로 지정) */
+
+  --r-uncommon: #5cc3dd;
+  --r-rare: #a67ad0;
+  --r-premium: #3fcf7a;
+  --r-unique: #ff6bd6;
+  --r-epic: #ffa552;
+
+  --font-body: "Noto Sans KR", "Nanum Gothic", sans-serif;
+  --font-display: "Noto Serif KR", serif;
+}
+body[data-side="0"] { --side: var(--side-aris); }
+body[data-side="1"] { --side: var(--side-mine); }
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--ink);
+  color: var(--parchment);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.55;
+}
+a { color: var(--brass); text-decoration: none; }
+a:hover { text-decoration: underline; }
+:focus-visible { outline: 2px solid var(--brass); outline-offset: 2px; }
+
+/* ---------- 레이아웃 ---------- */
+.page { max-width: 1100px; margin: 0 auto; padding: 16px; }
+.grid { display: grid; gap: 16px; }
+@media (min-width: 900px) {
+  .grid-main { grid-template-columns: 340px 1fr; align-items: start; }
+}
+
+/* ---------- 패널 ---------- */
+.panel {
+  background: var(--slate);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.panel > h2 {
+  margin: 0;
+  padding: 10px 14px;
+  font: 600 14px/1.3 var(--font-display);
+  letter-spacing: 0.02em;
+  color: var(--brass);
+  background: var(--slate-2);
+  border-bottom: 1px solid var(--line);
+}
+.panel-body { padding: 12px 14px; }
+
+/* ---------- 캐릭터 명패 (진영 색상 반영) ---------- */
+.nameplate {
+  display: grid;
+  grid-template-columns: 6px 1fr auto;
+  gap: 0 14px;
+  align-items: center;
+  background: var(--slate);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+.nameplate::before { content: ""; align-self: stretch; background: var(--side); }
+.nameplate-main { padding: 12px 0; min-width: 0; }
+.nameplate-main .name {
+  margin: 0;
+  font: 700 24px/1.2 var(--font-display);
+  color: var(--parchment);
+}
+.nameplate-main .name small { font: 400 14px var(--font-body); color: var(--ash); margin-left: 8px; }
+.nameplate-main .sub { margin: 4px 0 0; color: var(--ash); font-size: 13px; }
+.nameplate-main .sub b { color: var(--side); font-weight: 600; }
+.nameplate-side { padding: 12px 14px; text-align: right; color: var(--ash); font-size: 13px; }
+.nameplate-side .user { color: var(--parchment); }
+
+/* ---------- 키-값 표 ---------- */
+table.kv { width: 100%; border-collapse: collapse; }
+.kv td { padding: 6px 14px; border-top: 1px solid var(--line); vertical-align: middle; }
+.kv tr:first-child td { border-top: 0; }
+.kv td.k { color: var(--ash); white-space: nowrap; width: 1%; }
+.kv td.v { color: var(--parchment); }
+.kv td.a { width: 1%; white-space: nowrap; text-align: right; }
+.kv form { display: inline; margin: 0; }
+.kv .gauge { display: inline-block; min-width: 90px; height: 6px; background: var(--ink); border-radius: 3px; vertical-align: middle; margin-left: 8px; overflow: hidden; }
+.kv .gauge i { display: block; height: 100%; background: var(--side); }
+
+/* ---------- 버튼 ---------- */
+.btn, button, input[type="submit"], input[type="button"] {
+  font: 500 13px/1 var(--font-body);
+  color: var(--parchment);
+  background: var(--slate-2);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  padding: 7px 12px;
+  cursor: pointer;
+}
+.btn:hover, button:hover { border-color: var(--brass-dim); }
+button:disabled { opacity: 0.4; cursor: not-allowed; }
+.btn-primary, input[type="submit"].btn-primary {
+  background: var(--brass);
+  color: var(--ink);
+  border-color: var(--brass);
+  font-weight: 700;
+}
+.btn-primary:hover { background: #e3bb62; }
+.btn-sm, .kv button { padding: 4px 9px; font-size: 12px; }
+
+/* ---------- 장비 / 스킬 ---------- */
+.equip-row { display: grid; grid-template-columns: 78px 1fr auto; gap: 10px; align-items: center; padding: 8px 14px; border-top: 1px solid var(--line); }
+.equip-row:first-child { border-top: 0; }
+.equip-row .slot { color: var(--ash); font-size: 13px; }
+.equip-row .item { min-width: 0; }
+.equip-row .item .rank { color: var(--ash); font-size: 12px; margin-right: 6px; }
+.equip-row.empty .item { color: var(--line); }
+
+.skills { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 12px 14px; }
+.skill {
+  position: relative;
+  background: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 10px;
+  text-align: center;
+}
+.skill .glyph { font: 700 20px/1 var(--font-display); color: var(--brass); }
+.skill .sname { display: block; margin-top: 6px; font-size: 13px; }
+.skill .sdmg { display: block; color: var(--ash); font-size: 12px; }
+.skills-extra { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 0 14px 12px; }
+.skills-extra .skill { text-align: left; display: flex; justify-content: space-between; align-items: baseline; }
+.skills-extra .glyph { font-size: 12px; color: var(--ash); }
+
+/* ---------- 등급 색상 ---------- */
+.rarityUncommon { color: var(--r-uncommon); }
+.rarityRare     { color: var(--r-rare); }
+.rarityPremium  { color: var(--r-premium); }
+.rarityUnique   { color: var(--r-unique); }
+.rarityEpic     { color: var(--r-epic); }
+
+/* ---------- 인벤토리 ---------- */
+.inventory { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 6px; padding: 12px 14px; }
+.inventoryItem form { margin: 0; }
+.inventoryItem button {
+  position: relative;
+  width: 100%;
+  text-align: left;
+  padding: 8px 10px;
+  border-left-width: 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  background: var(--ink);
+}
+.inventoryItem button[type="submit"] { border-color: var(--brass); box-shadow: inset 0 0 0 1px var(--brass); }
+.buttonCommon   { border-left-color: var(--ash) !important; }
+.buttonUncommon { border-left-color: var(--r-uncommon) !important; color: var(--r-uncommon); }
+.buttonRare     { border-left-color: var(--r-rare) !important; color: var(--r-rare); }
+.buttonPremium  { border-left-color: var(--r-premium) !important; color: var(--r-premium); }
+.buttonUnique   { border-left-color: var(--r-unique) !important; color: var(--r-unique); }
+.buttonEpic     { border-left-color: var(--r-epic) !important; color: var(--r-epic); }
+
+/* ---------- 툴팁 (hover + 탭) ---------- */
+.has-tip { position: relative; }
+.itemTooltip {
+  visibility: hidden;
+  opacity: 0;
+  position: absolute;
+  left: 0; top: calc(100% + 6px);
+  z-index: 10;
+  width: 260px;
+  max-width: 80vw;
+  padding: 8px 10px;
+  background: #0f131c;
+  color: var(--parchment);
+  border: 1px solid var(--brass-dim);
+  border-radius: 4px;
+  font: 400 12.5px/1.5 var(--font-body);
+  text-align: left;
+  white-space: normal;
+  box-shadow: 0 6px 18px rgba(0,0,0,.45);
+  transition: opacity .12s;
+}
+.tooltipFlavor { color: var(--ash); font-style: italic; }
+@media (hover: hover) {
+  .has-tip:hover > .itemTooltip,
+  .inventoryItem button:hover > .itemTooltip,
+  .charViewContent:hover > .itemTooltip { visibility: visible; opacity: 1; }
+}
+.tip-open > .itemTooltip { visibility: visible; opacity: 1; }
+
+/* ---------- 소식 ---------- */
+.news { margin: 0; padding: 0; list-style: none; }
+.news li { padding: 8px 14px; border-top: 1px solid var(--line); font-size: 13.5px; }
+.news li:first-child { border-top: 0; }
+.news-personal li { border-left: 3px solid var(--side); }
+
+/* ---------- 채팅 ---------- */
+.chat { display: grid; grid-template-columns: 1fr 110px; }
+.chat ul { margin: 0; padding: 0; list-style: none; height: 220px; overflow-y: auto; }
+.chat ul#messages li { padding: 6px 14px; font-size: 13.5px; border-top: 1px solid var(--line); }
+.chat ul#messages li:first-child { border-top: 0; }
+.chat ul#people { border-left: 1px solid var(--line); background: var(--ink); }
+.chat ul#people li { padding: 6px 12px; font-size: 13px; color: var(--ash); }
+.chat ul#people li::before { content: "●"; color: var(--r-premium); font-size: 8px; margin-right: 6px; vertical-align: middle; }
+.chat form { grid-column: 1 / -1; display: flex; gap: 6px; padding: 10px 14px; border-top: 1px solid var(--line); }
+.chat input[type="text"] { flex: 1; }
+
+/* ---------- 폼 입력 ---------- */
+input[type="text"], input[type="password"], select {
+  font: 14px var(--font-body);
+  color: var(--parchment);
+  background: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  padding: 8px 10px;
+  width: 100%;
+}
+input::placeholder { color: var(--ash); opacity: .8; }
+input:focus { border-color: var(--brass); outline: none; }
+
+/* ---------- 메뉴 ---------- */
+.menu { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; padding: 12px 14px; }
+.menu a {
+  display: block;
+  padding: 11px 12px;
+  background: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  color: var(--parchment);
+  font-size: 13.5px;
+  text-align: center;
+}
+.menu a:hover { border-color: var(--brass); color: var(--brass); text-decoration: none; }
+.menu a.quiet { color: var(--ash); }
+
+/* ---------- 알림 오버레이 ---------- */
+.alertBack { position: fixed; inset: 0; background: rgba(15,19,28,.85); z-index: 100; display: none; }
+#alertWindow { margin: 30vh auto 0; width: min(320px, 90vw); padding: 20px; background: var(--slate); border: 1px solid var(--brass-dim); border-radius: 4px; text-align: center; }
+#alertWindow form { margin-top: 12px; display: flex; gap: 8px; justify-content: center; }
+
+/* ---------- 로그인 ---------- */
+.login-page { min-height: 100vh; display: grid; place-items: center; padding: 24px; }
+.login-card { width: min(360px, 100%); }
+.login-card .brand { text-align: center; margin-bottom: 18px; }
+.login-card .brand h1 { margin: 0; font: 700 26px/1.2 var(--font-body); letter-spacing: 0.01em; color: var(--parchment); text-shadow: 0 0 2px #000; }
+.login-card .brand p { margin: 10px 0 0; color: var(--ash); font-size: 13px; }
+.login-card form { display: grid; gap: 10px; }
+.login-card input[type="text"], .login-card input[type="password"] { padding: 12px 12px; font-size: 15px; }
+.login-card .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 6px; }
+.login-card .actions .btn, .login-card .actions input { padding: 12px; font-size: 14px; text-align: center; }
+.login-card .note { margin: 18px 0 0; color: var(--ash); font-size: 12.5px; line-height: 1.6; }
+
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
