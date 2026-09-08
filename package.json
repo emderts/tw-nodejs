@@ -2,7 +2,7 @@
   "name": "ThirdWorld-nodejs",
   "description": "",
   "engines": {
-    "node": "8.9.1"
+    "node": "20.x"
   },
   "main": "index.js",
   "scripts": {
