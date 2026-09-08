@@ -8,7 +8,7 @@ const bcrypt = require('bcrypt-nodejs');
 const { Pool } = require('pg');
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: true
+  ssl: { rejectUnauthorized: false }
 }); 
 const battlemodule = require('./battlemodule');
 const battlemodule2 = require('./battlemodule2');
