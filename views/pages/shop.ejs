@@ -1,27 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>ThirdWorld -  상점</title>
-    <link href="https://fonts.googleapis.com/css?family=Nanum+Gothic" rel="stylesheet">
-    <style>
-      body {font-family: "Nanum Gothic", sans-serif; }
-      div {width: 450px; max-width: 100%; margin: 0 auto; }
-      .charItem button {width: 450px; max-width: 100%; background-color: #ffffea; }
-      .charItem button:hover {background-color: #ffffcc; }
-      .itemTooltip {font-family: "Nanum Gothic", sans-serif; visibility: hidden; width: 250px; background-color: black; color: #fff; text-align: center; font-size: 13.3333px; border-radius: 6px; padding: 5px 0; position: absolute; z-index: 1; }
-      .charItem:hover .itemTooltip {visibility: visible; }
-      .rarityUncommon {color: #4bacc6; }
-      .rarityRare {color: #8054a2; }
-      .rarityPremium {color: #00b050; }
-      .rarityUnique {color: #ff33cc; }
-      .rarityEpic {color: #f79646; }
-      .backLink {text-align: center; width: 40%; margin: 10px auto; overflow: hidden; }
-    </style>
-    <script>
-      
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ThirdWorld - 상점</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Noto+Serif+KR:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/stylesheets/main.css">
+<script>
   function invClick(thisNode, event) {
     if (thisNode.type !== 'submit') {
       event.preventDefault();
@@ -31,7 +17,7 @@
       thisNode.setAttribute('type', 'submit');
     }
   }
-    </script>
+</script>
 </head>
 <body>
 <%  
@@ -152,9 +138,11 @@
     return cname;
   }
 %>
-  <div class="backLink">
-    프리미엄 샵 (현재 프리미엄 포인트 : <%= premiumPoint %>)
-  </div>
+<div class="page-narrow">
+  <div class="page-title"><h1>상점</h1></div>
+  <div class="list">
+
+  <h2 class="section-head">프리미엄 샵<small>현재 프리미엄 포인트 : <%= premiumPoint %></small></h2>
   <div class="charItem">
     <form action="/useShop" method="post">
       <button onclick="invClick(this, event)" type="button">요일석 구매 [<%= dayStoneBought ? 5 + dayStoneBought : 5 %>pt]</button>
@@ -233,9 +221,7 @@
       <input type="hidden" name="option" value="13">
     </form>
   </div>
-  <div class="backLink">
-    리설트 카드 샵 (현재 가루 : <%= dust %>)
-  </div>
+  <h2 class="section-head">리설트 카드 샵<small>현재 가루 : <%= dust %></small></h2>
   <div class="charItem">
     <form action="/useShop" method="post">
       <button onclick="invClick(this, event)" type="button">장비 리설트 카드 [<%= 100 * rankFactor %> 가루]</button>
@@ -297,108 +283,88 @@
     </form>
   </div>
   <% if (currencies.mevious) { %>
-  <div class="backLink">
-    메비우스 섬멸 병참장교 (현재 메비우스 섬멸의 증표 : <%= currencies.mevious %>)
-  </div>
+  <h2 class="section-head">메비우스 섬멸 병참장교<small>현재 메비우스 섬멸의 증표 : <%= currencies.mevious %></small></h2>
   <div class="charItem">
     <form action="/useShop" method="post">
-      <button onclick="invClick(this, event)" type="button">크로울러의 민첩한 눈 [10 메비우스 섬멸의 증표]</button>
-      <div class="itemTooltip"><%- makeTooltip(item.mevious[0]) %></div> 
+      <button onclick="invClick(this, event)" type="button">크로울러의 민첩한 눈 [10 메비우스 섬멸의 증표]<div class="itemTooltip"><%- makeTooltip(item.mevious[0]) %></div></button> 
       <input type="hidden" name="option" value="90001">
     </form>
   </div>
   <div class="charItem">
     <form action="/useShop" method="post">
-      <button onclick="invClick(this, event)" type="button">헤드 헌터의 괴창 [10 메비우스 섬멸의 증표]</button>
-      <div class="itemTooltip"><%- makeTooltip(item.mevious[1]) %></div> 
+      <button onclick="invClick(this, event)" type="button">헤드 헌터의 괴창 [10 메비우스 섬멸의 증표]<div class="itemTooltip"><%- makeTooltip(item.mevious[1]) %></div></button> 
       <input type="hidden" name="option" value="90002">
     </form>
   </div>
   <div class="charItem">
     <form action="/useShop" method="post">
-      <button onclick="invClick(this, event)" type="button">메비우스 소탕자 [30 메비우스 섬멸의 증표]</button>
-      <div class="itemTooltip"><%- makeTooltip(item.mevious[2]) %></div> 
+      <button onclick="invClick(this, event)" type="button">메비우스 소탕자 [30 메비우스 섬멸의 증표]<div class="itemTooltip"><%- makeTooltip(item.mevious[2]) %></div></button> 
       <input type="hidden" name="option" value="90003">
     </form>
   </div>
   <div class="charItem">
     <form action="/useShop" method="post">
-      <button onclick="invClick(this, event)" type="button">빅토리어스의 의지 [60 메비우스 섬멸의 증표]</button>
-      <div class="itemTooltip"><%- makeTooltip(item.mevious[3]) %></div> 
+      <button onclick="invClick(this, event)" type="button">빅토리어스의 의지 [60 메비우스 섬멸의 증표]<div class="itemTooltip"><%- makeTooltip(item.mevious[3]) %></div></button> 
       <input type="hidden" name="option" value="90004">
     </form>
   </div>
   <% } %>
   <% if (currencies.ember) { %>
-  <div class="backLink">
-    잔불 교환자 (현재 잔불 : <%= currencies.ember %>)
-  </div>
+  <h2 class="section-head">잔불 교환자<small>현재 잔불 : <%= currencies.ember %></small></h2>
   <div class="charItem">
     <form action="/useShop" method="post">
-      <button onclick="invClick(this, event)" type="button">카사스의 피고리 [5 잔불]</button>
-      <div class="itemTooltip"><%- makeTooltip(item.ember[0]) %></div> 
+      <button onclick="invClick(this, event)" type="button">카사스의 피고리 [5 잔불]<div class="itemTooltip"><%- makeTooltip(item.ember[0]) %></div></button> 
       <input type="hidden" name="option" value="90005">
     </form>
   </div>
   <div class="charItem">
     <form action="/useShop" method="post">
-      <button onclick="invClick(this, event)" type="button">깊은 곳의 가호 [15 잔불]</button>
-      <div class="itemTooltip"><%- makeTooltip(item.ember[1]) %></div> 
+      <button onclick="invClick(this, event)" type="button">깊은 곳의 가호 [15 잔불]<div class="itemTooltip"><%- makeTooltip(item.ember[1]) %></div></button> 
       <input type="hidden" name="option" value="90006">
     </form>
   </div>
   <div class="charItem">
     <form action="/useShop" method="post">
-      <button onclick="invClick(this, event)" type="button">잿더미 : 나선의 검 [30 잔불]</button>
-      <div class="itemTooltip"><%- makeTooltip(item.ember[2]) %></div> 
+      <button onclick="invClick(this, event)" type="button">잿더미 : 나선의 검 [30 잔불]<div class="itemTooltip"><%- makeTooltip(item.ember[2]) %></div></button> 
       <input type="hidden" name="option" value="90007">
     </form>
   </div>
   <div class="charItem">
     <form action="/useShop" method="post">
-      <button onclick="invClick(this, event)" type="button">잿더미 : 장작의 왕 [60 잔불]</button>
-      <div class="itemTooltip"><%- makeTooltip(item.ember[3]) %></div> 
+      <button onclick="invClick(this, event)" type="button">잿더미 : 장작의 왕 [60 잔불]<div class="itemTooltip"><%- makeTooltip(item.ember[3]) %></div></button> 
       <input type="hidden" name="option" value="90008">
     </form>
   </div>
   <% } %>
   <% if (currencies.burntMark) { %>
-  <div class="backLink">
-    불탄 증표 병참장교 (현재 불탄 증표 : <%= currencies.burntMark %>)
-  </div>
+  <h2 class="section-head">불탄 증표 병참장교<small>현재 불탄 증표 : <%= currencies.burntMark %></small></h2>
   <div class="charItem">
     <form action="/useShop" method="post">
-      <button onclick="invClick(this, event)" type="button">무력화 토템 [5 불탄 증표]</button>
-      <div class="itemTooltip"><%- makeTooltip(item.burntMark[0]) %></div> 
+      <button onclick="invClick(this, event)" type="button">무력화 토템 [5 불탄 증표]<div class="itemTooltip"><%- makeTooltip(item.burntMark[0]) %></div></button> 
       <input type="hidden" name="option" value="90009">
     </form>
   </div>
   <div class="charItem">
     <form action="/useShop" method="post">
-      <button onclick="invClick(this, event)" type="button">해제의 지팡이 [10 불탄 증표]</button>
-      <div class="itemTooltip"><%- makeTooltip(item.burntMark[1]) %></div> 
+      <button onclick="invClick(this, event)" type="button">해제의 지팡이 [10 불탄 증표]<div class="itemTooltip"><%- makeTooltip(item.burntMark[1]) %></div></button> 
       <input type="hidden" name="option" value="90010">
     </form>
   </div>
   <div class="charItem">
     <form action="/useShop" method="post">
-      <button onclick="invClick(this, event)" type="button">석상 파괴자 [20 불탄 증표]</button>
-      <div class="itemTooltip"><%- makeTooltip(item.burntMark[2]) %></div> 
+      <button onclick="invClick(this, event)" type="button">석상 파괴자 [20 불탄 증표]<div class="itemTooltip"><%- makeTooltip(item.burntMark[2]) %></div></button> 
       <input type="hidden" name="option" value="90011">
     </form>
   </div>
   <div class="charItem">
     <form action="/useShop" method="post">
-      <button onclick="invClick(this, event)" type="button">무결한 물의 정령석 [60 불탄 증표]</button>
-      <div class="itemTooltip"><%- makeTooltip(item.burntMark[3]) %></div> 
+      <button onclick="invClick(this, event)" type="button">무결한 물의 정령석 [60 불탄 증표]<div class="itemTooltip"><%- makeTooltip(item.burntMark[3]) %></div></button> 
       <input type="hidden" name="option" value="90012">
     </form>
   </div>
   <% } %>
   <% if (currencies.warlock) { %>
-  <div class="backLink">
-    흑마술의 파편 교환자 (현재 흑마술의 파편 : <%= currencies.warlock %>)
-  </div>
+  <h2 class="section-head">흑마술의 파편 교환자<small>현재 흑마술의 파편 : <%= currencies.warlock %></small></h2>
   <div class="charItem">
     <form action="/useShop" method="post">
       <button onclick="invClick(this, event)" type="button">프리미엄 포인트 1점 [1 흑마술의 파편]</button>
@@ -413,9 +379,7 @@
   </div>
   <% } %>
   <% if (currencies.aeika) { %>
-  <div class="backLink">
-    움직이는 요새의 파편 교환자 (현재 움직이는 요새의 파편 : <%= currencies.aeika %>)
-  </div>
+  <h2 class="section-head">움직이는 요새의 파편 교환자<small>현재 움직이는 요새의 파편 : <%= currencies.aeika %></small></h2>
   <div class="charItem">
     <form action="/useShop" method="post">
       <button onclick="invClick(this, event)" type="button">프리미엄 포인트 1점 [1 움직이는 요새의 파편]</button>
@@ -436,9 +400,7 @@
   </div>
   <% } %>
   <% if (currencies.julius) { %>
-  <div class="backLink">
-    조작된 시간의 파편 교환자 (현재 조작된 시간의 파편 : <%= currencies.julius %>)
-  </div>
+  <h2 class="section-head">조작된 시간의 파편 교환자<small>현재 조작된 시간의 파편 : <%= currencies.julius %></small></h2>
   <div class="charItem">
     <form action="/useShop" method="post">
       <button onclick="invClick(this, event)" type="button">프리미엄 포인트 1점 [1 조작된 시간의 파편]</button>
@@ -459,9 +421,7 @@
   </div>
   <% } %>
   <% if (currencies.train) { %>
-  <div class="backLink">
-    검은 빛의 수련가 (현재 수련의 결실 : <%= currencies.train %>)
-  </div>
+  <h2 class="section-head">검은 빛의 수련가<small>현재 수련의 결실 : <%= currencies.train %></small></h2>
   <div class="charItem">
     <form action="/useShop" method="post">
       <button onclick="invClick(this, event)" type="button">스탯 포인트 +2 (<%= 5 - item.train[3] %>회 남음) [10 수련의 결실]</button>
@@ -470,30 +430,25 @@
   </div>
   <div class="charItem">
     <form action="/useShop" method="post">
-      <button onclick="invClick(this, event)" type="button">흑색의 기사 [30 수련의 결실]</button>
-      <div class="itemTooltip"><%- makeTooltip(item.train[0]) %></div> 
+      <button onclick="invClick(this, event)" type="button">흑색의 기사 [30 수련의 결실]<div class="itemTooltip"><%- makeTooltip(item.train[0]) %></div></button> 
       <input type="hidden" name="option" value="90023">
     </form>
   </div>
   <div class="charItem">
     <form action="/useShop" method="post">
-      <button onclick="invClick(this, event)" type="button">섬광의 기사 [30 수련의 결실]</button>
-      <div class="itemTooltip"><%- makeTooltip(item.train[1]) %></div> 
+      <button onclick="invClick(this, event)" type="button">섬광의 기사 [30 수련의 결실]<div class="itemTooltip"><%- makeTooltip(item.train[1]) %></div></button> 
       <input type="hidden" name="option" value="90024">
     </form>
   </div>
   <div class="charItem">
     <form action="/useShop" method="post">
-      <button onclick="invClick(this, event)" type="button">로엔그린의 무위 [60 수련의 결실]</button>
-      <div class="itemTooltip"><%- makeTooltip(item.train[2]) %></div> 
+      <button onclick="invClick(this, event)" type="button">로엔그린의 무위 [60 수련의 결실]<div class="itemTooltip"><%- makeTooltip(item.train[2]) %></div></button> 
       <input type="hidden" name="option" value="90025">
     </form>
   </div>
   <% } %>
   <% if (currencies.indigo) { %>
-  <div class="backLink">
-    석영 고원 상인 (현재 석영 고원 증표 : <%= currencies.indigo %>)
-  </div>
+  <h2 class="section-head">석영 고원 상인<small>현재 석영 고원 증표 : <%= currencies.indigo %></small></h2>
   <div class="charItem">
     <form action="/useShop" method="post">
       <button onclick="invClick(this, event)" type="button">기력의 조각 (피로도 +3) [5 석영 증표]</button>
@@ -514,14 +469,21 @@
   </div>
   <div class="charItem">
     <form action="/useShop" method="post">
-      <button onclick="invClick(this, event)" type="button">몬스터 볼 [35 석영 증표]</button>
-      <div class="itemTooltip"><%- makeTooltip(item.indigo[0]) %></div> 
+      <button onclick="invClick(this, event)" type="button">몬스터 볼 [35 석영 증표]<div class="itemTooltip"><%- makeTooltip(item.indigo[0]) %></div></button> 
       <input type="hidden" name="option" value="90029">
     </form>
   </div>
   <% } %>
-  <div class="backLink">
-    <a href="/">돌아가기</a>
+<div class="backLink"><a href="/">돌아가기</a></div>
+
   </div>
+</div>
+<script>
+  document.addEventListener('click', function (e) {
+    var t = e.target.closest('.has-tip, .inventoryItem button, .charItem button, .actualContent');
+    document.querySelectorAll('.tip-open').forEach(function (el) { if (el !== t) el.classList.remove('tip-open'); });
+    if (t && !e.target.closest('.itemTooltip') && t.querySelector('.itemTooltip')) t.classList.toggle('tip-open');
+  });
+</script>
 </body>
-</html> 
+</html>

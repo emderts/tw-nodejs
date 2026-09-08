@@ -1,21 +1,17 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>ThirdWorld - 전투 로그 보기</title>
-    <link href="https://fonts.googleapis.com/css?family=Nanum+Gothic" rel="stylesheet">
-    <style>
-      body {font-family: "Nanum Gothic", sans-serif; }
-      div {width: 450px; max-width: 100%; margin: 0 auto; text-align: center; }
-      .logDate {font-size: 12px; }
-      .charItem button {width: 450px; max-width: 100%; background-color: #ffffea; margin-top: 5px; }
-      .charItem button:hover {background-color: #ffffcc; }
-      .backLink {text-align: center; width: 40%; margin: 10px auto; overflow: hidden; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ThirdWorld - 전투 로그</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Noto+Serif+KR:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/stylesheets/main.css">
 </head>
 <body>
+<div class="page-narrow">
+  <div class="page-title"><h1>전투 로그</h1></div>
+  <div class="list">
   <% for (val of list) { %>
     <div class="charItem">
       <form action="/battleLog" method="post">
@@ -25,8 +21,8 @@
       <div class="logDate"><%= val.date %></div>
     </div>
   <% } %>
-  <div class="backLink">
-    <a href="/">돌아가기</a>
   </div>
+  <div class="backLink"><a href="/">돌아가기</a></div>
+</div>
 </body>
-</html> 
+</html>

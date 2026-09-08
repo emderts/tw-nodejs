@@ -1,22 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>ThirdWorld - 퀘스트</title>
-    <link href="https://fonts.googleapis.com/css?family=Nanum+Gothic" rel="stylesheet">
-    <style>
-      body {font-family: "Nanum Gothic", sans-serif; }
-      div {width: 450px; max-width: 100%; margin: 0 auto; }
-      .questItem {width: 60%; padding: 3%; text-align: center; border: 0.1px solid gainsboro; background-color: aliceblue; }
-      .questTitle {font-weight: bold; font-size: 17px; margin-bottom: 2px; }
-      .questDesc {font-size: 15px; margin-bottom: 8px; }
-      .questReward {font-size: 15px; margin-bottom: 3px; }
-      .questItem button {width: 450px; max-width: 100%; background-color: #ffffea; }
-      .questItem button:hover {background-color: #ffffcc; }
-      .backLink {text-align: center; width: 40%; margin: 10px auto; overflow: hidden; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ThirdWorld - 퀘스트</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Noto+Serif+KR:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/stylesheets/main.css">
 </head>
 <body>
 <%
@@ -42,29 +32,29 @@
   printName = ['', '승리가 눈 앞에 있다!', '도장 깨기', '저를 때려주세요', '가루족망겜', '실력갓흥겜', '안되겠소! 갑시다!', '왕위를 계승 중입니다, 아버지', '존버하지 마세요', '위대한 해체가', '도로우! 버서커 소울!', '오늘은 n요일이에요', '공격왕 김공격'];
   printDesc = ['', '대전 승리', '각 다른 플레이어와 대전', '대전 신청받음', '리설트 카드에서 가루 획득', '리설트 카드에서 레어 이상 획득', '아이템 해체', '아서스 메네실과 대전', '상점 아이템 구매', '유니크 장비 이상 해체', '리설트 카드 개봉', '오늘의 요일석 부여', '공격 성공'];
 %>
-  <div class="backLink">
-    퀘스트
-  </div>
+<div class="page-narrow">
+  <div class="page-title"><h1>퀘스트</h1></div>
   <div class="questWrap">
-  <% for (key in quest) { 
+  <% for (key in quest) {
        val = quest[key]; %>
     <div class="questItem">
       <div class="questTitle"><%= printName[val.code] %></div>
-      <div class="questDesc"><%= printDesc[val.code] + ' ' + val.progress + ' / ' + val.target %></div>
-      <div class="questReward"><%= printReward(val) %><br>경험치 10%</div>
-      <form action="/submitQuest" method="post">
-        <button type="submit"<%= val.progress >= val.target ? '' : ' disabled' %>>완료</button>
-        <input type="hidden" name="option" value="<%= val.code %>">
-      </form>
-      <form action="/resetQuest" method="post">
-        <button type="submit"<%= resetQuest ? '' : ' disabled' %>>교체</button>
-        <input type="hidden" name="option" value="<%= val.code %>">
-      </form>
+      <div class="questDesc"><%= printDesc[val.code] %> <b><%= val.progress %> / <%= val.target %></b></div>
+      <div class="questReward">보상: <%= printReward(val) %>, 경험치 10%</div>
+      <div class="actions">
+        <form action="/submitQuest" method="post">
+          <button type="submit" class="btn-primary"<%= val.progress >= val.target ? '' : ' disabled' %>>완료</button>
+          <input type="hidden" name="option" value="<%= val.code %>">
+        </form>
+        <form action="/resetQuest" method="post">
+          <button type="submit"<%= resetQuest ? '' : ' disabled' %>>교체</button>
+          <input type="hidden" name="option" value="<%= val.code %>">
+        </form>
+      </div>
     </div>
   <% } %>
   </div>
-  <div class="backLink">
-    <a href="/">돌아가기</a>
-  </div>
+  <div class="backLink"><a href="/">돌아가기</a></div>
+</div>
 </body>
-</html> 
+</html>

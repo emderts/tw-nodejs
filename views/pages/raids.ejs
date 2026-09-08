@@ -1,22 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>ThirdWorld - 시즌 레이드</title>
-    <link href="https://fonts.googleapis.com/css?family=Nanum+Gothic" rel="stylesheet">
-    <style>
-      body {font-family: "Nanum Gothic", sans-serif; }
-      div {width: 450px; max-width: 100%; margin: 0 auto; }
-      .charItem button {width: 450px; max-width: 100%; background-color: #ffffea; }
-      .charItem button:hover {background-color: #ffffcc; }
-      .itemTooltip {font-family: "Nanum Gothic", sans-serif; visibility: hidden; width: 250px; background-color: black; color: #fff; text-align: center; font-size: 13.3333px; border-radius: 6px; padding: 5px 0; position: absolute; z-index: 1; }
-      .charItem:hover .itemTooltip {visibility: visible; }
-      .backLink {text-align: center; width: 60%; margin: 10px auto; overflow: hidden; }
-    </style>
-    <script>
-      
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ThirdWorld - 시즌 레이드</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Noto+Serif+KR:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/stylesheets/main.css">
+<script>
   function invClick(thisNode, event) {
     if (thisNode.type !== 'submit') {
       event.preventDefault();
@@ -26,12 +17,12 @@
       thisNode.setAttribute('type', 'submit');
     }
   }
-    </script>
+</script>
 </head>
 <body>
-  <div class="backLink">
-    던전 입장
-  </div>
+<div class="page-narrow">
+  <div class="page-title"><h1>시즌 레이드</h1></div>
+  <div class="list">
   <% for (dun of dungeonList) { %>
   <div class="charItem">
     <form action="/enterRaid" method="post">
@@ -45,16 +36,23 @@
     </form>
     <% if (dun.progress) { %>
       <div class="backLink">
-         공략율 <%= dun.progress %>%<br>
+         공략율 <%= dun.progress %>%
     <% if (dun.left) { %>
-         재생성 <%= dun.left * 10 %>분<br>
+         · 재생성 <%= dun.left * 10 %>분
     <% } %>
       </div>
     <% } %>
   </div>
   <% } %>
-  <div class="backLink">
-    <a href="/">돌아가기</a>
   </div>
+  <div class="backLink"><a href="/">돌아가기</a></div>
+</div>
+<script>
+  document.addEventListener('click', function (e) {
+    var t = e.target.closest('.has-tip, .inventoryItem button, .charItem button, .actualContent');
+    document.querySelectorAll('.tip-open').forEach(function (el) { if (el !== t) el.classList.remove('tip-open'); });
+    if (t && !e.target.closest('.itemTooltip') && t.querySelector('.itemTooltip')) t.classList.toggle('tip-open');
+  });
+</script>
 </body>
-</html> 
+</html>

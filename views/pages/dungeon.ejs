@@ -1,22 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>ThirdWorld - 던전 입장</title>
-    <link href="https://fonts.googleapis.com/css?family=Nanum+Gothic" rel="stylesheet">
-    <style>
-      body {font-family: "Nanum Gothic", sans-serif; }
-      div {width: 450px; max-width: 100%; margin: 0 auto; }
-      .charItem button {width: 450px; max-width: 100%; background-color: #ffffea; }
-      .charItem button:hover {background-color: #ffffcc; }
-      .itemTooltip {font-family: "Nanum Gothic", sans-serif; visibility: hidden; width: 250px; background-color: black; color: #fff; text-align: center; font-size: 13.3333px; border-radius: 6px; padding: 5px 0; position: absolute; z-index: 1; }
-      .charItem:hover .itemTooltip {visibility: visible; }
-      .backLink {text-align: center; width: 60%; margin: 10px auto; overflow: hidden; }
-    </style>
-    <script>
-      
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ThirdWorld - 던전</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Noto+Serif+KR:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/stylesheets/main.css">
+<script>
   function invClick(thisNode, event) {
     if (thisNode.type !== 'submit') {
       event.preventDefault();
@@ -26,16 +17,16 @@
       thisNode.setAttribute('type', 'submit');
     }
   }
-    </script>
+</script>
 </head>
 <body>
 <%
   const names = {'03' : '가이우스 엠더츠', '04' : '루니샤', '05' : '뤼순 창', '06' : '세리어스 플로에르시아',
         '07' : '일룬드롤', '08' : '나백수', '09' : '이 눅스', '10' : '카시엔', '11' : '마랑', '12' : '가비류이', '13' : '제이'};
 %>
-  <div class="backLink">
-    던전 입장
-  </div>
+<div class="page-narrow">
+  <div class="page-title"><h1>던전 입장</h1></div>
+  <div class="list">
   <% for (dun of dungeonList) { %>
   <div class="charItem">
     <form action="/enterDungeon" method="post">
@@ -47,35 +38,32 @@
       </button>
       <input type="hidden" name="option" value="<%= dun.code %>">
     </form>
-    <% if (dun.phase) { 
+    <% if (dun.phase) {
   var leaderboard = [];
-  for (key in dun.battleRecord) { 
+  for (key in dun.battleRecord) {
     leaderboard.push({name : names[key], damage : dun.battleRecord[key]});
   }
-  leaderboard.sort(function(a, b) {
-    if (a.damage > b.damage) {
-      return -1;
-    } else if (a.damage == b.damage) {
-      return 0;
-    } else {
-      return 1;
-    }
-  }); 
+  leaderboard.sort(function(a, b) { return b.damage - a.damage; });
   const rank = leaderboard.findIndex(x => x.name == nameIn); %>
       <div class="backLink">
         <%= dun.bossName %><br>
-        <img src="<%= dun.image %>"><br>
-         <br><table><tr>현재 피해량</tr>
+        <img src="<%= dun.image %>" alt="<%= dun.bossName %>">
          <% if (rank != -1) { %>
-           <tr><td><%= rank+1 %>위</td><td><%= leaderboard[rank].damage %></td></tr>
+         <table><tr><td>현재 피해량</td><td><%= rank+1 %>위</td><td><%= leaderboard[rank].damage %></td></tr></table>
          <% } %>
-          </table>
       </div>
     <% } %>
   </div>
   <% } %>
-  <div class="backLink">
-    <a href="/">돌아가기</a>
   </div>
+  <div class="backLink"><a href="/">돌아가기</a></div>
+</div>
+<script>
+  document.addEventListener('click', function (e) {
+    var t = e.target.closest('.has-tip, .inventoryItem button, .charItem button, .actualContent');
+    document.querySelectorAll('.tip-open').forEach(function (el) { if (el !== t) el.classList.remove('tip-open'); });
+    if (t && !e.target.closest('.itemTooltip') && t.querySelector('.itemTooltip')) t.classList.toggle('tip-open');
+  });
+</script>
 </body>
-</html> 
+</html>

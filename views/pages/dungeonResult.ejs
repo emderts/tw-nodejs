@@ -1,42 +1,19 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>ThirdWorld - 던전</title>
-    <link href="https://fonts.googleapis.com/css?family=Nanum+Gothic" rel="stylesheet">
-    <style>
-      body {font-family: "Nanum Gothic", sans-serif; }
-      div.charItem {width: 450px; max-width: 100%; margin: 0 auto; }
-      .charItem button {width: 300px; max-width: 100%; background-color: #ffffea; }
-      .charItem button:hover {background-color: #ffffcc; }
-      .itemTooltip {font-family: "Nanum Gothic", sans-serif; visibility: hidden; width: 250px; background-color: black; color: #fff; text-align: center; font-size: 13.3333px; border-radius: 6px; padding: 5px 0; position: absolute; z-index: 1; }
-      .charItem:hover .itemTooltip {visibility: visible; }
-      .turnWrap {text-align: center; }
-      span.turnCount {font-size: 20px; font-weight: bold; }
-      span.skillUseWinner {font-weight: bold; }
-      .driveSkill {margin-top: 5px; font-weight: bold; }
-      .specialSkill {margin-top: 7px; font-weight: bold; }
-      .colorLeft {color: red; font-weight: bold; }
-      .colorRight {color: blue; font-weight: bold; }
-      .colorHp {color: green; }
-      .colorSp {color: blue; }
-      .charInfoWrap {width: 70%; max-width: 510px; margin: 10px auto; overflow: hidden; }
-      .charInfo {text-align: center; width: 49%; float: left; border-top: 1px solid black; }
-      .resultWrap {width: 70%; max-width: 510px; margin: 10px auto; overflow: hidden; }
-      .backLink {text-align: center; width: 40%; margin: 10px auto; overflow: hidden; }
-      table {margin: 30px auto; text-align: center; }
-      tr {background-color: gainsboro; }
-      tr.tblTitle {background-color: lightblue; }
-      td {padding: 10px; }
-      img {max-width: 400px; }
-    </style>
-  <script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ThirdWorld - 던전 결과</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Noto+Serif+KR:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/stylesheets/main.css">
+<script>
     function reveal() {
       document.getElementById('battleResult').setAttribute('style', 'display: block');
+      document.getElementById('revealBtn').setAttribute('style', 'display: none');
     }
-      
+</script>
+<script>
   function invClick(thisNode, event) {
     if (thisNode.type !== 'submit') {
       event.preventDefault();
@@ -46,51 +23,63 @@
       thisNode.setAttribute('type', 'submit');
     }
   }
-  </script>
+</script>
 </head>
 <body>
-    <table>
-      <tr class="tblTitle">
-        <td>페이즈</td>
-        <td>몬스터</td>
-        <td>결과</td>
-      </tr>
-    <% for (res of resultList) { %>
-      <tr>
-        <td><%= res.phase %></td>
-        <td><img src="<%= res.monImage %>" /><br><%= res.monName %></td>
-        <td><%= res.result %> (HP <%= res.hpLeft %>)</td>
-      </tr>
-    <% } %>
-    </table>
-    <div class="charItem">
-      <button type="button" onclick="reveal();">전투 보기</button>
-    </div>
-    <div id="battleResult" style="display: none">
-    <%- result %>
-    </div>
-      <div class="backLink"><%- reward %></div>
-    <% if (isFinished) { %>
-      <div class="backLink"><a href="/">돌아가기</a></div>
-    <% } else { 
-      if (stop) { %>
-        <div class="backLink"><a href="/stopDungeon">밖으로</a></div>
-      <div class="backLink"><a href="/nextPhaseDungeon">다음 단계로</a></div>
-      <% } else if (addInfo.type == 8) { 
-           var idx = 0; %>
-        <% for (const sel of addInfo.data) { %>
-    <div class="charItem">
+<div class="page-narrow battle-log">
+  <div class="page-title"><h1>던전 결과</h1></div>
+  <table class="data-table">
+    <tr class="tblTitle">
+      <td>페이즈</td>
+      <td>몬스터</td>
+      <td>결과</td>
+    </tr>
+  <% for (res of resultList) { %>
+    <tr>
+      <td><%= res.phase %></td>
+      <td><img src="<%= res.monImage %>" alt="" style="max-width:140px"><br><%= res.monName %></td>
+      <td><%= res.result %><br><span class="muted" style="color:var(--ash);font-size:12.5px">HP <%= res.hpLeft %></span></td>
+    </tr>
+  <% } %>
+  </table>
+
+  <div class="backLink" id="revealBtn"><a href="#" onclick="reveal(); return false;">전투 보기</a></div>
+  <div id="battleResult" style="display: none">
+  <%- result %>
+  </div>
+  <div class="note-box" style="margin-top:14px"><%- reward %></div>
+
+  <% if (isFinished) { %>
+    <div class="backLink"><a href="/">돌아가기</a></div>
+  <% } else {
+    if (stop) { %>
+    <div class="backLink"><a href="/stopDungeon">밖으로</a> &nbsp; <a href="/nextPhaseDungeon">다음 단계로</a></div>
+    <% } else if (addInfo.type == 8) {
+         var idx = 0; %>
+    <h2 class="section-head">선택</h2>
+    <div class="list">
+      <% for (const sel of addInfo.data) { %>
+      <div class="charItem">
         <form action="/nextPhaseDungeon" method="post">
           <button onclick="invClick(this, event)" type="button">
           <%= sel.name %><div class="itemTooltip"><%- sel.desc %></div>
           </button>
           <input type="hidden" name="option" value="<%= idx++ %>">
         </form>
+      </div>
+      <% } %>
     </div>
-        <% } %>
-      <% } else { %>
-      <div class="backLink"><a href="/nextPhaseDungeon">다음 단계로</a></div>
-    <% }
-    } %>
+    <% } else { %>
+    <div class="backLink"><a href="/nextPhaseDungeon">다음 단계로</a></div>
+  <% }
+  } %>
+</div>
+<script>
+  document.addEventListener('click', function (e) {
+    var t = e.target.closest('.has-tip, .inventoryItem button, .charItem button, .actualContent');
+    document.querySelectorAll('.tip-open').forEach(function (el) { if (el !== t) el.classList.remove('tip-open'); });
+    if (t && !e.target.closest('.itemTooltip') && t.querySelector('.itemTooltip')) t.classList.toggle('tip-open');
+  });
+</script>
 </body>
-</html> 
+</html>

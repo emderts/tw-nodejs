@@ -1,37 +1,13 @@
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>ThirdWorld - <%= title %></title>
-    <link href="https://fonts.googleapis.com/css?family=Nanum+Gothic" rel="stylesheet">
-    <style>
-      body {font-family: "Nanum Gothic", sans-serif; }
-      div {width: 450px; max-width: 100%; margin: 0 auto; }
-      div.cubeWrap {padding: 10px; border: 1px solid gainsboro; background-color: aliceblue; margin: 10px 5px 0 0; }
-      div.cubeItem {padding: 10px; }
-      .inventoryItem button {width: 150px; float: left; padding: 2px; }
-      .inventoryItem input {width: 150px; float: left; padding: 2px; }
-      .cubeItem button {width: 450px; padding: 2px; }
-      .inventoryItem button:hover { }
-      .itemTooltip {font-family: "Nanum Gothic", sans-serif; visibility: hidden; width: 250px; background-color: black; color: #fff; text-align: center; font-size: 13.3333px; border-radius: 6px; padding: 5px 0; position: absolute; z-index: 1; }
-      .inventoryItem:hover .itemTooltip {visibility: visible; }
-      .tooltipFlavor {font-style: italic; }
-      .rarityUncommon {color: #4bacc6; }
-      .rarityRare {color: #8054a2; }
-      .rarityPremium {color: #00b050; }
-      .rarityUnique {color: #ff33cc; }
-      .rarityEpic {color: #f79646; }
-      .buttonUncommon {background-color: #4bacc6; }
-      .buttonRare {background-color: #8054a2; }
-      .buttonPremium {background-color: #00b050; }
-      .buttonUnique {background-color: #ff33cc; }
-      .buttonEpic {background-color: #f79646; }
-      .backLink {text-align: center; width: 40%; margin: 10px auto; overflow: hidden; }
-    </style>
-    <script>
-      
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ThirdWorld - 아이템 선택</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Noto+Serif+KR:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/stylesheets/main.css">
+<script>
   function invClick(thisNode, event) {
     if (thisNode.type !== 'submit') {
       event.preventDefault();
@@ -41,7 +17,7 @@
       thisNode.setAttribute('type', 'submit');
     }
   }
-    </script>
+</script>
 </head>
 <body>
 <% 
@@ -202,15 +178,17 @@
     var tgtInv = inv.map(x => (x.type <= 3 && !x.setBonus) ? x : {}); 
   }
   %>
-  <div>
+<div class="page-narrow">
+  <div class="page-title"><h1>아이템 선택</h1></div>
+  <div class="note-box">
     <%= description %>
     <% if (mode == 2 && dustVal) { %>
       <br><%= dustVal %> 가루를 획득했습니다.
     <% } else if (mode == 3) { %>
       <br>프리미엄 포인트 주기 (보유량 : <%= premiumPoint %>점)
-        <form action="/givePoint" method="post">
-          <input type="tel" name="point" value="">
-          <button class="cubeButton" onclick="invClick(this, event)" type="button">
+        <form action="/givePoint" method="post" class="inline-form">
+          <input type="tel" name="point" value="" placeholder="포인트">
+          <button class="cubeButton" onclick="invClick(this, event)" type="button" style="width:auto">
               주기
           </button>
           <input type="hidden" name="charUid" value="<%= uid %>">
@@ -268,8 +246,15 @@
       } %>
   </div>
   <br>
-  <div class="backLink">
-    <a href="/">돌아가기</a>
-  </div>
+<div class="backLink"><a href="/">돌아가기</a></div>
+
+</div>
+<script>
+  document.addEventListener('click', function (e) {
+    var t = e.target.closest('.has-tip, .inventoryItem button, .charItem button, .actualContent');
+    document.querySelectorAll('.tip-open').forEach(function (el) { if (el !== t) el.classList.remove('tip-open'); });
+    if (t && !e.target.closest('.itemTooltip') && t.querySelector('.itemTooltip')) t.classList.toggle('tip-open');
+  });
+</script>
 </body>
 </html>

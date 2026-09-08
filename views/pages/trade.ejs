@@ -1,64 +1,27 @@
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>ThirdWorld - 수동전투</title>
-    <link href="https://fonts.googleapis.com/css?family=Nanum+Gothic" rel="stylesheet">
-    <style>
-      body {font-family: "Nanum Gothic", sans-serif; }
-      .turnWrap {text-align: center; }
-      .selectWrap {position: fixed; width: 700px; max-width: 95%; top: 85%; left: 50%; transform: translateX(-50%); }
-      .enemyWrap {position: fixed; width: 700px; max-width: 95%; top: 5%; left: 50%; transform: translateX(-50%); }
-      .charItem button {width: 200px; background-color: #ffffea; max-width: 100%; height: 55px; }
-      .charItem button:hover {background-color: #ffffcc; }
-      .charItem { float: left; max-width: 33%; }
-      .itemTooltip {font-family: "Nanum Gothic", sans-serif; visibility: hidden; width: 250px; background-color: black; color: #fff; text-align: center; font-size: 13.3333px; border-radius: 6px; padding: 5px 0; position: absolute; z-index: 1; }}
-      .selectWrap .itemTooltip {transform: translateY(-130%); }
-      .charItem:hover .itemTooltip {visibility: visible; }
-      .tooltipFlavor {font-style: italic; }
-      span.turnCount {font-size: 20px; font-weight: bold; }
-      span.skillUseWinner {font-weight: bold; }
-      .driveSkill {margin-top: 5px; font-weight: bold; }
-      .specialSkill {margin-top: 7px; font-weight: bold; }
-      .colorLeft {color: red; font-weight: bold; }
-      .colorRight {color: blue; font-weight: bold; }
-      .colorHp {color: green; }
-      .colorSp {color: blue; }
-      .charInfoWrap {width: 70%; max-width: 510px; margin: 10px auto; overflow: hidden; }
-      .charInfo {text-align: center; width: 49%; float: left; border-top: 1px solid black; }
-      .resultWrap {width: 90%; margin: 100px auto 150px auto; }
-      .backLink {text-align: center; width: 40%; margin: 10px auto; overflow: hidden; }
-    </style>
-    <script src="/socket.io/socket.io.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ThirdWorld - 랭크업 던전</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Noto+Serif+KR:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/stylesheets/main.css">
+<script src="/socket.io/socket.io.js"></script>
 </head>
 <body>
-  <div class="enemyWrap">
-  <div class="charItem">
-    <button id="enemyBtn0" disabled type="button">[가위]<br></button>
+  <div class="rps-bar enemyWrap">
+    <div class="charItem"><button id="enemyBtn0" disabled type="button">[가위]<br></button></div>
+    <div class="charItem"><button id="enemyBtn1" disabled type="button">[바위]<br></button></div>
+    <div class="charItem"><button id="enemyBtn2" disabled type="button">[보]<br></button></div>
   </div>
-  <div class="charItem">
-    <button id="enemyBtn1" disabled type="button">[바위]<br></button>
+  <div id="result" class="rps-result battle-log"></div>
+  <div class="rps-bar selectWrap">
+    <div class="charItem"><button id="selectBtn0" onclick="invClick(0)" type="button">[가위]<br></button></div>
+    <div class="charItem"><button id="selectBtn1" onclick="invClick(1)" type="button">[바위]<br></button></div>
+    <div class="charItem"><button id="selectBtn2" onclick="invClick(2)" type="button">[보]<br></button></div>
   </div>
-  <div class="charItem">
-    <button id="enemyBtn2" disabled type="button">[보]<br></button>
-  </div>
-  </div>
-  <div class="selectWrap">
-  <div class="charItem">
-    <button id="selectBtn0" onclick="invClick(0)" type="button">[가위]<br></button>
-  </div>
-  <div class="charItem">
-    <button id="selectBtn1" onclick="invClick(1)" type="button">[바위]<br></button>
-  </div>
-  <div class="charItem">
-    <button id="selectBtn2" onclick="invClick(2)" type="button">[보]<br></button>
-  </div>
-  </div>
-  <div id="result" class="resultWrap">
-  </div>
-    <script>  
+<script>  
   var socket = io();
   socket.emit('rankupDungeonInit', '<%= room %>', '<%= uid %>');
     document.getElementById('selectBtn0').setAttribute('disabled', true);
@@ -96,5 +59,12 @@
     document.getElementById('selectBtn2').setAttribute('disabled', true);
   }
       </script>
+<script>
+  document.addEventListener('click', function (e) {
+    var t = e.target.closest('.has-tip, .inventoryItem button, .charItem button, .actualContent');
+    document.querySelectorAll('.tip-open').forEach(function (el) { if (el !== t) el.classList.remove('tip-open'); });
+    if (t && !e.target.closest('.itemTooltip') && t.querySelector('.itemTooltip')) t.classList.toggle('tip-open');
+  });
+</script>
 </body>
 </html>
