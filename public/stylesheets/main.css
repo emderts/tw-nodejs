@@ -111,7 +111,6 @@ table.kv { width: 100%; border-collapse: collapse; }
   padding: 7px 12px;
   cursor: pointer;
 }
-.btn:hover, button:hover { border-color: var(--brass-dim); }
 button:disabled { opacity: 0.4; cursor: not-allowed; }
 .btn-primary, input[type="submit"].btn-primary {
   background: var(--brass);
@@ -119,7 +118,6 @@ button:disabled { opacity: 0.4; cursor: not-allowed; }
   border-color: var(--brass);
   font-weight: 700;
 }
-.btn-primary:hover { background: #e3bb62; }
 .btn-sm, .kv button { padding: 4px 9px; font-size: 12px; }
 
 /* ---------- 장비 / 스킬 ---------- */
@@ -243,7 +241,6 @@ input:focus { border-color: var(--brass); outline: none; }
   font-size: 13.5px;
   text-align: center;
 }
-.menu a:hover { border-color: var(--brass); color: var(--brass); text-decoration: none; }
 .menu a.quiet { color: var(--ash); }
 
 /* ---------- 알림 오버레이 ---------- */
@@ -277,7 +274,6 @@ input:focus { border-color: var(--brass); outline: none; }
 .page-title .meta { color: var(--ash); font-size: 13px; }
 .backLink { text-align: center; margin: 18px auto 6px; color: var(--ash); font-size: 13.5px; }
 .backLink a { display: inline-block; padding: 8px 16px; border: 1px solid var(--line); border-radius: 3px; color: var(--parchment); }
-.backLink a:hover { border-color: var(--brass); color: var(--brass); text-decoration: none; }
 .section-head { margin: 22px 0 8px; padding-bottom: 6px; border-bottom: 1px solid var(--line); font: 600 14px/1.3 var(--font-display); color: var(--brass); }
 .section-head small { font: 400 12.5px var(--font-body); color: var(--ash); margin-left: 8px; }
 .note-box { padding: 10px 14px; background: var(--slate); border: 1px solid var(--line); border-radius: 4px; margin-bottom: 12px; font-size: 14px; }
@@ -293,7 +289,6 @@ input:focus { border-color: var(--brass); outline: none; }
   font-size: 14px;
   background: var(--slate);
 }
-.list .charItem button:not(:disabled):hover { border-color: var(--brass); background: var(--slate-2); }
 .list .charItem .logDate, .list .charItem .backLink { text-align: left; margin: 6px 2px 0; font-size: 12.5px; color: var(--ash); }
 .list .charItem .backLink a { border: 0; padding: 0; color: var(--brass); }
 .list .charItem img { max-width: 100%; border-radius: 4px; border: 1px solid var(--line); margin-top: 6px; }
@@ -394,7 +389,6 @@ span.skillUseWinner { font-weight: 700; color: var(--parchment); }
 .rps-bar .charItem { position: relative; }
 .rps-bar button { width: 100%; min-height: 56px; font-size: 13.5px; line-height: 1.35; background: var(--slate); }
 .rps-bar.selectWrap button:not(:disabled) { border-color: var(--brass-dim); background: var(--slate-2); color: var(--parchment); }
-.rps-bar.selectWrap button:not(:disabled):hover { border-color: var(--brass); }
 .rps-bar.enemyWrap button:disabled { opacity: .85; }
 .rps-result { padding: 96px 12px 120px; max-width: 640px; margin: 0 auto; }
 
@@ -413,3 +407,12 @@ button[onclick^="invClick"][type="submit"]::after {
   color: var(--brass);
 }
 .rps-bar button::after { content: none !important; }
+
+@media (hover: hover) {
+  .btn:hover, button:hover { border-color: var(--brass-dim); }
+  .btn-primary:hover { background: #e3bb62; }
+  .menu a:hover { border-color: var(--brass); color: var(--brass); text-decoration: none; }
+  .backLink a:hover { border-color: var(--brass); color: var(--brass); text-decoration: none; }
+  .list .charItem button:not(:disabled):hover { border-color: var(--brass); background: var(--slate-2); }
+  .rps-bar.selectWrap button:not(:disabled):hover { border-color: var(--brass); }
+}

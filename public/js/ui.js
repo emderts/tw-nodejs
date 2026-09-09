@@ -53,3 +53,48 @@
     });
   }
 })();
+
+// ---- 두 번 눌러 실행하는 버튼: 브라우저 기본 submit에 의존하지 않고 직접 처리 ----
+// (페이지 head에 정의된 invClick(thisNode, event)를 대체. 수동전투 페이지의 invClick(idx)는 건드리지 않음)
+(function () {
+  if (typeof window.invClick === 'function' && window.invClick.length !== 2) return;
+
+  function disarmAll(except) {
+    var armed = document.querySelectorAll('button[onclick^="invClick"][type="submit"]');
+    for (var i = 0; i < armed.length; i++) if (armed[i] !== except) armed[i].setAttribute('type', 'button');
+  }
+  function fire(node) {
+    var form = node.form || node.closest('form');
+    if (!form) return;
+    if (form.requestSubmit) form.requestSubmit(); else form.submit();
+  }
+
+  window.invClick = function (thisNode, event) {
+    if (event) event.preventDefault();
+    if (thisNode.getAttribute('type') === 'submit') {
+      fire(thisNode);            // 두 번째 탭: 실행
+      return;
+    }
+    disarmAll(thisNode);
+    thisNode.setAttribute('type', 'submit');   // 첫 탭: 준비 상태
+  };
+
+  // 터치 기기에서 click이 씹히는 경우를 대비한 보험: 준비된 버튼을 (스크롤 없이) 탭하면 실행
+  var startX = 0, startY = 0, startTarget = null;
+  document.addEventListener('touchstart', function (e) {
+    var t = e.touches[0];
+    startX = t.clientX; startY = t.clientY;
+    startTarget = e.target.closest('button[onclick^="invClick"]');
+  }, { passive: true });
+  document.addEventListener('touchend', function (e) {
+    if (!startTarget) return;
+    var t = e.changedTouches[0];
+    var moved = Math.abs(t.clientX - startX) > 10 || Math.abs(t.clientY - startY) > 10;
+    var node = startTarget; startTarget = null;
+    if (moved || node.disabled) return;
+    if (node.getAttribute('type') === 'submit') {
+      e.preventDefault();       // 뒤따르는 click 방지 (중복 실행 차단)
+      fire(node);
+    }
+  }, { passive: false });
+})();
