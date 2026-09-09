@@ -28,6 +28,7 @@ body[data-side="1"] { --side: var(--side-mine); }
 
 * { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; }
+html, body { overflow-x: hidden; }
 body {
   margin: 0;
   background: var(--ink);
@@ -176,8 +177,7 @@ button:disabled { opacity: 0.4; cursor: not-allowed; }
 /* ---------- 툴팁 (hover + 탭) ---------- */
 .has-tip { position: relative; }
 .itemTooltip {
-  visibility: hidden;
-  opacity: 0;
+  display: none;
   position: absolute;
   left: 0; top: calc(100% + 6px);
   z-index: 50;
@@ -192,15 +192,14 @@ button:disabled { opacity: 0.4; cursor: not-allowed; }
   text-align: left;
   white-space: normal;
   box-shadow: 0 6px 18px rgba(0,0,0,.45);
-  transition: opacity .12s;
 }
 .tooltipFlavor { color: var(--ash); font-style: italic; }
 @media (hover: hover) {
   .has-tip:hover > .itemTooltip,
   .inventoryItem button:hover > .itemTooltip,
-  .charViewContent:hover > .itemTooltip { visibility: visible; opacity: 1; }
+  .charViewContent:hover > .itemTooltip { display: block; }
 }
-.tip-open > .itemTooltip { visibility: visible; opacity: 1; }
+.tip-open > .itemTooltip { display: block; }
 
 /* ---------- 소식 ---------- */
 .news { margin: 0; padding: 0; list-style: none; }

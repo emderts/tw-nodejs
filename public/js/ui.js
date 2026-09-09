@@ -44,8 +44,12 @@
     }
   });
 
-  document.addEventListener('mouseover', function (e) {
-    var t = e.target.closest(SEL);
-    if (t && t.querySelector('.itemTooltip')) placeTip(t);
-  });
+  // 마우스 hover 위치 보정은 실제 hover가 되는 기기(데스크톱)에서만.
+  // 터치 기기에서 mouseover 중 화면을 바꾸면 크롬이 click을 삼켜버림.
+  if (window.matchMedia && window.matchMedia('(hover: hover)').matches) {
+    document.addEventListener('mouseover', function (e) {
+      var t = e.target.closest(SEL);
+      if (t && !t.classList.contains('tip-open') && t.querySelector('.itemTooltip')) placeTip(t);
+    });
+  }
 })();
