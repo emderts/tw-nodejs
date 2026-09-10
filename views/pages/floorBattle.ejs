@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Noto+Serif+KR:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/stylesheets/main.css">
+  <title>ThirdWorld - 전투</title>
+  <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+  <div class="rps-bar enemyWrap">
+    <div class="rb-enemy"><b class="<%= enemy.isBoss ? 'colorGold' : '' %>"><%= enemy.name %></b> <span style="color:var(--ash);font-size:12px"><%= enemy.title %><% if (enemy.deck) { %> · 덱 <%= enemy.deck.length %>장<% } %></span></div>
+    <div class="charItem"><button id="enemyBtn0" disabled type="button">[가위]<br></button></div>
+    <div class="charItem"><button id="enemyBtn1" disabled type="button">[바위]<br></button></div>
+    <div class="charItem"><button id="enemyBtn2" disabled type="button">[보]<br></button></div>
+  </div>
+  <div id="result" class="rps-result battle-log"></div>
+  <div class="rps-bar selectWrap">
+    <div class="rb-hand" id="deckInfo"></div>
+    <div class="charItem"><button id="handBtn0" type="button" disabled></button></div>
+    <div class="charItem"><button id="handBtn1" type="button" disabled></button></div>
+    <div class="charItem"><button id="handBtn2" type="button" disabled></button></div>
+  </div>
+<script>
+  var socket = io();
+  var names = ['', '', ''];
+  var glyph = ['[가위]', '[바위]', '[보]'];
+  var hand = [];
+  function renderHand(types, drawN, discardN) {
+    hand = types;
+    for (var i = 0; i < 3; i++) {
+      var b = document.getElementById('handBtn' + i);
+      if (i < types.length) {
+        b.innerHTML = glyph[types[i]] + '<br>' + names[types[i]];
+        b.className = 'card-t' + types[i];
+        b.removeAttribute('disabled');
+      } else {
+        b.innerHTML = '';
+        b.className = '';
+        b.setAttribute('disabled', true);
+      }
+    }
+    document.getElementById('deckInfo').textContent = '덱 ' + drawN + ' · 버림 ' + discardN;
+  }
+  function lockHand() { for (var i = 0; i < 3; i++) document.getElementById('handBtn' + i).setAttribute('disabled', true); }
+  for (var i = 0; i < 3; i++) (function (i) {
+    document.getElementById('handBtn' + i).addEventListener('click', function () {
+      if (i >= hand.length) return;
+      lockHand();
+      socket.emit('floorSelect', '<%= room %>', '<%= uid %>', hand[i]);
+    });
+  })(i);
+  socket.emit('floorInit', '<%= room %>', '<%= uid %>');
+  socket.on('floorAck', function (result, myNames, oNames, types, drawN, discardN) {
+    document.getElementById('result').innerHTML = result;
+    names = myNames;
+    for (var i = 0; i < 3; i++) document.getElementById('enemyBtn' + i).innerHTML += oNames[i];
+    renderHand(types, drawN, discardN);
+  });
+  socket.on('floorSelectAck', function (result, types, drawN, discardN) {
+    document.getElementById('result').innerHTML = result;
+    renderHand(types, drawN, discardN);
+    window.scrollTo(0, document.body.scrollHeight);
+  });
+  socket.on('floorSelectEnd', function (result) {
+    document.getElementById('result').innerHTML = result + '<div class="backLink"><a href="/floorResult" class="btn-primary" style="padding:12px 24px">결과 보기</a></div>';
+    lockHand();
+    window.scrollTo(0, document.body.scrollHeight);
+  });
+</script>
+<script src="/js/ui.js"></script>
+</body>
+</html>

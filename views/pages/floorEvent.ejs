@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Noto+Serif+KR:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/stylesheets/main.css">
+  <title>ThirdWorld - 이벤트</title>
+</head>
+<body>
+<div class="page-narrow">
+  <%- include('../partials/runbar') %>
+  <div class="page-title"><h1><%= ev.title %></h1></div>
+  <div class="note-box"><%= ev.desc %></div>
+  <% if (done) { %>
+    <div class="note-box" style="border-color:var(--brass-dim)"><%= done %></div>
+    <form action="/floorEvent" method="post" class="backLink">
+      <button type="submit" class="btn-primary" style="padding:12px 24px">계속 간다</button>
+      <input type="hidden" name="action" value="leave">
+    </form>
+  <% } else { %>
+    <div class="list">
+    <% ev.options.forEach(function (o, i) { %>
+      <div class="charItem">
+        <form action="/floorEvent" method="post">
+          <button type="submit"><%= o.label %></button>
+          <input type="hidden" name="opt" value="<%= i %>">
+        </form>
+      </div>
+    <% }); %>
+    </div>
+  <% } %>
+  <div class="backLink"><a href="/">캐릭터 화면</a></div>
+</div>
+</body>
+</html>

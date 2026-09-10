@@ -272,7 +272,7 @@
   <header class="nameplate">
     <div class="nameplate-main">
       <h1 class="name"><%= char.name %><small><%= char.title %></small></h1>
-      <p class="sub"><%= char.level %>레벨<% if (sideName) { %> · <b class="has-tip"><%= sideName %> 공격대<div class="itemTooltip"><%= sideMembers %></div></b> · 공헌도 <%= char.raidEffort %><% } %></p>
+      <p class="sub"><%= char.level %>레벨<% if (rv) { %> · <b><%= rv.floor %>층</b> (<%= rv.cycle %>/<%= rv.total %>사이클) · <span style="color:var(--brass)"><%= rv.gold %> G</span><% } %><% if (sideName) { %> · <b class="has-tip"><%= sideName %> 공격대<div class="itemTooltip"><%= sideMembers %></div></b> · 공헌도 <%= char.raidEffort %><% } %></p>
     </div>
     <div class="nameplate-side">
       <span class="user"><%= user.name %></span>으로 접속<br>
@@ -431,7 +431,7 @@
       <section class="panel">
         <h2>행동</h2>
         <nav class="menu">
-          <a href="/nextFloor" class="btn-next">다음 층으로</a>
+          <a href="/nextFloor" class="btn-next"><% if (rv) { %><%= rv.floor %>층 · <%= rv.stageLabel %><% } else { %>다음 층으로<% } %></a>
           <a href="/sortInventory">아이템 정리</a>
           <a href="/dismantlingYard">아이템 해체</a>
           <a href="/stoneCube">요일석 합성</a>

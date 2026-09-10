@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Noto+Serif+KR:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/stylesheets/main.css">
+  <title>ThirdWorld - 전투 결과</title>
+</head>
+<body>
+<div class="page-narrow battle-log">
+  <div class="page-title"><h1><%= title %></h1></div>
+  <div class="note-box" <%= dead ? 'style="border-color:var(--side-mine)"' : '' %>>
+    <% for (const l of lines) { %><div><%- l %></div><% } %>
+  </div>
+  <details class="fold" style="margin-bottom:14px"><summary>전투 기록 보기</summary><div style="margin-top:10px"><%- result %></div></details>
+  <div class="backLink"><a href="/"><%= dead ? '새 캐릭터 선택' : '캐릭터 화면으로' %></a></div>
+</div>
+<script src="/js/ui.js"></script>
+</body>
+</html>

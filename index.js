@@ -15,6 +15,8 @@ const battlemodule2 = require('./battlemodule2');
 const ach = require('./achievement');
 const chara = require('./chara');
 const roster = require('./roster');
+const run = require('./run');
+run.configure({ getItem: _getItem, calcStats: calcStats, makeDayStone: makeDayStone });
 const cons = require('./constant');
 const item = require('./items');
 const monster = require('./monster');
@@ -38,6 +40,9 @@ const app = express()
 .post('/login', procLogin)
 .post('/selectChar', procSelectChar)
 .get('/nextFloor', procNextFloor)
+.post('/floorShop', procFloorShop)
+.post('/floorEvent', procFloorEvent)
+.get('/floorResult', procFloorResult)
 .get('/join', (req, res) => res.render('pages/join'))
 .post('/join', procJoin)
 .get('/logout', procLogout)
@@ -222,6 +227,43 @@ io.on('connection', (socket) => {
       }
       delete trades[room].leftSel;
       delete trades[room].rightSel;
+    }
+  });
+
+  socket.on('floorInit', function(room, uid) {
+    const t = trades[room];
+    if (!t || !t.floor || t.leftUid != uid) return;
+    t.left = socket;
+    if (!t.bmod) {
+      t.bmod = (new battlemodule.bmodule());
+      t.startHtml = t.bmod.procBattleStart(t.leftChr, t.rightChr);
+    }
+    run.drawHand(t.pdeck); run.drawHand(t.edeck);
+    socket.emit('floorAck', t.startHtml, floorNames(t.leftChr), floorNames(t.rightChr), run.handTypes(t.pdeck), t.pdeck.draw.length, t.pdeck.discard.length);
+  });
+  socket.on('floorSelect', function(room, uid, key) {
+    const t = trades[room];
+    if (!t || !t.floor || t.leftUid != uid || t.result || t.busy) return;
+    key = parseInt(key, 10);
+    if (!run.handTypes(t.pdeck).includes(key)) return;
+    t.busy = true;
+    const want = monster.selectFunc[t.rightChr.skillSelect](t.rightChr, key);
+    const eKey = run.aiPick(t.edeck, want);
+    const result = t.bmod.procBattleTurn(key, eKey);
+    if (result.redecide) {
+      // 다시 선택: 카드 소모 없음
+      t.busy = false;
+      socket.emit('floorSelectAck', result.result, run.handTypes(t.pdeck), t.pdeck.draw.length, t.pdeck.discard.length);
+      return;
+    }
+    run.playCard(t.pdeck, key); run.playCard(t.edeck, eKey);
+    if (!result.leftInfo) {
+      run.drawHand(t.pdeck); run.drawHand(t.edeck);
+      t.busy = false;
+      socket.emit('floorSelectAck', result.result, run.handTypes(t.pdeck), t.pdeck.draw.length, t.pdeck.discard.length);
+    } else {
+      t.result = result;
+      socket.emit('floorSelectEnd', result.result);
     }
   });
   socket.on('manualAdmin', function(room, luid, ruid, lc, rc) {
@@ -473,9 +515,11 @@ async function procIndex (req, res) {
       char.lastLogin = new Date();
       await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), sess.userUid]);
       }*/
+      const charObj = charRow.char_data ? JSON.parse(charRow.char_data) : undefined;
       res.render('pages/index', {
         user: {name: sess.userName, uid : sess.userUid},
-        char: charRow.char_data ? JSON.parse(charRow.char_data) : undefined,
+        char: charObj,
+        rv: (charObj && charObj.run) ? runView(charObj) : null,
         actionPoint : charRow.actionPoint,
         news : news,
         personalNews : personalNews
@@ -3522,6 +3566,7 @@ async function procSelectChar (req, res) {
     }
 
     const inst = roster.create(key);
+    run.initRun(inst);
     calcStats(inst);
     const uid = sess.userUid + '-' + Date.now().toString(36);
     await setCharacter(sess.userUid, uid, inst);
@@ -3532,10 +3577,171 @@ async function procSelectChar (req, res) {
   }
 }
 
-// TODO: 층 진행 시스템 — 상점/이벤트/전투 사이클
+function floorNames(chara) {
+  return chara.skill.base.map(sk => sk.name + '<div class="itemTooltip">' + sk.tooltip + (sk.flavor ? '<br><br><span class="tooltipFlavor">' + sk.flavor + '</span>' : '') + '</div>');
+}
+// ==================== 층 진행 ====================
+async function loadRunChar (req, res) {
+  const sess = req.session;
+  if (!sess.userUid) { res.redirect('/login'); return null; }
+  const charRow = await getCharacter(sess.userUid);
+  if (!charRow.char_data) { res.redirect('/'); return null; }
+  const char = JSON.parse(charRow.char_data);
+  if (!char.run) { run.initRun(char); }
+  return { charRow, char };
+}
+async function saveChar (char, uid) {
+  const client = await pool.connect();
+  try { await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), uid]); }
+  finally { client.release(); }
+}
+function runView (char) {
+  return { cycle: char.run.cycle, floor: run.floorNo(char), stageLabel: run.stageLabel(char), gold: char.gold, total: run.TOTAL_CYCLES };
+}
+
 async function procNextFloor (req, res) {
-  if (!req.session.userUid) { res.redirect('/login'); return; }
-  res.send('층 진행은 아직 준비 중입니다.<br><a href="/">돌아가기</a>');
+  try {
+    const ctx = await loadRunChar(req, res); if (!ctx) return;
+    const { charRow, char } = ctx;
+    const sess = req.session;
+    const st = run.stage(char);
+    const key = charRow.uid + ':' + run.floorNo(char);
+
+    if (st === 'shop') {
+      if (!sess.floorShop || sess.floorShop.key !== key) sess.floorShop = { key, shop: run.makeShop(char) };
+      res.render('pages/floorShop', { char, rv: runView(char), shop: sess.floorShop.shop, makeTooltip });
+    } else if (st === 'event') {
+      if (!sess.floorEvent || sess.floorEvent.key !== key) sess.floorEvent = { key, code: run.makeEvent(char).code, done: null };
+      const cur = run.makeEventByCode(char, sess.floorEvent.code);
+      res.render('pages/floorEvent', { char, rv: runView(char), ev: cur, done: sess.floorEvent.done });
+    } else {
+      // 전투: 방 생성 (이미 진행 중인 방이 있으면 재진입)
+      if (sess.floorBattle && sess.floorBattle.key === key && trades[sess.floorBattle.room] && !trades[sess.floorBattle.room].result) {
+        res.render('pages/floorBattle', { room: sess.floorBattle.room, uid: charRow.uid, rv: runView(char), char, enemy: trades[sess.floorBattle.room].rightChr });
+        return;
+      }
+      const enemy = await pickEnemy(char, sess.userUid);
+      const roomNum = curRoom++;
+      trades[roomNum] = { leftUid: charRow.uid, leftChr: JSON.parse(JSON.stringify(char)), rightChr: enemy, floor: true,
+                          pdeck: run.newDeckState(char.deck), edeck: run.newDeckState(enemy.deck) };
+      sess.floorBattle = { key, room: roomNum };
+      res.render('pages/floorBattle', { room: roomNum, uid: charRow.uid, rv: runView(char), char, enemy });
+    }
+  } catch (err) { console.error(err); res.send('내부 오류'); }
+}
+
+// 죽은 캐릭터 풀(같은 층)에서 40% 확률로, 아니면 생성
+async function pickEnemy (char, userId) {
+  const floor = run.floorNo(char);
+  if (Math.random() < 0.4) {
+    const client = await pool.connect();
+    try {
+      const r = await client.query('select * from fallen where floor = $1 and user_id <> $2 order by random() limit 1', [floor, userId]);
+      if (r.rows.length > 0) return run.enemyFromFallen(r.rows[0], char);
+    } catch (err) { console.error('fallen 조회 실패 (테이블 없음?)', err.message); }
+    finally { client.release(); }
+  }
+  return run.makeEnemy(char);
+}
+
+async function procFloorShop (req, res) {
+  try {
+    const ctx = await loadRunChar(req, res); if (!ctx) return;
+    const { charRow, char } = ctx;
+    const sess = req.session;
+    if (run.stage(char) !== 'shop' || !sess.floorShop) { res.redirect('/nextFloor'); return; }
+    const shop = sess.floorShop.shop;
+    if (req.body.action === 'leave') {
+      run.advance(char);
+      delete sess.floorShop;
+      await saveChar(char, charRow.uid);
+      res.redirect('/');
+      return;
+    }
+    const idx = parseInt(req.body.idx, 10);
+    const g = shop.goods[idx];
+    if (!g || shop.bought.includes(idx)) { res.redirect('/nextFloor'); return; }
+    if (char.gold < g.price) { sess.floorShop.msg = '골드가 부족합니다.'; res.redirect('/nextFloor'); return; }
+    char.gold -= g.price;
+    if (g.kind === 'item') char.inventory.push(g.item);
+    else if (g.kind === 'card') char.deck.push(g.card);
+    shop.bought.push(idx);
+    await saveChar(char, charRow.uid);
+    res.redirect('/nextFloor');
+  } catch (err) { console.error(err); res.send('내부 오류'); }
+}
+
+async function procFloorEvent (req, res) {
+  try {
+    const ctx = await loadRunChar(req, res); if (!ctx) return;
+    const { charRow, char } = ctx;
+    const sess = req.session;
+    if (run.stage(char) !== 'event' || !sess.floorEvent) { res.redirect('/nextFloor'); return; }
+    if (req.body.action === 'leave') {
+      run.advance(char);
+      delete sess.floorEvent;
+      await saveChar(char, charRow.uid);
+      res.redirect('/');
+      return;
+    }
+    if (sess.floorEvent.done) { res.redirect('/nextFloor'); return; }
+    const text = run.applyEvent(char, sess.floorEvent.code, parseInt(req.body.opt, 10));
+    if (text === null) { res.redirect('/nextFloor'); return; }
+    sess.floorEvent.done = text;
+    await saveChar(char, charRow.uid);
+    res.redirect('/nextFloor');
+  } catch (err) { console.error(err); res.send('내부 오류'); }
+}
+
+async function procFloorResult (req, res) {
+  const client = await pool.connect();
+  try {
+    const ctx = await loadRunChar(req, res); if (!ctx) return;
+    const { charRow, char } = ctx;
+    const sess = req.session;
+    const fb = sess.floorBattle;
+    if (!fb || !trades[fb.room] || !trades[fb.room].result) { res.redirect('/nextFloor'); return; }
+    const t = trades[fb.room];
+    const re = t.result;
+    const enemy = t.rightChr;
+    delete trades[fb.room];
+    delete sess.floorBattle;
+    const rv = runView(char);
+
+    if (re.winnerLeft) {
+      const gold = 40 + 10 * char.run.cycle + (enemy.isBoss ? 60 : 0);
+      char.gold += gold;
+      char.statPoint += 3;
+      char.battleCnt = (char.battleCnt || 0) + 1; char.winCnt = (char.winCnt || 0) + 1;
+      var rewardLines = ['<b>승리!</b> ' + gold + '골드, 스탯 포인트 3 획득.'];
+      // 쓰러진 모험가를 이겼다면 그 덱에서 카드 1장
+      if (enemy.fallenId && enemy.deck && enemy.deck.length) {
+        const cd = enemy.deck[Math.floor(Math.random() * enemy.deck.length)];
+        char.deck.push(Object.assign({}, cd));
+        rewardLines.push(enemy.fallenName + '의 덱에서 ' + ['가위', '바위', '보'][cd.type] + ' 카드를 얻었다.');
+      }
+      const cleared = run.advance(char);
+      if (cleared) {
+        const key = await unlockRandomChar(sess.userUid);
+        await client.query('delete from characters where uid = $1', [charRow.uid]);
+        await client.query('update users set uid = null where id = $1', [sess.userUid]);
+        res.render('pages/floorEnd', { title: '탑을 정복했다', lines: rewardLines.concat([key ? '새 캐릭터 해금: ' + roster.template(key).name : '해금할 캐릭터가 더 없다.']), result: re.result, dead: false });
+        return;
+      }
+      await saveChar(char, charRow.uid);
+      res.render('pages/floorEnd', { title: (enemy.isBoss ? '보스 격파' : '전투 승리'), lines: rewardLines, result: re.result, dead: false, rv: runView(char) });
+    } else {
+      // 사망: 스냅샷 저장 후 캐릭터 삭제
+      try {
+        await client.query('insert into fallen(user_id, floor, cycle, char_data, date) values ($1, $2, $3, $4, $5)',
+          [sess.userUid, run.floorNo(char), char.run.cycle, JSON.stringify(run.snapshotForFallen(char)), new Date()]);
+      } catch (err) { console.error('fallen 저장 실패 (테이블 없음?)', err.message); }
+      await client.query('delete from characters where uid = $1', [charRow.uid]);
+      await client.query('update users set uid = null where id = $1', [sess.userUid]);
+      res.render('pages/floorEnd', { title: char.name + getIga(char.nameType) + ' ' + rv.floor + '층에서 쓰러졌다', lines: ['이 캐릭터는 다른 도전자 앞에 적으로 나타날 수 있다.'], result: re.result, dead: true });
+    }
+  } catch (err) { console.error(err); res.send('내부 오류'); }
+  finally { client.release(); }
 }
 
 async function getCharacter (id) {
