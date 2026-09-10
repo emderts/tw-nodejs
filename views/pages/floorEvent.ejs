@@ -13,6 +13,7 @@
   <%- include('../partials/runbar') %>
   <div class="page-title"><h1><%= ev.title %></h1></div>
   <div class="note-box"><%= ev.desc %></div>
+  <% if (ev.html) { %><div class="note-box" style="border-color:var(--brass-dim)"><%- ev.html %></div><% } %>
   <% if (done) { %>
     <div class="note-box" style="border-color:var(--brass-dim)"><%- done %></div>
     <form action="/floorEvent" method="post" class="backLink">

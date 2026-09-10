@@ -144,7 +144,7 @@
       }
       const dustInfo = [10, 14, 26, 26, 62, 170];
       if (mode == 2) {
-        rtext += '<br><br>가루 양 : ' + Math.round(dustInfo[item.rarity] * Math.pow(2, 9 - item.rank) * (item.dustMod ? item.dustMod : 1));
+        rtext += '<br><br>해체 시 골드 : ' + ([5, 10, 20, 20, 45, 90][item.rarity] || 5);
       }
       if (mode == 5) {
         rtext += '<br><br>가루 요구량 : ' + Math.round(2 * dustInfo[item.rarity] * Math.pow(2, 9 - item.rank));
@@ -161,7 +161,7 @@
     var formAction = '/enchantItem';
     var tgtInv = inv.map(x => (x.type <= 3) ? x : {}); 
   } else if (mode === 2 && inv) { 
-    var description = '아이템을 해체합니다. (현재 가루 보유량 : ' + dust + ')';
+    var description = '아이템을 해체하면 골드를 받습니다. (보유 ' + dust + ' G)';
     var formAction = '/dismantleItem';
     var tgtInv = inv.map(x => (x.type <= 4) ? x : {}); 
   } else if (mode === 3 && inv) { 
@@ -183,7 +183,7 @@
   <div class="note-box">
     <%= description %>
     <% if (mode == 2 && dustVal) { %>
-      <br><%= dustVal %> 가루를 획득했습니다.
+      <br><%= dustVal %> 골드를 획득했습니다.
     <% } else if (mode == 3) { %>
       <br>프리미엄 포인트 주기 (보유량 : <%= premiumPoint %>점)
         <form action="/givePoint" method="post" class="inline-form">

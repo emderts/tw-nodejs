@@ -16,7 +16,7 @@ const ach = require('./achievement');
 const chara = require('./chara');
 const roster = require('./roster');
 const run = require('./run');
-run.configure({ getItem: _getItem, calcStats: calcStats, makeDayStone: makeDayStone, addResultCard: addSpecialResultCard });
+run.configure({ getItem: _getItem, calcStats: calcStats, makeDayStone: makeDayStone, addResultCard: addSpecialResultCard, makeTooltip: (it) => makeTooltip(it) });
 const cons = require('./constant');
 const item = require('./items');
 const monster = require('./monster');
@@ -3181,6 +3181,7 @@ async function procIdentifyingHall(req, res) {
 
 const setInfo = ['공격', '생명', '치명', '치명피해', '확률강화', '저항', '관통', '명중', '회피'];
 const dustInfo = [10, 14, 26, 26, 62, 170];
+const goldInfo = [5, 10, 20, 20, 45, 90];   // 해체 시 레어리티별 골드
 
 function _giveSetBonus(tgt) {
   tgt.setBonus = {};
@@ -3220,7 +3221,7 @@ async function procDismantlingYard(req, res) {
     const sess = req.session; 
     const charRow = await getCharacter(sess.userUid);
     const char = JSON.parse(charRow.char_data);
-    res.render('pages/selectItem', {title : '아이템 해체', inv : char.inventory, mode : 2, dust : char.dust, dustVal : null, usedItem : 0});
+    res.render('pages/selectItem', {title : '아이템 해체', inv : char.inventory, mode : 2, dust : char.gold, dustVal : null, usedItem : 0});
   } catch (err) {
     console.error(err);
     res.send('내부 오류');
@@ -3237,11 +3238,8 @@ async function procDismantleItem (req, res) {
     var tgt = char.inventory[body.itemNum];
     if (tgt.type <= 4) {
       char.inventory.splice(body.itemNum, 1);
-      var dustVal = Math.round(dustInfo[tgt.rarity] * Math.pow(2, 9 - tgt.rank));
-      if (tgt.dustMod) {
-        dustVal *= tgt.dustMod;
-      }
-      char.dust += dustVal;
+      var dustVal = goldInfo[tgt.rarity] || 5;   // 해체 → 골드
+      char.gold = (char.gold || 0) + dustVal;
       if (char.quest[6]) {
         char.quest[6].progress += 1;
       }
@@ -3251,7 +3249,7 @@ async function procDismantleItem (req, res) {
     }
     await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
     if (!res.headersSent) {
-      res.render('pages/selectItem', {title : '아이템 해체', inv : char.inventory, mode : 2, dustVal : dustVal, dust : char.dust, usedItem : 0});;
+      res.render('pages/selectItem', {title : '아이템 해체', inv : char.inventory, mode : 2, dustVal : dustVal, dust : char.gold, usedItem : 0});
     }
   } catch (err) {
     console.error(err);
@@ -3616,9 +3614,15 @@ async function procNextFloor (req, res) {
         res.render('pages/floorBattle', { room: sess.floorBattle.room, uid: charRow.uid, rv: runView(char), char, enemy: trades[sess.floorBattle.room].rightChr });
         return;
       }
-      const enemy = await pickEnemy(char, sess.userUid);
+      let enemy;
+      if (char.run.evData && char.run.evData.code === 'scout' && char.run.evData.enemy) {
+        enemy = char.run.evData.enemy; char.run.evData = null; await saveChar(char, charRow.uid);   // 망루에서 본 상대 그대로
+      } else enemy = await pickEnemy(char, sess.userUid);
+      if (run.applyEnemyDebuffs(char, enemy)) calcStats(enemy);
       const roomNum = curRoom++;
-      trades[roomNum] = { leftUid: charRow.uid, leftChr: JSON.parse(JSON.stringify(char)), rightChr: enemy, floor: true,
+      const leftCopy = JSON.parse(JSON.stringify(char));
+      if (run.applyBuffs(leftCopy)) calcStats(leftCopy);
+      trades[roomNum] = { leftUid: charRow.uid, leftChr: leftCopy, rightChr: enemy, floor: true,
                           pdeck: run.newDeckState(char.deck), edeck: run.newDeckState(enemy.deck) };
       sess.floorBattle = { key, room: roomNum };
       res.render('pages/floorBattle', { room: roomNum, uid: charRow.uid, rv: runView(char), char, enemy });
@@ -3717,8 +3721,9 @@ async function procFloorResult (req, res) {
     delete sess.floorBattle;
     const rv = runView(char);
 
+    run.tickBuffs(char);
     if (re.winnerLeft) {
-      const gold = 40 + 10 * char.run.cycle + (enemy.isBoss ? 60 : 0);
+      const gold = 60 + 15 * char.run.cycle + (enemy.isBoss ? 100 : 0);
       char.gold += gold;
       char.statPoint += 3;
       addSpecialResultCard(char, 4);
@@ -4190,6 +4195,11 @@ function makeTooltip(item) {
     if (item.flavor && item.flavor.length > 0) {
       rtext += '<br><br><span class="tooltipFlavor">' + item.flavor + '</span>';
     }
+  } else {
+    // 요일석·리설트 카드 등 장비 외 아이템: 효과 설명 표시
+    if (item.type == cons.ITEM_TYPE_DAYSTONE) rtext += '<br>요일석';
+    if (item.effectDesc && item.effectDesc.length > 0) rtext += '<br>' + item.effectDesc;
+    else if (item.tooltip && item.tooltip.length > 0) rtext += '<br>' + item.tooltip;
   }
   return rtext;
 }

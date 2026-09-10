@@ -166,7 +166,7 @@ function snapshotForFallen(char) {
 }
 
 // ---------- 상점 ----------
-const SHOP_TYPES = ['gear', 'stone', 'card'];
+const SHOP_TYPES = ['gear', 'stone', 'card', 'result'];
 function makeShop(char) {
   const type = SHOP_TYPES[Math.floor(Math.random() * SHOP_TYPES.length)];
   const cycle = char.run.cycle;
@@ -186,11 +186,14 @@ function makeShop(char) {
       const st = deps.makeDayStone(day, char.rank);
       goods.push({ kind: 'item', item: st, price: 30 + 10 * (st.level || 0) + 3 * cycle });
     }
-  } else {
+  } else if (type === 'card') {
     // 카드 상점: 가위/바위/보 카드 추가 (스킬은 캐릭터 고정)
     for (let t = 0; t < 3; t++) goods.push({ kind: 'card', card: { type: t }, price: 45 + 5 * cycle });
+  } else {
+    // 리설트 카드 상점: 슬롯별 1장씩
+    for (let t = 0; t < 4; t++) goods.push({ kind: 'item', item: roster.makeResultCard(char.rank, t), price: 50 + 5 * cycle });
   }
-  return { type, label: ({ gear: '장비 상인', stone: '요일석 상인', card: '카드 상인' })[type], goods, bought: [] };
+  return { type, label: ({ gear: '장비 상인', stone: '요일석 상인', card: '카드 상인', result: '리설트 카드 상인' })[type], goods, bought: [] };
 }
 
 // ---------- 이벤트 ----------
@@ -303,11 +306,167 @@ function eventPool(char) {
     ]
   });
 
+  // --- 일시 버프 ---
+  pool.push({
+    code: 'camp', weight: 2, title: '야영지', desc: '불을 피우고 쉴 수 있다. 다음 두 번의 전투 동안 몸이 가볍다.',
+    options: [
+      { label: '무기를 손질한다 (다음 2전투 공격력 +25%)', effect: (ch) => { addBuff(ch, { key: 'atk', mult: 1.25, battles: 2, label: '공격력 +25%' }); return '날이 서늘하게 빛난다. 다음 2전투 공격력 +25%.'; } },
+      { label: '푹 잔다 (다음 2전투 체력 +25%)', effect: (ch) => { addBuff(ch, { key: 'maxHp', mult: 1.25, battles: 2, label: '체력 +25%' }); return '몸이 개운하다. 다음 2전투 체력 +25%.'; } }
+    ]
+  });
+  pool.push({
+    code: 'shaman', weight: 2, title: '떠돌이 주술사', desc: '"작은 축복 하나 어때? 25골드면 돼."',
+    options: [
+      { label: '치명의 축복 (25골드, 다음 3전투 치명타 +10%p)', effect: (ch) => { if (ch.gold < 25) return '골드가 부족하다.'; ch.gold -= 25; addBuff(ch, { key: 'crit', add: 0.1, battles: 3, label: '치명타 +10%p' }); return '손끝이 저릿하다. 다음 3전투 치명타 +10%p.'; } },
+      { label: '회피의 축복 (25골드, 다음 3전투 회피 +10%p)', effect: (ch) => { if (ch.gold < 25) return '골드가 부족하다.'; ch.gold -= 25; addBuff(ch, { key: 'evasion', add: 0.1, battles: 3, label: '회피 +10%p' }); return '발이 가벼워졌다. 다음 3전투 회피 +10%p.'; } },
+      { label: '거절한다', effect: () => '주술사는 다음 손님을 찾아 떠났다.' }
+    ]
+  });
+  pool.push({
+    code: 'spring', weight: 1, title: '맑은 샘', desc: '물을 마시면 힘이 솟는다. 얼마나 오래 갈지는 모르겠다.',
+    options: [
+      { label: '마신다 (다음 전투 모든 능력치 +15%)', effect: (ch) => { addBuff(ch, { key: 'all', mult: 1.15, battles: 1, label: '전 능력치 +15%' }); return '온몸에 활력이 돈다. 다음 전투 전 능력치 +15%.'; } },
+      { label: '물통에 담는다 (골드 +20)', effect: (ch) => { ch.gold += 20; return '지나던 상인에게 팔아 20골드를 받았다.'; } }
+    ]
+  });
+
+  // ---------- 아래부터는 evData(사전 고정 데이터)를 쓰는 이벤트 ----------
+  const d = char.run.evData || {};
+  const has = (code) => d.code === code;
+  const SLOT = { weapon: '무기', armor: '방어구', subarmor: '보조방어구', trinket: '장신구' };
+  const SLOT_T = { weapon: 0, armor: 1, subarmor: 2, trinket: 3 };
+
+  // --- 영구 능력치 ---
+  pool.push({
+    code: 'monolith', weight: 2, title: '고대의 비석', desc: '손을 대자 글자가 빛난다. 한 가지 힘을 새겨 넣을 수 있을 것 같다.',
+    options: [
+      { label: '체력 +40', effect: (ch) => { ch.base.maxHp += 40; return '몸이 단단해졌다. 최대 체력 +40.'; } },
+      { label: '물리·마법 공격력 +6', effect: (ch) => { ch.base.phyAtk += 6; ch.base.magAtk += 6; return '팔에 힘이 실린다. 공격력 +6.'; } },
+      { label: '치명타 +3%p', effect: (ch) => { ch.base.crit += 0.03; return '눈이 날카로워졌다. 치명타 +3%p.'; } }
+    ]
+  });
+  pool.push({
+    code: 'devil', weight: 2, title: '악마의 거래', desc: '"공짜는 없어. 하나를 내놓으면 하나를 주지."',
+    options: [
+      { label: '체력 −60 → 공격력 +12', effect: (ch) => { ch.base.maxHp = Math.max(50, ch.base.maxHp - 60); ch.base.phyAtk += 12; ch.base.magAtk += 12; return '숨이 짧아진 대신 손이 무거워졌다.'; } },
+      { label: '공격력 −8 → 체력 +90', effect: (ch) => { ch.base.phyAtk = Math.max(5, ch.base.phyAtk - 8); ch.base.magAtk = Math.max(5, ch.base.magAtk - 8); ch.base.maxHp += 90; return '둔해진 대신 질겨졌다.'; } },
+      { label: '명중 −5%p → 치명타 +8%p', effect: (ch) => { ch.base.hit -= 0.05; ch.base.crit += 0.08; return '흐릿하지만 날카롭다.'; } },
+      { label: '거절한다', effect: () => '악마는 웃으며 사라졌다.' }
+    ]
+  });
+
+  // --- 재도전 회복 ---
+  const lives = char.run.lives === undefined ? 1 : char.run.lives;
+  const medicCost = 60 + 10 * char.run.cycle;
+  pool.push({
+    code: 'medic', weight: lives < 2 ? 3 : 1, title: '떠돌이 의사', desc: '"한 번 더 일어설 힘을 팔지. ' + medicCost + '골드야." (재도전 최대 3)',
+    options: [
+      { label: '치료받는다 (' + medicCost + '골드, 재도전 +1)', effect: (ch) => { const l = ch.run.lives === undefined ? 1 : ch.run.lives; if (l >= 3) return '더는 받을 수 없다.'; if (ch.gold < medicCost) return '골드가 부족하다.'; ch.gold -= medicCost; ch.run.lives = l + 1; return '재도전 +1. 현재 ' + ch.run.lives + '회.'; } },
+      { label: '거절한다', effect: () => '의사는 다음 환자를 찾아 떠났다.' }
+    ]
+  });
+
+  // --- 장비 교체 (대장장이): 장착 슬롯 하나를 정해진 장비로 교체 ---
+  pool.push({
+    code: 'forge', weight: 2, title: '대장장이',
+    prepare: (ch) => {
+      const equipped = Object.keys(SLOT).filter(k => ch.items && ch.items[k] && ch.items[k].name);
+      const slots = equipped.length ? equipped : Object.keys(SLOT);
+      const slot = slots[Math.floor(Math.random() * slots.length)];
+      const rarity = ch.run.cycle >= 7 ? 5 : 4;
+      return { slot, item: getItemSafe(ch.rank, rarity, SLOT_T[slot]) };
+    },
+    desc: has('forge') && d.item
+      ? '"네 ' + SLOT[d.slot] + ', 내가 만든 것으로 바꿔 주지. 원래 쓰던 건 녹여 버리겠지만."'
+      : '대장장이가 화로 앞에 있다.',
+    html: has('forge') && d.item ? (deps.makeTooltip ? deps.makeTooltip(d.item) : d.item.name) : '',
+    options: has('forge') && d.item ? [
+      { label: (char.items && char.items[d.slot] && char.items[d.slot].name ? char.items[d.slot].name : '(빈 슬롯)') + ' → ' + d.item.name, effect: (ch) => { if (!ch.items) ch.items = {}; ch.items[d.slot] = JSON.parse(JSON.stringify(d.item)); deps.calcStats(ch); return d.item.name + '을(를) 장착했다.'; } },
+      { label: '거절한다', effect: () => '대장장이는 망치질로 돌아갔다.' }
+    ] : [ { label: '지나간다', effect: () => '아무 일도 없었다.' } ]
+  });
+
+  // --- 스킬 교체 (검술 사범): 다른 캐릭터의 같은 슬롯 스킬로 교체 ---
+  pool.push({
+    code: 'master', weight: 2, title: '은둔한 사범',
+    prepare: (ch) => {
+      const keys = roster.KEYS.filter(k => k !== ch.rosterKey);
+      const key = keys[Math.floor(Math.random() * keys.length)];
+      const idx = Math.floor(Math.random() * 3);
+      const src = roster.template(key);
+      return { key, idx, from: src.name, skill: JSON.parse(JSON.stringify(src.skill.base[idx])) };
+    },
+    desc: has('master') && d.skill
+      ? '"' + d.from + '에게 배운 기술이다. 네 ' + ['가위', '바위', '보'][d.idx] + ' 기술과 바꿔 주마. 되돌릴 수는 없다."'
+      : '늙은 사범이 검을 닦고 있다.',
+    html: has('master') && d.skill ? '<b>' + d.skill.name + '</b><br>' + (d.skill.tooltip || '') + (d.skill.flavor ? '<br><span class="tooltipFlavor">' + d.skill.flavor + '</span>' : '') : '',
+    options: has('master') && d.skill ? [
+      { label: char.skill.base[d.idx].name + ' → ' + d.skill.name, effect: (ch) => { ch.skill.base[d.idx] = JSON.parse(JSON.stringify(d.skill)); return d.skill.name + '을(를) 익혔다.'; } },
+      { label: '거절한다', effect: () => '사범은 고개를 끄덕이고 눈을 감았다.' }
+    ] : [ { label: '지나간다', effect: () => '아무 일도 없었다.' } ]
+  });
+
+  // --- 정찰 / 적 디버프 ---
+  pool.push({
+    code: 'scout', weight: 2, title: '망루',
+    prepare: (ch) => ({ enemy: makeEnemy(ch) }),
+    desc: has('scout') && d.enemy ? '높은 곳에서 다음 상대가 보인다. 준비할 시간이 있다.' : '낡은 망루가 서 있다.',
+    html: has('scout') && d.enemy ? enemyBrief(d.enemy) : '',
+    options: has('scout') && d.enemy ? [
+      { label: '약점을 파악한다 (다음 전투 적 체력 −20%)', effect: (ch) => { addBuff(ch, { target: 'enemy', key: 'maxHp', mult: 0.8, battles: 1, label: '적 체력 −20%' }); return '허점을 찾았다. 다음 전투 적 체력 −20%.'; } },
+      { label: '기습을 준비한다 (다음 전투 적 공격력 −20%)', effect: (ch) => { addBuff(ch, { target: 'enemy', key: 'atk', mult: 0.8, battles: 1, label: '적 공격력 −20%' }); return '허를 찌를 수 있겠다. 다음 전투 적 공격력 −20%.'; } },
+      { label: '그냥 내려간다', effect: () => '정보만 얻고 내려왔다.' }
+    ] : [ { label: '지나간다', effect: () => '아무 일도 없었다.' } ]
+  });
+  pool.push({
+    code: 'poison', weight: 2, title: '독 우물', desc: '누군가 우물에 독을 풀어 놓았다. 다음 상대가 이 물을 마실 것이다.',
+    options: [
+      { label: '독을 진하게 한다 (다음 전투 적 회피 −10%p, 명중 −10%p)', effect: (ch) => { addBuff(ch, { target: 'enemy', key: 'evasion', add: -0.1, battles: 1, label: '적 회피·명중 −10%p' }); addBuff(ch, { target: 'enemy', key: 'hit', add: -0.1, battles: 1, label: '' }); return '다음 상대는 비틀거릴 것이다.'; } },
+      { label: '해독제를 판다 (골드 +30)', effect: (ch) => { ch.gold += 30; return '누군가에게 해독제를 팔아 30골드를 받았다.'; } }
+    ]
+  });
+
   return pool;
+}
+// 정찰용 적 요약
+function enemyBrief(e) {
+  const cnt = deckCounts ? [0, 1, 2].map(t => e.deck.filter(c => c.type === t).length) : [0, 0, 0];
+  return '<b>' + e.name + '</b> <small>' + (e.title || '') + (e.isBoss ? ' · 보스' : '') + '</small>'
+    + '<br>체력 ' + Math.round(e.stat.maxHp) + ' / 물리 ' + Math.round(e.stat.phyAtk) + ' / 마법 ' + Math.round(e.stat.magAtk)
+    + '<br>덱: 가위 ' + cnt[0] + ' · 바위 ' + cnt[1] + ' · 보 ' + cnt[2] + ' (' + ['가위', '바위', '보'][e.favType] + ' 선호)'
+    + '<br>기술: ' + e.skill.base.map(s => s.name).join(' / ');
+}
+// 일시 버프: char.run.buffs = [{ key, mult|add, battles, label }]
+function addBuff(ch, b) { if (!ch.run.buffs) ch.run.buffs = []; ch.run.buffs.push(b); }
+// 전투용 복사본에 버프 반영 (base에 적용 후 호출측에서 calcStats)
+function applyBuffs(copy) {
+  const buffs = ((copy.run && copy.run.buffs) || []).filter(b => b.target !== 'enemy');
+  return applyStatMods(copy, buffs);
+}
+// 적에게 걸린 디버프(target: 'enemy') 반영. 반환값: 적용 여부
+function applyEnemyDebuffs(char, enemy) {
+  const buffs = ((char.run && char.run.buffs) || []).filter(b => b.target === 'enemy');
+  return applyStatMods(enemy, buffs);
+}
+function applyStatMods(copy, buffs) {
+  for (const b of buffs) {
+    const keys = b.key === 'atk' ? ['phyAtk', 'magAtk'] : (b.key === 'all' ? ['maxHp', 'phyAtk', 'magAtk'] : [b.key]);
+    for (const k of keys) {
+      if (copy.base[k] === undefined) copy.base[k] = 0;
+      if (b.mult) copy.base[k] = Math.round(copy.base[k] * b.mult * 100) / 100;
+      if (b.add) copy.base[k] += b.add;
+    }
+  }
+  return buffs.length > 0;
+}
+// 전투 하나 소화 후 버프 수명 감소
+function tickBuffs(ch) {
+  if (!ch.run.buffs) return;
+  ch.run.buffs = ch.run.buffs.map(b => Object.assign({}, b, { battles: b.battles - 1 })).filter(b => b.battles > 0);
 }
 // 가중치 랜덤. 직전 이벤트는 제외
 function pickWeighted(pool, excludeCode) {
-  const cands = pool.filter(e => e.code !== excludeCode && e.options.length > 1);
+  const cands = pool.filter(e => e.code !== excludeCode && (e.prepare || e.options.length > 1));
   const total = cands.reduce((a, e) => a + (e.weight || 1), 0);
   let r = Math.random() * total;
   for (const e of cands) { r -= (e.weight || 1); if (r <= 0) return e; }
@@ -316,6 +475,9 @@ function pickWeighted(pool, excludeCode) {
 function makeEvent(char) {
   const ev = pickWeighted(eventPool(char), char.run.lastEvent);
   char.run.lastEvent = ev.code;
+  // 무작위 요소가 미리 보여야 하는 이벤트는 prepare로 데이터를 고정해 char.run.evData에 저장
+  if (ev.prepare) { char.run.evData = Object.assign({ code: ev.code }, ev.prepare(char)); return makeEventByCode(char, ev.code); }
+  char.run.evData = null;
   return ev;
 }
 function makeEventByCode(char, code) {
@@ -332,5 +494,5 @@ function applyEvent(char, code, optIdx) {
 module.exports = {
   configure, TOTAL_CYCLES, HAND_SIZE, initRun, stage, stageLabel, floorNo, isBossCycle, rankForCycle, advance,
   newDeckState, drawHand, playCard, handTypes, deckCounts, aiPick, makeEnemy, enemyFromFallen, snapshotForFallen,
-  makeShop, makeEvent, makeEventByCode, applyEvent
+  makeShop, makeEvent, makeEventByCode, applyEvent, applyBuffs, applyEnemyDebuffs, tickBuffs
 };

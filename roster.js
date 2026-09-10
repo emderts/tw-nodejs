@@ -33,6 +33,15 @@ function all() {
   return KEYS.map(summary);
 }
 
+const SLOT_LABEL = ['무기', '방어구', '보조방어구', '장신구', '장비'];
+function makeResultCard(rank, type) {
+  return {
+    type: cons.ITEM_TYPE_RESULT_CARD, resultType: type, rank: rank,
+    name: rank + '급 ' + SLOT_LABEL[type] + ' 리설트 카드',
+    tooltip: '27.3% : 언커먼 장비<br>55.2% : 레어 장비<br>12.5% : 유니크 장비<br>5% : 에픽 장비'
+  };
+}
+
 // ---- 새 런 시작값 ----
 const RUN_START = { rank: 9, level: 1, statPoint: 5 };
 // 가위/바위/보 각 2장. type은 skill.base 인덱스(0 가위, 1 바위, 2 보)와 대응
@@ -64,13 +73,7 @@ function create(key) {
   inst.items = {};
   inst.inventory = [];
   // 슬롯별(무기/방어구/보조방어구/장신구) 리설트 카드 1장씩
-  ['무기', '방어구', '보조방어구', '장신구'].forEach((label, type) => {
-    inst.inventory.push({
-      type: cons.ITEM_TYPE_RESULT_CARD, resultType: type, rank: inst.rank,
-      name: inst.rank + '급 ' + label + ' 리설트 카드',
-      tooltip: '27.3% : 언커먼 장비<br>55.2% : 레어 장비<br>12.5% : 유니크 장비<br>5% : 에픽 장비'
-    });
-  });
+  for (let t = 0; t < 4; t++) inst.inventory.push(makeResultCard(inst.rank, t));
 
   inst.deck = JSON.parse(JSON.stringify(START_DECK));
   inst.run = { cycle: 1, floor: 1 };
@@ -84,4 +87,4 @@ function randomLocked(unlocked) {
   return pool[Math.floor(Math.random() * pool.length)];
 }
 
-module.exports = { KEYS, template, summary, all, create, randomLocked, baseByRank, RUN_START };
+module.exports = { KEYS, template, summary, all, create, randomLocked, baseByRank, RUN_START, makeResultCard, SLOT_LABEL };

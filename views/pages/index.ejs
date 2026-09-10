@@ -286,8 +286,10 @@
       <section class="panel">
         <h2>캐릭터</h2>
         <table class="kv">
+          <% if (char.run && char.run.buffs && char.run.buffs.length) { %>
+          <tr><td class="k">일시 버프</td><td class="v"><% for (const b of char.run.buffs) { if (!b.label) continue; %><span style="color:var(--brass)"><%= b.label %></span> <small style="color:var(--ash)">(<%= b.battles %>전투)</small><br><% } %></td><td class="a"></td></tr>
+          <% } %>
           <tr><td class="k">스탯 포인트</td><td class="v"><%= char.statPoint %></td><td class="a"></td></tr>
-          <tr><td class="k">가루</td><td class="v"><%= char.dust %></td><td class="a"></td></tr>
           <tr><td class="k">전적</td><td class="v"><%= char.battleCnt %>전 <%= char.winCnt %>승 (<%= winRate %>%)<br><span style="color:var(--ash);font-size:12px">최근 50전 <%= char.recentRecord.filter(x => x).length %>승</span></td><td class="a"></td></tr>
         </table>
       </section>
