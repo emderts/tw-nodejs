@@ -241,7 +241,16 @@ io.on('connection', (socket) => {
       t.startHtml = t.bmod.procBattleStart(t.leftChr, t.rightChr, 1);
     }
     run.drawHand(t.pdeck); run.drawHand(t.edeck);
-    socket.emit('floorAck', t.startHtml, floorNames(t.leftChr), floorNames(t.rightChr), run.handTypes(t.pdeck), t.pdeck.draw.length, t.pdeck.discard.length, run.deckCounts(t.rightChr.deck));
+    if (!t.eplayed) t.eplayed = [0, 0, 0];
+    if (t.resets === undefined) t.resets = run.RESETS_PER_BATTLE;
+    socket.emit('floorAck', t.startHtml, floorNames(t.leftChr), floorNames(t.rightChr), floorState(t), run.deckCounts(t.rightChr.deck));
+  });
+  socket.on('floorReset', function(room, uid) {
+    const t = trades[room];
+    if (!t || !t.floor || t.leftUid != uid || t.result || t.busy || !t.resets) return;
+    t.resets--;
+    run.resetDeck(t.pdeck);
+    socket.emit('floorSelectAck', null, floorState(t));
   });
   socket.on('floorSelect', function(room, uid, key) {
     const t = trades[room];
@@ -253,10 +262,11 @@ io.on('connection', (socket) => {
     const eKey = run.aiPick(t.edeck, want);
     const result = t.bmod.procBattleTurn(key, eKey, 1);
     run.playCard(t.pdeck, key); run.playCard(t.edeck, eKey);
+    t.eplayed[eKey]++;
     if (result.redecide || !result.leftInfo) {
       run.drawHand(t.pdeck); run.drawHand(t.edeck);
       t.busy = false;
-      socket.emit('floorSelectAck', result.result, run.handTypes(t.pdeck), t.pdeck.draw.length, t.pdeck.discard.length);
+      socket.emit('floorSelectAck', result.result, floorState(t));
     } else {
       t.result = result;
       socket.emit('floorSelectEnd', result.result);
@@ -3571,6 +3581,17 @@ async function procSelectChar (req, res) {
   }
 }
 
+// 전투 화면용 상태: 손패/덱/체력/SP/적이 낸 카드/리셋 잔여
+function floorState(t) {
+  const L = t.leftChr, R = t.rightChr;
+  const sp = (c) => [Math.round(c.curSp || 0), (c.skill.special && c.skill.special.cost) || 0];
+  return {
+    hand: run.handTypes(t.pdeck), draw: t.pdeck.draw.length, discard: t.pdeck.discard.length,
+    hp: [Math.max(0, Math.round(L.curHp)), Math.round(L.stat.maxHp)], sp: sp(L),
+    ehp: [Math.max(0, Math.round(R.curHp)), Math.round(R.stat.maxHp)], esp: sp(R),
+    eplayed: t.eplayed, edraw: t.edeck.draw.length, resets: t.resets
+  };
+}
 function floorNames(chara) {
   return chara.skill.base.map(sk => sk.name + '<div class="itemTooltip">' + sk.tooltip + (sk.flavor ? '<br><br><span class="tooltipFlavor">' + sk.flavor + '</span>' : '') + '</div>');
 }

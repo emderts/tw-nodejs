@@ -1,11 +1,12 @@
 // 층 진행(로그라이크 런) 모듈
-// 사이클 = 상점 → 이벤트 → 전투. 10사이클, 보스는 3·6·10사이클 전투.
+// 사이클 = 이벤트 → 상점 → 전투. 10사이클, 보스는 3·6·10사이클 전투.
 const cons = require('./constant');
 const roster = require('./roster');
 
 const TOTAL_CYCLES = 10;
 const BOSS_CYCLES = [3, 6, 10];
-const STAGES = ['shop', 'event', 'battle'];
+const STAGES = ['event', 'shop', 'battle'];
+const RESETS_PER_BATTLE = 2;
 const HAND_SIZE = 3;
 
 // index.js 쪽 헬퍼 주입 (getItem, calcStats, makeDayStone)
@@ -79,7 +80,12 @@ function playCard(st, type) {
   st.discard.push(card);
   return card;
 }
-function handTypes(st) { return st.hand.map(c => c.type); }
+function handTypes(st) { return st.hand.map(c => c.type).sort((a, b) => a - b); }   // 가위-바위-보 순
+// 덱 리셋: 손패+버림+덱을 전부 섞어 새로 뽑음
+function resetDeck(st) {
+  st.draw = shuffle(st.draw.concat(st.hand, st.discard)); st.hand = []; st.discard = [];
+  return drawHand(st);
+}
 
 // AI: 원하는 수 → 손패에 있으면 그것, 없으면 차선(무승부 수), 그것도 없으면 손패 중 무작위
 // want는 상대 예상수 P를 이기는 수이므로 P = (want + 2) % 3
@@ -493,7 +499,7 @@ function applyEvent(char, code, optIdx) {
 }
 
 module.exports = {
-  configure, TOTAL_CYCLES, HAND_SIZE, initRun, stage, stageLabel, floorNo, isBossCycle, rankForCycle, advance,
+  configure, TOTAL_CYCLES, HAND_SIZE, RESETS_PER_BATTLE, resetDeck, initRun, stage, stageLabel, floorNo, isBossCycle, rankForCycle, advance,
   newDeckState, drawHand, playCard, handTypes, deckCounts, aiPick, makeEnemy, enemyFromFallen, snapshotForFallen,
   makeShop, makeEvent, makeEventByCode, applyEvent, applyBuffs, applyEnemyDebuffs, tickBuffs
 };

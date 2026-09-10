@@ -12,13 +12,21 @@
 <body>
   <div class="rps-bar enemyWrap">
     <div class="rb-enemy"><b class="<%= enemy.isBoss ? 'colorGold' : '' %>"><%= enemy.name %></b> <span style="color:var(--ash);font-size:12px"><%= enemy.title %><% if (enemy.deck) { %> · 덱 <%= enemy.deck.length %>장<% } %></span></div>
+    <div class="rb-status">
+      <div class="bar hp"><i id="ehpBar"></i></div><span class="num" id="ehpNum"></span>
+      <div class="bar sp" id="espWrap"><i id="espBar"></i></div><span class="num" id="espNum"></span>
+    </div>
     <div class="charItem"><button id="enemyBtn0" disabled type="button">[가위]<br></button></div>
     <div class="charItem"><button id="enemyBtn1" disabled type="button">[바위]<br></button></div>
     <div class="charItem"><button id="enemyBtn2" disabled type="button">[보]<br></button></div>
   </div>
   <div id="result" class="rps-result battle-log"></div>
   <div class="rps-bar selectWrap">
-    <div class="rb-hand" id="deckInfo"></div>
+    <div class="rb-status">
+      <div class="bar hp"><i id="hpBar"></i></div><span class="num" id="hpNum"></span>
+      <div class="bar sp" id="spWrap"><i id="spBar"></i></div><span class="num" id="spNum"></span>
+    </div>
+    <div class="rb-tools"><span id="deckInfo"></span><button id="resetBtn" type="button" disabled>덱 리셋</button></div>
     <div class="charItem"><button id="handBtn0" type="button" disabled></button></div>
     <div class="charItem"><button id="handBtn1" type="button" disabled></button></div>
     <div class="charItem"><button id="handBtn2" type="button" disabled></button></div>
@@ -28,6 +36,26 @@
   var names = ['', '', ''];
   var glyph = ['[가위]', '[바위]', '[보]'];
   var hand = [];
+  var busy = false;
+  function bar(id, cur, max) {
+    document.getElementById(id + 'Bar').style.width = (max > 0 ? Math.min(100, 100 * cur / max) : 0) + '%';
+    document.getElementById(id + 'Num').textContent = cur + ' / ' + max;
+  }
+  function renderState(s) {
+    bar('hp', s.hp[0], s.hp[1]); bar('ehp', s.ehp[0], s.ehp[1]);
+    bar('sp', s.sp[0], s.sp[1]); bar('esp', s.esp[0], s.esp[1]);
+    document.getElementById('spWrap').className = 'bar sp' + (s.sp[1] > 0 && s.sp[0] >= s.sp[1] ? ' ready' : '');
+    document.getElementById('espWrap').className = 'bar sp' + (s.esp[1] > 0 && s.esp[0] >= s.esp[1] ? ' ready' : '');
+    for (var i = 0; i < 3; i++) {
+      var b = document.getElementById('enemyBtn' + i);
+      b.innerHTML = glyph[i] + ' <span class="colorGold">×' + oDeckCnt[i] + '</span>' + (s.eplayed[i] ? ' <span style="color:var(--ash)">낸 ' + s.eplayed[i] + '</span>' : '') + '<br>' + oNames[i];
+    }
+    var rb = document.getElementById('resetBtn');
+    rb.textContent = '덱 리셋 (' + s.resets + ')';
+    if (s.resets > 0) rb.removeAttribute('disabled'); else rb.setAttribute('disabled', true);
+    renderHand(s.hand, s.draw, s.discard);
+  }
+  var oNames = ['', '', ''], oDeckCnt = [0, 0, 0];
   function renderHand(types, drawN, discardN) {
     hand = types;
     for (var i = 0; i < 3; i++) {
@@ -52,21 +80,24 @@
       socket.emit('floorSelect', '<%= room %>', '<%= uid %>', hand[i]);
     });
   })(i);
-  socket.emit('floorInit', '<%= room %>', '<%= uid %>');
-  socket.on('floorAck', function (result, myNames, oNames, types, drawN, discardN, oDeck) {
-    document.getElementById('result').innerHTML = result;
-    names = myNames;
-    for (var i = 0; i < 3; i++) document.getElementById('enemyBtn' + i).innerHTML = glyph[i] + ' <span class="colorGold">×' + oDeck[i] + '</span><br>' + oNames[i];
-    renderHand(types, drawN, discardN);
+  document.getElementById('resetBtn').addEventListener('click', function () {
+    this.setAttribute('disabled', true);
+    socket.emit('floorReset', '<%= room %>', '<%= uid %>');
   });
-  socket.on('floorSelectAck', function (result, types, drawN, discardN) {
+  socket.emit('floorInit', '<%= room %>', '<%= uid %>');
+  socket.on('floorAck', function (result, myNames, enemyNames, state, oDeck) {
     document.getElementById('result').innerHTML = result;
-    renderHand(types, drawN, discardN);
-    window.scrollTo(0, document.body.scrollHeight);
+    names = myNames; oNames = enemyNames; oDeckCnt = oDeck;
+    renderState(state);
+  });
+  socket.on('floorSelectAck', function (result, state) {
+    if (result !== null) document.getElementById('result').innerHTML = result;
+    renderState(state);
+    if (result !== null) window.scrollTo(0, document.body.scrollHeight);
   });
   socket.on('floorSelectEnd', function (result) {
     document.getElementById('result').innerHTML = result + '<div class="backLink"><a href="/floorResult" class="btn-primary" style="padding:12px 24px">결과 보기</a></div>';
-    lockHand();
+    lockHand(); document.getElementById('resetBtn').setAttribute('disabled', true);
     window.scrollTo(0, document.body.scrollHeight);
   });
 </script>
