@@ -416,3 +416,14 @@ button[onclick^="invClick"][type="submit"]::after {
   .list .charItem button:not(:disabled):hover { border-color: var(--brass); background: var(--slate-2); }
   .rps-bar.selectWrap button:not(:disabled):hover { border-color: var(--brass); }
 }
+
+/* ---------- 접기 / 덱 ---------- */
+details.fold > summary { list-style: none; cursor: pointer; padding: 8px 14px; border-top: 1px solid var(--line); color: var(--ash); font-size: 13px; }
+details.fold > summary::-webkit-details-marker { display: none; }
+details.fold > summary::before { content: "▸ "; color: var(--brass); }
+details.fold[open] > summary::before { content: "▾ "; }
+details.fold > table.kv tr:first-child td { border-top: 1px solid var(--line); }
+.skill .count { display: block; margin-top: 6px; font-size: 13px; font-weight: 600; color: var(--parchment); }
+.skill.special { border-color: var(--brass-dim); }
+.panel > h2.sub-head { border-top: 1px solid var(--line); border-radius: 0; margin-top: 2px; }
+.menu a.btn-next { grid-column: 1 / -1; background: var(--brass); color: var(--ink); border-color: var(--brass); font-weight: 700; font-size: 15px; padding: 14px; }

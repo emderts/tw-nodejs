@@ -37,6 +37,7 @@ const app = express()
 .get('/event', procEvent)
 .post('/login', procLogin)
 .post('/selectChar', procSelectChar)
+.get('/nextFloor', procNextFloor)
 .get('/join', (req, res) => res.render('pages/join'))
 .post('/join', procJoin)
 .get('/logout', procLogout)
@@ -3521,6 +3522,7 @@ async function procSelectChar (req, res) {
     }
 
     const inst = roster.create(key);
+    calcStats(inst);
     const uid = sess.userUid + '-' + Date.now().toString(36);
     await setCharacter(sess.userUid, uid, inst);
     res.redirect('/');
@@ -3528,6 +3530,12 @@ async function procSelectChar (req, res) {
     console.error(err);
     res.send('내부 오류');
   }
+}
+
+// TODO: 층 진행 시스템 — 상점/이벤트/전투 사이클
+async function procNextFloor (req, res) {
+  if (!req.session.userUid) { res.redirect('/login'); return; }
+  res.send('층 진행은 아직 준비 중입니다.<br><a href="/">돌아가기</a>');
 }
 
 async function getCharacter (id) {

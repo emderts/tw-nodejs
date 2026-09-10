@@ -2,6 +2,8 @@
 // - key   : users.unlocked / 선택 폼에서 쓰는 식별자 (chara.js export 이름과 동일)
 // - 템플릿은 chara.js의 객체를 그대로 참조하며, 실제 캐릭터 생성 시 깊은 복사해서 사용
 const chara = require('./chara');
+const cons = require('./constant');
+const item = require('./items');
 
 const KEYS = ['seriers', 'gaius', 'kines', 'julius', 'psi', 'aeika', 'ruisun', 'aeohelm', 'dekaitz',
               'bks', 'lunisha', 'illun', 'nux', 'lozic', 'kasien', 'marang', 'gabi', 'jay'];
@@ -31,12 +33,47 @@ function all() {
   return KEYS.map(summary);
 }
 
-// 새 런용 캐릭터 인스턴스 생성 (템플릿 깊은 복사)
+// ---- 새 런 시작값 ----
+const RUN_START = { rank: 9, level: 1, statPoint: 3 };
+// 가위/바위/보 각 2장. type은 skill.base 인덱스(0 가위, 1 바위, 2 보)와 대응
+const START_DECK = [0, 0, 1, 1, 2, 2].map(t => ({ type: t }));
+
+// 급수에 따른 기본 능력치 (기존 리셋 공식과 동일)
+function baseByRank(rank) {
+  return { phyAtk: 20 + 10 * (9 - rank), magAtk: 20 + 10 * (9 - rank), maxHp: 400 + 150 * (9 - rank) };
+}
+
+// 새 런용 캐릭터 인스턴스 생성 (템플릿 깊은 복사 후 런 시작값으로 초기화)
+// 능력치 합산(calcStats)은 호출측(index.js)에서 수행
 function create(key) {
   const c = template(key);
   if (!c) return null;
   const inst = JSON.parse(JSON.stringify(c));
   inst.rosterKey = key;
+
+  inst.rank = RUN_START.rank;
+  inst.level = RUN_START.level;
+  inst.statPoint = RUN_START.statPoint;
+  inst.premiumPoint = 0;
+  inst.exp = 0;
+  inst.dust = 0;
+  inst.lastStat = null;
+  Object.assign(inst.base, baseByRank(inst.rank));
+
+  // 장비는 기본 무기/갑옷만, 템플릿의 시작 인벤토리는 비움
+  inst.items = { weapon: item.list[0], armor: item.list[114] };
+  inst.inventory = [];
+  // 슬롯별(무기/방어구/보조방어구/장신구) 리설트 카드 1장씩
+  ['무기', '방어구', '보조방어구', '장신구'].forEach((label, type) => {
+    inst.inventory.push({
+      type: cons.ITEM_TYPE_RESULT_CARD, resultType: type, rank: inst.rank,
+      name: inst.rank + '급 ' + label + ' 리설트 카드',
+      tooltip: '60.5% : 언커먼 장비<br>27.6% : 레어 장비<br>5.55% : 유니크 장비<br>5.3% : 한 등급이 높은 커먼&언커먼 장비<br>1.05% : 에픽 장비'
+    });
+  });
+
+  inst.deck = JSON.parse(JSON.stringify(START_DECK));
+  inst.run = { cycle: 1, floor: 1 };
   return inst;
 }
 
@@ -47,4 +84,4 @@ function randomLocked(unlocked) {
   return pool[Math.floor(Math.random() * pool.length)];
 }
 
-module.exports = { KEYS, template, summary, all, create, randomLocked };
+module.exports = { KEYS, template, summary, all, create, randomLocked, baseByRank, RUN_START };

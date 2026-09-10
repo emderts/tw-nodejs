@@ -272,7 +272,7 @@
   <header class="nameplate">
     <div class="nameplate-main">
       <h1 class="name"><%= char.name %><small><%= char.title %></small></h1>
-      <p class="sub"><%= char.rank %>급 <%= char.level %>레벨 · <b class="has-tip"><%= sideName %> 공격대<div class="itemTooltip"><%= sideMembers %></div></b> · 공헌도 <%= char.raidEffort %></p>
+      <p class="sub"><%= char.level %>레벨<% if (sideName) { %> · <b class="has-tip"><%= sideName %> 공격대<div class="itemTooltip"><%= sideMembers %></div></b> · 공헌도 <%= char.raidEffort %><% } %></p>
     </div>
     <div class="nameplate-side">
       <span class="user"><%= user.name %></span>으로 접속<br>
@@ -286,39 +286,7 @@
       <section class="panel">
         <h2>캐릭터</h2>
         <table class="kv">
-          <tr>
-            <td class="k">경험치</td>
-            <td class="v has-tip"><%= char.exp %> / <%= char.reqExp %><span class="gauge"><i style="width:<%= Math.min(100, char.exp * 100 / (char.reqExp || 1)) %>%"></i></span>
-              <div class="itemTooltip">현재 경험치 / 요구 경험치<br>오늘 획득 가능 잔여 경험치: <%= char.maxExp %><%= char.expBoost ? '<br>Boost ' + char.expBoost : '' %></div></td>
-            <td class="a">
-            <% if ((char.level >= 20 && char.rank > 7) || (char.level >= 25 && char.rank == 7)) { %>
-              <form action="/doRankup" method="post"><button type="submit" <%= !char.rankReq ? 'disabled' : '' %>>랭크업</button></form>
-            <% } %>
-            </td>
-          </tr>
-          <tr>
-            <td class="k">피로도</td>
-            <td class="v"><%= actionPoint %> / 100<span class="gauge"><i style="width:<%= actionPoint %>%"></i></span></td>
-            <td class="a">
-              <form action="/actionAccel" method="post">
-                <button onclick="invClick(this, event)" type="button" class="has-tip">가속 <%= char.actionAccel ? '끄기' : '켜기' %>
-                  <div class="itemTooltip">가속을 켜면 PVP 전투에서 피로도를 2배 소모하고, 리설트 카드 게이지 획득 2배, 경험치 획득 +100%p. (부스트 등 추가 경험치는 2배가 되지 않음)</div>
-                </button>
-              </form>
-            </td>
-          </tr>
-          <tr>
-            <td class="k">카드 게이지</td>
-            <td class="v has-tip"><%= char.resultGauge %> / 500<span class="gauge"><i style="width:<%= Math.min(100, char.resultGauge / 5) %>%"></i></span>
-              <div class="itemTooltip">한 번에 최대 500까지 충전. 오늘 누적 <%= char.resultMaxGauge %>, 하루 2,500 초과 시 획득량 절반. 프리미엄 상점에서 누적 게이지 초기화 가능.</div></td>
-            <td class="a">
-            <% if (char.resultGauge >= 100) { %>
-              <form action="/getCard" method="post"><button type="submit" class="btn-primary">카드 받기</button></form>
-            <% } %>
-            </td>
-          </tr>
           <tr><td class="k">스탯 포인트</td><td class="v"><%= char.statPoint %></td><td class="a"></td></tr>
-          <tr><td class="k">프리미엄 포인트</td><td class="v"><%= char.premiumPoint %></td><td class="a"></td></tr>
           <tr><td class="k">가루</td><td class="v"><%= char.dust %></td><td class="a"></td></tr>
           <tr><td class="k">전적</td><td class="v"><%= char.battleCnt %>전 <%= char.winCnt %>승 (<%= winRate %>%)<br><span style="color:var(--ash);font-size:12px">최근 50전 <%= char.recentRecord.filter(x => x).length %>승</span></td><td class="a"></td></tr>
         </table>
@@ -326,30 +294,45 @@
 
       <section class="panel">
         <h2>능력치</h2>
+        <%
+          var statRows = [];
+          for ([key, val] of Object.entries(char.stat)) {
+            if (key === 'phyAtkMax' || key === 'phyAtkMin' || key === 'magAtkMax' || key === 'magAtkMin') continue;
+            var text;
+            if (key === 'phyAtk' || key === 'magAtk') {
+              text = (val + char.stat[key + 'Min']).toFixed(2) + '–' + (val + char.stat[key + 'Max']).toFixed(2);
+            } else if (key == 'phyReduce' || key == 'magReduce' || key == 'crit' || key == 'critDmg' || key == 'hit' || key == 'evasion' || key == 'pierce' || key == 'chanceEnh') {
+              text = (val * 100).toFixed(2) + '%';
+            } else {
+              text = val;
+            }
+            statRows.push({ key: key, label: (printName[key] ? printName[key] : key), text: text, main: (key === 'maxHp' || key === 'phyAtk' || key === 'magAtk') });
+          }
+        %>
         <table class="kv">
-        <% for ([key, val] of Object.entries(char.stat)) {
-             if (key === 'phyAtkMax' || key === 'phyAtkMin' || key === 'magAtkMax' || key === 'magAtkMin') continue; %>
+        <% for (const r of statRows.filter(x => x.main)) { %>
           <tr>
-            <td class="k"><%= (printName[key] ? printName[key] : key) %></td>
-            <td class="v">
-              <% if (key === 'phyAtk' || key === 'magAtk') { %>
-                <%= (val + char.stat[key + 'Min']).toFixed(2) %>–<%= (val + char.stat[key + 'Max']).toFixed(2) %>
-              <% } else {
-                   if (key == 'phyReduce' || key == 'magReduce' || key == 'crit' || key == 'critDmg' || key == 'hit' || key == 'evasion' || key == 'pierce' || key == 'chanceEnh') {
-                     val = (val * 100).toFixed(2) + '%';
-                   } %>
-                <%= val %>
-              <% } %>
-            </td>
+            <td class="k"><%= r.label %></td>
+            <td class="v"><%= r.text %></td>
             <td class="a">
-              <% if ((key === 'maxHp' || key === 'phyAtk' || key === 'magAtk') && char.statPoint > 0 && char.lastStat != key) { %>
-                <form action="/useStatPoint" method="post"><button type="submit">+</button><input type="hidden" name="keyType" value="<%= key %>"></form>
+              <% if (char.statPoint > 0 && char.lastStat != r.key) { %>
+                <form action="/useStatPoint" method="post"><button type="submit">+</button><input type="hidden" name="keyType" value="<%= r.key %>"></form>
               <% } %>
             </td>
           </tr>
         <% } %>
         </table>
+        <details class="fold">
+          <summary>상세 능력치</summary>
+          <table class="kv">
+          <% for (const r of statRows.filter(x => !x.main)) { %>
+            <tr><td class="k"><%= r.label %></td><td class="v"><%= r.text %></td><td class="a"></td></tr>
+          <% } %>
+          </table>
+        </details>
       </section>
+
+
     </div>
 
     <div class="grid">
@@ -371,14 +354,24 @@
       </section>
 
       <section class="panel">
-        <h2>스킬</h2>
+        <% var deckCounts = [0, 0, 0], deckExtra = [];
+           if (char.deck) { for (const cd of char.deck) { if (cd.type >= 0 && cd.type <= 2) deckCounts[cd.type]++; else deckExtra.push(cd); } } %>
+        <h2>스킬 · 덱<% if (char.deck) { %> <small style="color:var(--ash);font-weight:400"><%= char.deck.length %>장</small><% } %></h2>
         <div class="skills">
         <% for (let i = 0; i < 3; i++) { const sk = char.skill.base[i]; %>
           <div class="skill has-tip">
             <div class="glyph"><%= ['가위','바위','보'][i] %></div>
             <span class="sname"><%= sk.name %></span>
             <span class="sdmg"><%= getDamageText(sk) %></span>
+            <% if (char.deck) { %><span class="count">× <%= deckCounts[i] %></span><% } %>
             <div class="itemTooltip"><%- makeSkillTooltip(sk) %></div>
+          </div>
+        <% } %>
+        <% for (const cd of deckExtra) { %>
+          <div class="skill special has-tip">
+            <div class="glyph">특수</div>
+            <span class="sname"><%= cd.name %></span>
+            <% if (cd.tooltip) { %><div class="itemTooltip"><%- cd.tooltip %></div><% } %>
           </div>
         <% } %>
         </div>
@@ -394,10 +387,7 @@
           <% } %>
         </div>
         <% } %>
-      </section>
-
-      <section class="panel">
-        <h2>인벤토리</h2>
+        <h2 class="sub-head">인벤토리</h2>
         <div class="inventory" id="inventory">
           <% for (const [key, val] of Object.entries(char.inventory)) { if (val) { %>
           <div class="inventoryItem">
@@ -428,7 +418,7 @@
     </div>
     <div class="grid">
       <section class="panel">
-        <h2><%= sideName %> 공격대 채팅</h2>
+        <h2><%= sideName ? sideName + ' 공격대 채팅' : '채팅' %></h2>
         <div class="chat">
           <ul id="messages"></ul>
           <ul id="people"></ul>
@@ -441,21 +431,11 @@
       <section class="panel">
         <h2>행동</h2>
         <nav class="menu">
-          <a href="/doBattle">전투 신청</a>
-          <a href="/battleList">지정 전투 (<%= char.matchCount %>회 남음)</a>
-          <a href="/dungeon">던전 입장</a>
-          <a href="/quest">퀘스트</a>
-          <a href="/doTest">허수아비</a>
-          <a href="/battleLogs">전투 로그</a>
-          <a href="/shop">상점</a>
-          <a href="/tradeList">아이템 주기</a>
+          <a href="/nextFloor" class="btn-next">다음 층으로</a>
           <a href="/sortInventory">아이템 정리</a>
-          <a href="/stoneCube">요일석 합성</a>
-          <a href="/identifyingHall">아이템 감정</a>
           <a href="/dismantlingYard">아이템 해체</a>
-          <a href="/viewList">캐릭터 정보</a>
+          <a href="/stoneCube">요일석 합성</a>
           <a href="/viewItem">아이템 정보</a>
-          <a href="/viewAch">업적</a>
           <a href="/logout" class="quiet">로그아웃</a>
         </nav>
       </section>
