@@ -240,7 +240,7 @@ io.on('connection', (socket) => {
       t.startHtml = t.bmod.procBattleStart(t.leftChr, t.rightChr, 1);
     }
     run.drawHand(t.pdeck); run.drawHand(t.edeck);
-    socket.emit('floorAck', t.startHtml, floorNames(t.leftChr), floorNames(t.rightChr), run.handTypes(t.pdeck), t.pdeck.draw.length, t.pdeck.discard.length);
+    socket.emit('floorAck', t.startHtml, floorNames(t.leftChr), floorNames(t.rightChr), run.handTypes(t.pdeck), t.pdeck.draw.length, t.pdeck.discard.length, run.deckCounts(t.rightChr.deck));
   });
   socket.on('floorSelect', function(room, uid, key) {
     const t = trades[room];
@@ -251,14 +251,8 @@ io.on('connection', (socket) => {
     const want = monster.selectFunc[t.rightChr.skillSelect](t.rightChr, key);
     const eKey = run.aiPick(t.edeck, want);
     const result = t.bmod.procBattleTurn(key, eKey, 1);
-    if (result.redecide) {
-      // 다시 선택: 카드 소모 없음
-      t.busy = false;
-      socket.emit('floorSelectAck', result.result, run.handTypes(t.pdeck), t.pdeck.draw.length, t.pdeck.discard.length);
-      return;
-    }
     run.playCard(t.pdeck, key); run.playCard(t.edeck, eKey);
-    if (!result.leftInfo) {
+    if (result.redecide || !result.leftInfo) {
       run.drawHand(t.pdeck); run.drawHand(t.edeck);
       t.busy = false;
       socket.emit('floorSelectAck', result.result, run.handTypes(t.pdeck), t.pdeck.draw.length, t.pdeck.discard.length);
@@ -739,21 +733,19 @@ async function procUseItem (req, res) {
               chara.inventory.push(picked);
             }
           } else if (tgtObj.resultType <= 4) {
-            if (rand < 0.605) {
+            // 언커먼 27.3% / 레어 55.2% / 유니크 12.5% / 에픽 5%
+            if (rand < 0.273) {
               picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_UNCOMMON, tgtObj.resultType);
               chara.inventory.push(picked);
-            } else if (rand < 0.881) {
+            } else if (rand < 0.825) {
               picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_RARE, tgtObj.resultType);
               _processRare(chara, tgtObj, picked);
               chara.inventory.push(picked);
-            } else if (rand < 0.9365) {
+            } else if (rand < 0.95) {
               picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_UNIQUE, tgtObj.resultType);
               _processUnique(chara, tgtObj, picked);
               chara.inventory.push(picked);
               await addItemNews(client, chara, tgtObj, picked);
-            } else if (rand < 0.895/*9895*/) {
-              picked = _getItem(tgtObj.rank - 1, cons.ITEM_RARITY_COMMON_UNCOMMON, tgtObj.resultType);
-              chara.inventory.push(picked);
             } else {
               picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_EPIC, tgtObj.resultType);
               await _processEpic(chara, tgtObj, picked);
@@ -4028,7 +4020,7 @@ function addSpecialResultCard(chara, type, rank) {
   item.rank = rankUsed;
   item.resultType = type;
   if (type <= 4) {
-    item.tooltip = '60.5% : 언커먼 장비<br>27.6% : 레어 장비<br>5.55% : 유니크 장비<br>5.3% : 한 등급이 높은 커먼&언커먼 장비<br>1.05% : 에픽 장비';
+    item.tooltip = '27.3% : 언커먼 장비<br>55.2% : 레어 장비<br>12.5% : 유니크 장비<br>5% : 에픽 장비';
   } else if (type == 5) {
     item.tooltip = '97% : 레어 장비<br>2% : 유니크 장비<br>1% : 에픽 장비';
   } else if (type == 6) {

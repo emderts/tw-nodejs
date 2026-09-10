@@ -53,10 +53,10 @@
     });
   })(i);
   socket.emit('floorInit', '<%= room %>', '<%= uid %>');
-  socket.on('floorAck', function (result, myNames, oNames, types, drawN, discardN) {
+  socket.on('floorAck', function (result, myNames, oNames, types, drawN, discardN, oDeck) {
     document.getElementById('result').innerHTML = result;
     names = myNames;
-    for (var i = 0; i < 3; i++) document.getElementById('enemyBtn' + i).innerHTML += oNames[i];
+    for (var i = 0; i < 3; i++) document.getElementById('enemyBtn' + i).innerHTML = glyph[i] + ' <span class="colorGold">×' + oDeck[i] + '</span><br>' + oNames[i];
     renderHand(types, drawN, discardN);
   });
   socket.on('floorSelectAck', function (result, types, drawN, discardN) {

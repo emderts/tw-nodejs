@@ -68,7 +68,7 @@ function create(key) {
     inst.inventory.push({
       type: cons.ITEM_TYPE_RESULT_CARD, resultType: type, rank: inst.rank,
       name: inst.rank + '급 ' + label + ' 리설트 카드',
-      tooltip: '60.5% : 언커먼 장비<br>27.6% : 레어 장비<br>5.55% : 유니크 장비<br>5.3% : 한 등급이 높은 커먼&언커먼 장비<br>1.05% : 에픽 장비'
+      tooltip: '27.3% : 언커먼 장비<br>55.2% : 레어 장비<br>12.5% : 유니크 장비<br>5% : 에픽 장비'
     });
   });
 

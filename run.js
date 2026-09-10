@@ -55,15 +55,21 @@ function shuffle(arr) {
 function newDeckState(deck) {
   return { draw: shuffle(deck.map(c => Object.assign({}, c))), hand: [], discard: [] };
 }
+// 손패를 3장까지 보충. 뽑을 카드가 없을 때는 손패가 비어 있어야만 버림 더미를 셔플
 function drawHand(st) {
   while (st.hand.length < HAND_SIZE) {
     if (st.draw.length === 0) {
-      if (st.discard.length === 0) break;
+      if (st.hand.length > 0 || st.discard.length === 0) break;
       st.draw = shuffle(st.discard); st.discard = [];
     }
     st.hand.push(st.draw.shift());
   }
   return st.hand;
+}
+function deckCounts(deck) {
+  const c = [0, 0, 0];
+  for (const cd of deck) if (cd.type >= 0 && cd.type <= 2) c[cd.type]++;
+  return c;
 }
 function playCard(st, type) {
   const idx = st.hand.findIndex(c => c.type === type);
@@ -164,7 +170,8 @@ function makeShop(char) {
   const cycle = char.run.cycle;
   const goods = [];
   if (type === 'gear') {
-    const rarityPool = cycle < 4 ? [1, 1, 2] : (cycle < 7 ? [1, 2, 2, 4] : [2, 4, 4, 5]);
+    // 레어 이상만 판매
+    const rarityPool = cycle < 4 ? [2, 2, 2, 4] : (cycle < 7 ? [2, 2, 4, 4] : [2, 4, 4, 5]);
     for (let i = 0; i < 4; i++) {
       const rarity = rarityPool[Math.floor(Math.random() * rarityPool.length)];
       const t = Math.floor(Math.random() * 4);
@@ -242,6 +249,6 @@ function applyEvent(char, code, optIdx) {
 
 module.exports = {
   configure, TOTAL_CYCLES, HAND_SIZE, initRun, stage, stageLabel, floorNo, isBossCycle, rankForCycle, advance,
-  newDeckState, drawHand, playCard, handTypes, aiPick, makeEnemy, enemyFromFallen, snapshotForFallen,
+  newDeckState, drawHand, playCard, handTypes, deckCounts, aiPick, makeEnemy, enemyFromFallen, snapshotForFallen,
   makeShop, makeEvent, makeEventByCode, applyEvent
 };
