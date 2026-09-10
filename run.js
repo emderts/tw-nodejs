@@ -30,7 +30,8 @@ function stage(char) { return STAGES[char.run.stageIdx]; }
 function floorNo(char) { return (char.run.cycle - 1) * 3 + char.run.stageIdx + 1; }
 function isBossCycle(cycle) { return BOSS_CYCLES.includes(cycle); }
 // 급수는 2사이클마다 1씩 오름. 레어 이상 장비가 6급까지만 존재하므로 6급에서 멈춤
-function rankForCycle(cycle) { return Math.max(6, 9 - Math.floor((cycle - 1) / 2)); }
+// 1사이클 9급, 2~3 8급, 4~5 7급, 6~ 6급
+function rankForCycle(cycle) { return Math.max(6, 9 - Math.ceil((cycle - 1) / 2)); }
 function stageLabel(char) { return ({ shop: '상점', event: '이벤트', battle: isBossCycle(char.run.cycle) ? '보스 전투' : '전투' })[stage(char)]; }
 
 // 스테이지 하나 소화 후 호출. 사이클이 끝나면 레벨/급수 반영. 마지막 사이클 전투까지 끝났으면 true(클리어)
