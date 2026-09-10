@@ -14,6 +14,7 @@ const battlemodule = require('./battlemodule');
 const battlemodule2 = require('./battlemodule2');
 const ach = require('./achievement');
 const chara = require('./chara');
+const roster = require('./roster');
 const cons = require('./constant');
 const item = require('./items');
 const monster = require('./monster');
@@ -35,6 +36,7 @@ const app = express()
 .get('/login', (req, res) => res.render('pages/login'))
 .get('/event', procEvent)
 .post('/login', procLogin)
+.post('/selectChar', procSelectChar)
 .get('/join', (req, res) => res.render('pages/join'))
 .post('/join', procJoin)
 .get('/logout', procLogout)
@@ -452,6 +454,15 @@ async function procIndex (req, res) {
     const news = await getNews(5);
     if (!sess.userUid) {
       res.render('pages/login');
+    } else if (!charRow.char_data) {
+      // 진행 중인 캐릭터가 없음 → 캐릭터 선택 화면
+      const unlocked = await getUnlocked(sess.userUid);
+      res.render('pages/selectChar', {
+        user: {name: sess.userName, uid : sess.userUid},
+        roster: roster.all(),
+        unlocked: unlocked,
+        firstPick: unlocked.length === 0
+      });
     } else {
       const personalNews = await getPersonalNews(charRow.uid);
       /*var mark;
@@ -3459,6 +3470,66 @@ async function giveAchievement (uid, chara, idx) {
   }
 }
 
+// ---------- 캐릭터 해금 / 선택 ----------
+async function getUnlocked (id) {
+  const client = await pool.connect();
+  try {
+    const result = await client.query('select unlocked from users where id = $1', [id]);
+    if (result.rows.length === 0 || !result.rows[0].unlocked) return [];
+    try { return JSON.parse(result.rows[0].unlocked); } catch (e) { return []; }
+  } finally {
+    client.release();
+  }
+}
+
+async function setUnlocked (id, unlocked) {
+  const client = await pool.connect();
+  try {
+    await client.query('update users set unlocked = $1 where id = $2', [JSON.stringify(unlocked), id]);
+  } finally {
+    client.release();
+  }
+}
+
+// 클리어 보상 등에서 호출: 미해금 캐릭터 하나를 무작위로 해금하고 키를 반환 (없으면 null)
+async function unlockRandomChar (id) {
+  const unlocked = await getUnlocked(id);
+  const key = roster.randomLocked(unlocked);
+  if (!key) return null;
+  unlocked.push(key);
+  await setUnlocked(id, unlocked);
+  return key;
+}
+
+async function procSelectChar (req, res) {
+  try {
+    const sess = req.session;
+    if (!sess.userUid) { res.redirect('/login'); return; }
+    const key = req.body.charKey;
+    if (!roster.template(key)) { res.send('알 수 없는 캐릭터입니다.<br><a href="/">돌아가기</a>'); return; }
+
+    // 이미 진행 중인 캐릭터가 있으면 새로 만들지 않음
+    const charRow = await getCharacter(sess.userUid);
+    if (charRow.char_data) { res.redirect('/'); return; }
+
+    var unlocked = await getUnlocked(sess.userUid);
+    if (unlocked.length === 0) {
+      unlocked = [key];                       // 최초 선택 = 해금
+      await setUnlocked(sess.userUid, unlocked);
+    } else if (!unlocked.includes(key)) {
+      res.send('아직 해금되지 않은 캐릭터입니다.<br><a href="/">돌아가기</a>'); return;
+    }
+
+    const inst = roster.create(key);
+    const uid = sess.userUid + '-' + Date.now().toString(36);
+    await setCharacter(sess.userUid, uid, inst);
+    res.redirect('/');
+  } catch (err) {
+    console.error(err);
+    res.send('내부 오류');
+  }
+}
+
 async function getCharacter (id) {
   try {
     var rval = {};
@@ -3564,7 +3635,8 @@ async function setGlobals (setObj) {
 async function setCharacter (id, uid, data) {
   try {
     const client = await pool.connect();
-    const result = await client.query('insert into characters(uid, char_data, actionpoint) values ($1, $2, 10)', [uid, data]);
+    const payload = typeof data === 'string' ? data : JSON.stringify(data);
+    const result = await client.query('insert into characters(uid, char_data, actionpoint) values ($1, $2, 10)', [uid, payload]);
     const result2 = await client.query('update users set uid = $1 where id = $2', [uid, id]);
 
     client.release();

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ThirdWorld - 캐릭터 선택</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Noto+Serif+KR:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/stylesheets/main.css">
+  <style>
+    .roster { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+    .char-card { background: var(--slate); border: 1px solid var(--line); border-radius: 4px; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+    .char-card.locked { opacity: .45; }
+    .char-card .cname { margin: 0; font: 700 18px/1.25 var(--font-display); }
+    .char-card .ctitle { color: var(--ash); font-size: 13px; margin-top: 2px; }
+    .char-card .cskills { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+    .char-card .cskills .skill { padding: 8px 6px; }
+    .char-card .cskills .glyph { font-size: 12px; color: var(--ash); }
+    .char-card .cskills .sname { font-size: 12.5px; margin-top: 4px; }
+    .char-card .cskills .sdmg { font-size: 11.5px; }
+    .char-card .cextra { display: grid; gap: 4px; font-size: 12.5px; color: var(--ash); }
+    .char-card .cextra b { color: var(--parchment); font-weight: 500; }
+    .char-card form { margin-top: auto; }
+    .char-card form button { width: 100%; padding: 10px; }
+    .lock-tag { font-size: 11.5px; color: var(--ash); text-align: center; padding: 8px; border: 1px dashed var(--line); border-radius: 3px; }
+  </style>
+</head>
+<body>
+<%
+  function dmg(sk) { return (sk.type === 1 ? '물리' : '마법') + ' ' + sk.damage; }
+%>
+<div class="page">
+  <div class="page-title">
+    <h1><%= firstPick ? '시작 캐릭터 선택' : '캐릭터 선택' %></h1>
+    <span class="meta"><%= user.name %> · <a href="/logout">로그아웃</a></span>
+  </div>
+
+  <% if (firstPick) { %>
+  <div class="note-box">처음 고른 캐릭터가 해금됩니다. 이후에는 런을 클리어할 때마다 새 캐릭터가 무작위로 해금돼요.</div>
+  <% } else { %>
+  <div class="note-box">해금된 캐릭터 <b><%= unlocked.length %></b> / <%= roster.length %>. 잠긴 캐릭터는 런을 클리어하면 무작위로 해금돼요.</div>
+  <% } %>
+
+  <div class="roster">
+  <% const sorted = firstPick ? roster : roster.slice().sort(function (a, b) {
+       return (unlocked.includes(b.key) ? 1 : 0) - (unlocked.includes(a.key) ? 1 : 0);
+     });
+     for (const c of sorted) {
+       const isUnlocked = firstPick || unlocked.includes(c.key); %>
+    <div class="char-card <%= isUnlocked ? '' : 'locked' %>">
+      <div>
+        <h2 class="cname"><%= c.name %></h2>
+        <div class="ctitle"><%= c.title %> · <%= c.rank %>급</div>
+      </div>
+      <div class="cskills">
+      <% c.skills.forEach(function (sk, i) { %>
+        <div class="skill has-tip">
+          <div class="glyph"><%= ['가위','바위','보'][i] %></div>
+          <span class="sname"><%= sk.name %></span>
+          <span class="sdmg"><%= dmg(sk) %></span>
+          <div class="itemTooltip"><%- sk.tooltip %></div>
+        </div>
+      <% }); %>
+      </div>
+      <div class="cextra">
+        <% if (c.special) { %><div class="has-tip">스페셜 <b><%= c.special.name %></b> (SP <%= c.special.cost %>)<div class="itemTooltip"><%- c.special.tooltip %></div></div><% } %>
+        <% if (c.drive) { %><div class="has-tip">드라이브 <b><%= c.drive.name %></b><div class="itemTooltip"><%- c.drive.tooltip %></div></div><% } %>
+      </div>
+      <% if (isUnlocked) { %>
+      <form action="/selectChar" method="post">
+        <button type="submit" class="btn-primary"><%= firstPick ? '이 캐릭터로 시작' : '선택' %></button>
+        <input type="hidden" name="charKey" value="<%= c.key %>">
+      </form>
+      <% } else { %>
+      <div class="lock-tag">잠김</div>
+      <% } %>
+    </div>
+  <% } %>
+  </div>
+</div>
+<script src="/js/ui.js"></script>
+</body>
+</html>
