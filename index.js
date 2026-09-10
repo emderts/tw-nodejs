@@ -3482,8 +3482,9 @@ async function getChat() {
 }
 
 async function giveAchievement (uid, chara, idx) {
+  let client;
   try {
-    const client = await pool.connect();
+    client = await pool.connect();
     const globals = await getGlobals();
     
     if (!chara.achievement[idx]) {
@@ -3493,7 +3494,7 @@ async function giveAchievement (uid, chara, idx) {
           [uid, '[ ' + ach.achData[idx].name + ' ] 업적을 달성했습니다!', new Date()]);
     }
     
-    if (!globals.achievement[idx]) {
+    if (!globals || !globals.achievement || !globals.achievement[idx]) {
       await setGlobals({achievement : {type : 'achievement', idx : idx, holder : chara.name}});
       await client.query('insert into news(content, date) values ($1, $2)', 
           [chara.name + getIga(chara.nameType) + ' [ ' + ach.achData[idx].name + ' ] 업적을 달성했습니다!', new Date()]);
@@ -3501,7 +3502,7 @@ async function giveAchievement (uid, chara, idx) {
     client.release();
     return;
   } catch (err) {
-    client.release();
+    if (client) client.release();
     console.error(err);
     return;
   } finally {
@@ -3784,14 +3785,15 @@ async function getCharacterByUid (uid) {
 }
 
 async function getGlobals (setObj) {
+  let client;
   try {
-    const client = await pool.connect();
+    client = await pool.connect();
     const result = await client.query('select * from global');
     client.release();
 
     return JSON.parse(result.rows[0].globals);
   } catch (err) {
-    client.release();
+    if (client) client.release();
     console.error(err);
     return;
   } finally {
@@ -3799,8 +3801,9 @@ async function getGlobals (setObj) {
 }
 
 async function setGlobals (setObj) {
+  let client;
   try {
-    const client = await pool.connect();
+    client = await pool.connect();
     const result = await client.query('select * from global');
     if (result.rows.length > 0) {
       var newObj = JSON.parse(result.rows[0].globals);
@@ -3833,7 +3836,7 @@ async function setGlobals (setObj) {
     client.release();
     return;
   } catch (err) {
-    client.release();
+    if (client) client.release();
     console.error(err);
     return;
   } finally {
@@ -3841,15 +3844,16 @@ async function setGlobals (setObj) {
 }
 
 async function setCharacter (id, uid, data) {
+  let client;
   try {
-    const client = await pool.connect();
+    client = await pool.connect();
     const payload = typeof data === 'string' ? data : JSON.stringify(data);
     const result = await client.query('insert into characters(uid, char_data, actionpoint) values ($1, $2, 10)', [uid, payload]);
     const result2 = await client.query('update users set uid = $1 where id = $2', [uid, id]);
 
     client.release();
   } catch (err) {
-    client.release();
+    if (client) client.release();
     console.error(err);
   }
 }
