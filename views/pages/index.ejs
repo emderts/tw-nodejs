@@ -272,7 +272,7 @@
   <header class="nameplate">
     <div class="nameplate-main">
       <h1 class="name"><%= char.name %><small><%= char.title %></small></h1>
-      <p class="sub"><%= char.level %>레벨<% if (rv) { %> · <b><%= rv.floor %>층</b> (<%= rv.cycle %>/<%= rv.total %>사이클) · <span style="color:var(--brass)"><%= rv.gold %> G</span><% } %><% if (sideName) { %> · <b class="has-tip"><%= sideName %> 공격대<div class="itemTooltip"><%= sideMembers %></div></b> · 공헌도 <%= char.raidEffort %><% } %></p>
+      <p class="sub"><%= char.level %>레벨<% if (rv) { %> · <b><%= rv.floor %>층</b> (<%= rv.cycle %>/<%= rv.total %>사이클) · <span style="color:var(--brass)"><%= rv.gold %> G</span> · <span style="color:var(--side-mine)">♥<%= rv.lives %></span><% } %><% if (sideName) { %> · <b class="has-tip"><%= sideName %> 공격대<div class="itemTooltip"><%= sideMembers %></div></b> · 공헌도 <%= char.raidEffort %><% } %></p>
     </div>
     <div class="nameplate-side">
       <span class="user"><%= user.name %></span>으로 접속<br>

@@ -26,7 +26,7 @@
   <% } else if (dead || !rv) { %>
   <div class="backLink"><a href="/" class="btn-primary" style="padding:12px 24px"><%= dead ? '새 캐릭터 선택' : '캐릭터 화면으로' %></a></div>
   <% } else { %>
-  <div class="backLink"><a href="/nextFloor" class="btn-primary" style="padding:12px 24px"><%= rv.floor %>층 · <%= rv.stageLabel %></a></div>
+  <div class="backLink"><a href="/nextFloor" class="btn-primary" style="padding:12px 24px"><%= (typeof retry !== 'undefined' && retry) ? '재도전 — ' : '' %><%= rv.floor %>층 · <%= rv.stageLabel %></a></div>
   <div class="backLink"><a href="/">캐릭터 화면 (스탯 · 장비 정리)</a></div>
   <% } %>
 </div>

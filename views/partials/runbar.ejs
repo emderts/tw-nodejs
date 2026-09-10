@@ -1,5 +1,5 @@
 <div class="runbar">
   <span class="rb-floor"><b><%= rv.floor %>층</b> · <%= rv.cycle %>/<%= rv.total %>사이클</span>
   <span class="rb-stage"><%= rv.stageLabel %></span>
-  <span class="rb-gold"><%= rv.gold %> G</span>
+  <span class="rb-gold"><%= rv.gold %> G<% if (rv.lives !== undefined) { %> <span class="rb-lives" title="재도전">♥<%= rv.lives %></span><% } %></span>
 </div>

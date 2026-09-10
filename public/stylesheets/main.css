@@ -438,3 +438,4 @@ details.fold > table.kv tr:first-child td { border-top: 1px solid var(--line); }
 .rps-bar button.card-t0, .rps-bar button.card-t1, .rps-bar button.card-t2 { border-color: var(--brass-dim); background: var(--slate-2); }
 .rps-bar button:disabled:empty { visibility: hidden; }
 .rps-result { padding: 120px 12px 130px; }
+.runbar .rb-lives { color: var(--side-mine); margin-left: 6px; }

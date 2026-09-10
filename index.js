@@ -3592,7 +3592,7 @@ async function saveChar (char, uid) {
   finally { client.release(); }
 }
 function runView (char) {
-  return { cycle: char.run.cycle, floor: run.floorNo(char), stageLabel: run.stageLabel(char), gold: char.gold, total: run.TOTAL_CYCLES };
+  return { cycle: char.run.cycle, floor: run.floorNo(char), stageLabel: run.stageLabel(char), gold: char.gold, total: run.TOTAL_CYCLES, lives: (char.run.lives === undefined ? 1 : char.run.lives) };
 }
 
 async function procNextFloor (req, res) {
@@ -3741,6 +3741,12 @@ async function procFloorResult (req, res) {
       char.run.pendingCard = pendingCard;
       await saveChar(char, charRow.uid);
       res.render('pages/floorEnd', { title: (enemy.isBoss ? '보스 격파' : '전투 승리'), lines: rewardLines, result: re.result, dead: false, rv: runView(char), pendingCard: pendingCard });
+    } else if ((char.run.lives === undefined ? 1 : char.run.lives) > 0) {
+      // 패배했지만 재도전 가능: 같은 층, 적은 다시 생성됨
+      char.run.lives = (char.run.lives === undefined ? 1 : char.run.lives) - 1;
+      char.battleCnt = (char.battleCnt || 0) + 1;
+      await saveChar(char, charRow.uid);
+      res.render('pages/floorEnd', { title: '패배', lines: ['쓰러졌지만 아직 끝은 아니다. 남은 재도전 <b>' + char.run.lives + '</b>회.', '같은 층에서 다시 싸운다. 상대는 바뀔 수 있다.'], result: re.result, dead: false, rv: runView(char), pendingCard: null, retry: true });
     } else {
       // 사망: 스냅샷 저장 후 캐릭터 삭제
       try {

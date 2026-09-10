@@ -22,7 +22,7 @@ function getItemSafe(rank, rarity, type) {
 
 // ---------- 런 상태 ----------
 function initRun(char) {
-  char.run = { cycle: 1, stageIdx: 0, floor: 1 };
+  char.run = { cycle: 1, stageIdx: 0, floor: 1, lives: 1 };   // lives = 남은 재도전 횟수
   char.gold = 80;
   return char;
 }
