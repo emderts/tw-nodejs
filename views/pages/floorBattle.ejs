@@ -36,7 +36,14 @@
   var names = ['', '', ''];
   var glyph = ['[가위]', '[바위]', '[보]'];
   var hand = [];
-  var busy = false;
+  // 고정 바 높이에 맞춰 로그 여백 조정
+  function fitPadding() {
+    var r = document.getElementById('result');
+    r.style.paddingTop = (document.querySelector('.enemyWrap').offsetHeight + 12) + 'px';
+    r.style.paddingBottom = (document.querySelector('.selectWrap').offsetHeight + 24) + 'px';
+  }
+  window.addEventListener('resize', fitPadding);
+  window.addEventListener('load', fitPadding);
   function bar(id, cur, max) {
     document.getElementById(id + 'Bar').style.width = (max > 0 ? Math.min(100, 100 * cur / max) : 0) + '%';
     document.getElementById(id + 'Num').textContent = cur + ' / ' + max;
@@ -54,6 +61,7 @@
     rb.textContent = '덱 리셋 (' + s.resets + ')';
     if (s.resets > 0) rb.removeAttribute('disabled'); else rb.setAttribute('disabled', true);
     renderHand(s.hand, s.draw, s.discard);
+    fitPadding();
   }
   var oNames = ['', '', ''], oDeckCnt = [0, 0, 0];
   function renderHand(types, drawN, discardN) {

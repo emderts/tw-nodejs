@@ -62,7 +62,7 @@ function drawHand(st) {
   while (st.hand.length < HAND_SIZE) {
     if (st.draw.length === 0) {
       if (st.hand.length > 0 || st.discard.length === 0) break;
-      st.draw = shuffle(st.discard); st.discard = [];
+      st.draw = shuffle(st.discard); st.discard = []; st.shuffles = (st.shuffles || 0) + 1;
     }
     st.hand.push(st.draw.shift());
   }

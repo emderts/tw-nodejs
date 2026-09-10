@@ -264,7 +264,10 @@ io.on('connection', (socket) => {
     run.playCard(t.pdeck, key); run.playCard(t.edeck, eKey);
     t.eplayed[eKey]++;
     if (result.redecide || !result.leftInfo) {
-      run.drawHand(t.pdeck); run.drawHand(t.edeck);
+      run.drawHand(t.pdeck);
+      const eShuf = t.edeck.shuffles || 0;
+      run.drawHand(t.edeck);
+      if ((t.edeck.shuffles || 0) !== eShuf) t.eplayed = [0, 0, 0];   // 적 덱이 다시 섞이면 낸 카드 집계 초기화
       t.busy = false;
       socket.emit('floorSelectAck', result.result, floorState(t));
     } else {
