@@ -16,7 +16,7 @@ const ach = require('./achievement');
 const chara = require('./chara');
 const roster = require('./roster');
 const run = require('./run');
-run.configure({ getItem: _getItem, calcStats: calcStats, makeDayStone: makeDayStone });
+run.configure({ getItem: _getItem, calcStats: calcStats, makeDayStone: makeDayStone, addResultCard: addSpecialResultCard });
 const cons = require('./constant');
 const item = require('./items');
 const monster = require('./monster');
@@ -687,6 +687,7 @@ async function procUseItem (req, res) {
           chara.inventory.splice(body.itemNum, 1);
           chara.statistics.cardUsed += 1;
           const nextIdx = chara.inventory.findIndex(x => (x.type === cons.ITEM_TYPE_RESULT_CARD && x.resultType === tgtObj.resultType));
+          const remainCards = chara.inventory.map((x, i) => ({ idx: i, name: x.name })).filter((c, i) => chara.inventory[i].type === cons.ITEM_TYPE_RESULT_CARD);
           var rand = Math.random();
           var picked;
           if (chara.quest[10]) {
@@ -887,7 +888,7 @@ async function procUseItem (req, res) {
               await addItemNews(client, chara, tgtObj, picked);
             } 
           }
-          res.render('pages/resultCard', {item : picked, nextIdx : nextIdx});
+          res.render('pages/resultCard', {item : picked, nextIdx : nextIdx, remainCards : remainCards});
         } else if (tgtObj.type === cons.ITEM_TYPE_DAYSTONE) {
           res.render('pages/selectItem', {title : '요일석 사용', inv : chara.inventory, mode : 1, usedItem : body.itemNum, uid : null});
         } else if (tgtObj.type === 90001) {
@@ -3605,7 +3606,7 @@ async function procNextFloor (req, res) {
       if (!sess.floorShop || sess.floorShop.key !== key) sess.floorShop = { key, shop: run.makeShop(char) };
       res.render('pages/floorShop', { char, rv: runView(char), shop: sess.floorShop.shop, makeTooltip });
     } else if (st === 'event') {
-      if (!sess.floorEvent || sess.floorEvent.key !== key) sess.floorEvent = { key, code: run.makeEvent(char).code, done: null };
+      if (!sess.floorEvent || sess.floorEvent.key !== key) { sess.floorEvent = { key, code: run.makeEvent(char).code, done: null }; await saveChar(char, charRow.uid); }
       const cur = run.makeEventByCode(char, sess.floorEvent.code);
       res.render('pages/floorEvent', { char, rv: runView(char), ev: cur, done: sess.floorEvent.done });
     } else {

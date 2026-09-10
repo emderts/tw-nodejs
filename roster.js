@@ -61,7 +61,7 @@ function create(key) {
   Object.assign(inst.base, baseByRank(inst.rank));
 
   // 장비는 기본 무기/갑옷만, 템플릿의 시작 인벤토리는 비움
-  inst.items = { weapon: item.list[0], armor: item.list[114] };
+  inst.items = {};
   inst.inventory = [];
   // 슬롯별(무기/방어구/보조방어구/장신구) 리설트 카드 1장씩
   ['무기', '방어구', '보조방어구', '장신구'].forEach((label, type) => {

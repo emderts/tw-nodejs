@@ -197,14 +197,18 @@
   </div>
   </div>
   <div class="card-actions">
-  <% if (nextIdx != -1) { %>
-        <div class="nextBtn">
-          <form action="/useItem" method="post">
-            <button class="inventoryButton" onclick="invClick(this, event)" type="button">다음 리설트 카드
-            </button>
-            <input type="hidden" name="itemNum" value="<%= nextIdx %>">
-          </form>
-        </div>
+  <% if (remainCards && remainCards.length) { %>
+    <div class="section-head" style="text-align:left">남은 리설트 카드 <small><%= remainCards.length %>장</small></div>
+    <div class="list" style="text-align:left">
+    <% for (const c of remainCards) { %>
+      <div class="charItem">
+        <form action="/useItem" method="post">
+          <button type="submit"><%= c.name %> <span style="float:right;color:var(--brass)">개봉</span></button>
+          <input type="hidden" name="itemNum" value="<%= c.idx %>">
+        </form>
+      </div>
+    <% } %>
+    </div>
   <% } %>
 <div class="backLink"><a href="/">돌아가기</a></div>
   </div>

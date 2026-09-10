@@ -14,7 +14,7 @@
   <div class="page-title"><h1><%= ev.title %></h1></div>
   <div class="note-box"><%= ev.desc %></div>
   <% if (done) { %>
-    <div class="note-box" style="border-color:var(--brass-dim)"><%= done %></div>
+    <div class="note-box" style="border-color:var(--brass-dim)"><%- done %></div>
     <form action="/floorEvent" method="post" class="backLink">
       <button type="submit" class="btn-primary" style="padding:12px 24px">계속 간다</button>
       <input type="hidden" name="action" value="leave">

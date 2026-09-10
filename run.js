@@ -193,48 +193,128 @@ function makeShop(char) {
 
 // ---------- 이벤트 ----------
 // 각 이벤트: { code, title, desc, options: [{ label, effect: fn(char, ctx) → 결과 문구 }] }
+const T = ['가위', '바위', '보'];
+function addCard(ch, t) { ch.deck.push({ type: t }); }
+function giveGear(ch, rarity) {
+  const it = getItemSafe(ch.rank, rarity, Math.floor(Math.random() * 4));
+  if (!it) return null;
+  ch.inventory.push(it);
+  return it;
+}
+const RAR = ['커먼', '언커먼', '레어', '', '유니크', '에픽'];
+
 function eventPool(char) {
-  return [
-    {
-      code: 'altar', title: '낡은 제단', desc: '제단에 카드 한 장을 바치면 덱이 가벼워진다.',
-      options: [0, 1, 2].filter(t => char.deck.some(c => c.type === t)).map(t => ({
-        label: ['가위', '바위', '보'][t] + ' 카드 1장 제거', arg: t,
-        effect: (ch, arg) => { const i = ch.deck.findIndex(c => c.type === arg); if (i !== -1) ch.deck.splice(i, 1); return ['가위', '바위', '보'][arg] + ' 카드를 바쳤다. 덱 ' + ch.deck.length + '장.'; }
-      })).concat([{ label: '지나친다', effect: () => '제단을 지나쳤다.' }])
-    },
-    {
-      code: 'peddler', title: '떠돌이 상인', desc: '"골드 30에 카드 한 장 어때? 뭐가 나올진 모르지만."',
-      options: [
-        { label: '산다 (30골드)', effect: (ch) => { if (ch.gold < 30) return '골드가 부족하다.'; ch.gold -= 30; const t = Math.floor(Math.random() * 3); ch.deck.push({ type: t }); return ['가위', '바위', '보'][t] + ' 카드를 얻었다.'; } },
-        { label: '거절한다', effect: () => '상인은 어깨를 으쓱하고 떠났다.' }
-      ]
-    },
-    {
-      code: 'training', title: '버려진 훈련장', desc: '잠시 머물며 몸을 단련할 수 있다. 아니면 근처에서 값나가는 걸 뒤질 수도.',
-      options: [
-        { label: '단련한다 (스탯 포인트 +1)', effect: (ch) => { ch.statPoint += 1; return '스탯 포인트를 1 얻었다.'; } },
-        { label: '뒤진다 (골드 +40)', effect: (ch) => { ch.gold += 40; return '40골드를 찾았다.'; } }
-      ]
-    },
-    {
-      code: 'chest', title: '수상한 상자', desc: '잠긴 상자. 열면 보물일 수도, 함정일 수도.',
-      options: [
-        { label: '연다', effect: (ch) => { if (Math.random() < 0.55) { ch.gold += 80; return '보물이다! 80골드.'; } ch.gold = Math.max(0, ch.gold - 30); return '함정. 30골드를 잃었다.'; } },
-        { label: '내버려둔다', effect: () => '상자를 두고 떠났다.' }
-      ]
-    },
-    {
-      code: 'forge', title: '떠돌이 대장장이', desc: '"카드 한 장을 다른 종류로 바꿔줄 수 있어. 공짜로."',
-      options: [0, 1, 2].filter(t => char.deck.some(c => c.type === t)).map(t => ({
-        label: ['가위', '바위', '보'][t] + ' 1장 → 다른 종류로', arg: t,
-        effect: (ch, arg) => { const i = ch.deck.findIndex(c => c.type === arg); if (i === -1) return '그 카드가 없다.'; const to = [(arg + 1) % 3, (arg + 2) % 3][Math.floor(Math.random() * 2)]; ch.deck[i] = { type: to }; return ['가위', '바위', '보'][arg] + ' 카드가 ' + ['가위', '바위', '보'][to] + ' 카드가 됐다.'; }
-      })).concat([{ label: '괜찮다', effect: () => '대장장이는 망치질로 돌아갔다.' }])
-    }
-  ];
+  const cycle = char.run.cycle;
+  const pool = [];
+
+  // --- 카드 제거 (유일한 통로) ---
+  pool.push({
+    code: 'altar', weight: 3, title: '낡은 제단', desc: '제단에 카드 한 장을 바치면 덱이 가벼워진다.',
+    options: [0, 1, 2].filter(t => char.deck.some(c => c.type === t)).map(t => ({
+      label: T[t] + ' 카드 1장 제거', arg: t,
+      effect: (ch, arg) => { const i = ch.deck.findIndex(c => c.type === arg); if (i !== -1) ch.deck.splice(i, 1); return T[arg] + ' 카드를 바쳤다. 덱 ' + ch.deck.length + '장.'; }
+    })).concat([{ label: '지나친다', effect: () => '제단을 지나쳤다.' }])
+  });
+
+  // --- 카드 상인 + 대장장이 통합 ---
+  pool.push({
+    code: 'cardsmith', weight: 3, title: '떠돌이 카드 장인', desc: '"카드를 새로 찍어줄 수도, 있는 걸 다른 종류로 바꿔줄 수도 있어. 새 카드는 돈이 들지만."',
+    options: [
+      { label: '새 카드 1장 (30골드, 종류 무작위)', effect: (ch) => { if (ch.gold < 30) return '골드가 부족하다.'; ch.gold -= 30; const t = Math.floor(Math.random() * 3); addCard(ch, t); return T[t] + ' 카드를 얻었다.'; } }
+    ].concat([0, 1, 2].filter(t => char.deck.some(c => c.type === t)).map(t => ({
+      label: T[t] + ' 1장 → 다른 종류로 (무료)', arg: t,
+      effect: (ch, arg) => { const i = ch.deck.findIndex(c => c.type === arg); if (i === -1) return '그 카드가 없다.'; const to = [(arg + 1) % 3, (arg + 2) % 3][Math.floor(Math.random() * 2)]; ch.deck[i] = { type: to }; return T[arg] + ' 카드가 ' + T[to] + ' 카드가 됐다.'; }
+    }))).concat([{ label: '괜찮다', effect: () => '장인은 어깨를 으쓱했다.' }])
+  });
+
+  // --- 훈련장 ---
+  pool.push({
+    code: 'training', weight: 2, title: '버려진 훈련장', desc: '잠시 머물며 몸을 단련할 수 있다. 아니면 근처에서 값나가는 걸 뒤질 수도.',
+    options: [
+      { label: '단련한다 (스탯 포인트 +2)', effect: (ch) => { ch.statPoint += 2; return '스탯 포인트를 2 얻었다.'; } },
+      { label: '뒤진다 (골드 +40)', effect: (ch) => { ch.gold += 40; return '40골드를 찾았다.'; } }
+    ]
+  });
+
+  // --- 상자 3종 ---
+  pool.push({
+    code: 'chest_gold', weight: 2, title: '수상한 상자', desc: '잠긴 상자. 열면 보물일 수도, 함정일 수도.',
+    options: [
+      { label: '연다', effect: (ch) => { if (Math.random() < 0.55) { ch.gold += 80; return '보물이다! 80골드.'; } ch.gold = Math.max(0, ch.gold - 30); return '함정. 30골드를 잃었다.'; } },
+      { label: '내버려둔다', effect: () => '상자를 두고 떠났다.' }
+    ]
+  });
+  pool.push({
+    code: 'chest_gear', weight: 2, title: '녹슨 철제 상자', desc: '묵직하다. 안에 뭔가 단단한 게 들어 있는 듯하지만, 자물쇠에 이상한 문양이 새겨져 있다.',
+    options: [
+      { label: '억지로 연다', effect: (ch) => {
+          const r = Math.random();
+          if (r < 0.6) { const it = giveGear(ch, cycle < 5 ? 2 : 4); return it ? '<span class="rarity' + ['Common','Uncommon','Rare','','Unique','Epic'][it.rarity] + '">' + it.name + '</span>' + '을(를) 얻었다.' : '비어 있었다.'; }
+          if (r < 0.85) { ch.gold = Math.max(0, ch.gold - 40); return '자물쇠가 터지며 주머니가 찢어졌다. 40골드를 잃었다.'; }
+          if (ch.statPoint > 0) { ch.statPoint -= 1; return '저주가 흘러나왔다. 스탯 포인트 1을 잃었다.'; }
+          ch.gold = Math.max(0, ch.gold - 40); return '저주가 흘러나왔지만 빼앗길 게 없었다. 40골드를 잃었다.';
+        } },
+      { label: '내버려둔다', effect: () => '상자를 두고 떠났다.' }
+    ]
+  });
+  pool.push({
+    code: 'chest_cursed', weight: 1, title: '검은 상자', desc: '상자에서 낮은 웃음소리가 새어 나온다. 열면 카드 한 장을 빼앗기겠지만, 그 대가로 뭔가를 내놓는다고 한다.',
+    options: [
+      { label: '연다 (무작위 카드 1장 잃음)', effect: (ch) => {
+          if (ch.deck.length === 0) return '빼앗길 카드가 없어 상자는 잠긴 채였다.';
+          const i = Math.floor(Math.random() * ch.deck.length); const lost = ch.deck.splice(i, 1)[0];
+          const it = giveGear(ch, cycle < 5 ? 4 : 5);
+          return T[lost.type] + ' 카드를 빼앗겼다. 대신 ' + (it ? '<span class="rarity' + ['Common','Uncommon','Rare','','Unique','Epic'][it.rarity] + '">' + it.name + '</span>' + '을(를) 얻었다.' : '아무것도 나오지 않았다.');
+        } },
+      { label: '내버려둔다', effect: () => '웃음소리가 멀어졌다.' }
+    ]
+  });
+
+  // --- 장비 / 요일석 / 리설트 카드 이벤트 ---
+  pool.push({
+    code: 'corpse', weight: 2, title: '쓰러진 모험가', desc: '누군가의 시신. 장비는 아직 쓸 만해 보인다.',
+    options: [
+      { label: '장비를 챙긴다', effect: (ch) => { const it = giveGear(ch, 2); return it ? it.name + '을(를) 챙겼다.' : '쓸 만한 게 없었다.'; } },
+      { label: '묻어준다 (리설트 카드 1장)', effect: (ch) => { deps.addResultCard(ch, 4); return '묻어주었다. 품에서 ' + ch.rank + '급 장비 리설트 카드가 나왔다.'; } }
+    ]
+  });
+  pool.push({
+    code: 'shrine', weight: 2, title: '요일의 사당', desc: '일곱 개의 촛대 중 하나만 불이 켜져 있다.',
+    options: [
+      { label: '촛불에 손을 댄다 (요일석)', effect: (ch) => { const st = deps.makeDayStone(null, ch.rank); ch.inventory.push(st); return st.name + '을(를) 얻었다.'; } },
+      { label: '기도한다 (골드 +25)', effect: (ch) => { ch.gold += 25; return '촛대 아래에서 25골드를 발견했다.'; } }
+    ]
+  });
+  pool.push({
+    code: 'gambler', weight: 2, title: '카드 도박꾼', desc: '"리설트 카드 하나에 40골드. 사려면 사고, 아니면 판돈을 걸어 두 장을 노려봐."',
+    options: [
+      { label: '산다 (40골드 → 리설트 카드 1장)', effect: (ch) => { if (ch.gold < 40) return '골드가 부족하다.'; ch.gold -= 40; deps.addResultCard(ch, 4); return '리설트 카드를 샀다.'; } },
+      { label: '건다 (40골드 → 50%로 2장, 아니면 꽝)', effect: (ch) => { if (ch.gold < 40) return '골드가 부족하다.'; ch.gold -= 40; if (Math.random() < 0.5) { deps.addResultCard(ch, 4); deps.addResultCard(ch, 4); return '이겼다! 리설트 카드 2장.'; } return '졌다. 도박꾼이 웃으며 골드를 챙겼다.'; } },
+      { label: '지나친다', effect: () => '도박꾼을 지나쳤다.' }
+    ]
+  });
+  pool.push({
+    code: 'merchant_gear', weight: 2, title: '떠돌이 무기상', desc: '"급하게 처분할 물건이 있어. 싸게 줄게."',
+    options: [
+      { label: '산다 (50골드, 레어 장비)', effect: (ch) => { if (ch.gold < 50) return '골드가 부족하다.'; const it = giveGear(ch, 2); if (!it) return '물건이 없었다.'; ch.gold -= 50; return it.name + '을(를) 샀다.'; } },
+      { label: '거절한다', effect: () => '무기상은 서둘러 떠났다.' }
+    ]
+  });
+
+  return pool;
+}
+// 가중치 랜덤. 직전 이벤트는 제외
+function pickWeighted(pool, excludeCode) {
+  const cands = pool.filter(e => e.code !== excludeCode && e.options.length > 1);
+  const total = cands.reduce((a, e) => a + (e.weight || 1), 0);
+  let r = Math.random() * total;
+  for (const e of cands) { r -= (e.weight || 1); if (r <= 0) return e; }
+  return cands[cands.length - 1];
 }
 function makeEvent(char) {
-  const pool = eventPool(char);
-  return pool[Math.floor(Math.random() * pool.length)];
+  const ev = pickWeighted(eventPool(char), char.run.lastEvent);
+  char.run.lastEvent = ev.code;
+  return ev;
 }
 function makeEventByCode(char, code) {
   return eventPool(char).find(x => x.code === code) || null;
