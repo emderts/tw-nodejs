@@ -315,7 +315,7 @@
             <td class="k"><%= r.label %></td>
             <td class="v"><%= r.text %></td>
             <td class="a">
-              <% if (char.statPoint > 0 && char.lastStat != r.key) { %>
+              <% if (char.statPoint > 0) { %>
                 <form action="/useStatPoint" method="post"><button type="submit">+</button><input type="hidden" name="keyType" value="<%= r.key %>"></form>
               <% } %>
             </td>

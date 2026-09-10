@@ -16,7 +16,7 @@
   <% shop.goods.forEach(function (g, i) { const sold = shop.bought.includes(i); const canBuy = !sold && char.gold >= g.price; %>
     <div class="charItem">
       <form action="/floorShop" method="post">
-        <button type="submit" <%= canBuy ? '' : 'disabled' %>>
+        <button type="button" onclick="invClick(this, event)" <%= canBuy ? '' : 'disabled' %>>
           <% if (g.kind === 'item') { %>
             <span class="<%= 'rarity' + ['Common','Uncommon','Rare','Premium','Unique','Epic'][g.item.rarity || 0] %>"><%= g.item.name %></span>
             <div class="itemTooltip"><%- makeTooltip(g.item) %></div>
@@ -36,6 +36,15 @@
   </form>
   <div class="backLink"><a href="/">캐릭터 화면</a></div>
 </div>
+<script>
+  function invClick(thisNode, event) {
+    if (thisNode.type !== 'submit') {
+      event.preventDefault();
+      for (item of document.getElementsByClassName('inventoryButton')) { item.type = 'button'; }
+      thisNode.setAttribute('type', 'submit');
+    }
+  }
+</script>
 <script src="/js/ui.js"></script>
 </body>
 </html>

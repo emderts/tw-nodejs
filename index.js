@@ -236,7 +236,8 @@ io.on('connection', (socket) => {
     t.left = socket;
     if (!t.bmod) {
       t.bmod = (new battlemodule.bmodule());
-      t.startHtml = t.bmod.procBattleStart(t.leftChr, t.rightChr);
+      delete t.leftChr.curHp; delete t.leftChr.curSp; delete t.rightChr.curHp; delete t.rightChr.curSp;
+      t.startHtml = t.bmod.procBattleStart(t.leftChr, t.rightChr, 1);
     }
     run.drawHand(t.pdeck); run.drawHand(t.edeck);
     socket.emit('floorAck', t.startHtml, floorNames(t.leftChr), floorNames(t.rightChr), run.handTypes(t.pdeck), t.pdeck.draw.length, t.pdeck.discard.length);
@@ -249,7 +250,7 @@ io.on('connection', (socket) => {
     t.busy = true;
     const want = monster.selectFunc[t.rightChr.skillSelect](t.rightChr, key);
     const eKey = run.aiPick(t.edeck, want);
-    const result = t.bmod.procBattleTurn(key, eKey);
+    const result = t.bmod.procBattleTurn(key, eKey, 1);
     if (result.redecide) {
       // 다시 선택: 카드 소모 없음
       t.busy = false;
@@ -3361,7 +3362,7 @@ async function procUseStatPoint (req, res) {
   const sess = req.session; 
   const charRow = await getCharacter(sess.userUid);
   const char = JSON.parse(charRow.char_data);
-  if (char.statPoint > 0 && char.lastStat != req.body.keyType) {
+  if (char.statPoint > 0) {
     char.statPoint -= 1;
     var value = (req.body.keyType === 'maxHp') ? 10 : 1.5;
     char.base[req.body.keyType] += value;
@@ -3655,7 +3656,7 @@ async function procFloorShop (req, res) {
       run.advance(char);
       delete sess.floorShop;
       await saveChar(char, charRow.uid);
-      res.redirect('/');
+      res.redirect('/nextFloor');
       return;
     }
     const idx = parseInt(req.body.idx, 10);
@@ -3681,7 +3682,7 @@ async function procFloorEvent (req, res) {
       run.advance(char);
       delete sess.floorEvent;
       await saveChar(char, charRow.uid);
-      res.redirect('/');
+      res.redirect('/nextFloor');
       return;
     }
     if (sess.floorEvent.done) { res.redirect('/nextFloor'); return; }
@@ -3712,8 +3713,9 @@ async function procFloorResult (req, res) {
       const gold = 40 + 10 * char.run.cycle + (enemy.isBoss ? 60 : 0);
       char.gold += gold;
       char.statPoint += 3;
+      addSpecialResultCard(char, 4);
       char.battleCnt = (char.battleCnt || 0) + 1; char.winCnt = (char.winCnt || 0) + 1;
-      var rewardLines = ['<b>승리!</b> ' + gold + '골드, 스탯 포인트 3 획득.'];
+      var rewardLines = ['<b>승리!</b> ' + gold + '골드, 스탯 포인트 3, ' + char.rank + '급 장비 리설트 카드 1장 획득.'];
       // 쓰러진 모험가를 이겼다면 그 덱에서 카드 1장
       if (enemy.fallenId && enemy.deck && enemy.deck.length) {
         const cd = enemy.deck[Math.floor(Math.random() * enemy.deck.length)];
@@ -3725,7 +3727,7 @@ async function procFloorResult (req, res) {
         const key = await unlockRandomChar(sess.userUid);
         await client.query('delete from characters where uid = $1', [charRow.uid]);
         await client.query('update users set uid = null where id = $1', [sess.userUid]);
-        res.render('pages/floorEnd', { title: '탑을 정복했다', lines: rewardLines.concat([key ? '새 캐릭터 해금: ' + roster.template(key).name : '해금할 캐릭터가 더 없다.']), result: re.result, dead: false });
+        res.render('pages/floorEnd', { title: '탑을 정복했다', lines: rewardLines.concat([key ? '새 캐릭터 해금: ' + roster.template(key).name : '해금할 캐릭터가 더 없다.']), result: re.result, dead: false, rv: null });
         return;
       }
       await saveChar(char, charRow.uid);
@@ -3738,7 +3740,7 @@ async function procFloorResult (req, res) {
       } catch (err) { console.error('fallen 저장 실패 (테이블 없음?)', err.message); }
       await client.query('delete from characters where uid = $1', [charRow.uid]);
       await client.query('update users set uid = null where id = $1', [sess.userUid]);
-      res.render('pages/floorEnd', { title: char.name + getIga(char.nameType) + ' ' + rv.floor + '층에서 쓰러졌다', lines: ['이 캐릭터는 다른 도전자 앞에 적으로 나타날 수 있다.'], result: re.result, dead: true });
+      res.render('pages/floorEnd', { title: char.name + getIga(char.nameType) + ' ' + rv.floor + '층에서 쓰러졌다', lines: ['이 캐릭터는 다른 도전자 앞에 적으로 나타날 수 있다.'], result: re.result, dead: true, rv: null });
     }
   } catch (err) { console.error(err); res.send('내부 오류'); }
   finally { client.release(); }
