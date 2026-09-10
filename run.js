@@ -115,11 +115,13 @@ function makeEnemy(char) {
   e.inventory = [];
 
   // 스탯 포인트: 플레이어와 같은 총량(3 × 사이클)을 주력 공격 타입에 몰아줌
+  // 플레이어 스탯 포인트와 같은 환산 (체력 +10 / 공격 +1.5 per point)
   const pts = 3 * cycle + (boss ? 3 : 0);
   const magical = e.skill.base.filter(s => s.type === cons.DAMAGE_TYPE_MAGICAL).length >= 2;
-  e.base.maxHp += 20 * Math.round(pts / 3);
-  e.base[magical ? 'magAtk' : 'phyAtk'] += 2 * (pts - Math.round(pts / 3));
-  if (boss) { e.base.maxHp = Math.round(e.base.maxHp * 1.3); }
+  const hpPts = Math.round(pts / 3);
+  e.base.maxHp += 10 * hpPts;
+  e.base[magical ? 'magAtk' : 'phyAtk'] += 1.5 * (pts - hpPts);
+  if (boss) { e.base.maxHp = Math.round(e.base.maxHp * 1.15); }
   deps.calcStats(e);
 
   // 덱: 2/2/2 + 성향 편중 (사이클이 오를수록 편중 카드 추가)

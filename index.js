@@ -43,6 +43,7 @@ const app = express()
 .post('/floorShop', procFloorShop)
 .post('/floorEvent', procFloorEvent)
 .get('/floorResult', procFloorResult)
+.post('/floorCard', procFloorCard)
 .get('/join', (req, res) => res.render('pages/join'))
 .post('/join', procJoin)
 .get('/logout', procLogout)
@@ -3639,6 +3640,19 @@ async function pickEnemy (char, userId) {
   return run.makeEnemy(char);
 }
 
+// 전투 후 얻은 카드 수락/거부
+async function procFloorCard (req, res) {
+  try {
+    const ctx = await loadRunChar(req, res); if (!ctx) return;
+    const { charRow, char } = ctx;
+    const pc = char.run.pendingCard;
+    if (pc && req.body.action === 'accept') char.deck.push({ type: pc.type });
+    char.run.pendingCard = null;
+    await saveChar(char, charRow.uid);
+    res.redirect(req.body.next === 'home' ? '/' : '/nextFloor');
+  } catch (err) { console.error(err); res.send('내부 오류'); }
+}
+
 async function procFloorShop (req, res) {
   try {
     const ctx = await loadRunChar(req, res); if (!ctx) return;
@@ -3711,21 +3725,22 @@ async function procFloorResult (req, res) {
       char.battleCnt = (char.battleCnt || 0) + 1; char.winCnt = (char.winCnt || 0) + 1;
       var rewardLines = ['<b>승리!</b> ' + gold + '골드, 스탯 포인트 3, ' + char.rank + '급 장비 리설트 카드 1장 획득.'];
       // 쓰러진 모험가를 이겼다면 그 덱에서 카드 1장
+      var pendingCard = null;
       if (enemy.fallenId && enemy.deck && enemy.deck.length) {
         const cd = enemy.deck[Math.floor(Math.random() * enemy.deck.length)];
-        char.deck.push(Object.assign({}, cd));
-        rewardLines.push(enemy.fallenName + '의 덱에서 ' + ['가위', '바위', '보'][cd.type] + ' 카드를 얻었다.');
+        pendingCard = { type: cd.type, from: enemy.fallenName };
       }
       const cleared = run.advance(char);
       if (cleared) {
         const key = await unlockRandomChar(sess.userUid);
         await client.query('delete from characters where uid = $1', [charRow.uid]);
         await client.query('update users set uid = null where id = $1', [sess.userUid]);
-        res.render('pages/floorEnd', { title: '탑을 정복했다', lines: rewardLines.concat([key ? '새 캐릭터 해금: ' + roster.template(key).name : '해금할 캐릭터가 더 없다.']), result: re.result, dead: false, rv: null });
+        res.render('pages/floorEnd', { pendingCard: null, title: '탑을 정복했다', lines: rewardLines.concat([key ? '새 캐릭터 해금: ' + roster.template(key).name : '해금할 캐릭터가 더 없다.']), result: re.result, dead: false, rv: null });
         return;
       }
+      char.run.pendingCard = pendingCard;
       await saveChar(char, charRow.uid);
-      res.render('pages/floorEnd', { title: (enemy.isBoss ? '보스 격파' : '전투 승리'), lines: rewardLines, result: re.result, dead: false, rv: runView(char) });
+      res.render('pages/floorEnd', { title: (enemy.isBoss ? '보스 격파' : '전투 승리'), lines: rewardLines, result: re.result, dead: false, rv: runView(char), pendingCard: pendingCard });
     } else {
       // 사망: 스냅샷 저장 후 캐릭터 삭제
       try {
@@ -3734,7 +3749,7 @@ async function procFloorResult (req, res) {
       } catch (err) { console.error('fallen 저장 실패 (테이블 없음?)', err.message); }
       await client.query('delete from characters where uid = $1', [charRow.uid]);
       await client.query('update users set uid = null where id = $1', [sess.userUid]);
-      res.render('pages/floorEnd', { title: char.name + getIga(char.nameType) + ' ' + rv.floor + '층에서 쓰러졌다', lines: ['이 캐릭터는 다른 도전자 앞에 적으로 나타날 수 있다.'], result: re.result, dead: true, rv: null });
+      res.render('pages/floorEnd', { title: char.name + getIga(char.nameType) + ' ' + rv.floor + '층에서 쓰러졌다', lines: ['이 캐릭터는 다른 도전자 앞에 적으로 나타날 수 있다.'], result: re.result, dead: true, rv: null, pendingCard: null });
     }
   } catch (err) { console.error(err); res.send('내부 오류'); }
   finally { client.release(); }
