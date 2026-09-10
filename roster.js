@@ -49,7 +49,7 @@ const START_DECK = [0, 0, 1, 1, 2, 2].map(t => ({ type: t }));
 
 // 급수에 따른 기본 능력치 (기존 리셋 공식과 동일)
 function baseByRank(rank) {
-  return { phyAtk: 20 + 10 * (9 - rank), magAtk: 20 + 10 * (9 - rank), maxHp: 200 + 150 * (9 - rank) };
+  return { phyAtk: 20 + 10 * (9 - rank), magAtk: 20 + 10 * (9 - rank), maxHp: 200 + 50 * (9 - rank) };
 }
 
 // 새 런용 캐릭터 인스턴스 생성 (템플릿 깊은 복사 후 런 시작값으로 초기화)
