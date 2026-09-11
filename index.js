@@ -3698,7 +3698,7 @@ async function procFloorShop (req, res) {
     if (run.stage(char) !== 'shop' || !sess.floorShop) { res.redirect('/nextFloor'); return; }
     if (req.body.action === 'choose') {
       const oi = parseInt(req.body.idx, 10);
-      if (!sess.floorShop.shop && sess.floorShop.offers && sess.floorShop.offers[oi]) sess.floorShop.shop = run.makeShop(char, sess.floorShop.offers[oi].type);
+      if (!sess.floorShop.shop && sess.floorShop.offers && sess.floorShop.offers[oi]) sess.floorShop.shop = run.makeShop(char, sess.floorShop.offers[oi].type, { slot: sess.floorShop.offers[oi].slot });
       res.redirect('/nextFloor'); return;
     }
     const shop = sess.floorShop.shop;

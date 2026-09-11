@@ -222,7 +222,6 @@ const SHOP_INFO = {
   result:     { label: '리설트 카드 상인', blurb: '슬롯별 리설트 카드 4장' },
   resultRare: { label: '고급 리설트 카드 상인', blurb: '레어·유니크 확정 리설트 카드' },
   alchemist:  { label: '연금술사',         blurb: '스탯 포인트, 재도전(♥) 회복' },
-  junk:       { label: '고물상',           blurb: '싸구려 장비 4개 (해체용)' },
 };
 const SHOP_TYPES = Object.keys(SHOP_INFO);
 const SLOT_NAMES = ['무기', '방어구', '보조방어구', '장신구'];
@@ -230,17 +229,22 @@ const SLOT_NAMES = ['무기', '방어구', '보조방어구', '장신구'];
 function makeShopOffers(char) {
   const a = SHOP_TYPES[Math.floor(Math.random() * SHOP_TYPES.length)];
   let b; do { b = SHOP_TYPES[Math.floor(Math.random() * SHOP_TYPES.length)]; } while (b === a);
-  return [a, b].map(t => ({ type: t, label: SHOP_INFO[t].label, blurb: SHOP_INFO[t].blurb }));
+  return [a, b].map(t => {
+    const o = { type: t, label: SHOP_INFO[t].label, blurb: SHOP_INFO[t].blurb };
+    if (t === 'gearSlot') { o.slot = Math.floor(Math.random() * 4); o.label = SLOT_NAMES[o.slot] + ' 상인'; o.blurb = SLOT_NAMES[o.slot] + ' 레어 이상 4개'; }
+    return o;
+  });
 }
-function makeShop(char, typeIn) {
+function makeShop(char, typeIn, opts) {
   const type = typeIn || SHOP_TYPES[Math.floor(Math.random() * SHOP_TYPES.length)];
+  opts = opts || {};
   const cycle = char.run.cycle;
   const goods = [];
   let label = SHOP_INFO[type].label;
   const rarityPool = cycle < 4 ? [2, 2, 2, 4] : (cycle < 7 ? [2, 2, 4, 4] : [2, 4, 4, 5]);
   const gearPrice = (it) => 40 + [0, 15, 35, 0, 70, 120][it.rarity] + 5 * cycle;
   if (type === 'gear' || type === 'gearSlot') {
-    const fixed = type === 'gearSlot' ? Math.floor(Math.random() * 4) : -1;
+    const fixed = type === 'gearSlot' ? (opts.slot !== undefined ? opts.slot : Math.floor(Math.random() * 4)) : -1;
     if (fixed >= 0) label = SLOT_NAMES[fixed] + ' 상인';
     for (let i = 0; i < 4; i++) {
       const rarity = rarityPool[Math.floor(Math.random() * rarityPool.length)];
@@ -270,12 +274,6 @@ function makeShop(char, typeIn) {
     goods.push({ kind: 'stat', value: 2, name: '스탯 포인트 +2', price: 60 + 8 * cycle });
     goods.push({ kind: 'stat', value: 2, name: '스탯 포인트 +2', price: 60 + 8 * cycle });
     goods.push({ kind: 'life', name: '재도전 +1 (최대 3)', price: 70 + 10 * cycle });
-  } else if (type === 'junk') {
-    for (let i = 0; i < 4; i++) {
-      const rarity = [0, 1, 1, 2][Math.floor(Math.random() * 4)];
-      const it = getItemSafe(char.rank, rarity, Math.floor(Math.random() * 4));
-      if (it) goods.push({ kind: 'item', item: it, price: 12 + [0, 4, 10][rarity] + 2 * cycle });
-    }
   }
   return { type, label, goods, bought: [] };
 }
