@@ -11,6 +11,21 @@
 <body>
 <div class="page-narrow">
   <%- include('../partials/runbar') %>
+  <% if (!shop) { %>
+  <div class="page-title"><h1>갈림길</h1><span class="meta">보유 <%= char.gold %> G</span></div>
+  <div class="note-box">두 상점이 보인다. 한 곳만 들를 수 있다.</div>
+  <div class="list">
+  <% offers.forEach(function (o, i) { %>
+    <div class="charItem">
+      <form action="/floorShop" method="post">
+        <button type="submit"><b><%= o.label %></b><br><span style="color:var(--ash)"><%= o.blurb %></span></button>
+        <input type="hidden" name="action" value="choose"><input type="hidden" name="idx" value="<%= i %>">
+      </form>
+    </div>
+  <% }); %>
+  </div>
+  <div class="backLink"><a href="/">캐릭터 화면</a></div>
+  <% } else { %>
   <div class="page-title"><h1><%= shop.label %></h1><span class="meta">보유 <%= char.gold %> G</span></div>
   <div class="list">
   <% shop.goods.forEach(function (g, i) { const sold = shop.bought.includes(i); const canBuy = !sold && char.gold >= g.price; %>
@@ -20,8 +35,10 @@
           <% if (g.kind === 'item') { %>
             <span class="<%= 'rarity' + ['Common','Uncommon','Rare','Premium','Unique','Epic'][g.item.rarity || 0] %>"><%= g.item.name %></span>
             <div class="itemTooltip"><%- makeTooltip(g.item) %></div>
-          <% } else { %>
+          <% } else if (g.kind === 'card') { %>
             <%= ['가위','바위','보'][g.card.type] %> 카드 <span style="color:var(--ash)">— <%= char.skill.base[g.card.type].name %></span>
+          <% } else { %>
+            <%= g.name %>
           <% } %>
           <span style="float:right;color:var(--brass)"><%= sold ? '구매함' : g.price + ' G' %></span>
         </button>
@@ -35,6 +52,7 @@
     <input type="hidden" name="action" value="leave">
   </form>
   <div class="backLink"><a href="/">캐릭터 화면</a></div>
+  <% } %>
 </div>
 <script>
   function invClick(thisNode, event) {

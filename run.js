@@ -214,19 +214,39 @@ function snapshotForFallen(char) {
 }
 
 // ---------- 상점 ----------
-const SHOP_TYPES = ['gear', 'stone', 'card', 'result'];
-function makeShop(char) {
-  const type = SHOP_TYPES[Math.floor(Math.random() * SHOP_TYPES.length)];
+const SHOP_INFO = {
+  gear:       { label: '장비 상인',        blurb: '슬롯 무작위 레어 이상 장비 4개' },
+  gearSlot:   { label: '전문 장비 상인',   blurb: '한 슬롯의 레어 이상 장비 4개' },
+  stone:      { label: '요일석 상인',      blurb: '무작위 요일석 4개' },
+  card:       { label: '카드 상인',        blurb: '가위·바위·보 카드 각 1장' },
+  result:     { label: '리설트 카드 상인', blurb: '슬롯별 리설트 카드 4장' },
+  resultRare: { label: '고급 리설트 카드 상인', blurb: '레어·유니크 확정 리설트 카드' },
+  alchemist:  { label: '연금술사',         blurb: '스탯 포인트, 재도전(♥) 회복' },
+  junk:       { label: '고물상',           blurb: '싸구려 장비 4개 (해체용)' },
+};
+const SHOP_TYPES = Object.keys(SHOP_INFO);
+const SLOT_NAMES = ['무기', '방어구', '보조방어구', '장신구'];
+// 상점 후보 2곳 (서로 다른 종류)
+function makeShopOffers(char) {
+  const a = SHOP_TYPES[Math.floor(Math.random() * SHOP_TYPES.length)];
+  let b; do { b = SHOP_TYPES[Math.floor(Math.random() * SHOP_TYPES.length)]; } while (b === a);
+  return [a, b].map(t => ({ type: t, label: SHOP_INFO[t].label, blurb: SHOP_INFO[t].blurb }));
+}
+function makeShop(char, typeIn) {
+  const type = typeIn || SHOP_TYPES[Math.floor(Math.random() * SHOP_TYPES.length)];
   const cycle = char.run.cycle;
   const goods = [];
-  if (type === 'gear') {
-    // 레어 이상만 판매
-    const rarityPool = cycle < 4 ? [2, 2, 2, 4] : (cycle < 7 ? [2, 2, 4, 4] : [2, 4, 4, 5]);
+  let label = SHOP_INFO[type].label;
+  const rarityPool = cycle < 4 ? [2, 2, 2, 4] : (cycle < 7 ? [2, 2, 4, 4] : [2, 4, 4, 5]);
+  const gearPrice = (it) => 40 + [0, 15, 35, 0, 70, 120][it.rarity] + 5 * cycle;
+  if (type === 'gear' || type === 'gearSlot') {
+    const fixed = type === 'gearSlot' ? Math.floor(Math.random() * 4) : -1;
+    if (fixed >= 0) label = SLOT_NAMES[fixed] + ' 상인';
     for (let i = 0; i < 4; i++) {
       const rarity = rarityPool[Math.floor(Math.random() * rarityPool.length)];
-      const t = Math.floor(Math.random() * 4);
+      const t = fixed >= 0 ? fixed : Math.floor(Math.random() * 4);
       const it = getItemSafe(char.rank, rarity, t);
-      if (it) goods.push({ kind: 'item', item: it, price: 40 + [0, 15, 35, 0, 70, 120][it.rarity] + 5 * cycle });
+      if (it) goods.push({ kind: 'item', item: it, price: gearPrice(it) });
     }
   } else if (type === 'stone') {
     for (let i = 0; i < 4; i++) {
@@ -235,13 +255,29 @@ function makeShop(char) {
       goods.push({ kind: 'item', item: st, price: 30 + 10 * (st.level || 0) + 3 * cycle });
     }
   } else if (type === 'card') {
-    // 카드 상점: 가위/바위/보 카드 추가 (스킬은 캐릭터 고정)
     for (let t = 0; t < 3; t++) goods.push({ kind: 'card', card: { type: t }, price: 45 + 5 * cycle });
-  } else {
-    // 리설트 카드 상점: 슬롯별 1장씩
+  } else if (type === 'result') {
     for (let t = 0; t < 4; t++) goods.push({ kind: 'item', item: roster.makeResultCard(char.rank, t), price: 50 + 5 * cycle });
+  } else if (type === 'resultRare') {
+    // 레어 확정(97/2/1) 2장, 유니크 확정(96/4) 1장, 일반 슬롯 카드 1장
+    const rare = () => ({ type: cons.ITEM_TYPE_RESULT_CARD, resultType: 5, rank: char.rank, name: char.rank + '급 레어 장비 리설트 카드', tooltip: '97% : 레어 장비<br>2% : 유니크 장비<br>1% : 에픽 장비' });
+    const uniq = () => ({ type: cons.ITEM_TYPE_RESULT_CARD, resultType: 6, rank: char.rank, name: char.rank + '급 유니크 장비 리설트 카드', tooltip: '96% : 유니크 장비<br>4% : 에픽 장비' });
+    goods.push({ kind: 'item', item: rare(), price: 75 + 6 * cycle });
+    goods.push({ kind: 'item', item: rare(), price: 75 + 6 * cycle });
+    goods.push({ kind: 'item', item: uniq(), price: 150 + 10 * cycle });
+    goods.push({ kind: 'item', item: roster.makeResultCard(char.rank, Math.floor(Math.random() * 4)), price: 50 + 5 * cycle });
+  } else if (type === 'alchemist') {
+    goods.push({ kind: 'stat', value: 2, name: '스탯 포인트 +2', price: 60 + 8 * cycle });
+    goods.push({ kind: 'stat', value: 2, name: '스탯 포인트 +2', price: 60 + 8 * cycle });
+    goods.push({ kind: 'life', name: '재도전 +1 (최대 3)', price: 70 + 10 * cycle });
+  } else if (type === 'junk') {
+    for (let i = 0; i < 4; i++) {
+      const rarity = [0, 1, 1, 2][Math.floor(Math.random() * 4)];
+      const it = getItemSafe(char.rank, rarity, Math.floor(Math.random() * 4));
+      if (it) goods.push({ kind: 'item', item: it, price: 12 + [0, 4, 10][rarity] + 2 * cycle });
+    }
   }
-  return { type, label: ({ gear: '장비 상인', stone: '요일석 상인', card: '카드 상인', result: '리설트 카드 상인' })[type], goods, bought: [] };
+  return { type, label, goods, bought: [] };
 }
 
 // ---------- 이벤트 ----------
@@ -574,5 +610,5 @@ function applyEvent(char, code, optIdx) {
 module.exports = {
   configure, TOTAL_CYCLES, HAND_SIZE, RESETS_PER_BATTLE, resetDeck, initRun, stage, stageLabel, floorNo, isBossCycle, rankForCycle, advance,
   newDeckState, drawHand, playCard, handTypes, deckCounts, aiPick, makeEnemy, enemyFromFallen, snapshotForFallen,
-  makeMonster, makeRosterEnemy, makeShop, makeEvent, makeEventByCode, applyEvent, applyBuffs, applyEnemyDebuffs, tickBuffs
+  makeMonster, makeRosterEnemy, makeShop, makeShopOffers, makeEvent, makeEventByCode, applyEvent, applyBuffs, applyEnemyDebuffs, tickBuffs
 };

@@ -1256,7 +1256,7 @@ async function procBattle(req, res) {
         if (winner.winChain % 3 == 0) {
           if (winner.winChain > 5) {
             await client.query('insert into news(content, date) values ($1, $2)', 
-                [winner.name + getIga(winner.nameType) + ' ' + winner.winChain + '연승 중입니다!', new Date()]);
+                [newsName(winner) + getIga(winner.nameType) + ' ' + winner.winChain + '연승 중입니다!', new Date()]);
           }
           winner.premiumPoint += 1;
           if (winner.winChain % 9 == 0) {
@@ -1266,7 +1266,7 @@ async function procBattle(req, res) {
         if (loser.winChain >= 3) {
           if (loser.winChain >= 5) {
             await client.query('insert into news(content, date) values ($1, $2)', 
-                [winner.name + getIga(winner.nameType) + ' ' + loser.name + '의 ' + loser.winChain + '연승을 차단했습니다!', new Date()]);
+                [newsName(winner) + getIga(winner.nameType) + ' ' + loser.name + '의 ' + loser.winChain + '연승을 차단했습니다!', new Date()]);
           }
           winner.premiumPoint += Math.floor(loser.winChain / 3);            
         }
@@ -2602,7 +2602,7 @@ async function procNextPhaseDungeon(req, res) {
               char.statPoint += 5;
               reward += '첫 번째 [메모리얼 게이트 - 검은 빛의 수련장] 2페이즈 돌파!<br>스탯 포인트 5를 획득했습니다.<br>';
               await client.query('insert into news(content, date) values ($1, $2)', 
-                  [char.name + getIga(char.nameType) + ' [메모리얼 게이트 - 검은 빛의 수련장]을 돌파했습니다!', new Date()]);
+                  [newsName(char) + getIga(char.nameType) + ' [메모리얼 게이트 - 검은 빛의 수련장]을 돌파했습니다!', new Date()]);
             }
             if (req.session.dungeonProgress.phase == 2) {
               enterNext = false;
@@ -2714,7 +2714,7 @@ async function procNextPhaseDungeon(req, res) {
           char.inventory.push({type : cons.ITEM_TYPE_RESULT_CARD, name : '불타는 영웅의 증명 카드', rank : 7, resultType : 90003});
           reward += re.rightInfo.name + getUlrul(re.rightInfo.nameType) + ' 처치했습니다!<br>불탄 징표 20개와 불타는 영웅의 증명 카드 3개를 획득했습니다.<br>';
           await client.query('insert into news(content, date) values ($1, $2)', 
-              [char.name + getIga(char.nameType) + ' 불타는 과수원에서 ' + re.rightInfo.name + getUlrul(re.rightInfo.nameType) + ' 처치했습니다!', new Date()]);
+              [newsName(char) + getIga(char.nameType) + ' 불타는 과수원에서 ' + re.rightInfo.name + getUlrul(re.rightInfo.nameType) + ' 처치했습니다!', new Date()]);
         }
         await client.query('update raids set phase = $1, monsters = $2 where rindex = $3', [row.phase + (re.winnerRight ? 0 : 1), JSON.stringify(curData), 2]);
       } else if (!re.winnerLeft && req.session.dungeonProgress.code != 6) {
@@ -2753,7 +2753,7 @@ async function procNextPhaseDungeon(req, res) {
           char.statPoint += 5;
           reward += '첫 번째 [메모리얼 게이트 - 메비우스 섬멸] 10층 돌파!<br>스탯 포인트 5를 획득했습니다.<br>';
           await client.query('insert into news(content, date) values ($1, $2)', 
-              [char.name + getIga(char.nameType) + ' [메모리얼 게이트 - 메비우스 섬멸]을 돌파했습니다!', new Date()]);
+              [newsName(char) + getIga(char.nameType) + ' [메모리얼 게이트 - 메비우스 섬멸]을 돌파했습니다!', new Date()]);
         }
       } else if (req.session.dungeonProgress.code == 1 && req.session.dungeonProgress.phase % 2 == 1) {
         if (!char.dungeonInfos.rewardMevious && req.session.dungeonProgress.phase == 5) {
@@ -2782,7 +2782,7 @@ async function procNextPhaseDungeon(req, res) {
             char.statPoint += 5;
             reward += '첫 번째 [어나더 게이트 - 재의 묘소] 클리어!<br>스탯 포인트 5를 획득했습니다.<br>';
             await client.query('insert into news(content, date) values ($1, $2)', 
-                [char.name + getIga(char.nameType) + ' [어나더 게이트 - 재의 묘소]를 돌파했습니다!', new Date()]);
+                [newsName(char) + getIga(char.nameType) + ' [어나더 게이트 - 재의 묘소]를 돌파했습니다!', new Date()]);
             if (!char.achievement[31]) {
               await giveAchievement(charRow.uid, char, 31);
             }
@@ -2917,7 +2917,7 @@ async function procNextPhaseDungeon(req, res) {
             char.statPoint += 5;
             reward += '첫 번째 [어나더 게이트 - 전이된 석영 고원] 클리어!<br>스탯 포인트 5를 획득했습니다.<br>';
             await client.query('insert into news(content, date) values ($1, $2)', 
-                [char.name + getIga(char.nameType) + ' [어나더 게이트 - 전이된 석영 고원]을 돌파했습니다!', new Date()]);
+                [newsName(char) + getIga(char.nameType) + ' [어나더 게이트 - 전이된 석영 고원]을 돌파했습니다!', new Date()]);
           }
           if (char.dungeonInfos.enterIndigo >= 2) {
             reward += '<br>"..."<br>';
@@ -3401,7 +3401,7 @@ async function procRankup (req, res) {
   }
   await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
   await client.query('insert into news(content, date) values ($1, $2)', 
-      [char.name + getIga(char.nameType) + ' ' + char.rank + '급을 달성했습니다!', new Date()]);
+      [newsName(char) + getIga(char.nameType) + ' ' + char.rank + '급을 달성했습니다!', new Date()]);
   client.release();
   res.redirect('/');
 }
@@ -3434,7 +3434,7 @@ async function procActionAccel(req, res) {
 async function addItemNews (client, chara, tgtObj, picked) {
   const rarity = picked.rarity == cons.ITEM_RARITY_RARE ? 'Rare' : (picked.rarity == cons.ITEM_RARITY_UNIQUE ? 'Unique' : (picked.rarity == cons.ITEM_RARITY_COMMON_UNCOMMON ? 'Rare' : 'Epic'));
   await client.query('insert into news(content, date) values ($1, $2)', 
-      [chara.name + getIga(chara.nameType) + ' ' + tgtObj.name + '에서 <span class=\"rarity' + rarity + '\">' + picked.name + '<div class="itemTooltip">' + makeTooltip(picked) + '</div></span>' + getUlrul(picked.nameType) + ' 뽑았습니다!', new Date()]);
+      [newsName(chara) + getIga(chara.nameType) + ' ' + tgtObj.name + '에서 <span class=\"rarity' + rarity + '\">' + picked.name + '<div class="itemTooltip">' + makeTooltip(picked) + '</div></span>' + getUlrul(picked.nameType) + ' 뽑았습니다!', new Date()]);
 }
 
 async function getNews (cnt) {
@@ -3510,7 +3510,7 @@ async function giveAchievement (uid, chara, idx) {
     if (!globals || !globals.achievement || !globals.achievement[idx]) {
       await setGlobals({achievement : {type : 'achievement', idx : idx, holder : chara.name}});
       await client.query('insert into news(content, date) values ($1, $2)', 
-          [chara.name + getIga(chara.nameType) + ' [ ' + ach.achData[idx].name + ' ] 업적을 달성했습니다!', new Date()]);
+          [newsName(chara) + getIga(chara.nameType) + ' [ ' + ach.achData[idx].name + ' ] 업적을 달성했습니다!', new Date()]);
     }
     client.release();
     return;
@@ -3573,6 +3573,7 @@ async function procSelectChar (req, res) {
     }
 
     const inst = roster.create(key);
+    inst.owner = await getOwnerName(sess.userUid);
     run.initRun(inst);
     calcStats(inst);
     const uid = sess.userUid + '-' + Date.now().toString(36);
@@ -3599,6 +3600,8 @@ function floorNames(chara) {
   return chara.skill.base.map(sk => sk.name + '<div class="itemTooltip">' + sk.tooltip + (sk.flavor ? '<br><br><span class="tooltipFlavor">' + sk.flavor + '</span>' : '') + '</div>');
 }
 // ==================== 층 진행 ====================
+// 뉴스 표기: 계정명(캐릭터명)
+function newsName(c) { return c && c.owner ? c.owner + '(' + c.name + ')' : (c ? c.name : ''); }
 async function loadRunChar (req, res) {
   const sess = req.session;
   if (!sess.userUid) { res.redirect('/login'); return null; }
@@ -3606,7 +3609,13 @@ async function loadRunChar (req, res) {
   if (!charRow.char_data) { res.redirect('/'); return null; }
   const char = JSON.parse(charRow.char_data);
   if (!char.run) { run.initRun(char); }
+  if (!char.owner) char.owner = await getOwnerName(sess.userUid);
   return { charRow, char };
+}
+async function getOwnerName (userId) {
+  const client = await pool.connect();
+  try { const r = await client.query('select name from users where id = $1', [userId]); return (r.rows[0] && r.rows[0].name) || userId; }
+  catch (e) { return userId; } finally { client.release(); }
 }
 async function saveChar (char, uid) {
   const client = await pool.connect();
@@ -3626,8 +3635,8 @@ async function procNextFloor (req, res) {
     const key = charRow.uid + ':' + run.floorNo(char);
 
     if (st === 'shop') {
-      if (!sess.floorShop || sess.floorShop.key !== key) sess.floorShop = { key, shop: run.makeShop(char) };
-      res.render('pages/floorShop', { char, rv: runView(char), shop: sess.floorShop.shop, makeTooltip });
+      if (!sess.floorShop || sess.floorShop.key !== key) sess.floorShop = { key, offers: run.makeShopOffers(char), shop: null };
+      res.render('pages/floorShop', { char, rv: runView(char), shop: sess.floorShop.shop, offers: sess.floorShop.offers, makeTooltip });
     } else if (st === 'event') {
       if (!sess.floorEvent || sess.floorEvent.key !== key) { sess.floorEvent = { key, code: run.makeEvent(char).code, done: null }; await saveChar(char, charRow.uid); }
       const cur = run.makeEventByCode(char, sess.floorEvent.code);
@@ -3687,6 +3696,11 @@ async function procFloorShop (req, res) {
     const { charRow, char } = ctx;
     const sess = req.session;
     if (run.stage(char) !== 'shop' || !sess.floorShop) { res.redirect('/nextFloor'); return; }
+    if (req.body.action === 'choose') {
+      const oi = parseInt(req.body.idx, 10);
+      if (!sess.floorShop.shop && sess.floorShop.offers && sess.floorShop.offers[oi]) sess.floorShop.shop = run.makeShop(char, sess.floorShop.offers[oi].type);
+      res.redirect('/nextFloor'); return;
+    }
     const shop = sess.floorShop.shop;
     if (req.body.action === 'leave') {
       run.advance(char);
@@ -3702,6 +3716,8 @@ async function procFloorShop (req, res) {
     char.gold -= g.price;
     if (g.kind === 'item') char.inventory.push(g.item);
     else if (g.kind === 'card') char.deck.push(g.card);
+    else if (g.kind === 'stat') char.statPoint = (char.statPoint || 0) + g.value;
+    else if (g.kind === 'life') { const l = char.run.lives === undefined ? 1 : char.run.lives; if (l >= 3) { char.gold += g.price; res.redirect('/nextFloor'); return; } char.run.lives = l + 1; }
     shop.bought.push(idx);
     await saveChar(char, charRow.uid);
     res.redirect('/nextFloor');
@@ -3954,7 +3970,7 @@ async function createRaidResults (rindex, phase, killed) {
       }
       reward += '</table>';
       await client.query('insert into news(content, date) values ($1, $2)', 
-          [killed.name + getIga(killed.nameType) + ' ' + char[phase].name + getUlrul(char[phase].nameType) + ' 처치했습니다!<div class="itemTooltip longWidth">' + reward + '</div>', new Date()]);
+          [newsName(killed) + getIga(killed.nameType) + ' ' + char[phase].name + getUlrul(char[phase].nameType) + ' 처치했습니다!<div class="itemTooltip longWidth">' + reward + '</div>', new Date()]);
       
       return leaderboard;
     } 
