@@ -447,10 +447,35 @@ function eventPool(char) {
     desc: has('master') && d.skill
       ? '"' + d.from + '에게 배운 기술이다. 네 ' + ['가위', '바위', '보'][d.idx] + ' 기술과 바꿔 주마. 되돌릴 수는 없다."'
       : '늙은 사범이 검을 닦고 있다.',
-    html: has('master') && d.skill ? '<b>' + d.skill.name + '</b><br>' + (d.skill.tooltip || '') + (d.skill.flavor ? '<br><span class="tooltipFlavor">' + d.skill.flavor + '</span>' : '') : '',
+    html: has('master') && d.skill ? '<b>' + d.skill.name + '</b> <small>계수 ' + d.skill.damage + '</small><br>' + (d.skill.tooltip || '') + (d.skill.flavor ? '<br><span class="tooltipFlavor">' + d.skill.flavor + '</span>' : '') : '',
     options: has('master') && d.skill ? [
-      { label: char.skill.base[d.idx].name + ' → ' + d.skill.name, effect: (ch) => { ch.skill.base[d.idx] = JSON.parse(JSON.stringify(d.skill)); return d.skill.name + '을(를) 익혔다.'; } },
+      { label: char.skill.base[d.idx].name + ' (' + char.skill.base[d.idx].damage + ') → ' + d.skill.name + ' (' + d.skill.damage + ')', effect: (ch) => { ch.skill.base[d.idx] = JSON.parse(JSON.stringify(d.skill)); return d.skill.name + '을(를) 익혔다.'; } },
       { label: '거절한다', effect: () => '사범은 고개를 끄덕이고 눈을 감았다.' }
+    ] : [ { label: '지나간다', effect: () => '아무 일도 없었다.' } ]
+  });
+
+  // --- 스킬 계수 강화 ---
+  const honeCost = 40 + 10 * char.run.cycle;
+  pool.push({
+    code: 'hone', weight: 2, title: '검술 도장', desc: '"기술 하나를 골라라. ' + honeCost + '골드면 한 단계 더 날카롭게 해 주지." (공격 계수 +0.15)',
+    html: char.skill.base.map((sk, i) => ['가위', '바위', '보'][i] + ' <b>' + sk.name + '</b> 계수 ' + sk.damage).join('<br>'),
+    options: char.skill.base.map((sk, i) => ({
+      label: sk.name + ' ' + sk.damage + ' → ' + (Math.round((sk.damage + 0.15) * 100) / 100) + ' (' + honeCost + '골드)',
+      effect: (ch) => { if (ch.gold < honeCost) return '골드가 부족하다.'; ch.gold -= honeCost; const t = ch.skill.base[i]; t.damage = Math.round((t.damage + 0.15) * 100) / 100; return t.name + ' 계수가 ' + t.damage + '이 됐다.'; }
+    })).concat([{ label: '거절한다', effect: () => '사범은 어깨를 으쓱했다.' }])
+  });
+
+  // --- 스킬 아티팩트 ---
+  pool.push({
+    code: 'relic', weight: 2, title: '유물 상자',
+    prepare: (ch) => ({ item: pickArtifact(ch.rank) }),
+    desc: has('relic') && d.item
+      ? '봉인된 상자 안에서 낯선 유물이 빛난다. 스킬 아티팩트 자리에 장착할 수 있다.' + (char.items && char.items.skillArtifact ? ' 지금 낀 ' + char.items.skillArtifact.name + '은(는) 버려진다.' : '')
+      : '봉인된 상자가 있다.',
+    html: has('relic') && d.item ? (deps.makeTooltip ? deps.makeTooltip(d.item) : d.item.name) : '',
+    options: has('relic') && d.item ? [
+      { label: d.item.name + ' 장착', effect: (ch) => { if (!ch.items) ch.items = {}; ch.items.skillArtifact = JSON.parse(JSON.stringify(d.item)); deps.calcStats(ch); return d.item.name + '을(를) 장착했다.'; } },
+      { label: '두고 간다', effect: () => '상자를 다시 닫았다.' }
     ] : [ { label: '지나간다', effect: () => '아무 일도 없었다.' } ]
   });
 
@@ -475,6 +500,13 @@ function eventPool(char) {
   });
 
   return pool;
+}
+// 스킬 아티팩트: 현재 급수 것, 없으면 가까운 급수
+function pickArtifact(rank) {
+  const list = require('./items').list.filter(x => x && x.type === cons.ITEM_TYPE_SKILL_ARTIFACT);
+  let cand = list.filter(x => x.rank === rank);
+  if (!cand.length) cand = list.sort((a, b) => Math.abs(a.rank - rank) - Math.abs(b.rank - rank)).filter((x, i, arr) => x.rank === arr[0].rank);
+  return cand.length ? JSON.parse(JSON.stringify(cand[Math.floor(Math.random() * cand.length)])) : null;
 }
 // 정찰용 적 요약
 function enemyBrief(e) {
