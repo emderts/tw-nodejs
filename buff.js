@@ -3088,7 +3088,7 @@ module.exports.getBuffData = function(eff) {
     effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
     effectObj.code = cons.EFFECT_TYPE_STAT_ADD;
     effectObj.key = 'spRegen';
-    effectObj.value = 5;
+    effectObj.value = 3;
     retObj.effect.push(effectObj);
     effectObj = {};
     effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
@@ -4435,7 +4435,7 @@ module.exports.getBuffData = function(eff) {
     effectObj.code = cons.EFFECT_TYPE_ADD_HIT;
     effectObj.type = cons.DAMAGE_TYPE_PHYSICAL_FIXED;
     //effectObj.chkSkillCode = 201778;
-    effectObj.value = 0.9;
+    effectObj.value = 1.2;
     effectObj.hitMod = 1;
     retObj.effect.push(effectObj);
     break;
@@ -4465,7 +4465,7 @@ module.exports.getBuffData = function(eff) {
     effectObj.code = cons.EFFECT_TYPE_ADD_HIT;
     effectObj.type = cons.DAMAGE_TYPE_PHYSICAL_FIXED;
     //effectObj.chkSkillCode = 201778;
-    effectObj.value = 0.3;
+    effectObj.value = 0.5;
     effectObj.hitMod = 1;
     retObj.effect.push(effectObj);
     break;
@@ -4499,7 +4499,7 @@ module.exports.getBuffData = function(eff) {
     effectObj.code = cons.EFFECT_TYPE_ADD_HIT;
     effectObj.type = cons.DAMAGE_TYPE_MAGICAL_FIXED;
     //effectObj.chkSkillCode = 201778;
-    effectObj.value = 1.2;
+    effectObj.value = 1.5;
     effectObj.hitMod = 1;
     retObj.effect.push(effectObj);
     break;

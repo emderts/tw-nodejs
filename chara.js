@@ -27,11 +27,11 @@ const item = require('./items');
   charLeft.skill.base.push(skillObj);
 
   skillObj = {code : 20102, name : '파괴의 저주', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 0.7, 
-      effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.5, buffCode : 20102, buffDur : 3, value : 0.1}],
-      tooltip : '50\% 확률로 적에게 3턴간 [파괴됨] 버프 부여<br><br>[파괴됨] : 마법 0.1 피해'};
+      effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.7, buffCode : 20102, buffDur : 3, value : 0.2}],
+      tooltip : '70\% 확률로 적에게 3턴간 [파괴됨] 버프 부여<br><br>[파괴됨] : 마법 0.2 피해'};
   charLeft.skill.base.push(skillObj);
 
-  skillObj = {code : 20103, name : '망각의 계약', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 1.1, 
+  skillObj = {code : 20103, name : '망각의 계약', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 1.3, 
       effect : [{code : cons.EFFECT_TYPE_SELF_SP, chance : 0.3, value : 15}],
       tooltip : '30\% 확률로 자신의 SP 15 회복'};
   charLeft.skill.base.push(skillObj);
@@ -39,8 +39,8 @@ const item = require('./items');
   skillObj = {code : 20104, name : '생명력 전환', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_DRIVE, 
       active : cons.ACTIVE_TYPE_ATTACK, cost : 0, chance : 0.5, 
       effect : [{code : cons.EFFECT_TYPE_SELF_SP, value : 25},
-                {code : cons.EFFECT_TYPE_SELF_HP, value : -20}],
-      tooltip : '공격 성공 시 50\% 확률로 자신의 HP를 20 잃고 SP 25 회복'};
+                {code : cons.EFFECT_TYPE_SELF_HP, value : -8}],
+      tooltip : '공격 성공 시 50\% 확률로 자신의 HP를 8 잃고 SP 25 회복'};
   charLeft.skill.drive = skillObj;
 
   skillObj = {code : 20105, name : '지옥불길', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 90, 
@@ -265,7 +265,7 @@ const item = require('./items');
   skillObj.effect.push(effectObj);
   effectObj = {};
   effectObj.code = cons.EFFECT_TYPE_OPP_BUFF;
-  effectObj.chance = 0.35;
+  effectObj.chance = 0.25;
   effectObj.buffCode = 20178;
   effectObj.buffDur = 3;
   skillObj.effect.push(effectObj);
@@ -434,9 +434,9 @@ const item = require('./items');
   skillObj.effect = [];
   effectObj = {};
   effectObj.code = cons.EFFECT_TYPE_SKILL_RESELECT;
-  effectObj.chance = 0.2;
+  effectObj.chance = 0.35;
   skillObj.effect.push(effectObj);
-  skillObj.tooltip = '상성 패배 시 20\% 확률로 스킬 재선택';
+  skillObj.tooltip = '상성 패배 시 25\% 확률로 스킬 재선택';
   skillObj.flavor = '다중우주로 흐르는 시간들 중 선택해 시간을 진행시킨다.';
   charJulius.skill.base.push(skillObj);
 
@@ -449,11 +449,11 @@ const item = require('./items');
   skillObj.effect = [];
   effectObj = {};
   effectObj.code = cons.EFFECT_TYPE_ADD_HIT;
-  effectObj.chance = 0.2;
+  effectObj.chance = 0.3;
   effectObj.type = cons.DAMAGE_TYPE_MAGICAL;
   effectObj.value = 0.5;
   skillObj.effect.push(effectObj);
-  skillObj.tooltip = '20\% 확률로 마법 0.5 추가 피해';
+  skillObj.tooltip = '30\% 확률로 마법 0.5 추가 피해';
   skillObj.flavor = '시간을 조작해 상대를 혼란에 빠뜨린다.';
   charJulius.skill.base.push(skillObj);
 
@@ -488,7 +488,7 @@ const item = require('./items');
   skillObj.name = '시간 왜곡';
   skillObj.nameType = cons.NAME_KOR_END_CONS;
   skillObj.type = cons.SKILL_TYPE_SPECIAL;
-  skillObj.cost = 85;
+  skillObj.cost = 75;
   skillObj.effect = [];
   effectObj = {};
   effectObj.code = cons.EFFECT_TYPE_SELF_BUFF;
@@ -516,7 +516,7 @@ const item = require('./items');
   skillObj.name = '모듈 - 복합 장갑';
   skillObj.nameType = cons.NAME_KOR_END_CONS;
   skillObj.type = cons.DAMAGE_TYPE_MAGICAL;
-  skillObj.damage = 0.5;
+  skillObj.damage = 0.8;
   skillObj.effect = [];
   var effectObj = {};
   effectObj.code = cons.EFFECT_TYPE_SELF_BUFF;
@@ -541,7 +541,7 @@ const item = require('./items');
   skillObj.name = '모듈 - 방벽 시스템 작동';
   skillObj.nameType = cons.NAME_KOR_END_CONS;
   skillObj.type = cons.DAMAGE_TYPE_MAGICAL;
-  skillObj.damage = 0.5;
+  skillObj.damage = 0.8;
   skillObj.effect = [];
   effectObj = {};
   effectObj.code = cons.EFFECT_TYPE_SELF_BUFF;
@@ -640,7 +640,7 @@ const item = require('./items');
   skillObj.name = '제압 프로토콜 - 에너지 방출';
   skillObj.nameType = cons.NAME_KOR_END_CONS;
   skillObj.type = cons.SKILL_TYPE_SPECIAL;
-  skillObj.cost = 150;
+  skillObj.cost = 100;
   skillObj.effect = [];
   effectObj = {};
   effectObj.code = cons.EFFECT_TYPE_SELECTION;
@@ -829,14 +829,14 @@ const item = require('./items');
   skillObj.effect = [];
   var effectObj = {};
   effectObj.code = cons.EFFECT_TYPE_OPP_BUFF;
-  effectObj.chance = 0.3;
+  effectObj.chance = 0.25;
   effectObj.buffCode = 2;
   effectObj.buffDur = 3;
   effectObj.critNot = true;
   skillObj.effect.push(effectObj);
   effectObj = {};
   effectObj.code = cons.EFFECT_TYPE_OPP_BUFF;
-  effectObj.chance = 0.6;
+  effectObj.chance = 0.5;
   effectObj.buffCode = 2;
   effectObj.buffDur = 3;
   effectObj.onCrit = true;
@@ -846,7 +846,7 @@ const item = require('./items');
   effectObj.buffCode = 201737;
   effectObj.buffDur = null;
   skillObj.effect.push(effectObj);
-  skillObj.tooltip = '자신에게 [백수의 마음가짐] 1중첩 부여, 30\% (치명타 시 60%) 확률로 적에게 3턴 간 [중독] 상태이상 부여';
+  skillObj.tooltip = '자신에게 [백수의 마음가짐] 1중첩 부여, 25\% (치명타 시 50%) 확률로 적에게 3턴 간 [중독] 상태이상 부여';
   skillObj.flavor = '꼬집힘을 당하였습니다. 상처나서 씻지 않은 발에 붙은 세균에 감염되었습니다.';
   charBks.skill.base.push(skillObj);
 
@@ -891,7 +891,7 @@ const item = require('./items');
   effectObj.buffCode = 201737;
   effectObj.buffDur = null;
   skillObj.effect.push(effectObj);
-  skillObj.tooltip = '자신에게 [백수의 마음가짐] 1중첩 부여, 100\% 확률로 자신에게 2턴 간 [해탈] 버프 부여<br><br>[해탈] : SP 재생 +5, 물리저항 -15\%p, 마법저항 +15\%p, 해로운 버프 무시';
+  skillObj.tooltip = '자신에게 [백수의 마음가짐] 1중첩 부여, 100\% 확률로 자신에게 2턴 간 [해탈] 버프 부여<br><br>[해탈] : SP 재생 +3, 물리저항 -15\%p, 마법저항 +15\%p, 해로운 버프 무시';
   skillObj.flavor = '지갑이 채워졌습니다. 인생이 행복합니다! 멘탈이 강화되었습니다!';
   charBks.skill.base.push(skillObj);
 
@@ -1384,9 +1384,9 @@ const item = require('./items');
   charGabi.skill.base = [];
 
   var skillObj = {code : 201766, name : '깎아 올리는 재능', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1.2, 
-      effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201772, buffDur : null, setStack : 0.05, stackBase : 2, isPercentDamage : true, chkNot : [201775]},
+      effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201772, buffDur : null, setStack : 0.05, stackBase : 1, isPercentDamage : true, chkNot : [201775]},
                 {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201773, buffDur : null, setStack : 0.075, stackBase : 2, isPercentDamage : true, chk : [201775]}],
-      tooltip : '2 + 피해량의 5%만큼 [재능] 스택을 부여한다. [반복 숙달] 효과 : 기본 효과 대신, 2 + 피해량의 7.5%만큼 [연마된 재능] 스택을 부여한다.<br><br>[재능] : 물리/마법 최대 공격력 +1<br>[연마된 재능] : 물리/마법 공격력 +1',
+      tooltip : '1 + 피해량의 5%만큼 [재능] 스택을 부여한다. [반복 숙달] 효과 : 기본 효과 대신, 2 + 피해량의 7.5%만큼 [연마된 재능] 스택을 부여한다.<br><br>[재능] : 물리/마법 최대 공격력 +1<br>[연마된 재능] : 물리/마법 공격력 +1',
       flavor : '가난으로부터 탈출하기 위한 끝없는 노력은 이세계에서 능력으로 보상받는다.'};  
   charGabi.skill.base.push(skillObj);
 
@@ -1410,16 +1410,16 @@ const item = require('./items');
   skillObj = {code : 201769, name : '반복 숙달', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_DRIVE, 
       active : cons.ACTIVE_TYPE_SKILL_WIN, cost : 0, chance : 1, chkSameAttack : true,
       effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201775, buffDur : null},
-                {code : cons.EFFECT_TYPE_SELF_SP, value : 20}],
-      tooltip : '지난 턴에 사용했던 스킬을 이번 턴에도 사용하여 공격 시, 스킬의 피해량이 12.5% 상승하고 SP 20을 회복하며 각 스킬 별 특수 효과가 강화된다.',
+                {code : cons.EFFECT_TYPE_SELF_SP, value : 10}],
+      tooltip : '지난 턴에 사용했던 스킬을 이번 턴에도 사용하여 공격 시, 스킬의 피해량이 8% 상승하고 SP 10을 회복하며 각 스킬 별 특수 효과가 강화된다.',
       flavor : '어렸을 때부터 해 오던 불법 아르바이트 경험의 산실. 반복할수록, 숙달된다.'};
   charGabi.skill.drive = skillObj;
 
   skillObj = {code : 201770, name : '비급 - 급여 통장', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 135, 
-      effect : [{code : cons.EFFECT_TYPE_SELF_HP, value : 0.025, isPercentStat : true, percentKey : 'maxHp', addAttackCount : true},
+      effect : [{code : cons.EFFECT_TYPE_SELF_HP, value : 0.02, isPercentStat : true, percentKey : 'maxHp', addAttackCount : true},
                 {code : cons.EFFECT_TYPE_REMOVE_BUFF, anyDebuff : true, limit : 2},
                 {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 2017107, buffDur : null, stack : 3}],
-      tooltip : '최대 생명력의 (공격횟수*3.5)%만큼 생명력을 회복하고(최대 35%), 자신에게 부여된 나쁜 상태이상을 2종 해제한다. 자신의 [재능] 중첩을 모두 [연마된 재능]으로 변경하고, 자신에게 [월급 통장] 버프 3중첩을 부여한다.<br>[월급 통장] : 물리/마법저항 +50%p, 공격 시 1중첩을 소거하고 <반복 숙달> 효과 적용, 피격 시 1중첩 소거',
+      tooltip : '최대 생명력의 (공격횟수*2)%만큼 생명력을 회복하고, 자신에게 부여된 나쁜 상태이상을 2종 해제한다. 자신의 [재능] 중첩을 모두 [연마된 재능]으로 변경하고, 자신에게 [월급 통장] 버프 3중첩을 부여한다.<br>[월급 통장] : 물리/마법저항 +50%p, 공격 시 1중첩을 소거하고 <반복 숙달> 효과 적용, 피격 시 1중첩 소거',
       flavor : '고된 노동에 대한 보상은 죽어가는 이세계 고등학생도 살리는 법이다.'};
   charGabi.skill.special = skillObj;
 
@@ -1529,34 +1529,34 @@ const item = require('./items');
   charRuisun.skill.base = [];
 
   var skillObj = {code : 201781, name : '쇠뇌대 훈련', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 1.2, 
-      calcEffect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201791, buffDur : null, setStack : 1, isPercentDamage : true},
+      calcEffect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201791, buffDur : null, setStack : 1.2, isPercentDamage : true},
                     {code : cons.EFFECT_TYPE_MULTIPLY_DAMAGE, value : 0, all : true}],
       effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 2017108, buffDur : 3}],
-      tooltip : '피해를 주는 대신 피해량만큼 자신에게 [쇠뇌대] 중첩 부여, 자신에게 3턴 간 [전투의 함성] 버프 부여<br><br>[쇠뇌대] : [철갑군], [기마대]가 없을 때 피격 시 피해량만큼 중첩 소거',
+      tooltip : '피해를 주는 대신 피해량의 120%만큼 자신에게 [쇠뇌대] 중첩 부여, 자신에게 3턴 간 [전투의 함성] 버프 부여<br><br>[쇠뇌대] : [철갑군], [기마대]가 없을 때 피격 시 피해량만큼 중첩 소거',
       flavor : '쇠뇌와 연노로 무장한 쇠뇌대를 모집하여 훈련합니다. 강한 공격력을 지닙니다.'};  
   charRuisun.skill.base.push(skillObj);
 
   skillObj = {code : 201782, name : '기마대 훈련', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1, 
-      calcEffect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201788, buffDur : null, setStack : 1, isPercentDamage : true},
+      calcEffect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201788, buffDur : null, setStack : 1.2, isPercentDamage : true},
                     {code : cons.EFFECT_TYPE_MULTIPLY_DAMAGE, value : 0, all : true}],
       effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 2017108, buffDur : 3}],
-      tooltip : '피해를 주는 대신 피해량만큼 자신에게 [기마대] 중첩 부여, 자신에게 3턴 간 [전투의 함성] 버프 부여<br><br>[기마대] : [철갑군]이 없을 때 피격 시 피해량의 50%만큼 중첩 소거',
+      tooltip : '피해를 주는 대신 피해량의 120%만큼 자신에게 [기마대] 중첩 부여, 자신에게 3턴 간 [전투의 함성] 버프 부여<br><br>[기마대] : [철갑군]이 없을 때 피격 시 피해량의 50%만큼 중첩 소거',
       flavor : '월도와 장검으로 무장한 기마대를 훈련합니다. 빠른 기동력으로 적을 혼란에 빠트립니다.'};  
   charRuisun.skill.base.push(skillObj);
 
   skillObj = {code : 201783, name : '철갑군 훈련', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 0.8,
-      calcEffect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201789, buffDur : null, setStack : 1, isPercentDamage : true},
+      calcEffect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201789, buffDur : null, setStack : 1.2, isPercentDamage : true},
                     {code : cons.EFFECT_TYPE_MULTIPLY_DAMAGE, value : 0, all : true}],
       effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 2017108, buffDur : 3}],
-      tooltip : '피해를 주는 대신 피해량만큼 자신에게 [철갑군] 중첩 부여, 자신에게 3턴 간 [전투의 함성] 버프 부여<br><br>[철갑군] : 물리/마법저항 +0.2%p, 피격 시 피해량의 20%만큼 중첩 소거',
+      tooltip : '피해를 주는 대신 피해량의 120%만큼 자신에게 [철갑군] 중첩 부여, 자신에게 3턴 간 [전투의 함성] 버프 부여<br><br>[철갑군] : 물리/마법저항 +0.2%p, 피격 시 피해량의 20%만큼 중첩 소거',
       flavor : '철갑과 큰 방패로 무장한 철갑군을 훈련합니다. 단단한 진형을 통해 아군을 지킵니다.'};  
   charRuisun.skill.base.push(skillObj);
 
   skillObj = {code : 201784, name : '징병 공고', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.SKILL_TYPE_DRIVE,
-      active : cons.ACTIVE_TYPE_TURN_START, cost : 10, chance : 0.05, chanceModFunc : 0, setCooldown : 3,
+      active : cons.ACTIVE_TYPE_TURN_START, cost : 10, chance : 0.15, chanceModFunc : 0, setCooldown : 2,
       effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : [201791, 201788, 201789], buffDur : null, multiple : true, setStack : 35, 
         addDamage : [{value : 0.5, type : cons.DAMAGE_TYPE_MAGICAL}, {value : 0.5, type : cons.DAMAGE_TYPE_PHYSICAL}]}],
-      tooltip : '턴 시작 시 5% 확률 ((상대의 현재생명력% - 자신의 현재생명력%)%만큼 증가)로 자신에게 [쇠뇌대], [기마대], [철갑군] 중 하나를 (35 + 물리 0.5 + 마법 0.5) 중첩 부여',
+      tooltip : '턴 시작 시 15% 확률 ((상대의 현재생명력% - 자신의 현재생명력%)%만큼 증가)로 자신에게 [쇠뇌대], [기마대], [철갑군] 중 하나를 (35 + 물리 0.5 + 마법 0.5) 중첩 부여',
       flavor : '열세를 메꾸기 위해 더 많은 병사를 징집합니다.'};
   charRuisun.skill.drive = skillObj;
 
@@ -1577,7 +1577,7 @@ const item = require('./items');
                 {code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 1, buffDur : 1, chk : [201791], chkNot : [201788, 201789]},
                 {code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 11, buffDur : 2, chk : [201788], chkNot : [201791, 201789]},
                 {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201790, buffDur : 3, chk : [201789], chkNot : [201791, 201788]}],
-      tooltip : '[쇠뇌대] 중첩 * 1.2 마법 고정 피해, [기마대] 중첩 * 0.9 고정 물리 피해, [철갑군] 중첩 * 0.3 고정 물리 피해를 줍니다. ([쇠뇌대] 존재 시 적 1턴 간 [화상], [기마대] 존재 시 적 2턴 간 [혼란], [철갑군] 존재 시 자신 3턴 간 물리/마법저항 +10%p) 효과 중 하나를 적용합니다.',
+      tooltip : '[쇠뇌대] 중첩 * 1.5 마법 고정 피해, [기마대] 중첩 * 1.2 고정 물리 피해, [철갑군] 중첩 * 0.5 고정 물리 피해를 줍니다. ([쇠뇌대] 존재 시 적 1턴 간 [화상], [기마대] 존재 시 적 2턴 간 [혼란], [철갑군] 존재 시 자신 3턴 간 물리/마법저항 +10%p) 효과 중 하나를 적용합니다.',
       flavor : '뤼순이 병사들에게 총공격 명령을 내립니다.'};
   charRuisun.skill.special = skillObj;
 
@@ -1592,7 +1592,7 @@ const item = require('./items');
   charJay.skill = {};
   charJay.skill.base = [];
 
-  var skillObj = {code : 201786, name : '블레이드 악센트', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1.2, 
+  var skillObj = {code : 201786, name : '블레이드 악센트', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1.05, 
       calcEffect : [{code : cons.EFFECT_TYPE_MULTIPLY_DAMAGE_OBJECT, key : 'critDmg', value : 1.2, skillCode : 201786, name : '블레이드 악센트'},
                     {code : cons.EFFECT_TYPE_ADD_DAMAGE_OBJECT, key : 'crit', value : 0.05, skillCode : 201786, name : '블레이드 악센트'}],
       effect : [{code : cons.EFFECT_TYPE_SELF_SP, value : 0.35, isPercentSkill : true, skillKey : 'special', percentKey : 'cost', onCrit : true}],
@@ -1600,7 +1600,7 @@ const item = require('./items');
       flavor : '기습적으로 힘을 주어 상대를 향해 칼날을 내민다.'};  
   charJay.skill.base.push(skillObj);
 
-  skillObj = {code : 201787, name : '데스퍼레이트 론도', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 1.2, 
+  skillObj = {code : 201787, name : '데스퍼레이트 론도', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 1.05, 
       effect : [{code : cons.EFFECT_TYPE_MULTIPLE, chance : 0.3, loop : true,
         target : [{code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL, value : 0.3},
                   {code : cons.EFFECT_TYPE_SELF_SP, value : 0.2, isPercentSkill : true, skillKey : 'special', percentKey : 'cost'}]}],
@@ -1619,8 +1619,8 @@ const item = require('./items');
   skillObj = {code : 201789, name : '완벽한 앙상블', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_DRIVE,
       active : cons.ACTIVE_TYPE_TURN_END, cost : 10, chance : 1, checkFunc : 1,
       effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201793, buffDur : null},
-                {code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 10, buffDur : 2}],
-      tooltip : '턴 종료 시 자신과 상대의 공격횟수가 동일하고, [앙상블] 중첩이 12 미만이면 자신에게 [앙상블] 1중첩을 부여하고 적에게 2턴 간 [봉인] 상태이상을 부여한다.',
+                {code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 10, buffDur : 1}],
+      tooltip : '턴 종료 시 자신과 상대의 공격횟수가 동일하고, [앙상블] 중첩이 12 미만이면 자신에게 [앙상블] 1중첩을 부여하고 적에게 1턴 간 [봉인] 상태이상을 부여한다.',
       flavor : '연주가와 관객의 완벽한 호응이 이루어지는 순간.'};
   charJay.skill.drive = skillObj;
 
