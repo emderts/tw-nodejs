@@ -3647,7 +3647,7 @@ async function procNextFloor (req, res) {
       const leftCopy = JSON.parse(JSON.stringify(char));
       if (run.applyBuffs(leftCopy)) calcStats(leftCopy);
       trades[roomNum] = { leftUid: charRow.uid, leftChr: leftCopy, rightChr: enemy, floor: true,
-                          pdeck: run.newDeckState(char.deck), edeck: run.newDeckState(enemy.deck) };
+                          pdeck: run.newDeckState(char.deck), edeck: run.newDeckState(enemy.deck, enemy.deckOpts) };
       sess.floorBattle = { key, room: roomNum };
       res.render('pages/floorBattle', { room: roomNum, uid: charRow.uid, rv: runView(char), char, enemy });
     }
@@ -3657,7 +3657,7 @@ async function procNextFloor (req, res) {
 // 죽은 캐릭터 풀(같은 층)에서 40% 확률로, 아니면 생성
 async function pickEnemy (char, userId) {
   const floor = run.floorNo(char);
-  if (Math.random() < 0.4) {
+  if (!require('./monsterPool').isMonsterCycle(char.run.cycle) && Math.random() < 0.4) {   // 죽은 캐릭터는 짝수(캐릭터) 사이클에만
     const client = await pool.connect();
     try {
       const r = await client.query('select * from fallen where floor = $1 and user_id <> $2 order by random() limit 1', [floor, userId]);

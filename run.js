@@ -2,6 +2,7 @@
 // 사이클 = 이벤트 → 상점 → 전투. 10사이클, 보스는 3·6·10사이클 전투.
 const cons = require('./constant');
 const roster = require('./roster');
+const monsterPool = require('./monsterPool');
 
 const TOTAL_CYCLES = 10;
 const BOSS_CYCLES = [3, 6, 10];
@@ -54,11 +55,12 @@ function shuffle(arr) {
   for (let i = arr.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [arr[i], arr[j]] = [arr[j], arr[i]]; }
   return arr;
 }
-function newDeckState(deck) {
-  return { draw: shuffle(deck.map(c => Object.assign({}, c))), hand: [], discard: [] };
+function newDeckState(deck, opts) {
+  return { draw: shuffle(deck.map(c => Object.assign({}, c))), hand: [], discard: [], everyTurn: !!(opts && opts.shuffleEveryTurn) };
 }
 // 손패를 3장까지 보충. 뽑을 카드가 없을 때는 손패가 비어 있어야만 버림 더미를 셔플
 function drawHand(st) {
+  if (st.everyTurn) { st.draw = shuffle(st.draw.concat(st.hand, st.discard)); st.hand = []; st.discard = []; }
   while (st.hand.length < HAND_SIZE) {
     if (st.draw.length === 0) {
       if (st.hand.length > 0 || st.discard.length === 0) break;
@@ -101,6 +103,62 @@ function aiPick(st, want) {
 const RARITY_BY_CYCLE = [1, 1, 1, 2, 2, 2, 4, 4, 4, 5]; // 언커먼 → 레어 → 유니크 → 에픽
 
 function makeEnemy(char) {
+  if (monsterPool.isMonsterCycle(char.run.cycle)) return makeMonster(char);
+  return makeRosterEnemy(char);
+}
+// 장비/스탯 포인트 공통 (플레이어와 같은 환산)
+function equipAndScale(e, cycle, boss) {
+  let rarity = RARITY_BY_CYCLE[Math.min(cycle, 10) - 1];
+  if (boss && rarity < 5) rarity = rarity === 1 ? 2 : (rarity === 2 ? 4 : 5);
+  e.items = {};
+  for (let t = 0; t <= 3; t++) {
+    const it = getItemSafe(e.rank, rarity, t); if (it) e.items[['weapon', 'armor', 'subarmor', 'trinket'][t]] = it;
+  }
+  e.inventory = [];
+  const pts = 3 * cycle + (boss ? 3 : 0);
+  const magical = e.skill.base.filter(s => s.type === cons.DAMAGE_TYPE_MAGICAL).length >= 2;
+  const hpPts = Math.round(pts / 3);
+  e.base.maxHp += 10 * hpPts;
+  e.base[magical ? 'magAtk' : 'phyAtk'] += 1.5 * (pts - hpPts);
+  if (boss) e.base.maxHp = Math.round(e.base.maxHp * 1.15);
+  deps.calcStats(e);
+}
+function makeMonster(char) {
+  const cycle = char.run.cycle;
+  const boss = isBossCycle(cycle);
+  const cfg = monsterPool.pick(cycle);
+  const monster = require('./monster');
+  const e = JSON.parse(JSON.stringify(monster[cfg.key]));
+  e.monsterKey = cfg.key;
+  e.rank = rankForCycle(cycle);
+  e.level = cycle;
+  // 스탯 정규화: 급수 기본치로 덮되 몬스터 고유 저항/명중 등은 유지
+  Object.assign(e.base, roster.baseByRank(e.rank));
+  // 레이드용 저항/명중은 로그라이크 스케일에 맞게 상한
+  for (const k of ['phyReduce', 'magReduce']) e.base[k] = Math.min(e.base[k] || 0, 0.1);
+  e.base.dmgReduce = 0; e.base.hit = Math.min(e.base.hit || 1, 1.05);
+  // 레이드용 고유 버프(코드 90000+)를 100% 확률로 거는 스킬 효과는 발동 확률을 낮춰 정규화
+  for (const sk of e.skill.base) for (const ef of (sk.effect || [])) {
+    const bc = ef.buffCode; const raid = Array.isArray(bc) ? bc.some(x => x >= 90000) : bc >= 90000;
+    if (raid && ef.chance === undefined) ef.chance = 0.35;
+  }
+  if (cfg.skill0) Object.assign(e.skill.base[0], cfg.skill0);
+  if (cfg.tune) cfg.tune(e);   // base 조정은 여기서 (장비/스탯 포인트 반영 전)
+  equipAndScale(e, cycle, boss);
+  // 덱
+  e.deck = [];
+  cfg.deck.forEach((n, t) => { for (let i = 0; i < n; i++) e.deck.push({ type: t }); });
+  const fav = cfg.deck.indexOf(Math.max(...cfg.deck));
+  for (let i = 0; i < (cfg.extraFav || 0); i++) e.deck.push({ type: fav });
+  e.favType = fav;
+  e.deckOpts = cfg.shuffleEveryTurn ? { shuffleEveryTurn: true } : null;
+  e.skillSelect = 2;
+  e.rating = [0, 0, 0]; e.rating[fav] = 0.25;
+  e.isBoss = boss;
+  e.isMonster = true;
+  return e;
+}
+function makeRosterEnemy(char) {
   const cycle = char.run.cycle;
   const boss = isBossCycle(cycle);
   const keys = roster.KEYS.filter(k => k !== char.rosterKey);
@@ -112,24 +170,7 @@ function makeEnemy(char) {
   e.title = boss ? '층의 지배자' : '떠도는 도전자';
   Object.assign(e.base, roster.baseByRank(e.rank));
 
-  // 장비: 사이클에 맞는 레어리티
-  let rarity = RARITY_BY_CYCLE[Math.min(cycle, 10) - 1];
-  if (boss && rarity < 5) rarity = rarity === 1 ? 2 : (rarity === 2 ? 4 : 5);
-  e.items = {};
-  for (let t = 0; t <= 3; t++) {
-    const it = getItemSafe(e.rank, rarity, t); if (it) e.items[['weapon', 'armor', 'subarmor', 'trinket'][t]] = it;
-  }
-  e.inventory = [];
-
-  // 스탯 포인트: 플레이어와 같은 총량(3 × 사이클)을 주력 공격 타입에 몰아줌
-  // 플레이어 스탯 포인트와 같은 환산 (체력 +10 / 공격 +1.5 per point)
-  const pts = 3 * cycle + (boss ? 3 : 0);
-  const magical = e.skill.base.filter(s => s.type === cons.DAMAGE_TYPE_MAGICAL).length >= 2;
-  const hpPts = Math.round(pts / 3);
-  e.base.maxHp += 10 * hpPts;
-  e.base[magical ? 'magAtk' : 'phyAtk'] += 1.5 * (pts - hpPts);
-  if (boss) { e.base.maxHp = Math.round(e.base.maxHp * 1.15); }
-  deps.calcStats(e);
+  equipAndScale(e, cycle, boss);
 
   // 덱: 2/2/2 + 성향 편중 (사이클이 오를수록 편중 카드 추가)
   const fav = Math.floor(Math.random() * 3);
@@ -501,5 +542,5 @@ function applyEvent(char, code, optIdx) {
 module.exports = {
   configure, TOTAL_CYCLES, HAND_SIZE, RESETS_PER_BATTLE, resetDeck, initRun, stage, stageLabel, floorNo, isBossCycle, rankForCycle, advance,
   newDeckState, drawHand, playCard, handTypes, deckCounts, aiPick, makeEnemy, enemyFromFallen, snapshotForFallen,
-  makeShop, makeEvent, makeEventByCode, applyEvent, applyBuffs, applyEnemyDebuffs, tickBuffs
+  makeMonster, makeRosterEnemy, makeShop, makeEvent, makeEventByCode, applyEvent, applyBuffs, applyEnemyDebuffs, tickBuffs
 };
