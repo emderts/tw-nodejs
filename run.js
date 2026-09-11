@@ -137,6 +137,8 @@ function makeMonster(char) {
   // 레이드용 저항/명중은 로그라이크 스케일에 맞게 상한
   for (const k of ['phyReduce', 'magReduce']) e.base[k] = Math.min(e.base[k] || 0, 0.1);
   e.base.dmgReduce = 0; e.base.hit = Math.min(e.base.hit || 1, 1.05);
+  // 레이드 보스용 %생명력 피해 저항(boss)은 체력이 정상 스케일인 여기선 제거 — 윈드밀 등 %기반 스킬이 무력화되는 것 방지
+  delete e.boss; delete e.bossStatus;
   // 레이드용 고유 버프(코드 90000+)를 100% 확률로 거는 스킬 효과는 발동 확률을 낮춰 정규화
   for (const sk of e.skill.base) for (const ef of (sk.effect || [])) {
     const bc = ef.buffCode; const raid = Array.isArray(bc) ? bc.some(x => x >= 90000) : bc >= 90000;
