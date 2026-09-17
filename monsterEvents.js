@@ -125,6 +125,44 @@ const before = {
       { label: '태운다 (적 디버프 스킬 무효)', effect: (ch, mon) => { for (const s of mon.skill.base) for (const e of (s.effect || [])) if (e.buffCode) e.chance = 0; return '주문이 재가 됐다.'; } },
       { label: '읽는다 (마법 공격 +10 영구, 적도 +10)', effect: (ch, mon, h) => { ch.base.magAtk += 10; mon.base.magAtk += 10; h.calcStats(mon); return '둘 다 주문을 익혔다.'; } }
     ] },
+
+  // ---- 11·13·15 보스 ----
+  d721: { title: '얼음의 방', desc: '벽에 서리가 앉아 있다. 사천왕 칸나의 방이다. 세 마리의 숨소리가 들린다.',
+    options: [
+      { label: '난로에 불을 지핀다 (적 체력 -30%)', effect: (ch, mon, h) => { mon.base.maxHp = Math.round(mon.base.maxHp * 0.7); h.calcStats(mon); return '방이 데워지자 파르셀이 껍질 밖으로 나오지 못한다.'; } },
+      { label: '얼음을 깨서 판다 (골드 +80)', effect: (ch) => { ch.gold += 80; return '얼음 조각을 상인에게 팔았다. 80골드.'; } }
+    ] },
+  d722: { title: '수련의 도장', desc: '격투 소리가 벽을 흔든다. 사천왕 시바의 도장이다.',
+    options: [
+      { label: '대련을 지켜본다 (적 덱에서 바위 2장 제거)', effect: (ch, mon, h) => { const n = h.removeCards(mon, 1, 2); return '주먹의 버릇을 읽었다. 바위 ' + n + '장 제거.'; } },
+      { label: '대련에 끼어든다 (스탯 +5, 다음 전투 적 공격 +10%)', effect: (ch, mon, h) => { ch.statPoint += 5; h.addBuff(ch, { target: 'enemy', key: 'atk', mult: 1.1, battles: 1, label: '적 공격 +10%' }); return '한 판 붙었다. 스탯 +5. 시바가 몸을 풀었다.'; } }
+    ] },
+  d723: { title: '독안개의 정원', desc: '보랏빛 안개가 낮게 깔려 있다. 사천왕 국화의 정원이다.',
+    options: [
+      { label: '향을 피워 안개를 걷는다 (다음 전투 적 회피·명중 -15%p)', effect: (ch, mon, h) => { h.addBuff(ch, { target: 'enemy', key: 'evasion', add: -0.15, battles: 1, label: '적 회피·명중 -15%p' }); h.addBuff(ch, { target: 'enemy', key: 'hit', add: -0.15, battles: 1, label: '' }); return '안개가 걷히자 팬텀이 갈 곳을 잃었다.'; } },
+      { label: '독초를 캔다 (독약 3개)', effect: (ch, mon, h) => { for (let i = 0; i < 3; i++) ch.inventory.push(h.consumable('poison')); return '독약 3개를 얻었다.'; } }
+    ] },
+  d724: { title: '용의 둥지', desc: '뜨거운 바람이 올라온다. 사천왕 목호의 둥지다.',
+    options: [
+      { label: '둥지에 물을 붓는다 (다음 전투 적 공격 -20%)', effect: (ch, mon, h) => { h.addBuff(ch, { target: 'enemy', key: 'atk', mult: 0.8, battles: 1, label: '적 공격 -20%' }); return '김이 오르며 용들이 움츠러들었다.'; } },
+      { label: '용의 비늘을 줍는다 (에픽 장비, 적 체력 +15%)', effect: (ch, mon, h) => { const it = h.gear(ch.rank, 5); if (it) ch.inventory.push(it); mon.base.maxHp = Math.round(mon.base.maxHp * 1.15); h.calcStats(mon); return (it ? it.name + ' 획득. ' : '') + '용들이 깨어났다.'; } }
+    ] },
+  d725: { title: '챔피언의 방', desc: '아무 장식도 없다. 레드가 조용히 기다리고 있다. 네 개의 볼이 허리에 걸려 있다.',
+    options: [
+      { label: '볼 하나를 슬쩍한다 (적 폼 4 → 3)', effect: (ch, mon) => { if (mon.startEffects && mon.startEffects.length > 3) mon.startEffects.pop(); mon.pokemonForms = 3; return '피카츄의 볼을 빼돌렸다. 레드는 눈치채지 못했다.'; } },
+      { label: '정면으로 도전한다 (스탯 +6)', effect: (ch) => { ch.statPoint += 6; return '레드가 고개를 끄덕였다. 각오가 굳었다. 스탯 +6.'; } }
+    ] },
+  rAeika: { title: '요새의 정비고', desc: '거대한 기계가 정비 중이다. 에이카의 에너지 코어가 충전되고 있다.',
+    options: [
+      { label: '코어 충전을 끊는다 (적 SP 충전 -50%)', effect: (ch, mon, h) => { mon.base.spCharge = Math.round((mon.base.spCharge || 0) * 0.5); h.calcStats(mon); return '코어가 반만 찼다.'; } },
+      { label: '설계도를 훔친다 (스킬 아티팩트, 적 저항 +5%p)', effect: (ch, mon, h) => { const it = h.artifact(ch.rank); if (it) { if (!ch.items) ch.items = {}; ch.items.skillArtifact = it; h.calcStats(ch); } mon.base.phyReduce = (mon.base.phyReduce || 0) + 0.05; mon.base.magReduce = (mon.base.magReduce || 0) + 0.05; h.calcStats(mon); return (it ? it.name + ' 장착. ' : '') + '경보가 울렸다.'; } }
+    ] },
+  rsDeci: { title: '파멸의 문 앞', desc: '문 너머에서 모든 것이 부서지는 소리가 난다. 여기가 끝이다.',
+    options: [
+      { label: '문에 봉인을 새긴다 (적 드라이브 무효)', effect: (ch, mon) => { delete mon.skill.drive; return '파멸이 한 박자 늦어졌다.'; } },
+      { label: '남은 것을 전부 쏟는다 (골드 100당 스탯 +3)', effect: (ch) => { const n = Math.floor(ch.gold / 100) * 3; ch.statPoint += n; ch.gold = ch.gold % 100; return '더는 쓸 데가 없다. 스탯 +' + n + '.'; } },
+      { label: '숨을 고른다 (재도전 ♥ +1)', effect: (ch, mon, h) => { const l = ch.run.lives === undefined ? 1 : ch.run.lives; if (l >= h.maxLives(ch)) return '더는 받을 수 없다.'; ch.run.lives = l + 1; return '한 번 더 설 수 있다. 재도전 +1.'; } }
+    ] },
 };
 
 const after = {
@@ -200,6 +238,28 @@ const after = {
   rsNagpa: { title: '나그파의 서', desc: '나그파의 주문서가 온전히 남았다.',
     options: [ { label: '읽는다 (마법 공격 +12 영구)', effect: (ch) => { ch.base.magAtk += 12; return '마법 공격 +12.'; } },
                { label: '판다 (골드 +120)', effect: (ch) => { ch.gold += 120; return '120골드.'; } } ] },
+
+  d721: { title: '칸나의 얼음 조각', desc: '싸움이 끝난 방에 녹지 않는 얼음이 남았다.',
+    options: [ { label: '삼킨다 (마법 공격 +12 영구)', effect: (ch) => { ch.base.magAtk += 12; return '마법 공격 +12.'; } },
+               { label: '깎아 판다 (골드 +120)', effect: (ch) => { ch.gold += 120; return '120골드.'; } } ] },
+  d722: { title: '시바의 도복', desc: '땀에 젖은 도복이 걸려 있다.',
+    options: [ { label: '입는다 (물리 공격 +12 영구)', effect: (ch) => { ch.base.phyAtk += 12; return '물리 공격 +12.'; } },
+               { label: '단련한다 (스탯 +6)', effect: (ch) => { ch.statPoint += 6; return '스탯 +6.'; } } ] },
+  d723: { title: '국화의 독병', desc: '정원 한쪽에 독병이 나란히 놓여 있다.',
+    options: [ { label: '가져간다 (독약 2 + 화염병 2)', effect: (ch, i, h) => { ch.inventory.push(h.consumable('poison'), h.consumable('poison'), h.consumable('fire'), h.consumable('fire')); return '독약 2, 화염병 2.'; } },
+               { label: '판다 (유니크 리설트 카드 2장)', effect: (ch, i, h) => { ch.inventory.push(h.resultCard(ch.rank, 6), h.resultCard(ch.rank, 6)); return '유니크 리설트 카드 2장.'; } } ] },
+  d724: { title: '용의 알', desc: '둥지에 알 하나가 남았다. 따뜻하다.',
+    options: [ { label: '품는다 (체력 +80 영구)', effect: (ch) => { ch.base.maxHp += 80; return '최대 체력 +80.'; } },
+               { label: '판다 (에픽 장비)', effect: (ch, i, h) => { const it = h.gear(ch.rank, 5); if (it) { ch.inventory.push(it); return it.name + ' 획득.'; } return '깨져 버렸다.'; } } ] },
+  d725: { title: '챔피언의 벨트', desc: '레드가 말없이 벨트를 건넸다.',
+    options: [ { label: '찬다 (스탯 +8)', effect: (ch) => { ch.statPoint += 8; return '스탯 +8.'; } },
+               { label: '볼을 받는다 (에픽 장신구)', effect: (ch, i, h) => { const it = h.gear(ch.rank, 5, 3); if (it) { ch.inventory.push(it); return it.name + ' 획득.'; } return '비어 있었다.'; } } ] },
+  rAeika: { title: '요새의 잔해', desc: '멈춘 기계 사이에서 에너지 코어가 아직 빛난다.',
+    options: [ { label: '코어를 몸에 넣는다 (SP 충전 +3 영구)', effect: (ch) => { ch.base.spCharge = (ch.base.spCharge || 0) + 3; return 'SP 충전 +3.'; } },
+               { label: '장갑판을 벗겨 판다 (에픽 방어구)', effect: (ch, i, h) => { const it = h.gear(ch.rank, 5, 1); if (it) { ch.inventory.push(it); return it.name + ' 획득.'; } return '녹아 버렸다.'; } } ] },
+  rsDeci: { title: '파멸 이후', desc: '모든 것이 부서진 자리에 당신만 서 있다.',
+    options: [ { label: '남은 것을 줍는다 (에픽 장비 2개)', effect: (ch, i, h) => { const a = h.gear(ch.rank, 5), b = h.gear(ch.rank, 5); if (a) ch.inventory.push(a); if (b) ch.inventory.push(b); return [a, b].filter(x => x).map(x => x.name).join(', ') + ' 획득.'; } },
+               { label: '돌아본다 (스탯 +10)', effect: (ch) => { ch.statPoint += 10; return '스탯 +10.'; } } ] },
 };
 
 module.exports = { before, after };
