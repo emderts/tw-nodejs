@@ -6844,6 +6844,15 @@ module.exports.getBuffData = function(eff) {
     effectObj = { active : cons.ACTIVE_TYPE_DEAL_DAMAGE_RECEIVE, code : cons.EFFECT_TYPE_SHIELD, value : 20 };
     retObj.effect.push(effectObj);
     break;
+  case 10503 :   // 결을 따른 영석 뱅글
+    retObj.name = '영석의 결';
+    retObj.nameType = cons.NAME_KOR_NO_END_CONS;
+    retObj.stackType = 1;
+    retObj.isDebuff = false;
+    retObj.durOff = null;
+    effectObj = { active : cons.ACTIVE_TYPE_DEAL_DAMAGE_RECEIVE, code : cons.EFFECT_TYPE_SHIELD, value : 45 };
+    retObj.effect.push(effectObj);
+    break;
   }
 
   return retObj;
