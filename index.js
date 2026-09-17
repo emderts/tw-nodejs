@@ -250,6 +250,7 @@ io.on('connection', (socket) => {
       const fp = run.runEffect(L, 'freePotion'); if (fp) { const it = consumables.make(fp); if (it) { it.temp = true; L.inventory = L.inventory || []; L.inventory.push(it); } }   // 비상용 주머니
     }
     if (!t.eplayed) t.eplayed = [0, 0, 0];
+    if (t.redraws === undefined) t.redraws = run.runEffect(t.leftChr, 'redrawHand') || 0;
     if (t.resets === undefined) t.resets = run.RESETS_PER_BATTLE + ((t.leftChr.run && t.leftChr.run.extraResets) || 0) + (run.runEffect(t.leftChr, 'extraResets') || 0);
     socket.emit('floorAck', t.startHtml, floorNames(t.leftChr), floorNames(t.rightChr), floorState(t), run.deckCounts(t.rightChr.deck));
   });
@@ -267,6 +268,13 @@ io.on('connection', (socket) => {
     t.leftChr.inventory.splice(idx, 1);
     if (!it.temp) { if (!t.used) t.used = []; t.used.push(it.code); }
     socket.emit('floorSelectAck', out, floorState(t));
+  });
+  socket.on('floorRedraw', function(room, uid) {
+    const t = trades[room];
+    if (!t || !t.floor || t.leftUid != uid || t.result || t.busy || !t.redraws) return;
+    t.redraws--;
+    run.redrawHand(t.pdeck);
+    socket.emit('floorSelectAck', null, floorState(t));
   });
   socket.on('floorReset', function(room, uid) {
     const t = trades[room];
@@ -3627,7 +3635,7 @@ function floorState(t) {
     hand: run.handTypes(t.pdeck), draw: t.pdeck.draw.length, discard: t.pdeck.discard.length,
     hp: [Math.max(0, Math.round(L.curHp)), Math.round(L.stat.maxHp)], sp: sp(L),
     ehp: [Math.max(0, Math.round(R.curHp)), Math.round(R.stat.maxHp)], esp: sp(R),
-    eplayed: t.eplayed, edraw: t.edeck.draw.length, resets: t.resets,
+    eplayed: t.eplayed, edraw: t.edeck.draw.length, resets: t.resets, redraws: t.redraws,
     items: (L.inventory || []).map((it, i) => ({ i, code: it.code, name: it.name, tooltip: it.tooltip, card: it.card })).filter(x => x.code && consumables.DEFS[x.code]),
     ehint: enemyHint(t)
   };

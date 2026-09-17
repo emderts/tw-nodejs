@@ -1373,6 +1373,67 @@ itemList[580] = { id : 580, name : '전리품 자루', nameType : cons.NAME_KOR_
     effectDesc : '전투 승리 골드 +35%', effect : [], runEffect : { key : 'winGoldBonus', value : 0.35 } };
 itemList[581] = { id : 581, name : '세 갈래 이정표', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '세 방향을 가리키는 이정표. 어느 쪽이든 길은 있다.', rank : 8, rarity : cons.ITEM_RARITY_UNIQUE, stat : { maxHp : 40, hit : 0.04, crit : 0.02 }, 
     effectDesc : '상점 갈림길 선택지 +1', effect : [], runEffect : { key : 'shopOffers', value : 1 } };
+// ---------- 7급 신규 아이템 (문서 18종 + 로그라이크 12종) ----------
+itemList[582] = { id : 582, name : '세 번째 도면의 스틸레토', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_WEAPON, flavor : '앞선 두 판은 공방이 스스로 거두어 녹였다. 남은 것은 이것뿐이다.', rank : 7, rarity : cons.ITEM_RARITY_RARE, stat : { phyAtkMin : 25, phyAtkMax : 30, magAtkMin : 18, magAtkMax : 23, crit : 0.06, pierce : 0.05 }, 
+    effectDesc : '3턴까지 치명타 +8%p', effect : [{code : cons.EFFECT_TYPE_ADD_DAMAGE_OBJECT, active : cons.ACTIVE_TYPE_CALC_DAMAGE, chkTurnUnder : 3, anySkill : true, key : 'crit', value : 0.08}] };
+itemList[583] = { id : 583, name : '갱을 뚫은 곡괭이', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_WEAPON, flavor : '무너진 갱을 사흘 만에 뚫어낸 연장. 그 뒤로 같은 판으로만 만든다.', rank : 7, rarity : cons.ITEM_RARITY_RARE, stat : { phyAtkMin : 30, phyAtkMax : 35, magAtkMin : 14, magAtkMax : 18, crit : 0.03, critDmg : 0.12, pierce : 0.1 }, 
+    effectDesc : '', effect : [] };
+itemList[584] = { id : 584, name : '전열 뒤의 셉터', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_WEAPON, flavor : '창과 방패 뒤의 자리. 그 자리를 지켜낸 것에만 사단이 표를 새긴다.', rank : 7, rarity : cons.ITEM_RARITY_RARE, stat : { phyAtkMin : 15, phyAtkMax : 19, magAtkMin : 28, magAtkMax : 33, crit : 0.03, spRegen : 1 }, 
+    effectDesc : '공격 성공 시 SP +8', effect : [{code : cons.EFFECT_TYPE_SELF_SP, active : cons.ACTIVE_TYPE_ATTACK, value : 8}] };
+itemList[585] = { id : 585, name : '물길 짚는 스태프', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_WEAPON, flavor : '마른 땅에서 물을 찾는다. 숲지기의 일은 절반이 물에 관한 것이다.', rank : 7, rarity : cons.ITEM_RARITY_RARE, stat : { phyAtkMin : 15, phyAtkMax : 19, magAtkMin : 26, magAtkMax : 31, crit : 0.03, hpRegen : 2 }, 
+    effectDesc : '생명력 회복량 +20%', effect : [{code : cons.EFFECT_TYPE_MULTIPLY_HEAL, active : cons.ACTIVE_TYPE_DO_HEAL, value : 1.2}] };
+itemList[586] = { id : 586, name : '국경을 넘은 아밍소드', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_WEAPON, flavor : '변경까지 다녀온 제식검. 돌아온 검에 병기창은 표를 하나 더 찍는다.', rank : 7, rarity : cons.ITEM_RARITY_RARE, stat : { phyAtkMin : 25, phyAtkMax : 29, magAtkMin : 25, magAtkMax : 29, crit : 0.03, maxHp : 20 }, 
+    effectDesc : '직전 턴과 같은 스킬을 사용하면 피해 +12%', effect : [{code : cons.EFFECT_TYPE_MULTIPLY_DAMAGE, active : cons.ACTIVE_TYPE_CALC_DAMAGE, chkSameSkill : true, value : 1.12}] };
+itemList[587] = { id : 587, name : '밀려나지 않은 할버드', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_WEAPON, flavor : '세 번의 공성에서 한 걸음도 물러서지 않은 대열이 들던 판.', rank : 7, rarity : cons.ITEM_RARITY_RARE, stat : { phyAtkMin : 28, phyAtkMax : 33, magAtkMin : 16, magAtkMax : 20, crit : 0.03, dmgReduce : 3 }, 
+    effectDesc : '받는 피해 -8%', effect : [{code : cons.EFFECT_TYPE_MULTIPLY_DAMAGE, active : cons.ACTIVE_TYPE_CALC_DAMAGE_RECEIVE, value : 0.92}] };
+itemList[588] = { id : 588, name : '사대를 비운 장궁', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_WEAPON, flavor : '공방의 과녁을 남김없이 비우고 나온 활에만 이 이름이 붙는다.', rank : 7, rarity : cons.ITEM_RARITY_RARE, stat : { phyAtkMin : 27, phyAtkMax : 32, magAtkMin : 17, magAtkMax : 21, crit : 0.03, hit : 0.1 }, 
+    effectDesc : '이 무기의 공격은 회피당하지 않는다', effect : [{code : cons.EFFECT_TYPE_ADD_DAMAGE_OBJECT, active : cons.ACTIVE_TYPE_CALC_DAMAGE, anySkill : true, key : 'hit', value : 1}] };
+itemList[589] = { id : 589, name : '이름이 불린 레더메일', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_ARMOR, flavor : '이름을 호명받는 자리에 나가는 자에게만 내주는 규격품.', rank : 7, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 140, phyReduce : 0.035, magReduce : 0.035, evasion : 0.05, crit : 0.03 }, 
+    effectDesc : '적의 생명력 비율이 자신보다 높으면 치명타 +7%p', effect : [{code : cons.EFFECT_TYPE_ADD_DAMAGE_OBJECT, active : cons.ACTIVE_TYPE_CALC_DAMAGE, chkOppHpHigher : true, anySkill : true, key : 'crit', value : 0.07}] };
+itemList[590] = { id : 590, name : '밤 행군의 흑철', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_ARMOR, flavor : '이음매마다 천을 물려 소리를 죽인 판금. 로젯의 밤은 조용하다.', rank : 7, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 195, phyReduce : 0.045, magReduce : 0.045, evasion : -0.03 }, 
+    effectDesc : '전투 첫 2턴 동안 적의 명중 -10%p', effect : [{code : cons.EFFECT_TYPE_ADD_DAMAGE_OBJECT, active : cons.ACTIVE_TYPE_CALC_DAMAGE_RECEIVE, chkTurnUnder : 2, anySkill : true, key : 'hit', value : -0.1}] };
+itemList[591] = { id : 591, name : '일곱 비의 사제복', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_ARMOR, flavor : '일곱 번의 비를 지난 천은 그 사람의 몸을 따라 접히기 시작한다.', rank : 7, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 126, magReduce : 0.1, spRegen : 1, evasion : 0.05, hpRegen : 2 }, 
+    effectDesc : '3턴부터 받는 피해 -10%', effect : [{code : cons.EFFECT_TYPE_MULTIPLY_DAMAGE, active : cons.ACTIVE_TYPE_CALC_DAMAGE_RECEIVE, chkTurn : 3, value : 0.9}] };
+itemList[592] = { id : 592, name : '청동 테 방패', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '', rank : 7, rarity : cons.ITEM_RARITY_COMMON, stat : { maxHp : 55, dmgReduce : 4 }, 
+    effectDesc : '', effect : [] };
+itemList[593] = { id : 593, name : '조약을 지켜본 클로크', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '공화국이 도장을 찍은 자리마다 이것이 뒤에 서 있었다.', rank : 7, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 72, spCharge : 3, spRegen : 1 }, 
+    effectDesc : '전투 시작 시 SP +20', effect : [{code : cons.EFFECT_TYPE_SELF_SP, active : cons.ACTIVE_TYPE_BATTLE_START, value : 20}] };
+itemList[594] = { id : 594, name : '울음을 막는 라운드실드', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '그곳의 것들은 먼저 울음으로 사람을 무너뜨린다. 이 판은 그것부터 막는다.', rank : 7, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 72, dmgReduce : 5, phyReduce : 0.02 }, 
+    effectDesc : '전투 시작 시 자신에게 [울음 막기] (받는 상태이상을 25% 확률로 무효화)', effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_BATTLE_START, buffCode : 10504, buffDur : null}] };
+itemList[595] = { id : 595, name : '지름길 아는 각반', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '대륙에서 가장 짧은 길만 골라 밟은 판. 길드는 그 길을 팔지 않는다.', rank : 7, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 72, evasion : 0.08, hit : 0.03 }, 
+    effectDesc : '회피 성공 시 SP +10', effect : [{code : cons.EFFECT_TYPE_SELF_SP, active : cons.ACTIVE_TYPE_EVADE, value : 10}] };
+itemList[596] = { id : 596, name : '떨림 죽인 미튼', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '안쪽에 가는 쇳실을 짜 넣었다. 세공사의 손이 흔들리면 값이 사라진다.', rank : 7, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 72, hit : 0.075, crit : 0.04, pierce : 0.1 }, 
+    effectDesc : '', effect : [] };
+itemList[597] = { id : 597, name : '야바위꾼의 장갑', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '손이 눈보다 빠르다. 진 쪽은 무엇에 졌는지도 모른 채 어지러워진다.', rank : 7, rarity : cons.ITEM_RARITY_UNIQUE, stat : { maxHp : 90, hit : 0.09, evasion : 0.05 }, 
+    effectDesc : '공격 성공 시 적에게 1턴 간 [광란]', effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, active : cons.ACTIVE_TYPE_ATTACK, buffCode : 11, buffDur : 1}] };
+itemList[598] = { id : 598, name : '청동 팔찌', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '', rank : 7, rarity : cons.ITEM_RARITY_COMMON, stat : { maxHp : 45, hpRegen : 1 }, 
+    effectDesc : '', effect : [] };
+itemList[599] = { id : 599, name : '니오비움 방식 시그넷', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '떠돌던 연금술사가 남긴 세공법. 공방은 아직 그 순서를 바꾸지 않는다.', rank : 7, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 40, spRegen : 1, phyReduce : 0.02, magReduce : 0.02 }, 
+    effectDesc : '', effect : [] };
+itemList[600] = { id : 600, name : '접힌 소매 속 패', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '소매 안쪽에 접어 둔 패 한 벌. 필요할 때만 펴진다.', rank : 7, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 72, evasion : 0.05, spCharge : 2 }, 
+    effectDesc : '전투당 덱 리셋 +1회', effect : [], runEffect : { key : 'extraResets', value : 1 } };
+itemList[601] = { id : 601, name : '세 장 접은 카드', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '세 군데가 접힌 카드. 접은 자리마다 다른 수가 적혀 있다.', rank : 7, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 40, crit : 0.03 }, 
+    effectDesc : '전투 첫 턴 손패 +1장', effect : [], runEffect : { key : 'firstHandBonus', value : 1 } };
+itemList[602] = { id : 602, name : '계산자의 안경알', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '금을 그어 둔 안경알. 겹쳐 보면 셈이 맞는다.', rank : 7, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 40, hit : 0.04 }, 
+    effectDesc : '적 손패에서 가장 많은 종류를 표시', effect : [], runEffect : { key : 'revealEnemyMajor', value : true } };
+itemList[603] = { id : 603, name : '밀수꾼의 이중 가방', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '바닥이 두 겹인 가방. 세금도 값도 절반만 문다.', rank : 7, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 72, spCharge : 2, evasion : 0.03 }, 
+    effectDesc : '상점에서 소모품 가격 -40%', effect : [], runEffect : { key : 'potionDiscount', value : 0.4 } };
+itemList[604] = { id : 604, name : '연금술사의 증류기', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '몇 번이고 내려 받은 액체만 병에 담는다.', rank : 7, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 42, hpRegen : 2 }, 
+    effectDesc : '회복 소모품 효과 +75%', effect : [], runEffect : { key : 'healPotionBonus', value : 0.75 } };
+itemList[605] = { id : 605, name : '맹독 주입기', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '바늘 끝까지 독이 차 있는 기구. 한 방울로 오래 간다.', rank : 7, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 72, hit : 0.075, crit : 0.03 }, 
+    effectDesc : '상태이상 소모품 지속시간 +2턴', effect : [], runEffect : { key : 'statusPotionBonus', value : 2 } };
+itemList[606] = { id : 606, name : '도매상의 어음', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '대륙 어느 상단에서도 통하는 어음. 소매가로 사는 일이 없다.', rank : 7, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 40, spRegen : 1 }, 
+    effectDesc : '상점 장비 가격 -30%', effect : [], runEffect : { key : 'gearDiscount', value : 0.3 } };
+itemList[607] = { id : 607, name : '세금 징수함', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '이긴 쪽이 걷는 것이 세금이다. 상자는 그것만 안다.', rank : 7, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 40, hpRegen : 1, spRegen : 1 }, 
+    effectDesc : '전투 승리 골드 +45%', effect : [], runEffect : { key : 'winGoldBonus', value : 0.45 } };
+itemList[608] = { id : 608, name : '겹쳐 벼린 쌍검', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_WEAPON, flavor : '두 자루를 한 번에 벼렸다. 하나가 멈춰도 다른 하나는 멈추지 않는다.', rank : 7, rarity : cons.ITEM_RARITY_UNIQUE, stat : { phyAtkMin : 29, phyAtkMax : 35, magAtkMin : 29, magAtkMax : 35, crit : 0.05 }, 
+    effectDesc : '무승부 시 덱 카드를 소모하지 않는다', effect : [], runEffect : { key : 'keepCardOnTie', value : true } };
+itemList[609] = { id : 609, name : '예언자의 수정구', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '흐린 구슬 안에 상대의 손이 잠깐 비친다. 언제나 한 장뿐이다.', rank : 7, rarity : cons.ITEM_RARITY_UNIQUE, stat : { maxHp : 50, spRegen : 1, crit : 0.02 }, 
+    effectDesc : '전투 시작 시 적 손패 1장 공개', effect : [], runEffect : { key : 'revealEnemyOne', value : true } };
+itemList[610] = { id : 610, name : '네 갈래 이정표', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '네 방향을 가리키는 이정표. 고를 수 있는 길이 하나 더 있다.', rank : 7, rarity : cons.ITEM_RARITY_UNIQUE, stat : { maxHp : 50, hit : 0.04, crit : 0.02 }, 
+    effectDesc : '상점 갈림길 선택지 +1', effect : [], runEffect : { key : 'shopOffers', value : 1 } };
+itemList[611] = { id : 611, name : '제이의 조율 악보', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '제이는 연주 중에도 다음 소절을 바꿨다. 그의 악보는 늘 두 가지로 쓰여 있었다.', rank : 7, rarity : cons.ITEM_RARITY_EPIC, stat : { maxHp : 45, spCharge : 3, spRegen : 1 }, 
+    effectDesc : '전투 중 1회, 손패를 통째로 새로 뽑는다 (덱 리셋과 별개)', effect : [], runEffect : { key : 'redrawHand', value : 1 } };
 
 itemList.forEach(function(tgt) {
   tgt.base = JSON.parse(JSON.stringify(tgt.stat));

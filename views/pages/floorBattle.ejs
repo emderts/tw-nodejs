@@ -26,7 +26,7 @@
       <div class="bar hp"><i id="hpBar"></i></div><span class="num" id="hpNum"></span>
       <div class="bar sp" id="spWrap"><i id="spBar"></i></div><span class="num" id="spNum"></span>
     </div>
-    <div class="rb-tools"><span id="deckInfo"></span><span><button id="itemBtn" type="button" disabled>소모품</button> <button id="resetBtn" type="button" disabled>덱 리셋</button></span></div>
+    <div class="rb-tools"><span id="deckInfo"></span><span><button id="itemBtn" type="button" disabled>소모품</button> <button id="redrawBtn" type="button" style="display:none" disabled>손패 교체</button> <button id="resetBtn" type="button" disabled>덱 리셋</button></span></div>
     <div class="rb-items" id="itemList" style="display:none"></div>
     <div class="charItem"><button id="handBtn0" type="button" disabled></button></div>
     <div class="charItem"><button id="handBtn1" type="button" disabled></button></div>
@@ -83,6 +83,10 @@
       if (s.ehint && s.ehint.type === 'major' && s.ehint.cards.indexOf(i) >= 0) hint = ' <span style="color:var(--brass)">손패 ▲</span>';
       b.innerHTML = glyph[i] + ' <span class="colorGold">×' + oDeckCnt[i] + '</span>' + (s.eplayed[i] ? ' <span style="color:var(--ash)">낸 ' + s.eplayed[i] + '</span>' : '') + hint + '<br>' + oNames[i];
     }
+    var dr = document.getElementById('redrawBtn');
+    dr.style.display = s.redraws > 0 ? '' : 'none';
+    dr.textContent = '손패 교체 (' + s.redraws + ')';
+    if (s.redraws > 0) dr.removeAttribute('disabled'); else dr.setAttribute('disabled', true);
     var rb = document.getElementById('resetBtn');
     rb.textContent = '덱 리셋 (' + s.resets + ')';
     if (s.resets > 0) rb.removeAttribute('disabled'); else rb.setAttribute('disabled', true);
@@ -115,6 +119,10 @@
       socket.emit('floorSelect', '<%= room %>', '<%= uid %>', hand[i]);
     });
   })(i);
+  document.getElementById('redrawBtn').addEventListener('click', function () {
+    this.setAttribute('disabled', true);
+    socket.emit('floorRedraw', '<%= room %>', '<%= uid %>');
+  });
   document.getElementById('resetBtn').addEventListener('click', function () {
     this.setAttribute('disabled', true);
     socket.emit('floorReset', '<%= room %>', '<%= uid %>');
@@ -132,7 +140,7 @@
   });
   socket.on('floorSelectEnd', function (result) {
     document.getElementById('result').innerHTML = result + '<div class="backLink"><a href="/floorResult" class="btn-primary" style="padding:12px 24px">결과 보기</a></div>';
-    lockHand(); document.getElementById('resetBtn').setAttribute('disabled', true); items = []; renderItems();
+    lockHand(); document.getElementById('resetBtn').setAttribute('disabled', true); document.getElementById('redrawBtn').setAttribute('disabled', true); items = []; renderItems();
     window.scrollTo(0, document.body.scrollHeight);
   });
 </script>

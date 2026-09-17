@@ -107,6 +107,11 @@ function playCard(st, type) {
 function handTypes(st) { return st.hand.map(c => c.type).sort((a, b) => a - b); }   // 가위-바위-보 순
 // 추가 드로우 (첫 턴 손패 보너스용)
 function drawExtra(st, n) { for (let i = 0; i < n; i++) { if (!st.draw.length) { if (!st.discard.length) break; st.draw = shuffle(st.discard); st.discard = []; } st.hand.push(st.draw.pop()); } return st.hand; }
+// 손패 교체: 지금 손패만 버리고 새로 뽑는다 (덱/버림은 그대로)
+function redrawHand(st) {
+  st.discard = st.discard.concat(st.hand); st.hand = [];
+  return drawHand(st);
+}
 // 덱 리셋: 손패+버림+덱을 전부 섞어 새로 뽑음
 function resetDeck(st) {
   st.draw = shuffle(st.draw.concat(st.hand, st.discard)); st.hand = []; st.discard = [];
@@ -670,7 +675,7 @@ function applyEvent(char, code, optIdx) {
 }
 
 module.exports = {
-  configure, TOTAL_CYCLES, HAND_SIZE, RESETS_PER_BATTLE, resetDeck, drawExtra, runEffect, maxLives, initRun, stage, stageLabel, floorNo, isBossCycle, rankForCycle, advance,
+  configure, TOTAL_CYCLES, HAND_SIZE, RESETS_PER_BATTLE, resetDeck, redrawHand, drawExtra, runEffect, maxLives, initRun, stage, stageLabel, floorNo, isBossCycle, rankForCycle, advance,
   newDeckState, drawHand, playCard, handTypes, deckCounts, aiPick, makeEnemy, enemyFromFallen, snapshotForFallen,
   makeMonster, makeRosterEnemy, makeShop, makeShopOffers, makeEvent, makeEventByCode, applyEvent, applyBuffs, applyEnemyDebuffs, tickBuffs
 };
