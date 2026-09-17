@@ -3723,6 +3723,8 @@ async function procNextFloor (req, res) {
       if (run.applyEnemyDebuffs(char, enemy)) calcStats(enemy);
       const roomNum = curRoom++;
       const leftCopy = JSON.parse(JSON.stringify(char));
+      const rb = run.runEffect(leftCopy, 'rockBonus');
+      if (rb && leftCopy.deck.filter(c => c.type === 1).length >= 3) { leftCopy.base.phyAtk = Math.round(leftCopy.base.phyAtk * (1 + rb) * 100) / 100; calcStats(leftCopy); }   // 난 주먹만 내
       if (run.applyBuffs(leftCopy)) calcStats(leftCopy);
       trades[roomNum] = { leftUid: charRow.uid, leftChr: leftCopy, rightChr: enemy, floor: true,
                           pdeck: run.newDeckState(char.deck), edeck: run.newDeckState(enemy.deck, enemy.deckOpts) };
@@ -4179,14 +4181,16 @@ function calcStats(chara) {
   for (var key in chara.base) {
     chara.stat[key] = chara.base[key];
   }
+  for (var key in chara.stat) { if (!(key in chara.base)) chara.stat[key] = 0; }   // base에 없는 키(저항 등)는 매번 0에서
   var sockets = [];
   for (var key in chara.items) {
     if (!chara.items[key]) {
       continue;
     }
     for (var keyItem in chara.items[key]['stat']) {
-      chara.stat[keyItem] += chara.items[key]['stat'][keyItem];
+      chara.stat[keyItem] = (chara.stat[keyItem] || 0) + chara.items[key]['stat'][keyItem];   // 신규 키(저항 등)는 0에서 시작
     }
+    if (chara.items[key].pctStat) for (var pk in chara.items[key].pctStat) chara.stat[pk] = (chara.stat[pk] || 0) * (1 + chara.items[key].pctStat[pk]);
     if (chara.items[key].socket) {
       for (sock of chara.items[key].socket) {
         sockets = sockets.concat(sock.effect.filter(x => (x.active === cons.ACTIVE_TYPE_CALC_STATS)));

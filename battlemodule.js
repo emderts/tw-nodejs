@@ -64,6 +64,7 @@ Battlemodule.prototype.procBattleTurn = function (left, right, flag) {
   if (this.redecide) {
     return {redecide: true, result: this.result};
   }
+  this._checkRevive();
   if (this._isBattleFinished()) {
     return this._doBattleEnd(flag);
   }
@@ -137,6 +138,19 @@ function _applySetBonus(char) {
   }
 }
 
+// [네크로멘시](10534): 사망 시 최대 생명력 4%로 부활하고 그만큼 상대에게 마법 피해. 부활하면 소거
+Battlemodule.prototype._checkRevive = function() {
+  for (const [me, opp] of [[this.charLeft, this.charRight], [this.charRight, this.charLeft]]) {
+    if (me.curHp > 0) continue;
+    const b = (me.buffs || []).find(x => x.id === 10534);
+    if (!b) continue;
+    const v = Math.max(1, Math.round(me.stat.maxHp * 0.04));
+    me.curHp = v; removeBuff(b);
+    const dmg = Math.max(1, Math.round(v * (1 - (opp.stat.magReduce || 0))));
+    opp.curHp -= dmg;
+    this.result += '<span class="skillDamage">[ 네크로멘시 ] 효과로 ' + me.name + '이(가) 생명력 ' + v + '로 되살아나 ' + opp.name + '에게 ' + dmg + ' 마법 피해!</span><br>';
+  }
+};
 Battlemodule.prototype._doBattleEnd = function(flag) {
   var retObj = {};
   retObj.winnerLeft = (this.charLeft.curHp > 0);
@@ -357,6 +371,7 @@ Battlemodule.prototype._doBattleTurnManual = function(left, right) {
     }
   } 
   skillUsed.skillNum = skillNum;
+  winner.curSkillCode = skillUsed ? skillUsed.code : undefined; loser.curSkillCode = skillFailed ? skillFailed.code : undefined;   // 이번 턴 사용 스킬
   this.resolveEffects(winner, loser, getBuffEffects(winner, cons.ACTIVE_TYPE_SKILL_WIN), skillUsed, skillUsed);
   this.resolveEffects(winner, loser, getItemEffects(winner, cons.ACTIVE_TYPE_SKILL_WIN), skillUsed, skillUsed);
   this.resolveEffects(loser, winner, getBuffEffects(loser, cons.ACTIVE_TYPE_SKILL_LOSE), skillUsed);
@@ -934,6 +949,9 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
       continue;
     }
     if (eff.maxUses && (eff.uses || 0) >= eff.maxUses) {   // 전투당 사용 상한 (아이템은 전투마다 복사되므로 자동 초기화)
+      continue;
+    }
+    if (eff.chkMySkillIdx !== undefined && !(winner.skill && winner.skill.base[eff.chkMySkillIdx] && winner.skill.base[eff.chkMySkillIdx].code === winner.curSkillCode)) {   // 이번 턴 자신이 낸 스킬 슬롯
       continue;
     }
     if (eff.needStack) {   // 자신의 특정 버프 중첩이 N 이상
@@ -1515,6 +1533,16 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
       }
     } else if (eff.code === 'noop') {
       // 후속 처리(stackReduce 등)만 수행
+    } else if (eff.code === 'spMark') {
+      winner.spMark = winner.curSp || 0;
+    } else if (eff.code === 'spStack') {
+      const gained = Math.max(0, Math.round((winner.curSp || 0) - (winner.spMark || 0)));
+      winner.spMark = winner.curSp || 0;
+      if (gained > 0) {
+        const bo = buffMdl.getBuffData({ buffCode : eff.buffCode }); bo.dur = null; bo.stack = gained;
+        this.giveBuff(winner, winner, bo, false, eff.name);
+        this.result += '[ ' + eff.name + ' ] 효과로 [ ' + bo.name + ' ] ' + gained + '중첩!<br>';
+      }
     } else if (eff.code === cons.EFFECT_TYPE_SET_ALL_BUFF_DURATION || eff.code === cons.EFFECT_TYPE_OPP_SET_ALL_BUFF_DURATION) {
       const recv = (eff.code === cons.EFFECT_TYPE_SET_ALL_BUFF_DURATION) ? winner : loser;
       var valueUsed = eff.value;
@@ -1694,6 +1722,18 @@ function findBuffByIds(chara, ids) {
 
 Battlemodule.prototype.giveBuff = function(src, recv, buffObj, printFlag, name) {
   const srcText = name ? '[ ' + name + ' ] 효과로 ' : '';
+  // 소명의 길 : 블루플레임 — 자신이 부여하는 [화상]을 [청화]로
+  if (buffObj.id === 1 && src !== recv && src.stat && src.stat.blueFlame) {
+    const dur = buffObj.dur; buffObj = buffMdl.getBuffData({ buffCode : 10535 }); buffObj.dur = dur;
+  }
+  // 상태이상 저항: stat.resistAll + stat['resist_<id>'] 확률로 무효 (디버프에만)
+  if (buffObj.isDebuff && src !== recv && recv.stat) {
+    const res = (recv.stat.resistAll || 0) + (recv.stat['resist_' + buffObj.id] || 0);
+    if (res > 0 && Math.random() < res) {
+      this.result += srcText + '[ ' + buffObj.name + ' ] 효과를 ' + recv.name + '이(가) 저항했다!<br>';
+      return;
+    }
+  }
   if (recv.bossStatus && [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].includes(buffObj.id)) {
     if (Math.random < recv.bossStatus) {
       this.result += '보스 상태이상 저항으로 [ ' + buffObj.name + ' ] 효과가 무효화되었다!<br>';
@@ -1880,13 +1920,17 @@ function calcStats(chara, opp) {
   for (var key in chara.base) {
     chara.stat[key] = chara.base[key];
   }
+  for (var key in chara.stat) { if (!(key in chara.base)) chara.stat[key] = 0; }   // base에 없는 키(저항 등)는 매번 0에서
   for (var key in chara.items) {
     if (!chara.items[key]) {
       continue;
     }
     for (var keyItem in chara.items[key]['stat']) {
-      chara.stat[keyItem] += chara.items[key]['stat'][keyItem];
+      chara.stat[keyItem] = (chara.stat[keyItem] || 0) + chara.items[key]['stat'][keyItem];
     }
+  }
+  for (var key in chara.items) {   // 아이템 % 스탯 (고서 - 죽음에 대하여 등)
+    if (chara.items[key] && chara.items[key].pctStat) for (var pk in chara.items[key].pctStat) chara.stat[pk] = (chara.stat[pk] || 0) * (1 + chara.items[key].pctStat[pk]);
   }
   chara.name = chara.nameOri;
   chara.nameType = chara.nameTypeOri;
@@ -1912,7 +1956,7 @@ function calcStats(chara, opp) {
     }
     
     if (val.code === cons.EFFECT_TYPE_STAT_ADD) {
-      chara.stat[val.key] += val.value * stackMpl;
+      chara.stat[val.key] = (chara.stat[val.key] || 0) + val.value * stackMpl;
     } else if (val.code === cons.EFFECT_TYPE_SET_NAME) {
       chara.name = val.value;
       chara.nameType = val.type;
@@ -1921,7 +1965,7 @@ function calcStats(chara, opp) {
   for (val of getBuffEffects(opp, cons.ACTIVE_TYPE_OPP_CALC_STATS)) {
     var stackMpl = val.buff ? (val.buff.stack ? val.buff.stack : 1) : 1;
     if (val.code === cons.EFFECT_TYPE_OPP_STAT_ADD) {
-      chara.stat[val.key] += val.value * stackMpl;
+      chara.stat[val.key] = (chara.stat[val.key] || 0) + val.value * stackMpl;
     }
   }
   for (val of getItemEffects(chara, cons.ACTIVE_TYPE_CALC_STATS)) {
@@ -1954,7 +1998,7 @@ function calcStats(chara, opp) {
       continue;
     }
     if (val.code === cons.EFFECT_TYPE_STAT_ADD) {
-      chara.stat[val.key] += val.value * stackMpl;
+      chara.stat[val.key] = (chara.stat[val.key] || 0) + val.value * stackMpl;
     }
   }
 
