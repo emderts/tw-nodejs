@@ -1365,7 +1365,7 @@ itemList[576] = { id : 576, name : '은제 조합기', nameType : cons.NAME_KOR_
     effectDesc : '회복 소모품 효과 +60%', effect : [], runEffect : { key : 'healPotionBonus', value : 0.6 } };
 itemList[577] = { id : 577, name : '독사 이빨 걸이', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '독사의 이빨을 병마다 하나씩 물려 둔다. 약이 더 오래 돈다.', rank : 8, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 38, hit : 0.075, crit : 0.03 }, 
     effectDesc : '상태이상 소모품 지속시간 +1턴', effect : [], runEffect : { key : 'statusPotionBonus', value : 1 } };
-itemList[578] = { id : 578, name : '구급 상자', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '늘 한 병이 채워져 있는 상자. 누가 채우는지는 아무도 모른다.', rank : 8, rarity : cons.ITEM_RARITY_EPIC, stat : { maxHp : 50, spCharge : 2, hpRegen : 2 }, 
+itemList[578] = { id : 578, name : '카이네스의 비밀 주머니', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '카이네스 엠더츠는 싸움마다 어디선가 물약을 꺼내 마셨다. 아무도 그가 그것을 챙기는 것을 본 적이 없다.', rank : 8, rarity : cons.ITEM_RARITY_EPIC, stat : { maxHp : 50, spCharge : 2, hpRegen : 2 }, 
     effectDesc : '전투 시작 시 고급 치유 물약 1개 임시 지급 (전투 종료 시 소멸)', effect : [], runEffect : { key : 'freePotion', value : 'hp_l' } };
 itemList[579] = { id : 579, name : '상단주의 인장', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '상단을 통째로 움직이는 인장. 값은 부르는 쪽이 정한다.', rank : 8, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 28, spRegen : 1 }, 
     effectDesc : '상점 장비 가격 -25%', effect : [], runEffect : { key : 'gearDiscount', value : 0.25 } };
