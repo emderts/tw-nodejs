@@ -927,6 +927,23 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
     if (eff.chkOppHpHigher && (loser.curHp / loser.stat.maxHp) <= (winner.curHp / winner.stat.maxHp)) {   // 상대 체력 비율이 더 높을 때
       continue;
     }
+    if (eff.chkStreak && (winner.streak || 0) < eff.chkStreak) {   // 자신 N연승 이상
+      continue;
+    }
+    if (eff.chkOppStreak && (loser.streak || 0) < eff.chkOppStreak) {   // 상대 N연승 이상
+      continue;
+    }
+    if (eff.maxUses && (eff.uses || 0) >= eff.maxUses) {   // 전투당 사용 상한 (아이템은 전투마다 복사되므로 자동 초기화)
+      continue;
+    }
+    if (eff.needStack) {   // 자신의 특정 버프 중첩이 N 이상
+      const b = (winner.buffs || []).find(x => x.id === eff.needStack.buffCode);
+      if (!b || (b.stack || 1) < eff.needStack.stack) continue;
+    }
+    if (eff.needOppStack) {   // 상대의 특정 버프 중첩이 N 이상
+      const b = (loser.buffs || []).find(x => x.id === eff.needOppStack.buffCode);
+      if (!b || (b.stack || 1) < eff.needOppStack.stack) continue;
+    }
     if (eff.chkDmgType && eff.chkDmgType !== damage.type) {
       continue;
     }
@@ -1003,7 +1020,7 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
         continue;
       }
       var buffObj = buffMdl.getBuffData(eff);
-      buffObj.dur = eff.buffDur;
+      buffObj.dur = eff.buffDurDiv ? Math.max(1, Math.round(((winner.skill.special && winner.skill.special.cost) || 0) / eff.buffDurDiv)) : eff.buffDur;
       if (eff.addEffect) {
         buffObj.effect = buffObj.effect.concat(eff.addEffect);
       }
@@ -1210,7 +1227,7 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
       }
     } else if (eff.code === cons.EFFECT_TYPE_SHIELD_FROM_DAMAGE) {
       var buffObj = buffMdl.getBuffData(eff);
-      buffObj.dur = eff.buffDur;
+      buffObj.dur = eff.buffDurDiv ? Math.max(1, Math.round(((winner.skill.special && winner.skill.special.cost) || 0) / eff.buffDurDiv)) : eff.buffDur;
       
       for (val of findBuffByCode(winner, cons.EFFECT_TYPE_CHANGE_VALUE)) {
         buffObj.effect[0].value += val.value;
@@ -1227,7 +1244,7 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
       this.result += dmgCancelled + '의 대미지를 무효화했다!<br>';
     } else if (eff.code === cons.EFFECT_TYPE_SELF_CONVERT_BUFF || eff.code === cons.EFFECT_TYPE_OPP_CONVERT_BUFF) {
       var buffObj = buffMdl.getBuffData(eff);
-      buffObj.dur = eff.buffDur;
+      buffObj.dur = eff.buffDurDiv ? Math.max(1, Math.round(((winner.skill.special && winner.skill.special.cost) || 0) / eff.buffDurDiv)) : eff.buffDur;
 
       var recv = (eff.code === cons.EFFECT_TYPE_SELF_CONVERT_BUFF) ? winner : loser;
       var tgt = findBuffByIds(recv, eff.buffTarget);
@@ -1496,6 +1513,8 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
       } else {
         continue;
       }
+    } else if (eff.code === 'noop') {
+      // 후속 처리(stackReduce 등)만 수행
     } else if (eff.code === cons.EFFECT_TYPE_SET_ALL_BUFF_DURATION || eff.code === cons.EFFECT_TYPE_OPP_SET_ALL_BUFF_DURATION) {
       const recv = (eff.code === cons.EFFECT_TYPE_SET_ALL_BUFF_DURATION) ? winner : loser;
       var valueUsed = eff.value;
@@ -1521,6 +1540,29 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
     if (eff.setTurnCooldown) {
       eff.turnCooldown = eff.setTurnCooldown;
       this.cooldowns.push(eff);
+    }
+    if (eff.maxUses) {
+      eff.uses = (eff.uses || 0) + 1;
+    }
+    // ---- 후속 처리 (5급 아이템용) ----
+    if (eff.removeSelfBuff) {
+      for (const b of (winner.buffs || []).filter(x => eff.removeSelfBuff.includes(x.id))) removeBuff(b);
+    }
+    if (eff.removeOppBuff) {
+      for (const b of (loser.buffs || []).filter(x => eff.removeOppBuff.includes(x.id))) removeBuff(b);
+    }
+    if (eff.thenSelfBuff) {
+      const bo = buffMdl.getBuffData({ buffCode : eff.thenSelfBuff.buffCode }); bo.dur = eff.thenSelfBuff.buffDur;
+      this.giveBuff(winner, winner, bo, true, eff.name);
+    }
+    if (eff.chainBuff) {
+      const bo = buffMdl.getBuffData({ buffCode : eff.chainBuff }); bo.dur = 1;
+      this.giveBuff(winner, winner, bo, true, eff.name);
+    }
+    if (eff.chainHit) {
+      const v = Math.max(1, Math.round(loser.curHp * eff.chainHit.value));
+      loser.curHp -= v;
+      this.result += '[ ' + eff.name + ' ] 효과로 ' + loser.name + '에게 ' + v + ' 피해!<br>';
     }
     if (eff.turnReduce) {
       eff.buff.dur -= eff.turnReduce;
@@ -1599,6 +1641,8 @@ Battlemodule.prototype.resolveTurnEnd = function(winner, loser) {
   this.resolveTurnEndChar(loser, winner, 1);
   winner.winLast = true;
   loser.winLast = false;
+  winner.streak = (winner.streak || 0) + 1;
+  loser.streak = 0;
   if (winner.curHp > winner.stat.maxHp) {
     winner.curHp = winner.stat.maxHp;
   }
@@ -1793,7 +1837,9 @@ function getItemEffects(chara, active) {
   }
   var rval = [];
   var sockets = [];
+  const weaponSealed = (chara.buffs || []).some(b => b.id === 10514);   // [무기 시공간 추락]
   for (val in chara.items) {
+    if (weaponSealed && val === 'weapon') continue;
     rval = rval.concat(chara.items[val].effect.filter(x => (x.active === active)));
     if (chara.items[val].socket) {
       for (sock of chara.items[val].socket) {

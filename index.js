@@ -251,6 +251,7 @@ io.on('connection', (socket) => {
     }
     if (!t.eplayed) t.eplayed = [0, 0, 0];
     if (t.redraws === undefined) t.redraws = run.runEffect(t.leftChr, 'redrawHand') || 0;
+    if (t.undos === undefined) t.undos = run.runEffect(t.leftChr, 'undoTurn') || 0;
     if (t.resets === undefined) t.resets = run.RESETS_PER_BATTLE + ((t.leftChr.run && t.leftChr.run.extraResets) || 0) + (run.runEffect(t.leftChr, 'extraResets') || 0);
     socket.emit('floorAck', t.startHtml, floorNames(t.leftChr), floorNames(t.rightChr), floorState(t), run.deckCounts(t.rightChr.deck));
   });
@@ -265,9 +266,21 @@ io.on('connection', (socket) => {
     const mods = { healBonus: run.runEffect(t.leftChr, 'healPotionBonus') || 0, statusBonus: run.runEffect(t.leftChr, 'statusPotionBonus') || 0 };
     const html = consumables.apply(it.code, t.bmod, t.leftChr, t.rightChr, buffMdl, mods);
     const out = html + t.bmod.result;
-    t.leftChr.inventory.splice(idx, 1);
-    if (!it.temp) { if (!t.used) t.used = []; t.used.push(it.code); }
-    socket.emit('floorSelectAck', out, floorState(t));
+    const save = run.runEffect(t.leftChr, 'potionSave');
+    let outText = out;
+    if (save && Math.random() < save) outText += '<span class="skillDamage">손수건 안에 하나가 더 있었다. ' + it.name + '이(가) 남았다.</span><br>';
+    else { t.leftChr.inventory.splice(idx, 1); if (!it.temp) { if (!t.used) t.used = []; t.used.push(it.code); } }
+    socket.emit('floorSelectAck', outText, floorState(t));
+  });
+  socket.on('floorUndo', function(room, uid) {
+    const t = trades[room];
+    if (!t || !t.floor || t.leftUid != uid || t.result || t.busy || !t.undos || !t.snapshot) return;
+    const snap = JSON.parse(t.snapshot);
+    const bm = Object.assign(new battlemodule.bmodule(), snap.bm);
+    t.leftChr = snap.L; t.rightChr = snap.R; bm.charLeft = t.leftChr; bm.charRight = t.rightChr; bm.result = '';
+    t.bmod = bm; t.pdeck = snap.pdeck; t.edeck = snap.edeck; t.eplayed = snap.eplayed; t.resets = snap.resets; t.redraws = snap.redraws; t.used = snap.used;
+    t.undos--; t.snapshot = null;
+    socket.emit('floorSelectAck', '<span class="skillDamage">한 번만 물러줘라 — 방금 턴을 물렀다.</span><br>', floorState(t));
   });
   socket.on('floorRedraw', function(room, uid) {
     const t = trades[room];
@@ -292,10 +305,13 @@ io.on('connection', (socket) => {
       const it = t.leftChr.inventory && t.leftChr.inventory[parseInt(useIdx, 10)];
       if (!it || it.type !== consumables.TYPE || it.card === undefined) return;
       key = it.card; freeCard = true;
-      t.leftChr.inventory.splice(parseInt(useIdx, 10), 1);
-      if (!it.temp) { if (!t.used) t.used = []; t.used.push(it.code); }
+      const save = run.runEffect(t.leftChr, 'potionSave');
+      if (!(save && Math.random() < save)) { t.leftChr.inventory.splice(parseInt(useIdx, 10), 1); if (!it.temp) { if (!t.used) t.used = []; t.used.push(it.code); } }
     } else if (!run.handTypes(t.pdeck).includes(key)) return;
     t.busy = true;
+    // 한 번 무르기: 턴 처리 전 상태 스냅샷
+    if (t.undos) t.snapshot = JSON.stringify({ bm: t.bmod, L: t.leftChr, R: t.rightChr, pdeck: t.pdeck, edeck: t.edeck, eplayed: t.eplayed, resets: t.resets, redraws: t.redraws, used: t.used || [] });
+    else t.snapshot = null;
     const want = monster.selectFunc[t.rightChr.skillSelect](t.rightChr, key);
     const eKey = run.aiPick(t.edeck, want);
     const result = t.bmod.procBattleTurn(key, eKey, 1);
@@ -3635,7 +3651,7 @@ function floorState(t) {
     hand: run.handTypes(t.pdeck), draw: t.pdeck.draw.length, discard: t.pdeck.discard.length,
     hp: [Math.max(0, Math.round(L.curHp)), Math.round(L.stat.maxHp)], sp: sp(L),
     ehp: [Math.max(0, Math.round(R.curHp)), Math.round(R.stat.maxHp)], esp: sp(R),
-    eplayed: t.eplayed, edraw: t.edeck.draw.length, resets: t.resets, redraws: t.redraws,
+    eplayed: t.eplayed, edraw: t.edeck.draw.length, resets: t.resets, redraws: t.redraws, undos: t.undos && t.snapshot ? t.undos : 0,
     items: (L.inventory || []).map((it, i) => ({ i, code: it.code, name: it.name, tooltip: it.tooltip, card: it.card })).filter(x => x.code && consumables.DEFS[x.code]),
     ehint: enemyHint(t)
   };
@@ -3822,7 +3838,7 @@ async function procFloorResult (req, res) {
       run.tickBuffs(char);
     }
     if (re.winnerLeft) {
-      const gold = Math.round((60 + 15 * char.run.cycle + (enemy.isBoss ? 100 : 0)) * (1 + (run.runEffect(char, 'winGoldBonus') || 0)));
+      const gold = Math.round((60 + 15 * char.run.cycle + (enemy.isBoss ? 100 : 0)) * (1 + (run.runEffect(char, 'winGoldBonus') || 0)) * (1 - (run.runEffect(char, 'creditCard') || 0)));
       char.gold += gold;
       char.statPoint += 3;
       addSpecialResultCard(char, 4);

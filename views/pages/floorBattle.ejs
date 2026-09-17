@@ -26,7 +26,7 @@
       <div class="bar hp"><i id="hpBar"></i></div><span class="num" id="hpNum"></span>
       <div class="bar sp" id="spWrap"><i id="spBar"></i></div><span class="num" id="spNum"></span>
     </div>
-    <div class="rb-tools"><span id="deckInfo"></span><span><button id="itemBtn" type="button" disabled>소모품</button> <button id="redrawBtn" type="button" style="display:none" disabled>손패 교체</button> <button id="resetBtn" type="button" disabled>덱 리셋</button></span></div>
+    <div class="rb-tools"><span id="deckInfo"></span><span><button id="itemBtn" type="button" disabled>소모품</button> <button id="undoBtn" type="button" style="display:none" disabled>무르기</button> <button id="redrawBtn" type="button" style="display:none" disabled>손패 교체</button> <button id="resetBtn" type="button" disabled>덱 리셋</button></span></div>
     <div class="rb-items" id="itemList" style="display:none"></div>
     <div class="charItem"><button id="handBtn0" type="button" disabled></button></div>
     <div class="charItem"><button id="handBtn1" type="button" disabled></button></div>
@@ -84,6 +84,10 @@
       if (s.ehint && s.ehint.type === 'all') { var n = s.ehint.cards.filter(function (c) { return c === i; }).length; if (n) hint = ' <span style="color:var(--brass)">손패 ' + n + '</span>'; }
       b.innerHTML = glyph[i] + ' <span class="colorGold">×' + oDeckCnt[i] + '</span>' + (s.eplayed[i] ? ' <span style="color:var(--ash)">낸 ' + s.eplayed[i] + '</span>' : '') + hint + '<br>' + oNames[i];
     }
+    var ub = document.getElementById('undoBtn');
+    ub.style.display = s.undos > 0 ? '' : 'none';
+    ub.textContent = '무르기 (' + s.undos + ')';
+    if (s.undos > 0) ub.removeAttribute('disabled'); else ub.setAttribute('disabled', true);
     var dr = document.getElementById('redrawBtn');
     dr.style.display = s.redraws > 0 ? '' : 'none';
     dr.textContent = '손패 교체 (' + s.redraws + ')';
@@ -120,6 +124,10 @@
       socket.emit('floorSelect', '<%= room %>', '<%= uid %>', hand[i]);
     });
   })(i);
+  document.getElementById('undoBtn').addEventListener('click', function () {
+    this.setAttribute('disabled', true);
+    socket.emit('floorUndo', '<%= room %>', '<%= uid %>');
+  });
   document.getElementById('redrawBtn').addEventListener('click', function () {
     this.setAttribute('disabled', true);
     socket.emit('floorRedraw', '<%= room %>', '<%= uid %>');

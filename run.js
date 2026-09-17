@@ -277,7 +277,8 @@ function makeShop(char, typeIn, opts) {
   const goods = [];
   let label = SHOP_INFO[type].label;
   const rarityPool = cycle < 4 ? [2, 2, 2, 4] : (cycle < 7 ? [2, 2, 4, 4] : [2, 4, 4, 5]);
-  const gearDisc = 1 - (runEffect(char, 'gearDiscount') || 0), potDisc = 1 - (runEffect(char, 'potionDiscount') || 0);
+  const cc = runEffect(char, 'creditCard') || 0;   // 신용카드: 전 품목 할인
+  const gearDisc = (1 - (runEffect(char, 'gearDiscount') || 0)) * (1 - cc), potDisc = (1 - (runEffect(char, 'potionDiscount') || 0)) * (1 - cc), allDisc = 1 - cc;
   const gearPrice = (it) => Math.round((40 + [0, 15, 35, 0, 70, 120][it.rarity] + 5 * cycle) * gearDisc);
   if (type === 'gear' || type === 'gearSlot') {
     const fixed = type === 'gearSlot' ? (opts.slot !== undefined ? opts.slot : Math.floor(Math.random() * 4)) : -1;
@@ -294,21 +295,21 @@ function makeShop(char, typeIn, opts) {
       goods.push({ kind: 'item', item: it, price: Math.round(consumables.price(it.code, cycle) * potDisc) });
     }
   } else if (type === 'card') {
-    for (let t = 0; t < 3; t++) goods.push({ kind: 'card', card: { type: t }, price: 45 + 5 * cycle });
+    for (let t = 0; t < 3; t++) goods.push({ kind: 'card', card: { type: t }, price: Math.round((45 + 5 * cycle) * allDisc) });
   } else if (type === 'result') {
-    for (let t = 0; t < 4; t++) goods.push({ kind: 'item', item: roster.makeResultCard(char.rank, t), price: 50 + 5 * cycle });
+    for (let t = 0; t < 4; t++) goods.push({ kind: 'item', item: roster.makeResultCard(char.rank, t), price: Math.round((50 + 5 * cycle) * allDisc) });
   } else if (type === 'resultRare') {
     // 레어 확정(97/2/1) 2장, 유니크 확정(96/4) 1장, 일반 슬롯 카드 1장
     const rare = () => ({ type: cons.ITEM_TYPE_RESULT_CARD, resultType: 5, rank: char.rank, name: char.rank + '급 레어 장비 리설트 카드', tooltip: '97% : 레어 장비<br>2% : 유니크 장비<br>1% : 에픽 장비' });
     const uniq = () => ({ type: cons.ITEM_TYPE_RESULT_CARD, resultType: 6, rank: char.rank, name: char.rank + '급 유니크 장비 리설트 카드', tooltip: '96% : 유니크 장비<br>4% : 에픽 장비' });
-    goods.push({ kind: 'item', item: rare(), price: 75 + 6 * cycle });
-    goods.push({ kind: 'item', item: rare(), price: 75 + 6 * cycle });
-    goods.push({ kind: 'item', item: uniq(), price: 150 + 10 * cycle });
-    goods.push({ kind: 'item', item: roster.makeResultCard(char.rank, Math.floor(Math.random() * 4)), price: 50 + 5 * cycle });
+    goods.push({ kind: 'item', item: rare(), price: Math.round((75 + 6 * cycle) * allDisc) });
+    goods.push({ kind: 'item', item: rare(), price: Math.round((75 + 6 * cycle) * allDisc) });
+    goods.push({ kind: 'item', item: uniq(), price: Math.round((150 + 10 * cycle) * allDisc) });
+    goods.push({ kind: 'item', item: roster.makeResultCard(char.rank, Math.floor(Math.random() * 4)), price: Math.round((50 + 5 * cycle) * allDisc) });
   } else if (type === 'alchemist') {
-    goods.push({ kind: 'stat', value: 2, name: '스탯 포인트 +2', price: 60 + 8 * cycle });
-    goods.push({ kind: 'stat', value: 2, name: '스탯 포인트 +2', price: 60 + 8 * cycle });
-    goods.push({ kind: 'life', name: '재도전 +1 (최대 ' + maxLives(char) + ')', price: 70 + 10 * cycle });
+    goods.push({ kind: 'stat', value: 2, name: '스탯 포인트 +2', price: Math.round((60 + 8 * cycle) * allDisc) });
+    goods.push({ kind: 'stat', value: 2, name: '스탯 포인트 +2', price: Math.round((60 + 8 * cycle) * allDisc) });
+    goods.push({ kind: 'life', name: '재도전 +1 (최대 ' + maxLives(char) + ')', price: Math.round((70 + 10 * cycle) * allDisc) });
   }
   return { type, label, goods, bought: [] };
 }
