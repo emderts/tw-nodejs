@@ -59,6 +59,7 @@ function stageLabel(char) { return ({ shop: '상점', event: '이벤트', battle
 
 // 스테이지 하나 소화 후 호출. 사이클이 끝나면 레벨/급수 반영. 마지막 사이클 전투까지 끝났으면 true(클리어)
 function advance(char) {
+  const fg = runEffect(char, 'skipShop'); if (typeof fg === 'number' && fg > 0) char.gold = (char.gold || 0) + fg;   // 나백수의 취업준비카드: 층마다 골드
   char.run.stageIdx++;
   if (char.run.stageIdx >= STAGES.length) {
     char.run.stageIdx = 0;

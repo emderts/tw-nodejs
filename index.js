@@ -247,7 +247,7 @@ io.on('connection', (socket) => {
     if (fresh) {
       const L = t.leftChr;
       const fh = run.runEffect(L, 'firstHandBonus'); if (fh) run.drawExtra(t.pdeck, fh);   // 한 장 접은 카드
-      const fp = run.runEffect(L, 'freePotion'); if (fp) { const it = consumables.make(fp); if (it) { it.temp = true; L.inventory = L.inventory || []; L.inventory.push(it); } }   // 비상용 주머니
+      const fp = run.runEffect(L, 'freePotion'); if (fp) { const it = fp === 'random' ? consumables.random() : consumables.make(fp); if (it) { it.temp = true; L.inventory = L.inventory || []; L.inventory.push(it); } }   // 비상용 주머니 / 카시엔의 보따리
     }
     if (!t.eplayed) t.eplayed = [0, 0, 0];
     if (t.redraws === undefined) t.redraws = run.runEffect(t.leftChr, 'redrawHand') || 0;
@@ -3702,6 +3702,9 @@ async function procNextFloor (req, res) {
     const st = run.stage(char);
     const key = charRow.uid + ':' + run.floorNo(char);
 
+    if (st === 'shop' && run.runEffect(char, 'skipShop')) {   // 나백수의 취업준비카드: 상점 층 통째로 건너뜀
+      run.advance(char); delete sess.floorShop; await saveChar(char, charRow.uid); res.redirect('/nextFloor'); return;
+    }
     if (st === 'shop') {
       if (!sess.floorShop || sess.floorShop.key !== key) sess.floorShop = { key, offers: run.makeShopOffers(char), shop: null };
       res.render('pages/floorShop', { char, rv: runView(char), shop: sess.floorShop.shop, offers: sess.floorShop.offers, makeTooltip });
@@ -3709,7 +3712,7 @@ async function procNextFloor (req, res) {
       if (!sess.floorEvent || sess.floorEvent.key !== key) { sess.floorEvent = { key, code: run.makeEvent(char).code, done: null }; await saveChar(char, charRow.uid); }
       let cur = run.makeEventByCode(char, sess.floorEvent.code);
       if (!cur) { sess.floorEvent = { key, code: run.makeEvent(char).code, done: null }; await saveChar(char, charRow.uid); cur = run.makeEventByCode(char, sess.floorEvent.code); }   // 재구성 실패 시 새 이벤트
-      res.render('pages/floorEvent', { char, rv: runView(char), ev: cur, done: sess.floorEvent.done });
+      res.render('pages/floorEvent', { char, rv: runView(char), ev: cur, done: sess.floorEvent.done, canReroll: !sess.floorEvent.done && (sess.floorEvent.rerolls || 0) < (run.runEffect(char, 'eventReroll') || 0) });
     } else {
       // 전투: 방 생성 (이미 진행 중인 방이 있으면 재진입)
       if (sess.floorBattle && sess.floorBattle.key === key && trades[sess.floorBattle.room] && !trades[sess.floorBattle.room].result) {
@@ -3807,6 +3810,15 @@ async function procFloorEvent (req, res) {
       await saveChar(char, charRow.uid);
       res.redirect('/nextFloor');
       return;
+    }
+    if (req.body.action === 'reroll') {   // 프사이의 예지 노트: 사이클당 1회 이벤트 다시 뽑기
+      const allow = run.runEffect(char, 'eventReroll') || 0;
+      if (!sess.floorEvent.done && (sess.floorEvent.rerolls || 0) < allow) {
+        char.run.lastEvent = sess.floorEvent.code;
+        sess.floorEvent = { key: sess.floorEvent.key, code: run.makeEvent(char).code, done: null, rerolls: (sess.floorEvent.rerolls || 0) + 1 };
+        await saveChar(char, charRow.uid);
+      }
+      res.redirect('/nextFloor'); return;
     }
     if (sess.floorEvent.done) { res.redirect('/nextFloor'); return; }
     const text = run.applyEvent(char, sess.floorEvent.code, parseInt(req.body.opt, 10));
@@ -4187,8 +4199,10 @@ function calcStats(chara) {
     if (!chara.items[key]) {
       continue;
     }
+    var tm = 1;
+    if (chara.items[key].timeMult) { const h = (new Date(Date.now() + 9 * 3600 * 1000)).getUTCHours(); tm = chara.items[key].timeMult.hours.some(([a, b]) => h >= a && h < b) ? chara.items[key].timeMult.mult : 1; }
     for (var keyItem in chara.items[key]['stat']) {
-      chara.stat[keyItem] = (chara.stat[keyItem] || 0) + chara.items[key]['stat'][keyItem];   // 신규 키(저항 등)는 0에서 시작
+      chara.stat[keyItem] = (chara.stat[keyItem] || 0) + chara.items[key]['stat'][keyItem] * tm;   // 신규 키(저항 등)는 0에서 시작
     }
     if (chara.items[key].pctStat) for (var pk in chara.items[key].pctStat) chara.stat[pk] = (chara.stat[pk] || 0) * (1 + chara.items[key].pctStat[pk]);
     if (chara.items[key].socket) {

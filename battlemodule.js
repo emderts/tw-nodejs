@@ -142,6 +142,8 @@ function _applySetBonus(char) {
 Battlemodule.prototype._checkRevive = function() {
   for (const [me, opp] of [[this.charLeft, this.charRight], [this.charRight, this.charLeft]]) {
     if (me.curHp > 0) continue;
+    const guard = (me.buffs || []).find(x => x.id === 10550);   // [단장의 규약]: 생명력 1로 버팀
+    if (guard) { me.curHp = 1; removeBuff(guard); this.result += '<span class="skillDamage">[ 단장의 규약 ] 효과로 ' + me.name + '이(가) 생명력 1로 버텼다!</span><br>'; continue; }
     const b = (me.buffs || []).find(x => x.id === 10534);
     if (!b) continue;
     const v = Math.max(1, Math.round(me.stat.maxHp * 0.04));
@@ -951,6 +953,21 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
     if (eff.maxUses && (eff.uses || 0) >= eff.maxUses) {   // 전투당 사용 상한 (아이템은 전투마다 복사되므로 자동 초기화)
       continue;
     }
+    if (eff.chkOppHpUnder && (loser.curHp / loser.stat.maxHp) > eff.chkOppHpUnder) {   // 상대 체력 비율이 N 이하일 때만
+      continue;
+    }
+    if (eff.chkOppHpOver && (loser.curHp / loser.stat.maxHp) <= eff.chkOppHpOver) {   // 상대 체력 비율이 N 초과일 때만
+      continue;
+    }
+    if (eff.chkDmgPct && !(damage && damage.value >= winner.stat.maxHp * eff.chkDmgPct)) {   // 받은 피해가 최대 생명력의 N 이상
+      continue;
+    }
+    if (eff.chkOppHasSlot && !(loser.items && loser.items[eff.chkOppHasSlot] && loser.items[eff.chkOppHasSlot].name)) {
+      continue;
+    }
+    if (eff.chkOppNoSlot && (loser.items && loser.items[eff.chkOppNoSlot] && loser.items[eff.chkOppNoSlot].name)) {
+      continue;
+    }
     if (eff.chkMySkillIdx !== undefined && !(winner.skill && winner.skill.base[eff.chkMySkillIdx] && winner.skill.base[eff.chkMySkillIdx].code === winner.curSkillCode)) {   // 이번 턴 자신이 낸 스킬 슬롯
       continue;
     }
@@ -1123,6 +1140,8 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
           valueUsed *= skill[eff.percentKey];
         } else if (eff.isPercentHpLost) {
           valueUsed *= (winner.stat.maxHp - winner.curHp);
+        } else if (eff.isPercentOppHpLost) {
+          valueUsed *= (loser.stat.maxHp - loser.curHp);
         } else if (eff.isPercentBuffValue) {
           valueUsed *= damage.effect[0].value;
         } else if (eff.isPercentSkill) {
@@ -1533,6 +1552,21 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
       }
     } else if (eff.code === 'noop') {
       // 후속 처리(stackReduce 등)만 수행
+    } else if (eff.code === 'shieldPct') {   // 최대 생명력 비율 보호막 버프
+      const bo = buffMdl.getBuffData({ buffCode : eff.buffCode }); bo.dur = null;
+      for (const be of bo.effect) if (be.code === cons.EFFECT_TYPE_SHIELD) be.value = Math.round(winner.stat.maxHp * eff.value);
+      this.giveBuff(winner, winner, bo, true, eff.name);
+    } else if (eff.code === 'asura') {   // 아수라파천무: SP 전부 소모 × 배율 절대 피해
+      const sp = Math.round(winner.curSp || 0); if (sp <= 0) continue;
+      winner.curSp = 0; const v = sp * eff.value; loser.curHp -= v;
+      this.result += '<span class="skillDamage">[ ' + eff.name + ' ] 아수라파천무! SP ' + sp + '를 모두 태워 ' + loser.name + '에게 ' + v + ' 절대 피해!</span><br>';
+    } else if (eff.code === 'counterHigh') {   // 물리/마법 중 높은 쪽 × 배율로 즉시 피해
+      const usePhy = (winner.stat.phyAtk || 0) >= (winner.stat.magAtk || 0);
+      const atk = usePhy ? winner.stat.phyAtk : winner.stat.magAtk;
+      const red = usePhy ? (loser.stat.phyReduce || 0) : (loser.stat.magReduce || 0);
+      const v = Math.max(1, Math.round(atk * eff.value * (1 - red)));
+      loser.curHp -= v;
+      this.result += '<span class="skillDamage">[ ' + eff.name + ' ] 효과로 ' + loser.name + '에게 ' + v + ' ' + (usePhy ? '물리' : '마법') + ' 피해!</span><br>';
     } else if (eff.code === 'spMark') {
       winner.spMark = winner.curSp || 0;
     } else if (eff.code === 'spStack') {
@@ -1726,6 +1760,10 @@ Battlemodule.prototype.giveBuff = function(src, recv, buffObj, printFlag, name) 
   if (buffObj.id === 1 && src !== recv && src.stat && src.stat.blueFlame) {
     const dur = buffObj.dur; buffObj = buffMdl.getBuffData({ buffCode : 10535 }); buffObj.dur = dur;
   }
+  // 상태이상 지속 단축 (엘바스의 유산 - 어스퀘이드): 표준 상태이상의 지속턴 감소 (최소 1)
+  if (buffObj.isDebuff && src !== recv && recv.stat && recv.stat.debuffDurReduce && buffObj.dur && buffObj.id <= 12) {
+    buffObj.dur = Math.max(1, buffObj.dur - recv.stat.debuffDurReduce);
+  }
   // 상태이상 저항: stat.resistAll + stat['resist_<id>'] 확률로 무효 (디버프에만)
   if (buffObj.isDebuff && src !== recv && recv.stat) {
     const res = (recv.stat.resistAll || 0) + (recv.stat['resist_' + buffObj.id] || 0);
@@ -1916,6 +1954,12 @@ function getBuffEffects(chara, active) {
   return chara.buffs.map(x => x.effect).reduce((acc, val) => acc.concat(val)).filter(x => (x.active == active));
 }
 
+// 성자의 숫자: KST 특정 시간대에 이 장비의 스탯 배율
+function itemTimeMult(it) {
+  if (!it || !it.timeMult) return 1;
+  const h = (new Date(Date.now() + 9 * 3600 * 1000)).getUTCHours();
+  return it.timeMult.hours.some(([a, b]) => h >= a && h < b) ? it.timeMult.mult : 1;
+}
 function calcStats(chara, opp) {
   for (var key in chara.base) {
     chara.stat[key] = chara.base[key];
@@ -1925,8 +1969,9 @@ function calcStats(chara, opp) {
     if (!chara.items[key]) {
       continue;
     }
+    var tm = itemTimeMult(chara.items[key]);
     for (var keyItem in chara.items[key]['stat']) {
-      chara.stat[keyItem] = (chara.stat[keyItem] || 0) + chara.items[key]['stat'][keyItem];
+      chara.stat[keyItem] = (chara.stat[keyItem] || 0) + chara.items[key]['stat'][keyItem] * tm;
     }
   }
   for (var key in chara.items) {   // 아이템 % 스탯 (고서 - 죽음에 대하여 등)

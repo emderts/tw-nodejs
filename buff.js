@@ -6965,6 +6965,89 @@ module.exports.getBuffData = function(eff) {
     break;
 
   // ---- 4급 신규 아이템 버프 ----
+
+  // ---- 3급 신규 아이템 버프 ----
+  case 10550 :   // 사이쿤도리스 [단장의 규약] (처리는 battlemodule._checkRevive)
+    retObj.name = '단장의 규약'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 1; retObj.isDebuff = false; retObj.durOff = null;
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'hit', value : 0 });
+    break;
+  case 10551 :   // 셀레네 [달빛] 보호막 (값은 shieldPct가 채움)
+    retObj.name = '달빛'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 1; retObj.isDebuff = false; retObj.durOff = null;
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_DEAL_DAMAGE_RECEIVE, code : cons.EFFECT_TYPE_SHIELD, value : 1 });
+    break;
+  case 10552 :   // 셀레네 [빌린 달빛] 표식
+    retObj.name = '빌린 달빛'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 1; retObj.isDebuff = false; retObj.durOff = null;
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'hit', value : 0 });
+    break;
+  case 10553 :   // 신화 카드 더미 [불길한 소문]
+    retObj.name = '불길한 소문'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 1; retObj.isDebuff = true;
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_TURN_END, code : cons.EFFECT_TYPE_SELF_HIT, type : cons.DAMAGE_TYPE_ABSOLUTE, value : 33 });
+    break;
+  case 10554 :   // 달시계 [프라이빗 스퀘어]: 다음 피격 피해 0
+    retObj.name = '프라이빗 스퀘어'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 1; retObj.isDebuff = false;
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_DAMAGE_RECEIVE, code : cons.EFFECT_TYPE_MULTIPLY_DAMAGE, anySkill : true, value : 0, removeBuff : true });
+    break;
+  case 10555 :   // 달시계 [월드]: 기절 + 받는 공격 반드시 치명타
+    retObj.name = '월드'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 1; retObj.isDebuff = true;
+    retObj.effect.push({ code : 10011 });
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_DAMAGE_RECEIVE, code : cons.EFFECT_TYPE_ADD_DAMAGE_OBJECT, anySkill : true, key : 'crit', value : 1, removeBuff : true });
+    break;
+  case 10556 :   // 공성용 대포 지시기 [공성용 대포]
+    retObj.name = '공성용 대포'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 1; retObj.isDebuff = false; retObj.durOff = null;
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_TURN_END, code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL, value : 0.6 });
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_TAKE_HIT, code : 'noop', removeBuff : true, printText : '지시자가 피격되어 포격이 멈췄다.' });
+    break;
+  case 10557 :   // 백천의 라드릿트 [모음]
+    retObj.name = '모음'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 2; retObj.maxStack = 5; retObj.isDebuff = false; retObj.durOff = null;
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'hit', value : 0 });
+    break;
+  case 10558 :   // 테오드릭 [성벽]
+    retObj.name = '성벽'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 2; retObj.maxStack = 11; retObj.isDebuff = false; retObj.durOff = null;
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'phyReduce', value : 0.01 });
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'magReduce', value : 0.01 });
+    break;
+  case 10559 :   // 지옥철 장창 [밀기]
+    retObj.name = '밀기'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 2; retObj.maxStack = 6; retObj.isDebuff = false; retObj.durOff = null;
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_DAMAGE, code : cons.EFFECT_TYPE_MULTIPLY_DAMAGE, anySkill : true, stackable : true, value : 0.05 });
+    break;
+  case 10560 :   // 일곱 번 접은 옷 [접힘]
+    retObj.name = '접힘'; retObj.nameType = cons.NAME_KOR_END_CONS; retObj.stackType = 2; retObj.maxStack = 7; retObj.isDebuff = false; retObj.durOff = null;
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'phyReduce', value : -0.01 });
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'magReduce', value : -0.01 });
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'evasion', value : 0.02 });
+    break;
+  case 10561 :   // 반쪽 부적 [짝]
+    retObj.name = '짝'; retObj.nameType = cons.NAME_KOR_END_CONS; retObj.stackType = 1; retObj.isDebuff = false; retObj.durOff = null;
+    for (const k of ['phyAtk', 'magAtk', 'maxHp']) retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_PERCENTAGE, key : k, value : 0.08 });
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'phyReduce', value : 0.02 });
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'magReduce', value : 0.02 });
+    break;
+  case 10562 :   // 반쪽 부적 [외짝]
+    retObj.name = '외짝'; retObj.nameType = cons.NAME_KOR_END_CONS; retObj.stackType = 1; retObj.isDebuff = false; retObj.durOff = null;
+    for (const k of ['phyAtk', 'magAtk', 'maxHp']) retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_PERCENTAGE, key : k, value : -0.04 });
+    break;
+  case 10563 :   // 버티면 오른다 [버팀]
+    retObj.name = '버팀'; retObj.nameType = cons.NAME_KOR_END_CONS; retObj.stackType = 2; retObj.maxStack = 8; retObj.isDebuff = false; retObj.durOff = null;
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_PERCENTAGE, key : 'phyAtk', value : 0.04 });
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_PERCENTAGE, key : 'magAtk', value : 0.04 });
+    break;
+  case 10564 :   // 니오비움의 헌 외투 [다른 나라의 실] 4종
+    retObj.name = '기운 자국 - 저항'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 1; retObj.isDebuff = false; retObj.durOff = null;
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'phyReduce', value : 0.1 });
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'magReduce', value : 0.1 });
+    break;
+  case 10565 :
+    retObj.name = '기운 자국 - 회피'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 1; retObj.isDebuff = false; retObj.durOff = null;
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'evasion', value : 0.1 });
+    break;
+  case 10566 :
+    retObj.name = '기운 자국 - 치명'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 1; retObj.isDebuff = false; retObj.durOff = null;
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'crit', value : 0.1 });
+    break;
+  case 10567 :
+    retObj.name = '기운 자국 - 명중'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 1; retObj.isDebuff = false; retObj.durOff = null;
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'hit', value : 0.1 });
+    break;
   case 10530 :   // 에이카의 미완성 갑주 [채우는 영석]
     retObj.name = '채우는 영석'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 2; retObj.maxStack = 60; retObj.isDebuff = false; retObj.durOff = null;
     retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'phyReduce', value : 0.0033 });

@@ -14,6 +14,9 @@
   <div class="page-title"><h1><%= ev.title %></h1></div>
   <div class="note-box"><%= ev.desc %></div>
   <% if (ev.html) { %><div class="note-box" style="border-color:var(--brass-dim)"><%- ev.html %></div><% } %>
+  <% if (typeof canReroll !== 'undefined' && canReroll) { %>
+  <form action="/floorEvent" method="post" style="margin:6px 0"><input type="hidden" name="action" value="reroll"><button type="submit" style="width:auto;min-height:0;padding:6px 12px;font-size:12px">예지 노트를 펼친다 — 다른 일이 일어난다</button></form>
+  <% } %>
   <% if (done) { %>
     <div class="note-box" style="border-color:var(--brass-dim)"><%- done %></div>
     <form action="/floorEvent" method="post" class="backLink">
