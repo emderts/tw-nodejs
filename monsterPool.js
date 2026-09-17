@@ -33,6 +33,26 @@ const TIERS = {
     { key: 'rTimeStorm',    deck: [2, 2, 2], shuffleEveryTurn: true, note: '매 턴 덱 재셔플', tune: (e) => { delete e.skill.drive; delete e.startEffects; for (const k of e.skill.base) k.damage = 1.3; } },   // 51턴 즉사 타이머·공격 불가 제거
     { key: 'rJulius',       deck: [2, 2, 2] },
   ],
+  11: [   // 보스: 사천왕 (포켓몬 3폼 교체, 각 폼 체력 -67%)
+    { key: 'd721', deck: [4, 2, 3], note: '칸나 — 파르셀·루주라·라프라스' },
+    { key: 'd722', deck: [2, 5, 2], note: '시바 — 홍수몬·시라소몬·괴력몬' },
+    { key: 'd723', deck: [3, 2, 4], note: '국화 — 팬텀·아보크·팬텀' },
+    { key: 'd724', deck: [3, 3, 3], extraFav: 1, note: '목호 — 리자몽·갸라도스·망나뇽', tune: (e) => { e.base.maxHp = Math.round(e.base.maxHp * 0.8); e.skillScale = { damage: 0.55, specialCost: 3 }; } },
+  ],
+  13: [   // 보스
+    { key: 'd725',  deck: [3, 3, 3], extraFav: 2, note: '레드 — 이상해꽃·거북왕·잠만보·피카츄 (4폼, -75%)', tune: (e) => { e.base.maxHp = Math.round(e.base.maxHp * 0.85); } },
+    { key: 'rAeika', deck: [3, 3, 3], extraFav: 1, note: '움직이는 요새 에이카 — 에너지 코어 모듈' },
+    { key: 'rsNagpa', deck: [3, 3, 3], extraFav: 3, tune: (e) => { delete e.startEffects; e.name = '각성한 ' + e.name; for (const k of e.skill.base) k.damage = Math.round(k.damage * 1.1 * 100) / 100; e.skill.base[0].effect[0].chance = 0.4; } },
+  ],
+  15: [   // 최종 보스
+    { key: 'rsDeci', deck: [3, 3, 3], extraFav: 2, note: '파멸자 데시메이트 — 기절 연타, 안 걸리면 파멸', tune: (e) => {
+      delete e.startEffects; delete e.skill.special;
+      for (const k of e.skill.base) for (const ef of (k.effect || [])) if (ef.buffCode === 4) ef.chance = 0.35;
+      e.skill.drive.chance = 0.3;
+      e.skill.drive.effect = [{ code: cons.EFFECT_TYPE_ADD_HIT, type: cons.DAMAGE_TYPE_ABSOLUTE, isPercentOppStat: true, percentKey: 'maxHp', value: 0.15 }];
+      e.skill.drive.tooltip = '턴 종료 시 상대가 [기절]이 아니면 30% 확률로 상대 최대 생명력의 15% 절대 피해';
+    } },
+  ],
   9: [
     { key: 'rsInzeal',      deck: [3, 3, 3], extraFav: 2, tune: (e) => { delete e.startEffects; } },
     { key: 'rsNagpa',       deck: [3, 3, 3], extraFav: 2, tune: (e) => { delete e.startEffects; e.skill.base[0].effect[0].chance = 0.4; } },
@@ -40,7 +60,7 @@ const TIERS = {
     { key: 'rInfernal',     deck: [4, 1, 2], extraFav: 2 },
   ],
 };
-function tierFor(cycle) { const t = [9, 7, 5, 3, 1].find(x => x <= cycle); return t; }
+function tierFor(cycle) { const t = [15, 13, 11, 9, 7, 5, 3, 1].find(x => x <= cycle); return t; }
 function isMonsterCycle(cycle) { return cycle % 2 === 1; }
 function pick(cycle) {
   const list = TIERS[tierFor(cycle)];

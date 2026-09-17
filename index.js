@@ -3747,7 +3747,7 @@ async function procNextFloor (req, res) {
 // 죽은 캐릭터 풀(같은 층)에서 40% 확률로, 아니면 생성
 async function pickEnemy (char, userId) {
   const floor = run.floorNo(char);
-  if (!require('./monsterPool').isMonsterCycle(char.run.cycle) && Math.random() < 0.4) {   // 죽은 캐릭터는 짝수(캐릭터) 사이클에만
+  if (!require('./monsterPool').isMonsterCycle(char.run.cycle) && (run.isBossCycle(char.run.cycle) || Math.random() < 0.4)) {   // 죽은 캐릭터는 짝수(캐릭터) 사이클에만, 보스 사이클이면 우선
     const client = await pool.connect();
     try {
       const r = await client.query('select * from fallen where floor = $1 and user_id <> $2 order by random() limit 1', [floor, userId]);
@@ -3891,7 +3891,7 @@ async function procFloorResult (req, res) {
       run.tickBuffs(char);
     }
     if (re.winnerLeft) {
-      const gold = Math.round((60 + 15 * char.run.cycle + (enemy.isBoss ? 100 : 0)) * (1 + (run.runEffect(char, 'winGoldBonus') || 0)) * (1 - (run.runEffect(char, 'creditCard') || 0)));
+      const gold = Math.round((60 + 12 * char.run.cycle + (enemy.isBoss ? 100 : 0)) * (1 + (run.runEffect(char, 'winGoldBonus') || 0)) * (1 - (run.runEffect(char, 'creditCard') || 0)));
       char.gold += gold;
       char.statPoint += 3;
       addSpecialResultCard(char, 4);

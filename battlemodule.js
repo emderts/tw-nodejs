@@ -2167,6 +2167,10 @@ function calcStats(chara, opp) {
   }
   chara.stat.hpRegen = Math.round(10 * chara.stat.hpRegen) / 10;
   chara.stat.spRegen = Math.round(10 * chara.stat.spRegen) / 10;
+  if (chara.skillScale) {   // 로그라이크 몬스터 정규화: 버프로 세팅된 스킬 계수·스페셜 비용 보정 (사천왕/레드)
+    for (const sk of chara.skill.base) if (sk && sk.damage) sk.damage = Math.round(sk.damage * chara.skillScale.damage * 100) / 100;
+    if (chara.skill.special && chara.skillScale.specialCost) chara.skill.special.cost = Math.round(chara.skill.special.cost * chara.skillScale.specialCost);
+  }
   if (chara.skill.special) {
     chara.skill.special.cost = Math.round(10 * chara.skill.special.cost) / 10;
   }

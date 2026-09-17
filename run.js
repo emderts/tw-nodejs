@@ -6,8 +6,8 @@ const monsterPool = require('./monsterPool');
 const monsterEvents = require('./monsterEvents');
 const consumables = require('./consumables');
 
-const TOTAL_CYCLES = 10;
-const BOSS_CYCLES = [3, 6, 10];
+const TOTAL_CYCLES = 15;
+const BOSS_CYCLES = [3, 6, 9, 11, 13, 15];
 const STAGES = ['event', 'shop', 'battle'];
 const RESETS_PER_BATTLE = 2;
 const HAND_SIZE = 3;
@@ -57,8 +57,8 @@ function stage(char) { return STAGES[char.run.stageIdx]; }
 function floorNo(char) { return (char.run.cycle - 1) * 3 + char.run.stageIdx + 1; }
 function isBossCycle(cycle) { return BOSS_CYCLES.includes(cycle); }
 // 급수는 2사이클마다 1씩 오름. 레어 이상 장비가 6급까지만 존재하므로 6급에서 멈춤
-// 1사이클 9급, 2~3 8급, 4~5 7급, 6~8 6급, 9~10 5급
-const RANK_BY_CYCLE = [9, 8, 8, 7, 7, 6, 6, 6, 5, 5];
+// 1사이클 9급 … 15사이클 1급 (급수당 2사이클)
+const RANK_BY_CYCLE = [9, 8, 8, 7, 7, 6, 6, 5, 5, 4, 4, 3, 3, 2, 1];
 function rankForCycle(cycle) { return RANK_BY_CYCLE[Math.min(Math.max(cycle, 1), RANK_BY_CYCLE.length) - 1]; }
 function stageLabel(char) { return ({ shop: '상점', event: '이벤트', battle: isBossCycle(char.run.cycle) ? '보스 전투' : '전투' })[stage(char)]; }
 
@@ -136,7 +136,7 @@ function aiPick(st, want) {
 }
 
 // ---------- 적 생성 ----------
-const RARITY_BY_CYCLE = [1, 1, 1, 2, 2, 2, 4, 4, 4, 5]; // 언커먼 → 레어 → 유니크 → 에픽
+const RARITY_BY_CYCLE = [1, 1, 1, 2, 2, 2, 4, 4, 4, 4, 5, 5, 5, 5, 5]; // 언커먼 → 레어 → 유니크 → 에픽
 
 function makeEnemy(char) {
   if (monsterPool.isMonsterCycle(char.run.cycle)) {
@@ -150,11 +150,15 @@ function equipAndScale(e, cycle, boss) {
   let rarity = RARITY_BY_CYCLE[Math.min(cycle, 10) - 1];
   if (boss && rarity < 5) rarity = rarity === 1 ? 2 : (rarity === 2 ? 4 : 5);
   e.items = {};
+  // 적에게는 플레이어 전용/기믹 아이템(runEffect·드라이브 교체·시간대·커스텀 코드 효과) 제외
+  const enemyOk = (it) => it && !it.runEffect && !it.driveOverride && !it.timeMult && !(it.effect || []).some(ef => typeof ef.code === 'string');
   for (let t = 0; t <= 3; t++) {
-    const it = getItemSafe(e.rank, rarity, t); if (it) e.items[['weapon', 'armor', 'subarmor', 'trinket'][t]] = it;
+    let it = null;
+    for (let tries = 0; tries < 12 && !enemyOk(it); tries++) it = getItemSafe(e.rank, rarity, t);
+    if (enemyOk(it)) e.items[['weapon', 'armor', 'subarmor', 'trinket'][t]] = it;
   }
   e.inventory = [];
-  const pts = 3 * cycle + (boss ? 3 : 0);
+  const pts = Math.round(2.5 * cycle) + (boss ? 3 : 0);
   const magical = e.skill.base.filter(s => s.type === cons.DAMAGE_TYPE_MAGICAL).length >= 2;
   const hpPts = Math.round(pts / 3);
   e.base.maxHp += 10 * hpPts;
@@ -173,6 +177,19 @@ function makeMonster(char) {
   e.level = cycle;
   // 스탯 정규화: 급수 기본치로 덮되 몬스터 고유 저항/명중 등은 유지
   Object.assign(e.base, roster.baseByRank(e.rank));
+  // 사천왕/레드: 스킬이 비어 있고 시작 버프(포켓몬)가 SET_SKILL로 채움 → 표시·판정용으로 첫 폼을 미리 반영
+  if (e.skill.base.every(sk => !sk || !sk.name) && e.startEffects && e.startEffects.length) {
+    const buffMdl = require('./buff');
+    const first = buffMdl.getBuffData({ buffCode: e.startEffects[0].buffCode });
+    for (const ef of first.effect || []) {
+      if (ef.code === cons.EFFECT_TYPE_SET_SKILL && ef.key === 'base') e.skill.base[ef.value] = JSON.parse(JSON.stringify(ef.target));
+      if (ef.code === cons.EFFECT_TYPE_SET_SKILL && ef.key === 'special') e.skill.special = JSON.parse(JSON.stringify(ef.target));
+      if (ef.code === cons.EFFECT_TYPE_SET_NAME) e.name = ef.value;
+    }
+    e.pokemonForms = e.startEffects.length;
+    // 포켓몬 스킬은 상태이상 연타(광란·빙결·기절)가 강해 공격력을 낮춰 균형
+    delete e.skill.drive;   // 회복약(체력 30% 이하 시 완전 회복)은 폼 교체 회복과 겹쳐 제거
+  }
   // 레이드용 저항/명중은 로그라이크 스케일에 맞게 상한
   for (const k of ['phyReduce', 'magReduce']) e.base[k] = Math.min(e.base[k] || 0, 0.1);
   e.base.dmgReduce = 0; e.base.hit = Math.min(e.base.hit || 1, 1.05);
@@ -186,6 +203,10 @@ function makeMonster(char) {
   if (cfg.skill0) Object.assign(e.skill.base[0], cfg.skill0);
   if (cfg.tune) cfg.tune(e);   // base 조정은 여기서 (장비/스탯 포인트 반영 전)
   equipAndScale(e, cycle, boss);
+  if (e.pokemonForms) {   // 포켓몬 스킬 계수(1.4~2.3)·저비용 스페셜 보정
+    if (!e.skillScale) e.skillScale = { damage: 0.7, specialCost: 2.5 };
+    e.base.phyAtk = Math.round(e.base.phyAtk * 0.8); e.base.magAtk = Math.round(e.base.magAtk * 0.8); deps.calcStats(e);
+  }
   // 덱
   e.deck = [];
   cfg.deck.forEach((n, t) => { for (let i = 0; i < n; i++) e.deck.push({ type: t }); });
