@@ -242,7 +242,7 @@ io.on('connection', (socket) => {
     }
     run.drawHand(t.pdeck); run.drawHand(t.edeck);
     if (!t.eplayed) t.eplayed = [0, 0, 0];
-    if (t.resets === undefined) t.resets = run.RESETS_PER_BATTLE;
+    if (t.resets === undefined) t.resets = run.RESETS_PER_BATTLE + ((t.leftChr.run && t.leftChr.run.extraResets) || 0);
     socket.emit('floorAck', t.startHtml, floorNames(t.leftChr), floorNames(t.rightChr), floorState(t), run.deckCounts(t.rightChr.deck));
   });
   socket.on('floorReset', function(room, uid) {

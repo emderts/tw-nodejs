@@ -3,6 +3,7 @@
 const cons = require('./constant');
 const roster = require('./roster');
 const monsterPool = require('./monsterPool');
+const monsterEvents = require('./monsterEvents');
 
 const TOTAL_CYCLES = 10;
 const BOSS_CYCLES = [3, 6, 10];
@@ -26,7 +27,13 @@ function getItemSafe(rank, rarity, type) {
 function initRun(char) {
   char.run = { cycle: 1, stageIdx: 0, floor: 1, lives: 1 };   // lives = 남은 재도전 횟수
   char.gold = 80;
+  prepareCycle(char);
   return char;
+}
+// 사이클 시작 시: 홀수면 이번 사이클 몬스터를 미리 뽑아 고정 (이벤트/망루가 참조·수정)
+function prepareCycle(char) {
+  if (monsterPool.isMonsterCycle(char.run.cycle)) char.run.nextMonster = makeMonster(char);
+  else char.run.nextMonster = null;
 }
 function stage(char) { return STAGES[char.run.stageIdx]; }
 function floorNo(char) { return (char.run.cycle - 1) * 3 + char.run.stageIdx + 1; }
@@ -42,9 +49,11 @@ function advance(char) {
   if (char.run.stageIdx >= STAGES.length) {
     char.run.stageIdx = 0;
     char.run.cycle++;
+    if (char.run.nextMonster) { char.run.lastMonster = { key: char.run.nextMonster.monsterKey, name: char.run.nextMonster.name }; }
     if (char.run.cycle > TOTAL_CYCLES) return true;
     char.level = char.run.cycle;
     char.rank = rankForCycle(char.run.cycle);
+    prepareCycle(char);
   }
   char.run.floor = floorNo(char);
   return false;
@@ -103,7 +112,10 @@ function aiPick(st, want) {
 const RARITY_BY_CYCLE = [1, 1, 1, 2, 2, 2, 4, 4, 4, 5]; // 언커먼 → 레어 → 유니크 → 에픽
 
 function makeEnemy(char) {
-  if (monsterPool.isMonsterCycle(char.run.cycle)) return makeMonster(char);
+  if (monsterPool.isMonsterCycle(char.run.cycle)) {
+    if (!char.run.nextMonster) char.run.nextMonster = makeMonster(char);
+    return JSON.parse(JSON.stringify(char.run.nextMonster));   // 이벤트로 수정된 상태 그대로
+  }
   return makeRosterEnemy(char);
 }
 // 장비/스탯 포인트 공통 (플레이어와 같은 환산)
@@ -518,10 +530,10 @@ function eventPool(char) {
   // --- 정찰 / 적 디버프 ---
   pool.push({
     code: 'scout', weight: 2, title: '망루',
-    prepare: (ch) => ({ enemy: makeEnemy(ch) }),
-    desc: has('scout') && d.enemy ? '높은 곳에서 다음 상대가 보인다. 준비할 시간이 있다.' : '낡은 망루가 서 있다.',
-    html: has('scout') && d.enemy ? enemyBrief(d.enemy) : '',
-    options: has('scout') && d.enemy ? [
+    prepare: (ch) => (ch.run.nextMonster ? { useNext: true } : { enemy: makeEnemy(ch) }),
+    desc: has('scout') && (d.enemy || d.useNext) ? '높은 곳에서 다음 상대가 보인다. 준비할 시간이 있다.' : '낡은 망루가 서 있다.',
+    html: has('scout') && (d.enemy || (d.useNext && char.run.nextMonster)) ? enemyBrief(d.enemy || char.run.nextMonster) : '',
+    options: has('scout') && (d.enemy || d.useNext) ? [
       { label: '약점을 파악한다 (다음 전투 적 체력 −20%)', effect: (ch) => { addBuff(ch, { target: 'enemy', key: 'maxHp', mult: 0.8, battles: 1, label: '적 체력 −20%' }); return '허점을 찾았다. 다음 전투 적 체력 −20%.'; } },
       { label: '기습을 준비한다 (다음 전투 적 공격력 −20%)', effect: (ch) => { addBuff(ch, { target: 'enemy', key: 'atk', mult: 0.8, battles: 1, label: '적 공격력 −20%' }); return '허를 찌를 수 있겠다. 다음 전투 적 공격력 −20%.'; } },
       { label: '그냥 내려간다', effect: () => '정보만 얻고 내려왔다.' }
@@ -535,6 +547,22 @@ function eventPool(char) {
     ]
   });
 
+  // ---------- 몬스터 고유 이벤트 (등장률 ≈ 20%) ----------
+  const monWeight = () => Math.round(pool.reduce((a, e) => a + (e.weight || 1), 0) * 0.25);
+  const h = monsterHelpers();
+  const nm = char.run.nextMonster;
+  if (nm && monsterPool.isMonsterCycle(char.run.cycle) && monsterEvents.before[nm.monsterKey]) {
+    const src = monsterEvents.before[nm.monsterKey];
+    pool.push({ code: 'mon_before', weight: monWeight(), title: src.title, desc: src.desc,
+      options: src.options.map(o => ({ label: o.label, effect: (ch) => o.effect(ch, ch.run.nextMonster, h) })) });
+  }
+  const lm = char.run.lastMonster;
+  if (lm && !monsterPool.isMonsterCycle(char.run.cycle) && monsterEvents.after[lm.key]) {
+    const src = monsterEvents.after[lm.key];
+    pool.push({ code: 'mon_after', weight: monWeight(), title: src.title, desc: src.desc,
+      options: src.options.map(o => ({ label: o.label, effect: (ch) => { const r = o.effect(ch, ch.run.lastMonster, h); ch.run.lastMonster = null; return r; } })) });
+  }
+
   return pool;
 }
 // 스킬 아티팩트: 현재 급수 것, 없으면 가까운 급수
@@ -543,6 +571,21 @@ function pickArtifact(rank) {
   let cand = list.filter(x => x.rank === rank);
   if (!cand.length) cand = list.sort((a, b) => Math.abs(a.rank - rank) - Math.abs(b.rank - rank)).filter((x, i, arr) => x.rank === arr[0].rank);
   return cand.length ? JSON.parse(JSON.stringify(cand[Math.floor(Math.random() * cand.length)])) : null;
+}
+// 몬스터 이벤트용 헬퍼
+function monsterHelpers() {
+  return {
+    T: ['가위', '바위', '보'],
+    addBuff, calcStats: (c) => deps.calcStats(c),
+    // 적 덱에서 카드 n장 제거 (type null이면 무작위). 최소 3장은 남김
+    removeCards: (mon, type, n) => { let k = 0; for (let i = 0; i < n; i++) { if (mon.deck.length <= 3) break; const idx = type === null ? Math.floor(Math.random() * mon.deck.length) : mon.deck.findIndex(c => c.type === type); if (idx < 0) break; mon.deck.splice(idx, 1); k++; } return k; },
+    gear: (rank, rarity, type) => getItemSafe(rank, rarity, type === undefined ? Math.floor(Math.random() * 4) : type),
+    resultCard: (rank, type) => (type === 5 || type === 6)
+      ? { type: cons.ITEM_TYPE_RESULT_CARD, resultType: type, rank, name: rank + '급 ' + (type === 5 ? '레어' : '유니크') + ' 장비 리설트 카드', tooltip: type === 5 ? '97% : 레어 장비<br>2% : 유니크 장비<br>1% : 에픽 장비' : '96% : 유니크 장비<br>4% : 에픽 장비' }
+      : roster.makeResultCard(rank, type),
+    artifact: (rank) => pickArtifact(rank),
+    stone: (rank) => deps.makeDayStone(Math.floor(Math.random() * 7), rank),
+  };
 }
 // 정찰용 적 요약
 function enemyBrief(e) {
