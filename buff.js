@@ -6853,6 +6853,34 @@ module.exports.getBuffData = function(eff) {
     effectObj = { active : cons.ACTIVE_TYPE_RECEIVE_BUFF, code : cons.EFFECT_TYPE_PREVENT_DEBUFF, chance : 0.25, standard : true };
     retObj.effect.push(effectObj);
     break;
+  case 10505 :   // 상처가 닫히지 않는 지팡이
+    retObj.name = '벌어진 상처';
+    retObj.nameType = cons.NAME_KOR_NO_END_CONS;
+    retObj.stackType = 1;
+    retObj.isDebuff = true;
+    effectObj = { active : cons.ACTIVE_TYPE_DO_HEAL, code : cons.EFFECT_TYPE_MULTIPLY_HEAL, value : 0.5 };
+    retObj.effect.push(effectObj);
+    break;
+  case 10506 :   // 스타라이트 - 밤하늘의 별
+    retObj.name = '별빛';
+    retObj.nameType = cons.NAME_KOR_NO_END_CONS;
+    retObj.stackType = 2;
+    retObj.maxStack = 5;
+    retObj.isDebuff = false;
+    retObj.durOff = null;
+    effectObj = { active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_PERCENTAGE, key : 'magAtk', value : 0.05 };
+    retObj.effect.push(effectObj);
+    break;
+  case 10507 :   // 연승자의 스케일아머
+    retObj.name = '연승';
+    retObj.nameType = cons.NAME_KOR_NO_END_CONS;
+    retObj.stackType = 2;
+    retObj.maxStack = 5;
+    retObj.isDebuff = false;
+    retObj.durOff = null;
+    effectObj = { active : cons.ACTIVE_TYPE_CALC_DAMAGE, code : cons.EFFECT_TYPE_MULTIPLY_DAMAGE, anySkill : true, stackable : true, value : 0.04 };
+    retObj.effect.push(effectObj);
+    break;
   case 10503 :   // 결을 따른 영석 뱅글
     retObj.name = '영석의 결';
     retObj.nameType = cons.NAME_KOR_NO_END_CONS;

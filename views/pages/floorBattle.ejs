@@ -81,6 +81,7 @@
       var hint = '';
       if (s.ehint && s.ehint.type === 'one' && s.ehint.card === i) hint = ' <span style="color:var(--brass)">손패 ◆</span>';
       if (s.ehint && s.ehint.type === 'major' && s.ehint.cards.indexOf(i) >= 0) hint = ' <span style="color:var(--brass)">손패 ▲</span>';
+      if (s.ehint && s.ehint.type === 'all') { var n = s.ehint.cards.filter(function (c) { return c === i; }).length; if (n) hint = ' <span style="color:var(--brass)">손패 ' + n + '</span>'; }
       b.innerHTML = glyph[i] + ' <span class="colorGold">×' + oDeckCnt[i] + '</span>' + (s.eplayed[i] ? ' <span style="color:var(--ash)">낸 ' + s.eplayed[i] + '</span>' : '') + hint + '<br>' + oNames[i];
     }
     var dr = document.getElementById('redrawBtn');

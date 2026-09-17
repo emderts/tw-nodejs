@@ -3643,6 +3643,7 @@ function floorState(t) {
 // 아이템 효과로 공개되는 적 손패 정보
 function enemyHint(t) {
   const L = t.leftChr, hand = t.edeck.hand.map(c => c.type);
+  if (run.runEffect(L, 'revealEnemyAll') && hand.length) return { type: 'all', cards: hand };
   if (run.runEffect(L, 'revealEnemyOne') && hand.length) return { type: 'one', card: hand[0] };
   if (run.runEffect(L, 'revealEnemyMajor') && hand.length) { const cnt = [0, 1, 2].map(x => hand.filter(y => y === x).length); const m = Math.max(...cnt); const tops = [0, 1, 2].filter(x => cnt[x] === m); return { type: 'major', cards: tops }; }
   return null;
@@ -3813,9 +3814,13 @@ async function procFloorResult (req, res) {
     delete sess.floorBattle;
     const rv = runView(char);
 
-    // 전투 중 쓴 소모품 제거
-    for (const code of (t.used || [])) { const i = char.inventory.findIndex(x => x.type === consumables.TYPE && x.code === code); if (i >= 0) char.inventory.splice(i, 1); }
-    run.tickBuffs(char);
+    // 전투 중 쓴 소모품 제거 (일룬드롤의 모래시계: 패배 후 재도전이면 되감기 — 소모품·버프 유지)
+    const lives = char.run.lives === undefined ? 1 : char.run.lives;
+    const rewind = !re.winnerLeft && lives > 0 && run.runEffect(char, 'rewindOnLoss');
+    if (!rewind) {
+      for (const code of (t.used || [])) { const i = char.inventory.findIndex(x => x.type === consumables.TYPE && x.code === code); if (i >= 0) char.inventory.splice(i, 1); }
+      run.tickBuffs(char);
+    }
     if (re.winnerLeft) {
       const gold = Math.round((60 + 15 * char.run.cycle + (enemy.isBoss ? 100 : 0)) * (1 + (run.runEffect(char, 'winGoldBonus') || 0)));
       char.gold += gold;
