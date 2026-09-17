@@ -6967,6 +6967,87 @@ module.exports.getBuffData = function(eff) {
   // ---- 4급 신규 아이템 버프 ----
 
   // ---- 3급 신규 아이템 버프 ----
+
+  // ---- 2급 신규 아이템 버프 ----
+  case 10570 :   // 프레라티즈 스펠북 [이계의 수마] 보호막 (값은 shieldPct)
+    retObj.name = '이계의 수마'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 1; retObj.isDebuff = false; retObj.durOff = null;
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_DEAL_DAMAGE_RECEIVE, code : cons.EFFECT_TYPE_SHIELD, value : 1 });
+    break;
+  case 10571 :   // [촉수 공격] 대체 상태
+    retObj.name = '촉수'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 1; retObj.isDebuff = false; retObj.durOff = null;
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_DAMAGE, code : cons.EFFECT_TYPE_MULTIPLY_DAMAGE, anySkill : true, value : 0 });
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_ATTACK, code : 'counterHigh', value : 0.4 });
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_TURN_END, code : 'noop', chkNot : [10570], removeBuff : true, printText : '수마가 돌아갔다.' });
+    break;
+  case 10572 :   // 특급주 [취기]
+    retObj.name = '취기'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 2; retObj.maxStack = 3; retObj.isDebuff = false; retObj.durOff = null;
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'phyAtk', value : 5 });
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'magAtk', value : 5 });
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'crit', value : 0.05 });
+    break;
+  case 10573 :   // 리벨리온 [마인화-SP]
+    retObj.name = '마인화 - SP'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 2; retObj.maxStack = 300; retObj.isDebuff = false; retObj.durOff = null;
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'hit', value : 0 });
+    break;
+  case 10574 :   // 딱딱한 복숭아 [복숭아 섭취]
+    retObj.name = '복숭아 섭취'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 1; retObj.isDebuff = false; retObj.durOff = null;
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'dmgReduce', value : -17 });
+    break;
+  case 10575 :   // 빛나는 고리 [광채]
+    retObj.name = '광채'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 1; retObj.isDebuff = false;
+    for (const k of ['phyAtk', 'magAtk', 'maxHp']) retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_PERCENTAGE, key : k, value : 0.15 });
+    break;
+  case 10576 :   // 빛나는 고리 [빛바램]
+    retObj.name = '빛바램'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 1; retObj.isDebuff = false; retObj.durOff = null;
+    for (const k of ['phyAtk', 'magAtk', 'maxHp']) retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_PERCENTAGE, key : k, value : -0.15 });
+    break;
+  case 10577 :   // 하우베르크 [프리깃 사격]
+    retObj.name = '프리깃 사격'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 1; retObj.isDebuff = true;
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_TURN_END, code : cons.EFFECT_TYPE_SELF_HIT, type : cons.DAMAGE_TYPE_PHYSICAL_FIXED, isPercentOppStat : true, percentKey : 'phyAtk', value : 0.35 });
+    break;
+  case 10578 :   // 하우베르크 [티탄급 전함 포격]
+    retObj.name = '티탄급 전함 포격'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 1; retObj.isDebuff = true;
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_TURN_END, code : cons.EFFECT_TYPE_SELF_HIT, type : cons.DAMAGE_TYPE_PHYSICAL_FIXED, isPercentOppStat : true, percentKey : 'phyAtk', value : 0.8 });
+    break;
+  case 10579 :   // 타르타로스 게이트
+    retObj.name = '타르타로스 게이트'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 1; retObj.isDebuff = false;
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_TURN_START, code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 10580, buffDur : 2 });
+    break;
+  case 10580 :   // 타르타로스 스켈레톤
+    retObj.name = '타르타로스 스켈레톤'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 1; retObj.isDebuff = true;
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_TURN_END, code : cons.EFFECT_TYPE_SELF_HIT, type : cons.DAMAGE_TYPE_ABSOLUTE, isPercentStat : true, percentKey : 'maxHp', value : 0.005 });
+    break;
+  case 10581 :   // 그라니트 [장전 완료]
+    retObj.name = '장전 완료'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 1; retObj.isDebuff = false;
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_DAMAGE, code : cons.EFFECT_TYPE_MULTIPLY_DAMAGE, anySkill : true, value : 2.5 });
+    break;
+  case 10582 :   // 윈드라 [재집결]
+    retObj.name = '재집결'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 2; retObj.maxStack = 8; retObj.isDebuff = false; retObj.durOff = null;
+    for (const k of ['phyAtk', 'magAtk', 'maxHp']) retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_PERCENTAGE, key : k, value : 0.03 });
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'phyReduce', value : 0.005 });
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'magReduce', value : 0.005 });
+    break;
+  case 10583 :   // 슈퍼 페이머스 블레이드 [명성]
+    retObj.name = '명성'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 1; retObj.isDebuff = true; retObj.durOff = null;
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'evasion', value : -0.1 });
+    break;
+  case 10584 :   // 가문 없는 자의 경갑 [무문장]
+    retObj.name = '무문장'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 1; retObj.isDebuff = false;
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'resistAll', value : 1 });
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_PERCENTAGE, key : 'spCharge', value : -0.5 });
+    break;
+  case 10585 :   // 따라잡히지 않는 굽 [앞선 발자국]
+    retObj.name = '앞선 발자국'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 2; retObj.maxStack = 5; retObj.isDebuff = false; retObj.durOff = null;
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'evasion', value : 0.03 });
+    break;
+  case 10586 :   // 글래디에이터의 투지 [관중의 함성]
+    retObj.name = '관중의 함성'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 1; retObj.isDebuff = false; retObj.durOff = null;
+    for (const k of ['phyAtk', 'magAtk', 'maxHp']) retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_PERCENTAGE, key : k, value : 0.12 });
+    break;
+  case 10587 :   // 글래디에이터의 투지 [관중의 열광] (보스)
+    retObj.name = '관중의 열광'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 1; retObj.isDebuff = false; retObj.durOff = null;
+    for (const k of ['phyAtk', 'magAtk', 'maxHp']) retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_PERCENTAGE, key : k, value : 0.18 });
+    break;
   case 10550 :   // 사이쿤도리스 [단장의 규약] (처리는 battlemodule._checkRevive)
     retObj.name = '단장의 규약'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 1; retObj.isDebuff = false; retObj.durOff = null;
     retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'hit', value : 0 });

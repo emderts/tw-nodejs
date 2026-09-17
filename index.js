@@ -46,6 +46,7 @@ const app = express()
 .post('/floorEvent', procFloorEvent)
 .get('/floorResult', procFloorResult)
 .post('/floorCard', procFloorCard)
+.post('/removeCard', procRemoveCard)
 .get('/join', (req, res) => res.render('pages/join'))
 .post('/join', procJoin)
 .get('/logout', procLogout)
@@ -247,7 +248,7 @@ io.on('connection', (socket) => {
     if (fresh) {
       const L = t.leftChr;
       const fh = run.runEffect(L, 'firstHandBonus'); if (fh) run.drawExtra(t.pdeck, fh);   // 한 장 접은 카드
-      const fp = run.runEffect(L, 'freePotion'); if (fp) { const it = fp === 'random' ? consumables.random() : consumables.make(fp); if (it) { it.temp = true; L.inventory = L.inventory || []; L.inventory.push(it); } }   // 비상용 주머니 / 카시엔의 보따리
+      const fp = run.runEffect(L, 'freePotion'); if (fp) { const n = fp === 'random2' ? 2 : 1; for (let k = 0; k < n; k++) { const it = (fp === 'random' || fp === 'random2') ? consumables.random() : consumables.make(fp); if (it) { it.temp = true; L.inventory = L.inventory || []; L.inventory.push(it); } } }   // 비상용 주머니 / 카시엔의 보따리 / 뤼순 창의 예비 명부
     }
     if (!t.eplayed) t.eplayed = [0, 0, 0];
     if (t.redraws === undefined) t.redraws = run.runEffect(t.leftChr, 'redrawHand') || 0;
@@ -3729,7 +3730,11 @@ async function procNextFloor (req, res) {
       const rb = run.runEffect(leftCopy, 'rockBonus');
       if (rb && leftCopy.deck.filter(c => c.type === 1).length >= 3) { leftCopy.base.phyAtk = Math.round(leftCopy.base.phyAtk * (1 + rb) * 100) / 100; calcStats(leftCopy); }   // 난 주먹만 내
       if (run.applyBuffs(leftCopy)) calcStats(leftCopy);
-      trades[roomNum] = { leftUid: charRow.uid, leftChr: leftCopy, rightChr: enemy, floor: true,
+      if (run.runEffect(leftCopy, 'gladiator')) {   // 글래디에이터의 투지: 쓰러진 모험가 +12%, 보스 +18%
+        const code = enemy.isBoss ? 10587 : (enemy.isFallen ? 10586 : null);
+        if (code) { leftCopy.startEffects = (leftCopy.startEffects || []).concat([{ code: cons.EFFECT_TYPE_SELF_BUFF, buffCode: code, buffDur: null }]); }
+      }
+      trades[roomNum] = { leftUid: charRow.uid, leftChr: leftCopy, rightChr: enemy, floor: true, goldStart: leftCopy.gold,
                           pdeck: run.newDeckState(char.deck), edeck: run.newDeckState(enemy.deck, enemy.deckOpts) };
       sess.floorBattle = { key, room: roomNum };
       res.render('pages/floorBattle', { room: roomNum, uid: charRow.uid, rv: runView(char), char, enemy });
@@ -3752,6 +3757,21 @@ async function pickEnemy (char, userId) {
 }
 
 // 전투 후 얻은 카드 수락/거부
+// 마랑의 정리된 패: 덱에서 카드 1장 영구 제거 (런당 N회)
+async function procRemoveCard (req, res) {
+  try {
+    const ctx = await loadRunChar(req, res); if (!ctx) return;
+    const { charRow, char } = ctx;
+    const allow = run.runEffect(char, 'removeCards') || 0;
+    const used = char.run.cardRemovals || 0;
+    const type = parseInt(req.body.type, 10);
+    if (used < allow && char.deck.length > 3 && [0, 1, 2].includes(type)) {
+      const i = char.deck.findIndex(c => c.type === type);
+      if (i >= 0) { char.deck.splice(i, 1); char.run.cardRemovals = used + 1; await saveChar(char, charRow.uid); }
+    }
+    res.redirect('/');
+  } catch (e) { console.log(e); res.redirect('/'); }
+}
 async function procFloorCard (req, res) {
   try {
     const ctx = await loadRunChar(req, res); if (!ctx) return;
@@ -3844,6 +3864,9 @@ async function procFloorResult (req, res) {
     delete sess.floorBattle;
     const rv = runView(char);
 
+    // 정크 젯: 전투 중 소모한 골드·커먼 장비 반영
+    if (t.goldStart !== undefined && t.leftChr.gold !== undefined && t.leftChr.gold < t.goldStart) char.gold = Math.max(0, char.gold - (t.goldStart - t.leftChr.gold));
+    for (const nm of (t.leftChr.junkUsed || [])) { const i = char.inventory.findIndex(x => x && x.name === nm && x.rarity === cons.ITEM_RARITY_COMMON); if (i >= 0) char.inventory.splice(i, 1); }
     // 전투 중 쓴 소모품 제거 (일룬드롤의 모래시계: 패배 후 재도전이면 되감기 — 소모품·버프 유지)
     const lives = char.run.lives === undefined ? 1 : char.run.lives;
     const rewind = !re.winnerLeft && lives > 0 && run.runEffect(char, 'rewindOnLoss');

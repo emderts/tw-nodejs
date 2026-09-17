@@ -366,6 +366,10 @@
             <span class="sname"><%= sk.name %></span>
             <span class="sdmg"><%= getDamageText(sk) %></span>
             <% if (char.deck) { %><span class="count">× <%= deckCounts[i] %></span><% } %>
+            <% const rmAllow = (char.items && Object.values(char.items).some(it => it && it.runEffect && it.runEffect.key === 'removeCards')) ? Object.values(char.items).filter(it => it && it.runEffect && it.runEffect.key === 'removeCards').reduce((a, it) => a + it.runEffect.value, 0) : 0; const rmUsed = (char.run && char.run.cardRemovals) || 0;
+               if (char.deck && rmAllow > rmUsed && deckCounts[i] > 0 && char.deck.length > 3) { %>
+              <form action="/removeCard" method="post" style="display:inline"><input type="hidden" name="type" value="<%= i %>"><button type="submit" style="width:auto;min-height:0;padding:2px 8px;font-size:11px" title="마랑의 정리된 패 (남은 <%= rmAllow - rmUsed %>회)">제거</button></form>
+            <% } %>
             <div class="itemTooltip"><%- makeSkillTooltip(sk) %></div>
           </div>
         <% } %>

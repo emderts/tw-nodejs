@@ -871,6 +871,10 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
       stackMpl = eff.maxApply;
     }
     var chance = eff.chance ? eff.chance : 1;
+    if (eff.chance) {
+      if (loser && loser.stat && loser.stat.ruleBreaker && [cons.EFFECT_TYPE_OPP_BUFF, cons.EFFECT_TYPE_OPP_SP, cons.EFFECT_TYPE_OPP_HP, cons.EFFECT_TYPE_ADD_HIT].includes(eff.code)) chance *= (1 - loser.stat.ruleBreaker);
+      if (winner && winner.stat && winner.stat.ruleBreaker) chance *= (1 - winner.stat.ruleBreaker);
+    }
     chance *= (1 + winner.stat.chanceEnh);
     if (eff.chanceAddKey) {
       var factor = eff.chanceAddKeyFactor ? eff.chanceAddKeyFactor : 1;
@@ -1552,6 +1556,38 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
       }
     } else if (eff.code === 'noop') {
       // 후속 처리(stackReduce 등)만 수행
+    } else if (eff.code === 'spZero') {
+      winner.curSp = 0;
+      this.result += '[ ' + eff.name + ' ] 효과로 SP가 0이 됐다.<br>';
+    } else if (eff.code === 'stackToBuff') {   // 스택 버프를 소모해 지속 버프로 (리벨리온)
+      const b = (winner.buffs || []).find(x => x.id === eff.from);
+      if (!b || !b.stack) continue;
+      const dur = Math.max(1, Math.floor(b.stack / eff.per));
+      removeBuff(b);
+      const bo = buffMdl.getBuffData({ buffCode : eff.buffCode }); bo.dur = dur;
+      this.giveBuff(winner, winner, bo, true, eff.name);
+    } else if (eff.code === 'junkJet') {   // 정크 젯: 골드 또는 커먼 아이템을 소모해 피해
+      const inv = winner.inventory || [];
+      const ci = inv.findIndex(x => x && x.type <= 3 && x.rarity === cons.ITEM_RARITY_COMMON);
+      let mul = 1, used = null;
+      if (Math.random() < 0.3 && ci >= 0) { used = inv.splice(ci, 1)[0]; winner.junkUsed = (winner.junkUsed || []).concat([used.name]); mul = 3; }
+      else if ((winner.gold || 0) >= 20) { winner.gold -= 20; used = { name : '20골드' }; }
+      if (used) {
+        const v = Math.max(1, Math.round((winner.stat.phyAtk * 0.5 * (1 - (loser.stat.phyReduce || 0)) + winner.stat.magAtk * 0.7 * (1 - (loser.stat.magReduce || 0))) * mul));
+        loser.curHp -= v;
+        this.result += '<span class="skillDamage">[ 잡동사니 발사 ] ' + used.name + '을(를) 쏘아 ' + loser.name + '에게 ' + v + ' 피해!</span><br>';
+      } else {
+        const v = Math.max(1, Math.round((winner.stat.phyAtk * 0.5 + winner.stat.magAtk * 0.7) / 2));
+        winner.curHp -= v;
+        this.result += '[ 잡동사니 발사 ] 쏠 것이 없어 폭발했다! 자신에게 ' + v + ' 피해.<br>';
+      }
+    } else if (eff.code === 'hpDiffMul') {   // 데키메이트 윌: 상대 최대 생명력 초과분 10%당 +6% (최대 +60%)
+      const diff = (loser.stat.maxHp - winner.stat.maxHp) / winner.stat.maxHp;
+      const bonus = Math.min(0.6, Math.max(0, Math.floor(diff * 10) * 0.06));
+      if (bonus > 0 && damage) { damage.skillRat *= (1 + bonus); this.result += '[ ' + eff.name + ' ] 효과로 피해 +' + Math.round(bonus * 100) + '%!<br>'; }
+    } else if (eff.code === 'itemBreak') {   // 건틀릿 오브 오거 파워: 이 슬롯의 % 스탯 상실
+      const it = winner.items && winner.items[eff.slot];
+      if (it && it.pctStat) { delete it.pctStat; calcStats(winner, loser); this.result += '[ ' + eff.name + ' ] 기능이 멈췄다!<br>'; }
     } else if (eff.code === 'shieldPct') {   // 최대 생명력 비율 보호막 버프
       const bo = buffMdl.getBuffData({ buffCode : eff.buffCode }); bo.dur = null;
       for (const be of bo.effect) if (be.code === cons.EFFECT_TYPE_SHIELD) be.value = Math.round(winner.stat.maxHp * eff.value);
@@ -1763,6 +1799,10 @@ Battlemodule.prototype.giveBuff = function(src, recv, buffObj, printFlag, name) 
   // 상태이상 지속 단축 (엘바스의 유산 - 어스퀘이드): 표준 상태이상의 지속턴 감소 (최소 1)
   if (buffObj.isDebuff && src !== recv && recv.stat && recv.stat.debuffDurReduce && buffObj.dur && buffObj.id <= 12) {
     buffObj.dur = Math.max(1, buffObj.dur - recv.stat.debuffDurReduce);
+  }
+  // 통아저씨 룰렛: 부여하는/받는 [기절] +1턴
+  if (buffObj.id === 4 && src !== recv && buffObj.dur) {
+    buffObj.dur += ((src.stat && src.stat.stunGive) || 0) + ((recv.stat && recv.stat.stunRecv) || 0);
   }
   // 상태이상 저항: stat.resistAll + stat['resist_<id>'] 확률로 무효 (디버프에만)
   if (buffObj.isDebuff && src !== recv && recv.stat) {
@@ -2148,6 +2188,9 @@ function _initChar(char, flag) {
   char.nameOri = char.name;
   char.nameTypeOri = char.nameType;
   char.skillOri = JSON.parse(JSON.stringify(char.skill));
+  for (const k in (char.items || {})) {   // 드라이브 교체 아이템 (흑마법 의식 로브)
+    const it = char.items[k]; if (it && it.driveOverride) char.skillOri.drive = JSON.parse(JSON.stringify(it.driveOverride));
+  }
   char.lastDamage = 0;
   char.damageDone = 0;
   char.damageTaken = 0;

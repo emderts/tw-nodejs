@@ -226,6 +226,7 @@ function makeRosterEnemy(char) {
 function enemyFromFallen(row, char) {
   const e = JSON.parse(row.char_data);
   e.title = '쓰러진 모험가';
+  e.isFallen = true;
   e.inventory = [];
   if (!e.deck || e.deck.length === 0) e.deck = [0, 0, 1, 1, 2, 2].map(t => ({ type: t }));
   // 덱 편중을 성향으로
