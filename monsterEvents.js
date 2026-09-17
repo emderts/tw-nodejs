@@ -28,7 +28,7 @@ const before = {
   mTaurus: { title: '축사', desc: '거대한 발자국이 축사 안으로 이어진다. 타우러스가 여기 있다.',
     options: [
       { label: '소를 풀어준다 (적 덱에서 바위 2장 제거)', effect: (ch, mon, h) => { const n = h.removeCards(mon, 1, 2); return '무리가 흩어졌다. 바위 ' + n + '장 제거.'; } },
-      { label: '우리를 잠근다 (재도전 ♥ +1)', effect: (ch) => { const l = ch.run.lives === undefined ? 1 : ch.run.lives; if (l >= 3) return '더는 받을 수 없다.'; ch.run.lives = l + 1; return '퇴로를 확보했다. 재도전 +1.'; } }
+      { label: '우리를 잠근다 (재도전 ♥ +1)', effect: (ch) => { const l = ch.run.lives === undefined ? 1 : ch.run.lives; if (l >= h.maxLives(ch)) return '더는 받을 수 없다.'; ch.run.lives = l + 1; return '퇴로를 확보했다. 재도전 +1.'; } }
     ] },
   mMegaTaurus: { title: '떨리는 대지', desc: '메가 타우러스가 가까이 있다. 발밑에서 뿔 하나가 나뒹군다.',
     options: [
@@ -113,7 +113,7 @@ const before = {
   rJulius: { title: '되감긴 발자국', desc: '같은 발자국이 몇 번이고 겹쳐 있다. 줄리어스가 여기서 시간을 되돌렸다.',
     options: [
       { label: '발자국을 지운다 (적 드라이브 무효)', effect: (ch, mon) => { delete mon.skill.drive; return '되돌릴 길이 없다.'; } },
-      { label: '따라 밟는다 (재도전 ♥ +1)', effect: (ch) => { const l = ch.run.lives === undefined ? 1 : ch.run.lives; if (l >= 3) return '더는 받을 수 없다.'; ch.run.lives = l + 1; return '한 번 더 돌아올 수 있다. 재도전 +1.'; } }
+      { label: '따라 밟는다 (재도전 ♥ +1)', effect: (ch) => { const l = ch.run.lives === undefined ? 1 : ch.run.lives; if (l >= h.maxLives(ch)) return '더는 받을 수 없다.'; ch.run.lives = l + 1; return '한 번 더 돌아올 수 있다. 재도전 +1.'; } }
     ] },
   rsInzeal: { title: '심연의 문', desc: '인-질이 넘어온 문이 열려 있다.',
     options: [
@@ -151,7 +151,7 @@ const after = {
                { label: '재를 모아 판다 (유니크 리설트 카드)', effect: (ch, i, h) => { ch.inventory.push(h.resultCard(ch.rank, 6)); return '유니크 리설트 카드 획득.'; } } ] },
   eBroken: { title: '망자의 안식', desc: '직검을 든 망자가 마침내 쉬었다.',
     options: [ { label: '검을 거둔다 (레어 무기)', effect: (ch, i, h) => { const it = h.gear(ch.rank, 2, 0); if (it) { ch.inventory.push(it); return it.name + ' 획득.'; } return '검이 부서졌다.'; } },
-               { label: '기도한다 (재도전 ♥ +1)', effect: (ch) => { const l = ch.run.lives === undefined ? 1 : ch.run.lives; if (l >= 3) return '더는 받을 수 없다.'; ch.run.lives = l + 1; return '재도전 +1.'; } } ] },
+               { label: '기도한다 (재도전 ♥ +1)', effect: (ch) => { const l = ch.run.lives === undefined ? 1 : ch.run.lives; if (l >= h.maxLives(ch)) return '더는 받을 수 없다.'; ch.run.lives = l + 1; return '재도전 +1.'; } } ] },
   eCrossbow: { title: '석궁', desc: '망자의 석궁이 아직 쓸 만하다.',
     options: [ { label: '가위 스킬에 단다 (가위 스킬 계수 +0.15)', effect: (ch) => { const s = ch.skill.base[0]; s.damage = Math.round((s.damage + 0.15) * 100) / 100; return s.name + ' 계수 ' + s.damage + '.'; } },
                { label: '판다 (골드 +50)', effect: (ch) => { ch.gold += 50; return '50골드.'; } } ] },
@@ -192,7 +192,7 @@ const after = {
     options: [ { label: '한 번 더 (이번 런 덱 리셋 +1)', effect: (ch) => { ch.run.extraResets = (ch.run.extraResets || 0) + 1; return '덱 리셋 +1.'; } },
                { label: '시간을 판다 (골드 +90)', effect: (ch) => { ch.gold += 90; return '90골드.'; } } ] },
   rJulius: { title: '되감기의 끝', desc: '줄리어스가 더는 되돌리지 못했다.',
-    options: [ { label: '회중시계 (재도전 ♥ +1)', effect: (ch) => { const l = ch.run.lives === undefined ? 1 : ch.run.lives; if (l >= 3) return '더는 받을 수 없다.'; ch.run.lives = l + 1; return '재도전 +1.'; } },
+    options: [ { label: '회중시계 (재도전 ♥ +1)', effect: (ch) => { const l = ch.run.lives === undefined ? 1 : ch.run.lives; if (l >= h.maxLives(ch)) return '더는 받을 수 없다.'; ch.run.lives = l + 1; return '재도전 +1.'; } },
                { label: '시간의 지혜 (스킬 3개 계수 +0.05)', effect: (ch) => { for (const s of ch.skill.base) s.damage = Math.round((s.damage + 0.05) * 100) / 100; return '모든 스킬 계수 +0.05.'; } } ] },
   rsInzeal: { title: '심연의 잔향', desc: '인-질이 사라진 자리에 검은 결정이 남았다.',
     options: [ { label: '결정 (에픽 장비)', effect: (ch, i, h) => { const it = h.gear(ch.rank, 5); if (it) { ch.inventory.push(it); return it.name + ' 획득.'; } return '부서졌다.'; } },

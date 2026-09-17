@@ -25,6 +25,18 @@ function getItemSafe(rank, rarity, type) {
 }
 
 // ---------- 런 상태 ----------
+// 장착 아이템의 로그라이크 효과(runEffect) 조회. 같은 키가 여럿이면 합산(수치) / true(플래그)
+function runEffect(char, key) {
+  let acc = null;
+  for (const k in (char.items || {})) {
+    const it = char.items[k];
+    if (!it || !it.runEffect || it.runEffect.key !== key) continue;
+    const v = it.runEffect.value;
+    acc = (typeof v === 'number') ? ((acc || 0) + v) : v;
+  }
+  return acc;
+}
+function maxLives(char) { return 3 + (runEffect(char, 'luckyCoin') ? 1 : 0); }
 function initRun(char) {
   char.run = { cycle: 1, stageIdx: 0, floor: 1, lives: 1 };   // lives = 남은 재도전 횟수
   char.gold = 80;
@@ -93,6 +105,8 @@ function playCard(st, type) {
   return card;
 }
 function handTypes(st) { return st.hand.map(c => c.type).sort((a, b) => a - b); }   // 가위-바위-보 순
+// 추가 드로우 (첫 턴 손패 보너스용)
+function drawExtra(st, n) { for (let i = 0; i < n; i++) { if (!st.draw.length) { if (!st.discard.length) break; st.draw = shuffle(st.discard); st.discard = []; } st.hand.push(st.draw.pop()); } return st.hand; }
 // 덱 리셋: 손패+버림+덱을 전부 섞어 새로 뽑음
 function resetDeck(st) {
   st.draw = shuffle(st.draw.concat(st.hand, st.discard)); st.hand = []; st.discard = [];
@@ -242,9 +256,10 @@ const SHOP_TYPES = Object.keys(SHOP_INFO);
 const SLOT_NAMES = ['무기', '방어구', '보조방어구', '장신구'];
 // 상점 후보 2곳 (서로 다른 종류)
 function makeShopOffers(char) {
-  const a = SHOP_TYPES[Math.floor(Math.random() * SHOP_TYPES.length)];
-  let b; do { b = SHOP_TYPES[Math.floor(Math.random() * SHOP_TYPES.length)]; } while (b === a);
-  return [a, b].map(t => {
+  const n = Math.min(SHOP_TYPES.length, 2 + (runEffect(char, 'shopOffers') || 0));
+  const picked = [];
+  while (picked.length < n) { const t = SHOP_TYPES[Math.floor(Math.random() * SHOP_TYPES.length)]; if (!picked.includes(t)) picked.push(t); }
+  return picked.map(t => {
     const o = { type: t, label: SHOP_INFO[t].label, blurb: SHOP_INFO[t].blurb };
     if (t === 'gearSlot') { o.slot = Math.floor(Math.random() * 4); o.label = SLOT_NAMES[o.slot] + ' 상인'; o.blurb = SLOT_NAMES[o.slot] + ' 레어 이상 4개'; }
     return o;
@@ -257,7 +272,8 @@ function makeShop(char, typeIn, opts) {
   const goods = [];
   let label = SHOP_INFO[type].label;
   const rarityPool = cycle < 4 ? [2, 2, 2, 4] : (cycle < 7 ? [2, 2, 4, 4] : [2, 4, 4, 5]);
-  const gearPrice = (it) => 40 + [0, 15, 35, 0, 70, 120][it.rarity] + 5 * cycle;
+  const gearDisc = 1 - (runEffect(char, 'gearDiscount') || 0), potDisc = 1 - (runEffect(char, 'potionDiscount') || 0);
+  const gearPrice = (it) => Math.round((40 + [0, 15, 35, 0, 70, 120][it.rarity] + 5 * cycle) * gearDisc);
   if (type === 'gear' || type === 'gearSlot') {
     const fixed = type === 'gearSlot' ? (opts.slot !== undefined ? opts.slot : Math.floor(Math.random() * 4)) : -1;
     if (fixed >= 0) label = SLOT_NAMES[fixed] + ' 상인';
@@ -270,7 +286,7 @@ function makeShop(char, typeIn, opts) {
   } else if (type === 'potion') {
     for (let i = 0; i < 4; i++) {
       const it = consumables.random();
-      goods.push({ kind: 'item', item: it, price: consumables.price(it.code, cycle) });
+      goods.push({ kind: 'item', item: it, price: Math.round(consumables.price(it.code, cycle) * potDisc) });
     }
   } else if (type === 'card') {
     for (let t = 0; t < 3; t++) goods.push({ kind: 'card', card: { type: t }, price: 45 + 5 * cycle });
@@ -287,7 +303,7 @@ function makeShop(char, typeIn, opts) {
   } else if (type === 'alchemist') {
     goods.push({ kind: 'stat', value: 2, name: '스탯 포인트 +2', price: 60 + 8 * cycle });
     goods.push({ kind: 'stat', value: 2, name: '스탯 포인트 +2', price: 60 + 8 * cycle });
-    goods.push({ kind: 'life', name: '재도전 +1 (최대 3)', price: 70 + 10 * cycle });
+    goods.push({ kind: 'life', name: '재도전 +1 (최대 ' + maxLives(char) + ')', price: 70 + 10 * cycle });
   }
   return { type, label, goods, bought: [] };
 }
@@ -455,9 +471,9 @@ function eventPool(char) {
   const lives = char.run.lives === undefined ? 1 : char.run.lives;
   const medicCost = 60 + 10 * char.run.cycle;
   pool.push({
-    code: 'medic', weight: lives < 2 ? 3 : 1, title: '떠돌이 의사', desc: '"한 번 더 일어설 힘을 팔지. ' + medicCost + '골드야." (재도전 최대 3)',
+    code: 'medic', weight: lives < 2 ? 3 : 1, title: '떠돌이 의사', desc: '"한 번 더 일어설 힘을 팔지. ' + medicCost + '골드야." (재도전 최대 ' + maxLives(char) + ')',
     options: [
-      { label: '치료받는다 (' + medicCost + '골드, 재도전 +1)', effect: (ch) => { const l = ch.run.lives === undefined ? 1 : ch.run.lives; if (l >= 3) return '더는 받을 수 없다.'; if (ch.gold < medicCost) return '골드가 부족하다.'; ch.gold -= medicCost; ch.run.lives = l + 1; return '재도전 +1. 현재 ' + ch.run.lives + '회.'; } },
+      { label: '치료받는다 (' + medicCost + '골드, 재도전 +1)', effect: (ch) => { const l = ch.run.lives === undefined ? 1 : ch.run.lives; if (l >= maxLives(ch)) return '더는 받을 수 없다.'; if (ch.gold < medicCost) return '골드가 부족하다.'; ch.gold -= medicCost; ch.run.lives = l + 1; return '재도전 +1. 현재 ' + ch.run.lives + '회.'; } },
       { label: '거절한다', effect: () => '의사는 다음 환자를 찾아 떠났다.' }
     ]
   });
@@ -576,7 +592,7 @@ function pickArtifact(rank) {
 function monsterHelpers() {
   return {
     T: ['가위', '바위', '보'],
-    addBuff, calcStats: (c) => deps.calcStats(c),
+    addBuff, calcStats: (c) => deps.calcStats(c), maxLives,
     // 적 덱에서 카드 n장 제거 (type null이면 무작위). 최소 3장은 남김
     removeCards: (mon, type, n) => { let k = 0; for (let i = 0; i < n; i++) { if (mon.deck.length <= 3) break; const idx = type === null ? Math.floor(Math.random() * mon.deck.length) : mon.deck.findIndex(c => c.type === type); if (idx < 0) break; mon.deck.splice(idx, 1); k++; } return k; },
     gear: (rank, rarity, type) => getItemSafe(rank, rarity, type === undefined ? Math.floor(Math.random() * 4) : type),
@@ -647,11 +663,14 @@ function applyEvent(char, code, optIdx) {
   const ev = makeEventByCode(char, code);
   if (!ev || !ev.options[optIdx]) return null;
   const o = ev.options[optIdx];
-  return o.effect(char, o.arg);
+  const goldBefore = char.gold;
+  const r = o.effect(char, o.arg);
+  if (runEffect(char, 'luckyCoin') && char.gold > goldBefore) char.gold += (char.gold - goldBefore);   // 행운의 동전: 이벤트 골드 2배
+  return r;
 }
 
 module.exports = {
-  configure, TOTAL_CYCLES, HAND_SIZE, RESETS_PER_BATTLE, resetDeck, initRun, stage, stageLabel, floorNo, isBossCycle, rankForCycle, advance,
+  configure, TOTAL_CYCLES, HAND_SIZE, RESETS_PER_BATTLE, resetDeck, drawExtra, runEffect, maxLives, initRun, stage, stageLabel, floorNo, isBossCycle, rankForCycle, advance,
   newDeckState, drawHand, playCard, handTypes, deckCounts, aiPick, makeEnemy, enemyFromFallen, snapshotForFallen,
   makeMonster, makeRosterEnemy, makeShop, makeShopOffers, makeEvent, makeEventByCode, applyEvent, applyBuffs, applyEnemyDebuffs, tickBuffs
 };

@@ -2,7 +2,7 @@ const cons = require('./constant');
 
 var itemList = [];
 module.exports.list = itemList;
-itemList[0] = { id : 0, name : '﻿초보자의 단련검', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_WEAPON, rank : 9, rarity : cons.ITEM_RARITY_COMMON, stat : { phyAtkMin : 8, phyAtkMax : 12, magAtkMin : 8, magAtkMax : 12, crit : 0.02 }, effect : [] };
+itemList[0] = { id : 0, name : '초보자의 단련검', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_WEAPON, rank : 9, rarity : cons.ITEM_RARITY_COMMON, stat : { phyAtkMin : 8, phyAtkMax : 12, magAtkMin : 8, magAtkMax : 12, crit : 0.02 }, effect : [] };
 itemList[1] = { id : 1, name : '낡은 장검', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_WEAPON, rank : 8, rarity : cons.ITEM_RARITY_COMMON, stat : { phyAtkMin : 13, phyAtkMax : 17, magAtkMin : 13, magAtkMax : 17, crit : 0.02 }, effect : [] };
 itemList[2] = { id : 2, name : '비파형 청동검', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_WEAPON, rank : 7, rarity : cons.ITEM_RARITY_COMMON, stat : { phyAtkMin : 20, phyAtkMax : 24, magAtkMin : 20, magAtkMax : 24, crit : 0.03 }, effect : [] };
 itemList[3] = { id : 3, name : '토룡의 뿔칼', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_WEAPON, rank : 6, rarity : cons.ITEM_RARITY_COMMON, stat : { phyAtkMin : 27, phyAtkMax : 33, magAtkMin : 27, magAtkMax : 33, crit : 0.03 }, effect : [] };
@@ -1038,7 +1038,7 @@ itemList[462] = { id : 462, name : '검정색 타이즈', nameType : cons.NAME_K
               {code : cons.EFFECT_TYPE_RESOLVE_DRIVE, active : cons.ACTIVE_TYPE_EVADE}] };
 itemList[463] = { id : 463, name : '만크릭의 의지', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_ARMOR, flavor : '황무지에서 죽은 아내의 복수를 실현하고 있는 복수귀의 의지가 담긴 갑옷.', rank : 6, rarity : cons.ITEM_RARITY_UNIQUE, stat : { phyReduce : 0.065, magReduce : 0.065, maxHp : 286, critDmg : 0.1 }, 
     effectDesc : '공격 시 자신에게 1턴 간 [복수의 의지] 버프 부여<br><br>[복수의 의지] : 스킬 피해 +10%', 
-    effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_ATTACK, buffCode : 10090, buffDur : 2}] };
+    effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_ATTACK, buffCode : 10500, buffDur : 2}] };
 itemList[464] = { id : 464, name : '불타는 과수원 경갑', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_ARMOR, flavor : '다양한 영석들로 장식되어 있는 갑옷이다. 강렬한 온기가 느껴진다.', rank : 6, rarity : cons.ITEM_RARITY_UNIQUE, stat : { phyReduce : 0.065, magReduce : 0.065, maxHp : 286, critDmg : 0.1 }, 
     effectDesc : '피격 시 10% 확률로 자신에게 [타오르는 영석-악], [타오르는 영석-수호], [타오르는 영석-충전] 중 하나 부여, [불타는 과수원 방패] 착용 시 피격 시 10% 확률로 자신에게 [에너지 파동] 버프 부여<br><br>[타오르는 영석-*] : 턴 종료 시 10% 확률로 적 1턴 [화상] 부여, 드라이브 스킬 사용 시 1중첩 소거되며 자신에게 [에너지 파동] 버프 부여<br>[-악] : 마법 0.3 피해<br>[-수호] : 피해감소 3<br>[-충전] : SP충전 +4<br>[에너지 파동] : 공격 시 20% 확률로 소거되며 마법 1.1 피해', 
     effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_TAKE_HIT, chance : 0.1, buffCode : [90006, 90007, 90008], buffDur : null, multiple : true},
@@ -1054,7 +1054,7 @@ itemList[467] = { id : 467, name : '에스페란자의 흰 가운', nameType : c
               {code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_USE_SPECIAL, buffCode : 10091, buffDur : null}] };
 itemList[468] = { id : 468, name : '라이포트 - 고대 왕의 비보', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_ARMOR, flavor : '동부 대륙의 고대 왕이 사용했다고 알려진 갑옷. 이 왕은 전투에 매우 능했다고 하며 그가 전장에 뛰어들면 그를 손댈 수도 없었다고 전해진다.', rank : 6, rarity : cons.ITEM_RARITY_EPIC, stat : { phyReduce : 0.08, magReduce : 0.06, maxHp : 308, critDmg : 0.1, spRegen : 1 }, 
     effectDesc : '자신의 첫 스페셜 스킬을 \'[왕의 비보] : SP80, 3턴 간 무적 및 매 턴 종료 시 상대에게 0.8 물리 피해\' 로 변경', 
-    effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_BATTLE_START, buffCode : 10092, buffDur : null}] };
+    effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_BATTLE_START, buffCode : 10502, buffDur : null}] };
 itemList[469] = { id : 469, name : '군주의 검은 갑주', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_ARMOR, flavor : '피와 살점이 묻은 대검을 휘두르는 흑기사들과 그들을 이끄는 검은 군주는 전장의 재앙이다.', rank : 6, rarity : cons.ITEM_RARITY_EPIC, stat : { phyReduce : 0.077, magReduce : 0.065, maxHp : 400, evasion : -0.03 }, 
     effectDesc : '피격 시 자신에게 [격노의 메가데우스] 버프 부여 (중첩 가능, 공격 시 전체 소거)<br><br>[격노의 메가데우스] : 물리/마법공격력 +17, 회피-7%', 
     effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_TAKE_HIT, buffCode : 10094, buffDur : null}] };
@@ -1249,6 +1249,71 @@ itemList[516] = { id : 516, name : '석영 고원 몬스터 볼', nameType : con
     effectDesc : '75% 생명력으로 떨어질 때까지 피카츄가 전투에 참여', 
     effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_BATTLE_START, buffCode : 90062, buffDur : null}] };
 
+// ---------- 9급 신규 아이템 (문서 20종 + 로그라이크 13종) ----------
+itemList[521] = { id : 521, name : '도면에서 나온 대거', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_WEAPON, flavor : '흘러들어온 물건을 재어 그린 도면. 공방은 그것만 믿고 쇠를 깎는다.', rank : 9, rarity : cons.ITEM_RARITY_RARE, stat : { phyAtkMin : 12, phyAtkMax : 16, magAtkMin : 8, magAtkMax : 12, crit : 0.04, hit : 0.04 }, 
+    effectDesc : '', effect : [] };
+itemList[522] = { id : 522, name : '첫 쇳물의 핸드액스', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_WEAPON, flavor : '그해 처음 부은 쇳물로 벼린다. 철산은 이것을 아껴 두었다 내준다.', rank : 9, rarity : cons.ITEM_RARITY_RARE, stat : { phyAtkMin : 14, phyAtkMax : 18, magAtkMin : 6, magAtkMax : 10, crit : 0.02, critDmg : 0.1 }, 
+    effectDesc : '전투 첫 턴의 공격은 반드시 치명타', effect : [{code : cons.EFFECT_TYPE_FORCE_CRIT, active : cons.ACTIVE_TYPE_CALC_DAMAGE, chkTurnUnder : 1, anySkill : true}] };
+itemList[523] = { id : 523, name : '서약의 완드', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_WEAPON, flavor : '사단에 드는 날 손에 쥐여준다. 사람들은 그날을 오래 이야기한다.', rank : 9, rarity : cons.ITEM_RARITY_RARE, stat : { phyAtkMin : 6, phyAtkMax : 10, magAtkMin : 12, magAtkMax : 16, crit : 0.02, spRegen : 1 }, 
+    effectDesc : '전투 시작 시 SP +15', effect : [{code : cons.EFFECT_TYPE_SELF_SP, active : cons.ACTIVE_TYPE_BATTLE_START, value : 15}] };
+itemList[524] = { id : 524, name : '숲이 내어준 가지', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_WEAPON, flavor : '숲지기는 가지를 꺾지 않는다. 숲이 떨어뜨린 것 가운데서 고른다.', rank : 9, rarity : cons.ITEM_RARITY_RARE, stat : { phyAtkMin : 6, phyAtkMax : 10, magAtkMin : 11, magAtkMax : 15, crit : 0.02, hpRegen : 2 }, 
+    effectDesc : '생명력 회복량 +15%', effect : [{code : cons.EFFECT_TYPE_MULTIPLY_HEAL, active : cons.ACTIVE_TYPE_DO_HEAL, value : 1.15}] };
+itemList[525] = { id : 525, name : '맹세하는 강철', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_WEAPON, flavor : '병기창의 검을 받는 날, 제국군은 제 이름 대신 맹세를 말한다.', rank : 9, rarity : cons.ITEM_RARITY_RARE, stat : { phyAtkMin : 11, phyAtkMax : 15, magAtkMin : 11, magAtkMax : 15, crit : 0.02, maxHp : 15 }, 
+    effectDesc : '직전 턴과 같은 스킬을 사용하면 피해 +10%', effect : [{code : cons.EFFECT_TYPE_MULTIPLY_DAMAGE, active : cons.ACTIVE_TYPE_CALC_DAMAGE, chkSameSkill : true, value : 1.1}] };
+itemList[526] = { id : 526, name : '성문의 스피어', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_WEAPON, flavor : '공화국에서 이것을 받는 것은 문 하나를 맡는다는 뜻이다.', rank : 9, rarity : cons.ITEM_RARITY_RARE, stat : { phyAtkMin : 13, phyAtkMax : 17, magAtkMin : 7, magAtkMax : 11, crit : 0.02, dmgReduce : 2 }, 
+    effectDesc : '받는 피해 -6%', effect : [{code : cons.EFFECT_TYPE_MULTIPLY_DAMAGE, active : cons.ACTIVE_TYPE_CALC_DAMAGE_RECEIVE, value : 0.94}] };
+itemList[527] = { id : 527, name : '동방의 검은 각궁', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_WEAPON, flavor : '공방이 제 이름을 새겨 내보내는 활. 이름이 걸린 물건은 대충 만들지 않는다.', rank : 9, rarity : cons.ITEM_RARITY_RARE, stat : { phyAtkMin : 12, phyAtkMax : 16, magAtkMin : 8, magAtkMax : 12, crit : 0.02, hit : 0.06 }, 
+    effectDesc : '이 무기의 공격은 회피당하지 않는다', effect : [{code : cons.EFFECT_TYPE_ADD_DAMAGE_OBJECT, active : cons.ACTIVE_TYPE_CALC_DAMAGE, anySkill : true, key : 'hit', value : 1}] };
+itemList[528] = { id : 528, name : '모래를 밟은 가죽조끼', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_ARMOR, flavor : '경기장이 공인한 자만 모래를 밟는다. 이것이 그 자격을 말한다.', rank : 9, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 45, phyReduce : 0.025, magReduce : 0.025, evasion : 0.05, crit : 0.02 }, 
+    effectDesc : '적의 생명력 비율이 자신보다 높으면 치명타 +5%p', effect : [{code : cons.EFFECT_TYPE_ADD_DAMAGE_OBJECT, active : cons.ACTIVE_TYPE_CALC_DAMAGE, chkOppHpHigher : true, anySkill : true, key : 'crit', value : 0.05}] };
+itemList[529] = { id : 529, name : '손수 칠한 흑철', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_ARMOR, flavor : '기사단에 든 자가 제 손으로 검은 칠을 올린다. 그날부터 이름을 부르지 않는다.', rank : 9, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 70, phyReduce : 0.04, magReduce : 0.04, evasion : -0.03 }, 
+    effectDesc : '피격 시 25% 확률로 자신에게 2턴 간 [검은 칠] (물리/마법저항 +5%p)', effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_TAKE_HIT, chance : 0.25, buffCode : 10500, buffDur : 2}] };
+itemList[530] = { id : 530, name : '배웅받은 겉옷', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_ARMOR, flavor : '떠나는 날 마을이 한 벌을 지어 입혀 보낸다. 되돌아온 옷은 드물다.', rank : 9, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 32, magReduce : 0.07, spRegen : 1, evasion : 0.05 }, 
+    effectDesc : '턴 종료 시 생명력이 30% 이하면 자신에게 1턴 간 [배웅] (회피 +10%p)', effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_TURN_END, chkHp : 0.3, buffCode : 10501, buffDur : 1}] };
+itemList[531] = { id : 531, name : '글라디에이터즈 로드아웃', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_ARMOR, flavor : '투기장 검투사들이 입장 전에 걸치는 한 벌. 관중의 환호가 맞은 쪽으로 쏠리면, 때린 쪽의 기세가 꺾인다.', rank : 9, rarity : cons.ITEM_RARITY_EPIC, stat : { maxHp : 55, phyReduce : 0.03, magReduce : 0.03, evasion : 0.05, critDmg : 0.1 }, 
+    effectDesc : '피격 시 때린 상대의 SP -5', effect : [{code : cons.EFFECT_TYPE_OPP_SP, active : cons.ACTIVE_TYPE_TAKE_HIT, value : -5}] };
+itemList[532] = { id : 532, name : '천 감은 발싸개', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '', rank : 9, rarity : cons.ITEM_RARITY_COMMON, stat : { maxHp : 16, evasion : 0.04 }, 
+    effectDesc : '', effect : [] };
+itemList[533] = { id : 533, name : '사절의 재킷', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '공화국의 말을 대신 전하러 가는 자가 걸친다. 개인의 옷이 아니다.', rank : 9, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 19, spCharge : 2, phyReduce : 0.015, magReduce : 0.015 }, 
+    effectDesc : '전투 시작 시 SP +10', effect : [{code : cons.EFFECT_TYPE_SELF_SP, active : cons.ACTIVE_TYPE_BATTLE_START, value : 10}] };
+itemList[534] = { id : 534, name : '경계선의 버클러', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '사람의 땅과 메비우스가 갈리는 선. 수렵단은 그 선 위에서 이것을 받는다.', rank : 9, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 19, dmgReduce : 2, phyReduce : 0.02 }, 
+    effectDesc : '전투 중 처음 받는 피해 -30%', effect : [{code : cons.EFFECT_TYPE_MULTIPLY_DAMAGE, active : cons.ACTIVE_TYPE_CALC_DAMAGE_RECEIVE, value : 0.7, removeEffect : true}] };
+itemList[535] = { id : 535, name : '인장 박힌 워커', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '굽에 길드 인장을 박는다. 이 자국이 찍힌 길은 전령의 길로 친다.', rank : 9, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 19, evasion : 0.05, hit : 0.03 }, 
+    effectDesc : '회피 성공 시 SP +5', effect : [{code : cons.EFFECT_TYPE_SELF_SP, active : cons.ACTIVE_TYPE_EVADE, value : 5}] };
+itemList[536] = { id : 536, name : '세공대의 글러브', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '길드의 세공대에 앉는 자가 처음 받는다. 손끝 감각을 죽이지 않게 얇게 뜬다.', rank : 9, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 19, hit : 0.075, crit : 0.03, critDmg : 0.08 }, 
+    effectDesc : '', effect : [] };
+itemList[537] = { id : 537, name : '흔적만 남은 요일석 방패', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '박혀 있던 요일석은 떨어져 나가고 자국만 남았다. 그래도 승부가 멈춘 틈이면 남은 온기가 숨을 고르게 해 준다.', rank : 9, rarity : cons.ITEM_RARITY_EPIC, stat : { maxHp : 22, dmgReduce : 3, phyReduce : 0.02, magReduce : 0.02 }, 
+    effectDesc : '가위바위보 무승부 시 최대 생명력의 2% 회복', effect : [{code : cons.EFFECT_TYPE_SELF_HP, active : cons.ACTIVE_TYPE_TIE, value : 0.02, isPercentStat : true, percentKey : 'maxHp'}] };
+itemList[538] = { id : 538, name : '나무 구슬 목걸이', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '', rank : 9, rarity : cons.ITEM_RARITY_COMMON, stat : { maxHp : 18, hpRegen : 1 }, 
+    effectDesc : '', effect : [] };
+itemList[539] = { id : 539, name : '이름 새긴 영석 부적', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '영석 하나를 통째로 깎는다. 공방이 제 이름을 새기는 몇 안 되는 물건.', rank : 9, rarity : cons.ITEM_RARITY_UNIQUE, stat : { maxHp : 20 }, 
+    effectDesc : '전투 시작 시 자신에게 [영석의 온기] (피해를 20 흡수하는 보호막)', effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_BATTLE_START, buffCode : 10502, buffDur : null}] };
+itemList[540] = { id : 540, name : '도박꾼의 카드집', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '패를 한 벌 더 숨겨 두는 사람의 물건. 판이 기울면 판을 뒤집는다.', rank : 9, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 20, crit : 0.03 }, 
+    effectDesc : '전투당 덱 리셋 +1회', effect : [], runEffect : { key : 'extraResets', value : 1 } };
+itemList[541] = { id : 541, name : '한 장 접은 카드', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '모서리가 접힌 카드 한 장. 어디에 끼워 두었는지는 손이 기억한다.', rank : 9, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 20 }, 
+    effectDesc : '전투 첫 턴 손패 +1장', effect : [], runEffect : { key : 'firstHandBonus', value : 1 } };
+itemList[542] = { id : 542, name : '읽는 자의 안경', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '상대의 손끝을 오래 본 사람이 쓰던 안경. 알은 흐려도 버릇은 보인다.', rank : 9, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 19, hit : 0.05 }, 
+    effectDesc : '적 손패에서 가장 많은 종류를 표시', effect : [], runEffect : { key : 'revealEnemyMajor', value : true } };
+itemList[543] = { id : 543, name : '낡은 지혜의 패', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '오래된 도박꾼이 남긴 패. 뒤집기 전에 한 장은 이미 보인다고들 한다.', rank : 9, rarity : cons.ITEM_RARITY_UNIQUE, stat : { maxHp : 25, spRegen : 1 }, 
+    effectDesc : '전투 시작 시 적 손패 1장 공개', effect : [], runEffect : { key : 'revealEnemyOne', value : true } };
+itemList[544] = { id : 544, name : '엇갈린 두 자루', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_WEAPON, flavor : '같은 날 벼린 쌍검. 하나가 막히면 다른 하나가 자리를 지킨다.', rank : 9, rarity : cons.ITEM_RARITY_UNIQUE, stat : { phyAtkMin : 14, phyAtkMax : 18, magAtkMin : 14, magAtkMax : 18, crit : 0.04 }, 
+    effectDesc : '무승부 시 덱 카드를 소모하지 않는다', effect : [], runEffect : { key : 'keepCardOnTie', value : true } };
+itemList[545] = { id : 545, name : '행상인의 배낭', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '떠돌이 행상이 메던 배낭. 약병 자리가 따로 나 있다.', rank : 9, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 19, spCharge : 2 }, 
+    effectDesc : '상점에서 소모품 가격 -30%', effect : [], runEffect : { key : 'potionDiscount', value : 0.3 } };
+itemList[546] = { id : 546, name : '약재상의 절구', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '약재를 곱게 빻던 절구. 같은 약도 이걸로 빻으면 잘 듣는다.', rank : 9, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 22, hpRegen : 1 }, 
+    effectDesc : '회복 소모품 효과 +50%', effect : [], runEffect : { key : 'healPotionBonus', value : 0.5 } };
+itemList[547] = { id : 547, name : '독병 걸이', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '허리에 병을 여럿 매다는 걸이. 흔들리면서 약이 더 진해진다.', rank : 9, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 19, hit : 0.05 }, 
+    effectDesc : '상태이상 소모품 지속시간 +1턴', effect : [], runEffect : { key : 'statusPotionBonus', value : 1 } };
+itemList[548] = { id : 548, name : '비상용 주머니', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '언제나 물약 하나가 들어 있는 주머니. 꺼내 써도 다음 싸움엔 다시 차 있다.', rank : 9, rarity : cons.ITEM_RARITY_EPIC, stat : { maxHp : 25, phyReduce : 0.02, magReduce : 0.02 }, 
+    effectDesc : '전투 시작 시 치유 물약 1개 임시 지급 (전투 종료 시 소멸)', effect : [], runEffect : { key : 'freePotion', value : 'hp_s' } };
+itemList[549] = { id : 549, name : '길드 회원증', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '상인 길드의 회원증. 값을 부를 때 이걸 먼저 보인다.', rank : 9, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 20 }, 
+    effectDesc : '상점 장비 가격 -20%', effect : [], runEffect : { key : 'gearDiscount', value : 0.2 } };
+itemList[550] = { id : 550, name : '수금원의 장부', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '빚을 받으러 다니던 사람의 장부. 이긴 값은 꼭 받아 낸다.', rank : 9, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 20, spRegen : 1 }, 
+    effectDesc : '전투 승리 골드 +25%', effect : [], runEffect : { key : 'winGoldBonus', value : 0.25 } };
+itemList[551] = { id : 551, name : '갈림길의 이정표', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '길이 갈리는 곳마다 서 있던 이정표의 조각. 하나 더 보인다.', rank : 9, rarity : cons.ITEM_RARITY_UNIQUE, stat : { maxHp : 25, hit : 0.03 }, 
+    effectDesc : '상점 갈림길 선택지 +1', effect : [], runEffect : { key : 'shopOffers', value : 1 } };
+itemList[552] = { id : 552, name : '행운의 동전', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '던지면 늘 같은 면이 나오는 동전. 그래서 아무도 내기에 받아 주지 않는다.', rank : 9, rarity : cons.ITEM_RARITY_EPIC, stat : { maxHp : 25, evasion : 0.03 }, 
+    effectDesc : '이벤트로 얻는 골드 2배, 재도전 최대치 +1', effect : [], runEffect : { key : 'luckyCoin', value : true } };
 
 itemList.forEach(function(tgt) {
   tgt.base = JSON.parse(JSON.stringify(tgt.stat));

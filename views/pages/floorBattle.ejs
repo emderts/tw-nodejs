@@ -31,6 +31,7 @@
     <div class="charItem"><button id="handBtn0" type="button" disabled></button></div>
     <div class="charItem"><button id="handBtn1" type="button" disabled></button></div>
     <div class="charItem"><button id="handBtn2" type="button" disabled></button></div>
+    <div class="charItem" id="handWrap3" style="display:none"><button id="handBtn3" type="button" disabled></button></div>
   </div>
 <script>
   var socket = io();
@@ -77,7 +78,10 @@
     document.getElementById('espWrap').className = 'bar sp' + (s.esp[1] > 0 && s.esp[0] >= s.esp[1] ? ' ready' : '');
     for (var i = 0; i < 3; i++) {
       var b = document.getElementById('enemyBtn' + i);
-      b.innerHTML = glyph[i] + ' <span class="colorGold">×' + oDeckCnt[i] + '</span>' + (s.eplayed[i] ? ' <span style="color:var(--ash)">낸 ' + s.eplayed[i] + '</span>' : '') + '<br>' + oNames[i];
+      var hint = '';
+      if (s.ehint && s.ehint.type === 'one' && s.ehint.card === i) hint = ' <span style="color:var(--brass)">손패 ◆</span>';
+      if (s.ehint && s.ehint.type === 'major' && s.ehint.cards.indexOf(i) >= 0) hint = ' <span style="color:var(--brass)">손패 ▲</span>';
+      b.innerHTML = glyph[i] + ' <span class="colorGold">×' + oDeckCnt[i] + '</span>' + (s.eplayed[i] ? ' <span style="color:var(--ash)">낸 ' + s.eplayed[i] + '</span>' : '') + hint + '<br>' + oNames[i];
     }
     var rb = document.getElementById('resetBtn');
     rb.textContent = '덱 리셋 (' + s.resets + ')';
@@ -88,7 +92,8 @@
   var oNames = ['', '', ''], oDeckCnt = [0, 0, 0];
   function renderHand(types, drawN, discardN) {
     hand = types;
-    for (var i = 0; i < 3; i++) {
+    document.getElementById('handWrap3').style.display = types.length > 3 ? '' : 'none';
+    for (var i = 0; i < 4; i++) {
       var b = document.getElementById('handBtn' + i);
       if (i < types.length) {
         b.innerHTML = glyph[types[i]] + '<br>' + names[types[i]];
@@ -102,8 +107,8 @@
     }
     document.getElementById('deckInfo').textContent = '덱 ' + drawN + ' · 버림 ' + discardN;
   }
-  function lockHand() { for (var i = 0; i < 3; i++) document.getElementById('handBtn' + i).setAttribute('disabled', true); }
-  for (var i = 0; i < 3; i++) (function (i) {
+  function lockHand() { for (var i = 0; i < 4; i++) document.getElementById('handBtn' + i).setAttribute('disabled', true); }
+  for (var i = 0; i < 4; i++) (function (i) {
     document.getElementById('handBtn' + i).addEventListener('click', function () {
       if (i >= hand.length) return;
       lockHand();

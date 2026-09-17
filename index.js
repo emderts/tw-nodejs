@@ -242,9 +242,15 @@ io.on('connection', (socket) => {
       delete t.leftChr.curHp; delete t.leftChr.curSp; delete t.rightChr.curHp; delete t.rightChr.curSp;
       t.startHtml = t.bmod.procBattleStart(t.leftChr, t.rightChr, 1);
     }
+    const fresh = t.eplayed === undefined;
     run.drawHand(t.pdeck); run.drawHand(t.edeck);
+    if (fresh) {
+      const L = t.leftChr;
+      const fh = run.runEffect(L, 'firstHandBonus'); if (fh) run.drawExtra(t.pdeck, fh);   // 한 장 접은 카드
+      const fp = run.runEffect(L, 'freePotion'); if (fp) { const it = consumables.make(fp); if (it) { it.temp = true; L.inventory = L.inventory || []; L.inventory.push(it); } }   // 비상용 주머니
+    }
     if (!t.eplayed) t.eplayed = [0, 0, 0];
-    if (t.resets === undefined) t.resets = run.RESETS_PER_BATTLE + ((t.leftChr.run && t.leftChr.run.extraResets) || 0);
+    if (t.resets === undefined) t.resets = run.RESETS_PER_BATTLE + ((t.leftChr.run && t.leftChr.run.extraResets) || 0) + (run.runEffect(t.leftChr, 'extraResets') || 0);
     socket.emit('floorAck', t.startHtml, floorNames(t.leftChr), floorNames(t.rightChr), floorState(t), run.deckCounts(t.rightChr.deck));
   });
   socket.on('floorUse', function(room, uid, idx) {
@@ -255,10 +261,11 @@ io.on('connection', (socket) => {
     if (!it || it.type !== consumables.TYPE || !consumables.DEFS[it.code]) return;
     if (consumables.DEFS[it.code].card !== undefined) return;   // 카드는 floorSelect로
     t.bmod.result = '';
-    const html = consumables.apply(it.code, t.bmod, t.leftChr, t.rightChr, buffMdl);
+    const mods = { healBonus: run.runEffect(t.leftChr, 'healPotionBonus') || 0, statusBonus: run.runEffect(t.leftChr, 'statusPotionBonus') || 0 };
+    const html = consumables.apply(it.code, t.bmod, t.leftChr, t.rightChr, buffMdl, mods);
     const out = html + t.bmod.result;
     t.leftChr.inventory.splice(idx, 1);
-    if (!t.used) t.used = []; t.used.push(it.code);
+    if (!it.temp) { if (!t.used) t.used = []; t.used.push(it.code); }
     socket.emit('floorSelectAck', out, floorState(t));
   });
   socket.on('floorReset', function(room, uid) {
@@ -278,13 +285,14 @@ io.on('connection', (socket) => {
       if (!it || it.type !== consumables.TYPE || it.card === undefined) return;
       key = it.card; freeCard = true;
       t.leftChr.inventory.splice(parseInt(useIdx, 10), 1);
-      if (!t.used) t.used = []; t.used.push(it.code);
+      if (!it.temp) { if (!t.used) t.used = []; t.used.push(it.code); }
     } else if (!run.handTypes(t.pdeck).includes(key)) return;
     t.busy = true;
     const want = monster.selectFunc[t.rightChr.skillSelect](t.rightChr, key);
     const eKey = run.aiPick(t.edeck, want);
     const result = t.bmod.procBattleTurn(key, eKey, 1);
-    if (!freeCard) run.playCard(t.pdeck, key);
+    const tie = key === eKey && result.redecide;
+    if (!freeCard && !(tie && run.runEffect(t.leftChr, 'keepCardOnTie'))) run.playCard(t.pdeck, key);   // 엇갈린 두 자루: 무승부 시 카드 유지
     run.playCard(t.edeck, eKey);
     t.eplayed[eKey]++;
     if (result.redecide || !result.leftInfo) {
@@ -3620,8 +3628,16 @@ function floorState(t) {
     hp: [Math.max(0, Math.round(L.curHp)), Math.round(L.stat.maxHp)], sp: sp(L),
     ehp: [Math.max(0, Math.round(R.curHp)), Math.round(R.stat.maxHp)], esp: sp(R),
     eplayed: t.eplayed, edraw: t.edeck.draw.length, resets: t.resets,
-    items: (L.inventory || []).map((it, i) => ({ i, code: it.code, name: it.name, tooltip: it.tooltip, card: it.card })).filter(x => x.code && consumables.DEFS[x.code])
+    items: (L.inventory || []).map((it, i) => ({ i, code: it.code, name: it.name, tooltip: it.tooltip, card: it.card })).filter(x => x.code && consumables.DEFS[x.code]),
+    ehint: enemyHint(t)
   };
+}
+// 아이템 효과로 공개되는 적 손패 정보
+function enemyHint(t) {
+  const L = t.leftChr, hand = t.edeck.hand.map(c => c.type);
+  if (run.runEffect(L, 'revealEnemyOne') && hand.length) return { type: 'one', card: hand[0] };
+  if (run.runEffect(L, 'revealEnemyMajor') && hand.length) { const cnt = [0, 1, 2].map(x => hand.filter(y => y === x).length); const m = Math.max(...cnt); const tops = [0, 1, 2].filter(x => cnt[x] === m); return { type: 'major', cards: tops }; }
+  return null;
 }
 function floorNames(chara) {
   return chara.skill.base.map(sk => sk.name + '<div class="itemTooltip">' + sk.tooltip + (sk.flavor ? '<br><br><span class="tooltipFlavor">' + sk.flavor + '</span>' : '') + '</div>');
@@ -3745,7 +3761,7 @@ async function procFloorShop (req, res) {
     if (g.kind === 'item') char.inventory.push(g.item);
     else if (g.kind === 'card') char.deck.push(g.card);
     else if (g.kind === 'stat') char.statPoint = (char.statPoint || 0) + g.value;
-    else if (g.kind === 'life') { const l = char.run.lives === undefined ? 1 : char.run.lives; if (l >= 3) { char.gold += g.price; res.redirect('/nextFloor'); return; } char.run.lives = l + 1; }
+    else if (g.kind === 'life') { const l = char.run.lives === undefined ? 1 : char.run.lives; if (l >= run.maxLives(char)) { char.gold += g.price; res.redirect('/nextFloor'); return; } char.run.lives = l + 1; }
     shop.bought.push(idx);
     await saveChar(char, charRow.uid);
     res.redirect('/nextFloor');
@@ -3793,7 +3809,7 @@ async function procFloorResult (req, res) {
     for (const code of (t.used || [])) { const i = char.inventory.findIndex(x => x.type === consumables.TYPE && x.code === code); if (i >= 0) char.inventory.splice(i, 1); }
     run.tickBuffs(char);
     if (re.winnerLeft) {
-      const gold = 60 + 15 * char.run.cycle + (enemy.isBoss ? 100 : 0);
+      const gold = Math.round((60 + 15 * char.run.cycle + (enemy.isBoss ? 100 : 0)) * (1 + (run.runEffect(char, 'winGoldBonus') || 0)));
       char.gold += gold;
       char.statPoint += 3;
       addSpecialResultCard(char, 4);

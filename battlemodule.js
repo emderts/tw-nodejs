@@ -235,6 +235,10 @@ Battlemodule.prototype._doBattleTurnManual = function(left, right) {
         && !(findBuffByCode(this.charRight, 10004).length > 0 || findBuffByCode(this.charRight, 10005).length > 0)) {
       this.result += this.charLeft.name + '의 [ ' + this.charLeft.skill.base[left].name + ' ] vs ' + this.charRight.name + '의 [ ' + this.charRight.skill.base[right].name + ' ]</span><br>';
       this.result += '비겼습니다!<br>';
+      this.resolveEffects(this.charLeft, this.charRight, getItemEffects(this.charLeft, cons.ACTIVE_TYPE_TIE), null, this.charLeft.skill.base[left]);
+      this.resolveEffects(this.charRight, this.charLeft, getItemEffects(this.charRight, cons.ACTIVE_TYPE_TIE), null, this.charRight.skill.base[right]);
+      this.charLeft.lastSkillCode = this.charLeft.skill.base[left].code;
+      this.charRight.lastSkillCode = this.charRight.skill.base[right].code;
       this.redecide = true;
       return;
     }
@@ -461,6 +465,8 @@ Battlemodule.prototype._doBattleTurnManual = function(left, right) {
   }
 
   this.resolveTurnEnd(winner, loser);
+  if (skillUsed) winner.lastSkillCode = skillUsed.code;   // 직전 턴 스킬 기록 (맹세하는 강철 등)
+  if (skillFailed) loser.lastSkillCode = skillFailed.code;
 
   this.result += '</div></div>';
 
@@ -910,6 +916,15 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
       continue;
     }
     if (eff.chkTurn && this.turnCount < eff.chkTurn) {
+      continue;
+    }
+    if (eff.chkTurnUnder && this.turnCount > eff.chkTurnUnder) {   // N턴 이내에만
+      continue;
+    }
+    if (eff.chkSameSkill && (!skill || winner.lastSkillCode !== skill.code)) {   // 직전 턴과 같은 스킬
+      continue;
+    }
+    if (eff.chkOppHpHigher && (loser.curHp / loser.stat.maxHp) <= (winner.curHp / winner.stat.maxHp)) {   // 상대 체력 비율이 더 높을 때
       continue;
     }
     if (eff.chkDmgType && eff.chkDmgType !== damage.type) {
@@ -1463,7 +1478,7 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
       loser.curSp = swap - winner.curSp;
       this.result += 'SP가 재분배됩니다!<br>';
     } else if (eff.code === cons.EFFECT_TYPE_FORCE_CRIT) {
-      if (eff.skillCode && eff.skillCode === skill.code) {
+      if ((eff.skillCode && eff.skillCode === skill.code) || eff.anySkill) {
         damage.crit = true;
         this.result += '[ ' + eff.name + ' ] 효과로 치명타가 적용됩니다!<br>';
       } else {

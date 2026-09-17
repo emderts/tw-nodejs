@@ -39,10 +39,11 @@ function price(code, cycle) {
   return base + 3 * cycle;
 }
 // 전투 중 사용. 반환: 로그 문자열. bm: battlemodule 인스턴스, L/R: 전투용 캐릭터 복사본
-function apply(code, bm, L, R, buffMdl) {
+function apply(code, bm, L, R, buffMdl, mods) {
   const d = DEFS[code]; if (!d) return null;
+  mods = mods || {};
   const log = (s) => '<span class="skillDamage">' + L.name + '의 [ ' + d.name + ' ] 사용: ' + s + '</span><br>';
-  const heal = (p) => { const v = Math.round(L.stat.maxHp * p); L.curHp = Math.min(L.stat.maxHp, L.curHp + v); return log('생명력 ' + v + ' 회복'); };
+  const heal = (p) => { const v = Math.round(L.stat.maxHp * p * (1 + (mods.healBonus || 0))); L.curHp = Math.min(L.stat.maxHp, L.curHp + v); return log('생명력 ' + v + ' 회복'); };
   switch (code) {
     case 'hp_s': return heal(0.25);
     case 'hp_l': return heal(0.5);
@@ -55,7 +56,7 @@ function apply(code, bm, L, R, buffMdl) {
     case 'bomb': { const v = Math.max(1, Math.round(R.stat.maxHp * 0.12)); R.curHp = Math.max(1, R.curHp - v); return log(R.name + '에게 ' + v + ' 절대 피해'); }
     default: {
       if (STATUS[code]) {
-        const [bc, dur] = STATUS[code];
+        const [bc, dur0] = STATUS[code]; const dur = dur0 + (mods.statusBonus || 0);
         const buffObj = buffMdl.getBuffData({ buffCode: bc }); buffObj.dur = dur;
         bm.giveBuff(L, R, buffObj, true, d.name);
         return log(R.name + '에게 [' + buffObj.name + '] ' + dur + '턴');
