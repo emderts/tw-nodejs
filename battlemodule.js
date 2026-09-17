@@ -876,6 +876,8 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
       if (winner && winner.stat && winner.stat.ruleBreaker) chance *= (1 - winner.stat.ruleBreaker);
     }
     chance *= (1 + winner.stat.chanceEnh);
+    var moonBuff = eff.isItem ? (winner.buffs || []).find(x => x.id === 10590) : null;   // [태초의 흔들리는 달빛]
+    if (moonBuff) chance *= 3;
     if (eff.chanceAddKey) {
       var factor = eff.chanceAddKeyFactor ? eff.chanceAddKeyFactor : 1;
       if (eff.chanceAddKey == 'hit') {
@@ -1556,6 +1558,16 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
       }
     } else if (eff.code === 'noop') {
       // 후속 처리(stackReduce 등)만 수행
+    } else if (eff.code === 'dragon') {   // 캐버나이크: 고위 드래곤으로 변신
+      if (winner.isDragon) continue;
+      winner.isDragon = true;
+      winner.base = Object.assign({}, winner.base, { maxHp : 1799, phyAtk : winner.base.phyAtk, magAtk : winner.base.magAtk });
+      winner.skillOri = JSON.parse(JSON.stringify(eff.dragonSkill));
+      winner.skill = JSON.parse(JSON.stringify(eff.dragonSkill));
+      winner.nameOri = winner.name = '고위 드래곤 ' + winner.nameOri;
+      calcStats(winner, loser);
+      winner.curHp = 179;
+      this.result += '<span class="skillDamage">[ ' + eff.name + ' ] 맹약이 발동한다 — ' + winner.name + '으로 변모했다! (179 / 1799)</span><br>';
     } else if (eff.code === 'spZero') {
       winner.curSp = 0;
       this.result += '[ ' + eff.name + ' ] 효과로 SP가 0이 됐다.<br>';
@@ -1641,6 +1653,10 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
     }
     if (eff.maxUses) {
       eff.uses = (eff.uses || 0) + 1;
+    }
+    if (eff.isItem) {   // 달빛 스택 소거
+      const mb = (winner.buffs || []).find(x => x.id === 10590);
+      if (mb) { mb.stack = (mb.stack || 1) - 1; if (mb.stack <= 0) { removeBuff(mb); this.result += '[ 태초의 흔들리는 달빛 ] 달빛이 모두 흔들려 사라졌다.<br>'; } }
     }
     // ---- 후속 처리 (5급 아이템용) ----
     if (eff.removeSelfBuff) {
@@ -1800,6 +1816,8 @@ Battlemodule.prototype.giveBuff = function(src, recv, buffObj, printFlag, name) 
   if (buffObj.isDebuff && src !== recv && recv.stat && recv.stat.debuffDurReduce && buffObj.dur && buffObj.id <= 12) {
     buffObj.dur = Math.max(1, buffObj.dur - recv.stat.debuffDurReduce);
   }
+  // 땅에 닿지 않는 밑창: 자신은 상대에게 상태이상을 걸 수 없다
+  if (buffObj.isDebuff && src !== recv && src.items && Object.values(src.items).some(it => it && it.noGiveDebuff)) return;
   // 통아저씨 룰렛: 부여하는/받는 [기절] +1턴
   if (buffObj.id === 4 && src !== recv && buffObj.dur) {
     buffObj.dur += ((src.stat && src.stat.stunGive) || 0) + ((recv.stat && recv.stat.stunRecv) || 0);
@@ -1958,7 +1976,7 @@ function getItemEffects(chara, active) {
   const weaponSealed = (chara.buffs || []).some(b => b.id === 10514);   // [무기 시공간 추락]
   for (val in chara.items) {
     if (weaponSealed && val === 'weapon') continue;
-    rval = rval.concat(chara.items[val].effect.filter(x => (x.active === active)));
+    rval = rval.concat(chara.items[val].effect.filter(x => (x.active === active)).map(x => { x.isItem = true; return x; }));
     if (chara.items[val].socket) {
       for (sock of chara.items[val].socket) {
         sockets = sockets.concat(sock.effect.filter(x => (x.active === active)));

@@ -45,6 +45,11 @@ function initRun(char) {
 }
 // 사이클 시작 시: 홀수면 이번 사이클 몬스터를 미리 뽑아 고정 (이벤트/망루가 참조·수정)
 function prepareCycle(char) {
+  // 줄리어스의 중단점: 사이클 시작 상태 저장 (아직 안 쓴 경우에만)
+  if (runEffect(char, 'breakpoint') && !char.run.breakpointUsed) {
+    const snap = JSON.parse(JSON.stringify(char)); snap.run.breakpoint = null;
+    char.run.breakpoint = JSON.stringify(snap);
+  }
   if (monsterPool.isMonsterCycle(char.run.cycle)) { char.run.nextMonster = makeMonster(char); char.run.lastMonster = null; }
   else char.run.nextMonster = null;
 }

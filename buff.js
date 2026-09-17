@@ -6969,6 +6969,55 @@ module.exports.getBuffData = function(eff) {
   // ---- 3급 신규 아이템 버프 ----
 
   // ---- 2급 신규 아이템 버프 ----
+
+  // ---- 1급 신규 아이템 버프 ----
+  case 10588 :   // 프로스트 블레이드 [절대영도]
+    retObj.name = '절대영도'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 1; retObj.isDebuff = true;
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'evasion', value : -0.15 });
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'spCharge', value : -5 });
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_DAMAGE_RECEIVE, code : cons.EFFECT_TYPE_MULTIPLY_DAMAGE, anySkill : true, value : 1.1 });
+    break;
+  case 10589 :   // 팔뮤지리위스 [천년의 수호]
+    retObj.name = '천년의 수호'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 1; retObj.isDebuff = false;
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_DAMAGE_RECEIVE, code : cons.EFFECT_TYPE_MULTIPLY_DAMAGE, anySkill : true, value : 0.1 });
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_TURN_END, code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_MAGICAL, value : 0.7 });
+    break;
+  case 10590 :   // 태초의 서사 - 문 라이트 플레어 [태초의 흔들리는 달빛]
+    retObj.name = '태초의 흔들리는 달빛'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 2; retObj.maxStack = 5; retObj.isDebuff = false; retObj.durOff = null;
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'hit', value : 0 });
+    break;
+  case 10591 :   // 그림자만 남은 옷 [잔상]
+    retObj.name = '잔상'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 2; retObj.maxStack = 6; retObj.isDebuff = false; retObj.durOff = null;
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'evasion', value : 0.04 });
+    break;
+  case 10592 :   // 마지막 한 장 [마지막]
+    retObj.name = '마지막'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 1; retObj.isDebuff = false;
+    for (const k of ['phyAtk', 'magAtk', 'evasion', 'crit']) retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_PERCENTAGE, key : k, value : 0.6 });
+    retObj.durOffEffect = true;
+    break;
+  case 10593 :   // 베르하르트 [벽]
+    retObj.name = '벽'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 2; retObj.maxStack = 10; retObj.isDebuff = false; retObj.durOff = null;
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_DAMAGE_RECEIVE, code : cons.EFFECT_TYPE_MULTIPLY_DAMAGE, anySkill : true, stackable : true, value : -0.04 });
+    break;
+  case 10594 :   // 끝까지 간다 [전진]
+    retObj.name = '전진'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 2; retObj.maxStack = 99; retObj.isDebuff = false; retObj.durOff = null;
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_PERCENTAGE, key : 'phyAtk', value : 0.04 });
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_PERCENTAGE, key : 'magAtk', value : 0.04 });
+    break;
+  case 10595 :   // 정원사가 두고 간 씨앗 [자람]
+    retObj.name = '자람'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 2; retObj.maxStack = 10; retObj.isDebuff = false; retObj.durOff = null;
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'hit', value : 0 });
+    break;
+  case 10596 :   // [정원]
+    retObj.name = '정원'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 1; retObj.isDebuff = false; retObj.durOff = null;
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_TURN_END, code : cons.EFFECT_TYPE_SELF_HP, value : 0.04, isPercentStat : true, percentKey : 'maxHp' });
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_PERCENTAGE, key : 'phyAtk', value : 0.2 });
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_PERCENTAGE, key : 'magAtk', value : 0.2 });
+    break;
+  case 10597 :   // 단 한 발의 예의 [쏘고 난 뒤]
+    retObj.name = '쏘고 난 뒤'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 1; retObj.isDebuff = false; retObj.durOff = null;
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_DAMAGE, code : cons.EFFECT_TYPE_MULTIPLY_DAMAGE, anySkill : true, value : 0.75 });
+    break;
   case 10570 :   // 프레라티즈 스펠북 [이계의 수마] 보호막 (값은 shieldPct)
     retObj.name = '이계의 수마'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 1; retObj.isDebuff = false; retObj.durOff = null;
     retObj.effect.push({ active : cons.ACTIVE_TYPE_DEAL_DAMAGE_RECEIVE, code : cons.EFFECT_TYPE_SHIELD, value : 1 });

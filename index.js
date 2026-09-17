@@ -47,6 +47,7 @@ const app = express()
 .get('/floorResult', procFloorResult)
 .post('/floorCard', procFloorCard)
 .post('/removeCard', procRemoveCard)
+.post('/breakpoint', procBreakpoint)
 .get('/join', (req, res) => res.render('pages/join'))
 .post('/join', procJoin)
 .get('/logout', procLogout)
@@ -251,9 +252,10 @@ io.on('connection', (socket) => {
       const fp = run.runEffect(L, 'freePotion'); if (fp) { const n = fp === 'random2' ? 2 : 1; for (let k = 0; k < n; k++) { const it = (fp === 'random' || fp === 'random2') ? consumables.random() : consumables.make(fp); if (it) { it.temp = true; L.inventory = L.inventory || []; L.inventory.push(it); } } }   // 비상용 주머니 / 카시엔의 보따리 / 뤼순 창의 예비 명부
     }
     if (!t.eplayed) t.eplayed = [0, 0, 0];
-    if (t.redraws === undefined) t.redraws = run.runEffect(t.leftChr, 'redrawHand') || 0;
-    if (t.undos === undefined) t.undos = run.runEffect(t.leftChr, 'undoTurn') || 0;
-    if (t.resets === undefined) t.resets = run.RESETS_PER_BATTLE + ((t.leftChr.run && t.leftChr.run.extraResets) || 0) + (run.runEffect(t.leftChr, 'extraResets') || 0);
+    const oneMore = run.runEffect(t.leftChr, 'oneMore') || 0;
+    if (t.redraws === undefined) t.redraws = (run.runEffect(t.leftChr, 'redrawHand') || 0) + oneMore;
+    if (t.undos === undefined) t.undos = (run.runEffect(t.leftChr, 'undoTurn') || 0) + oneMore;
+    if (t.resets === undefined) t.resets = run.RESETS_PER_BATTLE + ((t.leftChr.run && t.leftChr.run.extraResets) || 0) + (run.runEffect(t.leftChr, 'extraResets') || 0) + oneMore;
     socket.emit('floorAck', t.startHtml, floorNames(t.leftChr), floorNames(t.rightChr), floorState(t), run.deckCounts(t.rightChr.deck));
   });
   socket.on('floorUse', function(room, uid, idx) {
@@ -3757,6 +3759,20 @@ async function pickEnemy (char, userId) {
 }
 
 // 전투 후 얻은 카드 수락/거부
+// 줄리어스의 중단점: 이번 사이클 시작 시점으로 복원 (런당 1회)
+async function procBreakpoint (req, res) {
+  try {
+    const ctx = await loadRunChar(req, res); if (!ctx) return;
+    const { charRow, char } = ctx;
+    if (!run.runEffect(char, 'breakpoint') || !char.run.breakpoint || char.run.breakpointUsed) { res.redirect('/'); return; }
+    const restored = JSON.parse(char.run.breakpoint);
+    restored.run.breakpointUsed = true;
+    restored.run.breakpoint = null;
+    delete req.session.floorShop; delete req.session.floorEvent; delete req.session.floorBattle;
+    await saveChar(restored, charRow.uid);
+    res.redirect('/');
+  } catch (e) { console.log(e); res.redirect('/'); }
+}
 // 마랑의 정리된 패: 덱에서 카드 1장 영구 제거 (런당 N회)
 async function procRemoveCard (req, res) {
   try {
