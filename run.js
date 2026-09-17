@@ -33,7 +33,7 @@ function initRun(char) {
 }
 // 사이클 시작 시: 홀수면 이번 사이클 몬스터를 미리 뽑아 고정 (이벤트/망루가 참조·수정)
 function prepareCycle(char) {
-  if (monsterPool.isMonsterCycle(char.run.cycle)) char.run.nextMonster = makeMonster(char);
+  if (monsterPool.isMonsterCycle(char.run.cycle)) { char.run.nextMonster = makeMonster(char); char.run.lastMonster = null; }
   else char.run.nextMonster = null;
 }
 function stage(char) { return STAGES[char.run.stageIdx]; }
@@ -560,7 +560,7 @@ function eventPool(char) {
   if (lm && !monsterPool.isMonsterCycle(char.run.cycle) && monsterEvents.after[lm.key]) {
     const src = monsterEvents.after[lm.key];
     pool.push({ code: 'mon_after', weight: monWeight(), title: src.title, desc: src.desc,
-      options: src.options.map(o => ({ label: o.label, effect: (ch) => { const r = o.effect(ch, ch.run.lastMonster, h); ch.run.lastMonster = null; return r; } })) });
+      options: src.options.map(o => ({ label: o.label, effect: (ch) => o.effect(ch, ch.run.lastMonster, h) })) });   // lastMonster는 다음 홀수 사이클 시작 때 정리
   }
 
   return pool;

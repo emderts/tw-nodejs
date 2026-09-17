@@ -3666,7 +3666,8 @@ async function procNextFloor (req, res) {
       res.render('pages/floorShop', { char, rv: runView(char), shop: sess.floorShop.shop, offers: sess.floorShop.offers, makeTooltip });
     } else if (st === 'event') {
       if (!sess.floorEvent || sess.floorEvent.key !== key) { sess.floorEvent = { key, code: run.makeEvent(char).code, done: null }; await saveChar(char, charRow.uid); }
-      const cur = run.makeEventByCode(char, sess.floorEvent.code);
+      let cur = run.makeEventByCode(char, sess.floorEvent.code);
+      if (!cur) { sess.floorEvent = { key, code: run.makeEvent(char).code, done: null }; await saveChar(char, charRow.uid); cur = run.makeEventByCode(char, sess.floorEvent.code); }   // 재구성 실패 시 새 이벤트
       res.render('pages/floorEvent', { char, rv: runView(char), ev: cur, done: sess.floorEvent.done });
     } else {
       // 전투: 방 생성 (이미 진행 중인 방이 있으면 재진입)
