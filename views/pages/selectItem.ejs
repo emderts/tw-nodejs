@@ -144,7 +144,7 @@
       }
       const dustInfo = [10, 14, 26, 26, 62, 170];
       if (mode == 2) {
-        rtext += '<br><br>해체 시 골드 : ' + ([5, 10, 20, 20, 45, 90][item.rarity] || 5);
+        rtext += '<br><br>해체 시 골드 : ' + (([5, 10, 20, 20, 45, 90][item.rarity] || 5) * (item.dustMod || 1));
       }
       if (mode == 5) {
         rtext += '<br><br>가루 요구량 : ' + Math.round(2 * dustInfo[item.rarity] * Math.pow(2, 9 - item.rank));

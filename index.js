@@ -3277,7 +3277,7 @@ async function procDismantleItem (req, res) {
     var tgt = char.inventory[body.itemNum];
     if (tgt.type <= 4) {
       char.inventory.splice(body.itemNum, 1);
-      var dustVal = goldInfo[tgt.rarity] || 5;   // 해체 → 골드
+      var dustVal = (goldInfo[tgt.rarity] || 5) * (tgt.dustMod || 1);   // 해체 → 골드 (대통주 등 dustMod 반영)
       char.gold = (char.gold || 0) + dustVal;
       if (char.quest[6]) {
         char.quest[6].progress += 1;

@@ -819,7 +819,7 @@ itemList[391] = { id : 391, name : '타임트리커', nameType : cons.NAME_KOR_N
     effectDesc : '적이 처음으로 스페셜 스킬 시전 시 자신과 적의 SP를 바꿈 (바꾼 뒤에도 적이 스페셜 스킬을 시전할 수 있다면 시전한다.)', 
     effect : [{code : cons.EFFECT_TYPE_SWAP_SP, active : cons.ACTIVE_TYPE_BEFORE_OPP_USE_SPECIAL, removeEffect : true}] };
 itemList[392] = { id : 392, name : '대통주', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '여기 웬 술이..?', rank : 7, rarity : cons.ITEM_RARITY_UNIQUE, stat : { maxHp : -150, spRegen : 3 }, dustMod : 3, 
-    effectDesc : '해체 시 가루 3배', effect : [] };
+    effectDesc : '해체 시 골드 3배 (유니크 45 → 135)', effect : [] };
 itemList[393] = { id : 393, name : '노란색 큐브', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '투명한 노란색 큐브. 왠지 치워야 할 것 같다.', rank : 7, rarity : cons.ITEM_RARITY_RARE, stat : { magAtkMin : 8, magAtkMax : 12, hpRegen : -1, critDmg : 0.15, crit : 0.03 }, 
     effectDesc : '', effect : [] };
 itemList[394] = { id : 394, name : '빨간색 큐브', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '투명한 빨간색 큐브. 왠지 치워야 할 것 같다.', rank : 7, rarity : cons.ITEM_RARITY_RARE, stat : { phyAtkMin : 8, phyAtkMax : 12, hpRegen : -1, critDmg : 0.15, crit : 0.03 }, 
@@ -1244,7 +1244,7 @@ itemList[514] = { id : 514, name : '로엔그린의 무위', nameType : cons.NAM
     effectDesc : '연속 공격 시 스킬 피해량 +13%', 
     effect : [{active : cons.ACTIVE_TYPE_CALC_DAMAGE, code : cons.EFFECT_TYPE_MULTIPLY_DAMAGE, value : 1.13, anySkill : true, chkWinLast : true}] };
 itemList[515] = { id : 515, name : '엎어진 콜라', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '그 중에는 카드를 닦는 이도 있었다..', rank : 6, rarity : cons.ITEM_RARITY_UNIQUE, stat : { phyReduce : -0.2, magReduce : -0.2, spCharge : 7 }, dustMod : 3, 
-    effectDesc : '해체 시 가루 3배', effect : [] };
+    effectDesc : '해체 시 골드 3배 (유니크 45 → 135)', effect : [] };
 itemList[516] = { id : 516, name : '석영 고원 몬스터 볼', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_SKILL_ARTIFACT, flavor : '', rank : 6, rarity : cons.ITEM_RARITY_RARE, stat : { }, 
     effectDesc : '75% 생명력으로 떨어질 때까지 피카츄가 전투에 참여', 
     effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_BATTLE_START, buffCode : 90062, buffDur : null}] };
