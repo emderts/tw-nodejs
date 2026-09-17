@@ -26,7 +26,8 @@
       <div class="bar hp"><i id="hpBar"></i></div><span class="num" id="hpNum"></span>
       <div class="bar sp" id="spWrap"><i id="spBar"></i></div><span class="num" id="spNum"></span>
     </div>
-    <div class="rb-tools"><span id="deckInfo"></span><button id="resetBtn" type="button" disabled>덱 리셋</button></div>
+    <div class="rb-tools"><span id="deckInfo"></span><span><button id="itemBtn" type="button" disabled>소모품</button> <button id="resetBtn" type="button" disabled>덱 리셋</button></span></div>
+    <div class="rb-items" id="itemList" style="display:none"></div>
     <div class="charItem"><button id="handBtn0" type="button" disabled></button></div>
     <div class="charItem"><button id="handBtn1" type="button" disabled></button></div>
     <div class="charItem"><button id="handBtn2" type="button" disabled></button></div>
@@ -48,7 +49,28 @@
     document.getElementById(id + 'Bar').style.width = (max > 0 ? Math.min(100, 100 * cur / max) : 0) + '%';
     document.getElementById(id + 'Num').textContent = cur + ' / ' + max;
   }
+  var items = [], itemsOpen = false;
+  function renderItems() {
+    var box = document.getElementById('itemList'), btn = document.getElementById('itemBtn');
+    btn.textContent = '소모품 (' + items.length + ')';
+    if (items.length) btn.removeAttribute('disabled'); else { btn.setAttribute('disabled', true); itemsOpen = false; }
+    box.style.display = itemsOpen && items.length ? '' : 'none';
+    box.innerHTML = '';
+    items.forEach(function (it) {
+      var b = document.createElement('button'); b.type = 'button';
+      b.innerHTML = '<b>' + it.name + '</b><br><small>' + (it.tooltip || '').replace('전투 중 사용: ', '') + '</small>';
+      b.addEventListener('click', function () {
+        itemsOpen = false; renderItems(); lockHand();
+        if (it.card !== undefined && it.card !== null) socket.emit('floorSelect', '<%= room %>', '<%= uid %>', it.card, it.i);
+        else socket.emit('floorUse', '<%= room %>', '<%= uid %>', it.i);
+      });
+      box.appendChild(b);
+    });
+    fitPadding();
+  }
+  document.getElementById('itemBtn').addEventListener('click', function () { itemsOpen = !itemsOpen; renderItems(); });
   function renderState(s) {
+    items = s.items || []; renderItems();
     bar('hp', s.hp[0], s.hp[1]); bar('ehp', s.ehp[0], s.ehp[1]);
     bar('sp', s.sp[0], s.sp[1]); bar('esp', s.esp[0], s.esp[1]);
     document.getElementById('spWrap').className = 'bar sp' + (s.sp[1] > 0 && s.sp[0] >= s.sp[1] ? ' ready' : '');
@@ -105,7 +127,7 @@
   });
   socket.on('floorSelectEnd', function (result) {
     document.getElementById('result').innerHTML = result + '<div class="backLink"><a href="/floorResult" class="btn-primary" style="padding:12px 24px">결과 보기</a></div>';
-    lockHand(); document.getElementById('resetBtn').setAttribute('disabled', true);
+    lockHand(); document.getElementById('resetBtn').setAttribute('disabled', true); items = []; renderItems();
     window.scrollTo(0, document.body.scrollHeight);
   });
 </script>

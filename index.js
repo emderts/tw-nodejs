@@ -16,6 +16,8 @@ const ach = require('./achievement');
 const chara = require('./chara');
 const roster = require('./roster');
 const run = require('./run');
+const consumables = require('./consumables');
+const buffMdl = require('./buff');
 run.configure({ getItem: _getItem, calcStats: calcStats, makeDayStone: makeDayStone, addResultCard: addSpecialResultCard, makeTooltip: (it) => makeTooltip(it) });
 const cons = require('./constant');
 const item = require('./items');
@@ -245,6 +247,20 @@ io.on('connection', (socket) => {
     if (t.resets === undefined) t.resets = run.RESETS_PER_BATTLE + ((t.leftChr.run && t.leftChr.run.extraResets) || 0);
     socket.emit('floorAck', t.startHtml, floorNames(t.leftChr), floorNames(t.rightChr), floorState(t), run.deckCounts(t.rightChr.deck));
   });
+  socket.on('floorUse', function(room, uid, idx) {
+    const t = trades[room];
+    if (!t || !t.floor || t.leftUid != uid || t.result || t.busy) return;
+    idx = parseInt(idx, 10);
+    const it = t.leftChr.inventory && t.leftChr.inventory[idx];
+    if (!it || it.type !== consumables.TYPE || !consumables.DEFS[it.code]) return;
+    if (consumables.DEFS[it.code].card !== undefined) return;   // 카드는 floorSelect로
+    t.bmod.result = '';
+    const html = consumables.apply(it.code, t.bmod, t.leftChr, t.rightChr, buffMdl);
+    const out = html + t.bmod.result;
+    t.leftChr.inventory.splice(idx, 1);
+    if (!t.used) t.used = []; t.used.push(it.code);
+    socket.emit('floorSelectAck', out, floorState(t));
+  });
   socket.on('floorReset', function(room, uid) {
     const t = trades[room];
     if (!t || !t.floor || t.leftUid != uid || t.result || t.busy || !t.resets) return;
@@ -252,16 +268,24 @@ io.on('connection', (socket) => {
     run.resetDeck(t.pdeck);
     socket.emit('floorSelectAck', null, floorState(t));
   });
-  socket.on('floorSelect', function(room, uid, key) {
+  socket.on('floorSelect', function(room, uid, key, useIdx) {
     const t = trades[room];
     if (!t || !t.floor || t.leftUid != uid || t.result || t.busy) return;
     key = parseInt(key, 10);
-    if (!run.handTypes(t.pdeck).includes(key)) return;
+    let freeCard = false;
+    if (useIdx !== undefined && useIdx !== null) {   // 일회용 카드 사용
+      const it = t.leftChr.inventory && t.leftChr.inventory[parseInt(useIdx, 10)];
+      if (!it || it.type !== consumables.TYPE || it.card === undefined) return;
+      key = it.card; freeCard = true;
+      t.leftChr.inventory.splice(parseInt(useIdx, 10), 1);
+      if (!t.used) t.used = []; t.used.push(it.code);
+    } else if (!run.handTypes(t.pdeck).includes(key)) return;
     t.busy = true;
     const want = monster.selectFunc[t.rightChr.skillSelect](t.rightChr, key);
     const eKey = run.aiPick(t.edeck, want);
     const result = t.bmod.procBattleTurn(key, eKey, 1);
-    run.playCard(t.pdeck, key); run.playCard(t.edeck, eKey);
+    if (!freeCard) run.playCard(t.pdeck, key);
+    run.playCard(t.edeck, eKey);
     t.eplayed[eKey]++;
     if (result.redecide || !result.leftInfo) {
       run.drawHand(t.pdeck);
@@ -903,6 +927,8 @@ async function procUseItem (req, res) {
             } 
           }
           res.render('pages/resultCard', {item : picked, nextIdx : nextIdx, remainCards : remainCards});
+        } else if (tgtObj.type === consumables.TYPE) {
+          res.send('소모품은 전투 중에만 쓸 수 있습니다.<br><a href="/">돌아가기</a>');
         } else if (tgtObj.type === cons.ITEM_TYPE_DAYSTONE) {
           res.render('pages/selectItem', {title : '요일석 사용', inv : chara.inventory, mode : 1, usedItem : body.itemNum, uid : null});
         } else if (tgtObj.type === 90001) {
@@ -3593,7 +3619,8 @@ function floorState(t) {
     hand: run.handTypes(t.pdeck), draw: t.pdeck.draw.length, discard: t.pdeck.discard.length,
     hp: [Math.max(0, Math.round(L.curHp)), Math.round(L.stat.maxHp)], sp: sp(L),
     ehp: [Math.max(0, Math.round(R.curHp)), Math.round(R.stat.maxHp)], esp: sp(R),
-    eplayed: t.eplayed, edraw: t.edeck.draw.length, resets: t.resets
+    eplayed: t.eplayed, edraw: t.edeck.draw.length, resets: t.resets,
+    items: (L.inventory || []).map((it, i) => ({ i, code: it.code, name: it.name, tooltip: it.tooltip, card: it.card })).filter(x => x.code && consumables.DEFS[x.code])
   };
 }
 function floorNames(chara) {
@@ -3761,6 +3788,8 @@ async function procFloorResult (req, res) {
     delete sess.floorBattle;
     const rv = runView(char);
 
+    // 전투 중 쓴 소모품 제거
+    for (const code of (t.used || [])) { const i = char.inventory.findIndex(x => x.type === consumables.TYPE && x.code === code); if (i >= 0) char.inventory.splice(i, 1); }
     run.tickBuffs(char);
     if (re.winnerLeft) {
       const gold = 60 + 15 * char.run.cycle + (enemy.isBoss ? 100 : 0);
@@ -4238,6 +4267,7 @@ function makeTooltip(item) {
   } else {
     // 요일석·리설트 카드 등 장비 외 아이템: 효과 설명 표시
     if (item.type == cons.ITEM_TYPE_DAYSTONE) rtext += '<br>요일석';
+    if (item.type == consumables.TYPE) rtext += '<br>소모품';
     if (item.effectDesc && item.effectDesc.length > 0) rtext += '<br>' + item.effectDesc;
     else if (item.tooltip && item.tooltip.length > 0) rtext += '<br>' + item.tooltip;
   }

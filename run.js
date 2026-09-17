@@ -4,6 +4,7 @@ const cons = require('./constant');
 const roster = require('./roster');
 const monsterPool = require('./monsterPool');
 const monsterEvents = require('./monsterEvents');
+const consumables = require('./consumables');
 
 const TOTAL_CYCLES = 10;
 const BOSS_CYCLES = [3, 6, 10];
@@ -231,7 +232,7 @@ function snapshotForFallen(char) {
 const SHOP_INFO = {
   gear:       { label: '장비 상인',        blurb: '슬롯 무작위 레어 이상 장비 4개' },
   gearSlot:   { label: '전문 장비 상인',   blurb: '한 슬롯의 레어 이상 장비 4개' },
-  stone:      { label: '요일석 상인',      blurb: '무작위 요일석 4개' },
+  potion:     { label: '소모품 상인',      blurb: '물약·폭탄·일회용 카드 등 4개' },
   card:       { label: '카드 상인',        blurb: '가위·바위·보 카드 각 1장' },
   result:     { label: '리설트 카드 상인', blurb: '슬롯별 리설트 카드 4장' },
   resultRare: { label: '고급 리설트 카드 상인', blurb: '레어·유니크 확정 리설트 카드' },
@@ -266,11 +267,10 @@ function makeShop(char, typeIn, opts) {
       const it = getItemSafe(char.rank, rarity, t);
       if (it) goods.push({ kind: 'item', item: it, price: gearPrice(it) });
     }
-  } else if (type === 'stone') {
+  } else if (type === 'potion') {
     for (let i = 0; i < 4; i++) {
-      const day = Math.floor(Math.random() * 7);
-      const st = deps.makeDayStone(day, char.rank);
-      goods.push({ kind: 'item', item: st, price: 30 + 10 * (st.level || 0) + 3 * cycle });
+      const it = consumables.random();
+      goods.push({ kind: 'item', item: it, price: consumables.price(it.code, cycle) });
     }
   } else if (type === 'card') {
     for (let t = 0; t < 3; t++) goods.push({ kind: 'card', card: { type: t }, price: 45 + 5 * cycle });
@@ -371,7 +371,7 @@ function eventPool(char) {
     ]
   });
 
-  // --- 장비 / 요일석 / 리설트 카드 이벤트 ---
+  // --- 장비 / 소모품 / 리설트 카드 이벤트 ---
   pool.push({
     code: 'corpse', weight: 2, title: '쓰러진 모험가', desc: '누군가의 시신. 장비는 아직 쓸 만해 보인다.',
     options: [
@@ -382,7 +382,7 @@ function eventPool(char) {
   pool.push({
     code: 'shrine', weight: 2, title: '요일의 사당', desc: '일곱 개의 촛대 중 하나만 불이 켜져 있다.',
     options: [
-      { label: '촛불에 손을 댄다 (요일석)', effect: (ch) => { const st = deps.makeDayStone(null, ch.rank); ch.inventory.push(st); return st.name + '을(를) 얻었다.'; } },
+      { label: '촛불에 손을 댄다 (소모품 2개)', effect: (ch) => { const a = consumables.random(), b = consumables.random(); ch.inventory.push(a, b); return a.name + ', ' + b.name + '을(를) 얻었다.'; } },
       { label: '기도한다 (골드 +25)', effect: (ch) => { ch.gold += 25; return '촛대 아래에서 25골드를 발견했다.'; } }
     ]
   });
@@ -584,7 +584,7 @@ function monsterHelpers() {
       ? { type: cons.ITEM_TYPE_RESULT_CARD, resultType: type, rank, name: rank + '급 ' + (type === 5 ? '레어' : '유니크') + ' 장비 리설트 카드', tooltip: type === 5 ? '97% : 레어 장비<br>2% : 유니크 장비<br>1% : 에픽 장비' : '96% : 유니크 장비<br>4% : 에픽 장비' }
       : roster.makeResultCard(rank, type),
     artifact: (rank) => pickArtifact(rank),
-    stone: (rank) => deps.makeDayStone(Math.floor(Math.random() * 7), rank),
+    consumable: (code) => code ? consumables.make(code) : consumables.random(),
   };
 }
 // 정찰용 적 요약

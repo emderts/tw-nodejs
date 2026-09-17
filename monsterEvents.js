@@ -162,7 +162,7 @@ const after = {
     options: [ { label: '흡수한다 (마법 공격 +8 영구)', effect: (ch) => { ch.base.magAtk += 8; return '마법 공격 +8.'; } },
                { label: '아티팩트로 만든다 (스킬 아티팩트)', effect: (ch, i, h) => { const it = h.artifact(ch.rank); if (!it) return '실패했다.'; if (!ch.items) ch.items = {}; ch.items.skillArtifact = it; h.calcStats(ch); return it.name + ' 장착.'; } } ] },
   oStoneist: { title: '영석 무더기', desc: '술사가 쌓아 둔 영석이 그대로 남았다.',
-    options: [ { label: '요일석으로 다듬는다 (요일석 2개)', effect: (ch, i, h) => { ch.inventory.push(h.stone(ch.rank)); ch.inventory.push(h.stone(ch.rank)); return '요일석 2개 획득.'; } },
+    options: [ { label: '영석을 정제한다 (고급 치유 물약 + 소모품 1개)', effect: (ch, i, h) => { ch.inventory.push(h.consumable('hp_l')); const b = h.consumable(); ch.inventory.push(b); return '고급 치유 물약, ' + b.name + ' 획득.'; } },
                { label: '판다 (골드 +70)', effect: (ch) => { ch.gold += 70; return '70골드.'; } } ] },
   oDeathKnight: { title: '기사의 유언', desc: '죽음의 기사가 마지막으로 무언가 말했다.',
     options: [ { label: '검을 잇는다 (유니크 무기)', effect: (ch, i, h) => { const it = h.gear(ch.rank, 4, 0); if (it) { ch.inventory.push(it); return it.name + ' 획득.'; } return '검이 바스러졌다.'; } },
