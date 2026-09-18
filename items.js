@@ -2093,9 +2093,9 @@ itemList[935] = { id : 935, name : '상대의 손', nameType : cons.NAME_KOR_NO_
 itemList[936] = { id : 936, name : '아리스란의 마지막 가르침', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SKILL_ARTIFACT, flavor : '아리스란은 마지막에 한 가지만 가르쳤다. 그것으로 충분했다.', rank : 1, rarity : cons.ITEM_RARITY_EPIC, stat : {  }, 
     effectDesc : '캐릭터 화면에서 스킬 하나를 고른다. 그 스킬은 계수 2배, 나머지 둘은 절반', effect : [], skillMod : { focus : true }, runEffect : { key : 'focusSkill', value : 1 } };
 // ---------- 5급 유니크 장신구 (대통주 계열) ----------
-itemList[937] = { id : 937, name : '삐에로의 맛있게먹어', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '한 조각이 남아 있다. 누가 여기까지 배달했는지는 아무도 모른다.', rank : 5, rarity : cons.ITEM_RARITY_UNIQUE, stat : { maxHp : 320, evasion : -0.15, crit : -0.05 }, 
-    effectDesc : '생명력이 40% 이하가 되면 남은 한 조각을 먹는다 — 최대 생명력의 25% 회복 (전투당 1회)<br>해체 시 골드 3배 (유니크 45 → 135)', dustMod : 3,
-    effect : [{code : cons.EFFECT_TYPE_SELF_HP, active : cons.ACTIVE_TYPE_TURN_START, chkHp : 0.4, value : 0.25, isPercentStat : true, percentKey : 'maxHp', maxUses : 1, printText : '남겨 둔 한 조각을 먹었다. 맛있게 먹어.'}] };
+itemList[937] = { id : 937, name : '삐에로의 맛있게먹어', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '아직 반쯤 남은 캔. 김이 다 빠졌는데도 이상하게 목이 시원해진다.', rank : 5, rarity : cons.ITEM_RARITY_UNIQUE, stat : { spCharge : 9, spRegen : 2, maxHp : -120 }, 
+    effectDesc : '생명력이 40% 이하가 되면 남은 것을 한 번에 들이켠다 — SP +60 (전투당 1회)<br>해체 시 골드 3배 (유니크 45 → 135)', dustMod : 3,
+    effect : [{code : cons.EFFECT_TYPE_SELF_SP, active : cons.ACTIVE_TYPE_TURN_START, chkHp : 0.4, value : 60, maxUses : 1, printText : '남은 것을 한 번에 들이켰다. 맛있게 먹어.'}] };
 
 itemList.forEach(function(tgt) {
   tgt.base = JSON.parse(JSON.stringify(tgt.stat));
