@@ -6973,6 +6973,15 @@ module.exports.getBuffData = function(eff) {
   // ---- 1급 신규 아이템 버프 ----
 
   // ---- 스킬 아티팩트 버프 ----
+
+  case 10610 :   // 테라포밍 세트 [과학 태그]
+    retObj.name = '과학 태그'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 2; retObj.maxStack = 99; retObj.isDebuff = false; retObj.durOff = null;
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'spRegen', value : 0.5 });
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'crit', value : 0.01 });
+    break;
+  case 10611 :   // 올림푸스 제어봉 [빌려온 설계] (효과는 생성 시 채움)
+    retObj.name = '빌려온 설계'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 1; retObj.isDebuff = false; retObj.durOff = null;
+    break;
   case 10600 :   // 늦게 터지는 심지 [지연 폭발]
     retObj.name = '지연 폭발'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 1; retObj.isDebuff = true;
     retObj.effect.push({ active : cons.ACTIVE_TYPE_TURN_END, code : cons.EFFECT_TYPE_SELF_HIT, type : cons.DAMAGE_TYPE_PHYSICAL_FIXED, isPercentOppStat : true, percentKey : 'phyAtk', value : 0.3 });

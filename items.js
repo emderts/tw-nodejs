@@ -2096,6 +2096,19 @@ itemList[936] = { id : 936, name : '아리스란의 마지막 가르침', nameTy
 itemList[937] = { id : 937, name : '삐에로의 맛있게먹어', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '\'맛있게먹어\'라는 스티커가 붙어 있다.', rank : 5, rarity : cons.ITEM_RARITY_UNIQUE, stat : { spCharge : 9, spRegen : 2, maxHp : -120 }, 
     effectDesc : '생명력이 40% 이하가 되면 남은 것을 한 번에 들이켠다 — SP +60 (전투당 1회)<br>해체 시 골드 3배 (유니크 45 → 135)', dustMod : 3,
     effect : [{code : cons.EFFECT_TYPE_SELF_SP, active : cons.ACTIVE_TYPE_TURN_START, chkHp : 0.4, value : 60, maxUses : 1, printText : '남은 것을 한 번에 들이켰다. 맛있게 먹어.'}] };
+// ---------- 테라포밍 세트 (3급, [과학 태그] 공유) ----------
+itemList[938] = { id : 938, name : '올림푸스 제어봉', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_WEAPON, flavor : '올림푸스 몬스 정상의 관제소와 이어진 제어봉. 손잡이를 돌릴 때마다 저 아래 어딘가에서 설비 하나가 완성된다.', rank : 3, rarity : cons.ITEM_RARITY_EPIC, stat : { phyAtkMin : 96, phyAtkMax : 110, magAtkMin : 96, magAtkMax : 110, crit : 0.06 }, 
+    effectDesc : '치명타 시 [과학 태그] 1중첩. [과학 태그]를 얻을 때마다 무작위 3급 장비의 능력치를 이번 전투 동안 덧입는다<br><br>[과학 태그] : 중첩당 SP재생 +0.5, 치명 +1%p',
+    effect : [{code : 'sciTag', active : cons.ACTIVE_TYPE_ATTACK_CRIT, value : 1, borrowGear : true, gearRank : 3}] };
+itemList[939] = { id : 939, name : '화성 연구자의 의복', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_ARMOR, flavor : '과학 태그를 두 개나 준다고? 멋지군!', rank : 3, rarity : cons.ITEM_RARITY_UNIQUE, stat : { maxHp : 480, phyReduce : 0.05, magReduce : 0.05 }, 
+    effectDesc : '전투 시작 시 [과학 태그] 2중첩을 얻고, 이 의복이 무작위 3급 방어구로 바뀐다 (전투마다 다시 결정)',
+    effect : [{code : 'sciTag', active : cons.ACTIVE_TYPE_BATTLE_START, value : 2}, {code : 'marsRobe', active : cons.ACTIVE_TYPE_BATTLE_START, gearRank : 3}] };
+itemList[940] = { id : 940, name : '화성 대학교 학사모', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '화성 대학교의 졸업생은 무엇이든 한 번은 시험해 본다. 상대에게도.', rank : 3, rarity : cons.ITEM_RARITY_UNIQUE, stat : { maxHp : 300, evasion : 0.1, hit : 0.04 }, 
+    effectDesc : '회피 성공 시 [과학 태그] 1중첩. [과학 태그]를 얻을 때마다 상대에게 무작위 상태이상 1턴',
+    effect : [{code : 'sciTag', active : cons.ACTIVE_TYPE_EVADE, value : 1, randomDebuff : 1}] };
+itemList[941] = { id : 941, name : '반중력 기술 문서', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '읽는 것만으로 몸이 가벼워진다. 페이지를 넘기는 손이 자꾸 떠오른다.', rank : 3, rarity : cons.ITEM_RARITY_EPIC, stat : { maxHp : 180, spRegen : 2, crit : 0.03 }, 
+    effectDesc : '공격 성공 시 [과학 태그] 1중첩. [과학 태그]가 7중첩 이상이면 스페셜 스킬 SP 소모량 -50%', sciSpDiscount : { stack : 7, value : 0.5 },
+    effect : [{code : 'sciTag', active : cons.ACTIVE_TYPE_ATTACK, value : 1}] };
 
 itemList.forEach(function(tgt) {
   tgt.base = JSON.parse(JSON.stringify(tgt.stat));

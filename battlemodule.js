@@ -1585,6 +1585,40 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
       calcStats(winner, loser);
       winner.curHp = 179;
       this.result += '<span class="skillDamage">[ ' + eff.name + ' ] 맹약이 발동한다 — ' + winner.name + '으로 변모했다! (179 / 1799)</span><br>';
+    } else if (eff.code === 'sciTag') {   // 테라포밍 세트: [과학 태그] 획득 + 부가 효과
+      const n = eff.value || 1;
+      const tag = buffMdl.getBuffData({ buffCode : 10610 }); tag.dur = null; tag.stack = n;
+      this.giveBuff(winner, winner, tag, false, eff.name);
+      const cur = (winner.buffs || []).find(x => x.id === 10610);
+      this.result += '[ ' + eff.name + ' ] 효과로 [ 과학 태그 ] ' + (cur ? cur.stack : n) + '중첩!<br>';
+      for (let k = 0; k < n; k++) {
+        if (eff.borrowGear) {   // 올림푸스 제어봉: 무작위 장비의 능력치를 덧입는다
+          const itemMdl = require('./items');
+          const pool = itemMdl.list.filter(x => x && x.rank === (eff.gearRank || 3) && x.type <= 3 && x.stat && Object.keys(x.stat).length && !x.runEffect && !x.timeMult);
+          if (pool.length) {
+            const pick = pool[Math.floor(Math.random() * pool.length)];
+            const bo = buffMdl.getBuffData({ buffCode : 10611 }); bo.dur = null; bo.name = '빌려온 설계 - ' + pick.name;
+            bo.effect = Object.entries(pick.stat).map(([k2, v]) => ({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : k2, value : v, name : bo.name }));
+            bo.id = 10611 + Math.random();   // 중첩 누적을 위해 별개 버프로
+            this.giveBuff(winner, winner, bo, false, eff.name);
+            this.result += '[ ' + eff.name + ' ] 설계도가 펼쳐진다 — ' + pick.name + '의 능력치를 덧입었다!<br>';
+          }
+        }
+        if (eff.randomDebuff) {   // 학사모: 무작위 상태이상
+          const ids = [1, 2, 3, 4, 6, 7, 8, 11];
+          const bd = buffMdl.getBuffData({ buffCode : ids[Math.floor(Math.random() * ids.length)] }); bd.dur = eff.randomDebuff;
+          this.giveBuff(winner, loser, bd, true, eff.name);
+        }
+      }
+    } else if (eff.code === 'marsRobe') {   // 화성 연구자의 의복: 무작위 같은 급수 방어구로 변경
+      const itemMdl = require('./items');
+      const pool = itemMdl.list.filter(x => x && x.rank === (eff.gearRank || 3) && x.type === cons.ITEM_TYPE_ARMOR && x.name !== '화성 연구자의 의복' && !x.runEffect && !x.timeMult);
+      if (pool.length) {
+        const pick = JSON.parse(JSON.stringify(pool[Math.floor(Math.random() * pool.length)]));
+        for (const ef of (pick.effect || [])) ef.name = pick.name;
+        winner.items.armor = pick; calcStats(winner, loser);
+        this.result += '[ ' + eff.name + ' ] 의복이 형태를 바꾼다 — ' + pick.name + '이(가) 되었다!<br>';
+      }
     } else if (eff.code === 'weakenOppSkill') {   // 상대 스킬 하나 무작위 계수 감소 (전투 내내)
       const r = Math.floor(Math.random() * 3); const sk = loser.skillOri && loser.skillOri.base[r];
       if (sk && sk.damage) { sk.damage = Math.round(sk.damage * eff.value * 100) / 100; this.result += '[ ' + eff.name + ' ] 효과로 ' + loser.name + '의 [ ' + sk.name + ' ] 계수가 줄었다!<br>'; }
@@ -2268,6 +2302,10 @@ function calcStats(chara, opp) {
   if (chara.skillScale) {   // 로그라이크 몬스터 정규화: 버프로 세팅된 스킬 계수·스페셜 비용 보정 (사천왕/레드)
     for (const sk of chara.skill.base) if (sk && sk.damage) sk.damage = Math.round(sk.damage * chara.skillScale.damage * 100) / 100;
     if (chara.skill.special && chara.skillScale.specialCost) chara.skill.special.cost = Math.round(chara.skill.special.cost * chara.skillScale.specialCost);
+  }
+  const sciTag = (chara.buffs || []).find(b => b.id === 10610);
+  if (chara.skill.special && sciTag) {   // 반중력 기술 문서: 태그 N중첩 이상이면 스페셜 비용 할인
+    for (const k in (chara.items || {})) { const it = chara.items[k]; if (it && it.sciSpDiscount && (sciTag.stack || 1) >= it.sciSpDiscount.stack) chara.skill.special.cost *= (1 - it.sciSpDiscount.value); }
   }
   if (chara.skill.special) {
     chara.skill.special.cost = Math.round(10 * chara.skill.special.cost) / 10;
