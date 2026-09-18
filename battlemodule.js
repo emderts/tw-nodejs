@@ -2055,6 +2055,43 @@ function getBuffEffects(chara, active) {
   return chara.buffs.map(x => x.effect).reduce((acc, val) => acc.concat(val)).filter(x => (x.active == active));
 }
 
+// 버프 툴팁: 효과 목록에서 설명 생성
+const ACTIVE_KO = { 0 : '공격 시', 1 : '턴 시작 시', 2 : '턴 종료 시', 3 : '피격 시', 4 : '전투 시작 시', 6 : '공격 시', 10 : '', 12 : '', 13 : '', 14 : '상태이상 받을 때', 18 : '상성 패배 시', 19 : '치명타 시', 26 : '드라이브 발동 시', 29 : '', 30 : '피격 시', 32 : '무승부 시', 40 : '턴 종료 후' };
+function describeBuff(b) {
+  const lines = [];
+  for (const e of (b.effect || [])) {
+    const when = ACTIVE_KO[e.active] !== undefined ? ACTIVE_KO[e.active] : '';
+    const pre = when ? when + ' ' : '';
+    const kname = printName[e.key] || e.key;
+    const pct = (v) => (v > 0 ? '+' : '') + (Math.round(v * 1000) / 10) + '%';
+    if (e.code === cons.EFFECT_TYPE_STAT_ADD) lines.push(kname + ' ' + (Math.abs(e.value) < 1 && ['crit', 'critDmg', 'hit', 'evasion', 'phyReduce', 'magReduce', 'pierce', 'resistAll', 'chanceEnh', 'ruleBreaker'].includes(e.key) || String(e.key).startsWith('resist_') ? pct(e.value) + 'p' : (e.value > 0 ? '+' : '') + e.value) + (b.stack ? ' ×' + b.stack : ''));
+    else if (e.code === cons.EFFECT_TYPE_STAT_PERCENTAGE) lines.push(kname + ' ' + pct(e.value) + (b.stack ? ' ×' + b.stack : ''));
+    else if (e.code === cons.EFFECT_TYPE_STAT_MULTIPLY) lines.push(kname + ' ×' + e.value);
+    else if (e.code === cons.EFFECT_TYPE_SHIELD) lines.push('보호막 ' + e.value);
+    else if (e.code === cons.EFFECT_TYPE_SELF_HIT) {
+      const amt = e.isPercentStat ? '최대 ' + (printName[e.percentKey] || e.percentKey) + '의 ' + Math.round(e.value * 100) + '%' : e.isPercentChar && e.percentKey === 'curHp' ? '현재 생명력의 ' + Math.round(e.value * 100) + '%' : e.isPercentOppStat ? '상대 ' + (printName[e.percentKey] || e.percentKey) + '의 ' + Math.round(e.value * 100) + '%' : e.value;
+      lines.push(pre + amt + ' 피해');
+    }
+    else if (e.code === cons.EFFECT_TYPE_SELF_HP) lines.push(pre + '생명력 ' + (e.isPercentStat ? Math.round(e.value * 100) + '%' : (e.value > 0 ? '+' : '') + e.value));
+    else if (e.code === cons.EFFECT_TYPE_SELF_SP) lines.push(pre + 'SP ' + (e.value > 0 ? '+' : '') + e.value);
+    else if (e.code === cons.EFFECT_TYPE_OPP_SP) lines.push(pre + '상대 SP ' + e.value);
+    else if (e.code === cons.EFFECT_TYPE_MULTIPLY_DAMAGE) lines.push(pre + (e.active === 13 ? '받는 ' : '') + '피해 ' + (e.stackable ? pct(e.value) + '/중첩' : pct(e.value - 1)));
+    else if (e.code === cons.EFFECT_TYPE_ADD_DAMAGE) lines.push(pre + '공격 계수 +' + e.value);
+    else if (e.code === cons.EFFECT_TYPE_ADD_HIT) lines.push(pre + '추가 타격');
+    else if (e.code === cons.EFFECT_TYPE_OPP_BUFF) lines.push(pre + '상대에게 버프 부여');
+    else if (e.code === cons.EFFECT_TYPE_SELF_BUFF) lines.push(pre + '자신에게 버프 부여');
+    else if (e.code === cons.EFFECT_TYPE_SET_SKILL) lines.push('스킬 교체');
+    else if (e.code === 10004) lines.push('행동 불가');
+    else if (e.code === 10006) lines.push('행동 불가 (빙결)');
+    else if (e.turnReduce) lines.push('버프 지속 -' + e.turnReduce + '턴');
+    else if (e.code === 10005) lines.push('스페셜 사용 불가');
+    else if (e.code === 10011) lines.push('무작위 행동');
+    else if (e.code === 10010) lines.push('스킬 봉인');
+    else if (e.code === cons.EFFECT_TYPE_REMOVE_BUFF) lines.push(pre + '버프 제거');
+  }
+  if (b.tooltip) lines.unshift(b.tooltip);
+  return lines.length ? [...new Set(lines)].join('<br>') : (b.isDebuff ? '디버프' : '버프');
+}
 // 성자의 숫자: KST 특정 시간대에 이 장비의 스탯 배율
 function itemTimeMult(it) {
   if (!it || !it.timeMult) return 1;
@@ -2356,14 +2393,14 @@ function printChar(chara, name, flag) {
   if (flag === 1) {
     resultStr += '<div class="charInfoBuffs">';
     for (val of chara.buffs) {
-      resultStr += val.name;
+      resultStr += '<span class="has-tip buffTip">' + val.name;
       if (val.stack) {
         resultStr += ' (' + val.stack + ')';
       }
       if (val.dur) {
         resultStr += ' (' + val.dur + '턴 남음)';
       }
-      resultStr += '<br>';
+      resultStr += '<span class="itemTooltip">' + describeBuff(val) + '</span></span><br>';
     }
     for (key in chara.items) {
       if (chara.items[key].itemValue > 0) {

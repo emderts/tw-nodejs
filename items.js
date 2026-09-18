@@ -2064,7 +2064,7 @@ itemList[921] = { id : 921, name : '비어 있는 슬롯', nameType : cons.NAME_
     effectDesc : '스페셜 비용 -20%, 스페셜 계수 -15%', effect : [], skillMod : { specialCostMul : 0.8, specialDmgMul : 0.85 } };
 itemList[922] = { id : 922, name : '첫 수의 무게', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SKILL_ARTIFACT, flavor : '첫 수를 무엇으로 두었느냐가 그 판을 정한다.', rank : 4, rarity : cons.ITEM_RARITY_UNIQUE, stat : {  }, 
     effectDesc : '전투에서 처음 사용한 스킬은 그 전투 내내 피해 +25%', effect : [{code : cons.EFFECT_TYPE_MULTIPLY_DAMAGE, active : cons.ACTIVE_TYPE_CALC_DAMAGE, anySkill : true, chkFirstSkill : true, value : 1.25}] };
-itemList[923] = { id : 923, name : '카이네스의 시간 폭풍', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SKILL_ARTIFACT, flavor : '카이네스가 지나간 자리엔 시간이 고르게 흐르지 않았다. 손에 든 패가 매 순간 달라졌다.', rank : 4, rarity : cons.ITEM_RARITY_EPIC, stat : { spRegen : 1 }, 
+itemList[923] = { id : 923, name : '시간의 폭풍 - 멈추지 않는 패', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SKILL_ARTIFACT, flavor : '시간의 폭풍 한가운데서 건져 올린 조각. 이걸 쥔 손 안에서는 패가 한 순간도 같은 자리에 머물지 않는다.', rank : 4, rarity : cons.ITEM_RARITY_EPIC, stat : { spRegen : 1 }, 
     effectDesc : '매 턴 시작 시 손패를 전부 다시 뽑는다 (카드 소모 없음). 무승부 시 SP +10', effect : [{code : cons.EFFECT_TYPE_SELF_SP, active : cons.ACTIVE_TYPE_TIE, value : 10}], runEffect : { key : 'shuffleEveryTurn', value : true } };
 itemList[924] = { id : 924, name : '굳은살', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SKILL_ARTIFACT, flavor : '손바닥의 굳은살. 기술이 한 번 더 먹힌다.', rank : 3, rarity : cons.ITEM_RARITY_RARE, stat : { chanceEnh : 0.15 }, 
     effectDesc : '스킬·아이템 효과 발동 확률 +15%', effect : [] };

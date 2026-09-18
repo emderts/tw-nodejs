@@ -198,6 +198,8 @@ button:disabled { opacity: 0.4; cursor: not-allowed; }
   .charViewContent:hover > .itemTooltip { display: block; }
 }
 .tip-open > .itemTooltip { display: block; }
+.buffTip { position: relative; cursor: pointer; border-bottom: 1px dotted var(--brass-dim); }
+.buffTip > .itemTooltip { min-width: 180px; }
 
 /* ---------- 소식 ---------- */
 .news { margin: 0; padding: 0; list-style: none; }
