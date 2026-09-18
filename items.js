@@ -912,14 +912,14 @@ itemList[412] = { id : 412, name : '크로울러의 민첩한 눈', nameType : c
 itemList[413] = { id : 413, name : '헤드 헌터의 괴창', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_SKILL_ARTIFACT, flavor : '', rank : 8, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { crit : 0.02 }, 
     effectDesc : '', effect : [] };
 itemList[414] = { id : 414, name : '메비우스 소탕자', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SKILL_ARTIFACT, flavor : '', rank : 8, rarity : cons.ITEM_RARITY_RARE, stat : { }, 
-    effectDesc : '\'메비우스\' 몬스터를 상대로 피해량 10% 증가', 
-    effect : [{code : cons.EFFECT_TYPE_MULTIPLY_DAMAGE, active : cons.ACTIVE_TYPE_CALC_DAMAGE, value : 1.1, all : true, chkTitle : '메비우스'}] };
+    effectDesc : '몬스터를 상대로 피해량 10% 증가', 
+    effect : [{code : cons.EFFECT_TYPE_MULTIPLY_DAMAGE, active : cons.ACTIVE_TYPE_CALC_DAMAGE, value : 1.1, anySkill : true, chkOppIsMonster : true}] };
 itemList[415] = { id : 415, name : '빅토리어스의 의지', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SKILL_ARTIFACT, flavor : '', rank : 8, rarity : cons.ITEM_RARITY_UNIQUE, stat : {  }, 
     effectDesc : '현재 생명력이 50% 이하라면 피격 피해량을 10% 경감', 
     effect : [{code : cons.EFFECT_TYPE_CANCEL_DAMAGE, active : cons.ACTIVE_TYPE_TAKE_HIT, value : 0.1, chkHp : 0.5}] };
 itemList[416] = { id : 416, name : '카사스의 피고리', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_SKILL_ARTIFACT, flavor : '', rank : 8, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { phyReduce : -0.02, magReduce : -0.02 }, 
-    effectDesc : '재의 묘소 던전에서 회피 +20%', 
-    effect : [{code : cons.EFFECT_TYPE_STAT_ADD, active : cons.ACTIVE_TYPE_CALC_STATS, key : 'evasion', value : 0.2, chkTitle : '재의 묘소'}] };
+    effectDesc : '쓰러진 모험가와 전투 시 회피 +15%p', 
+    effect : [{code : cons.EFFECT_TYPE_STAT_ADD, active : cons.ACTIVE_TYPE_CALC_STATS, key : 'evasion', value : 0.15, chkOppIsFallen : true}] };
 itemList[417] = { id : 417, name : '깊은 곳의 가호', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SKILL_ARTIFACT, flavor : '', rank : 8, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { phyAtk : 5, magAtk : 5 }, 
     effectDesc : '', effect : [] };
 itemList[418] = { id : 418, name : '잿더미 : 나선의 검', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_SKILL_ARTIFACT, flavor : '', rank : 8, rarity : cons.ITEM_RARITY_RARE, stat : { }, 
@@ -931,18 +931,18 @@ itemList[419] = { id : 419, name : '잿더미 : 장작의 왕', nameType : cons.
     effectDesc : '자신이 부여하는 [화상]의 상태이상 피해량 +15%', 
     effect : [{code : cons.EFFECT_TYPE_SET_BUFF_VALUE, active : cons.ACTIVE_TYPE_GIVE_BUFF, buffCode : 1, isEffect : true, effNum : 0, effKey : 'value', multiply : true, value : 1.15}] };
 itemList[420] = { id : 420, name : '무력화 토템', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_SKILL_ARTIFACT, flavor : '', rank : 7, rarity : cons.ITEM_RARITY_UNCOMMON, stat : {  }, 
-    effectDesc : '턴 종료 시 50% 확률로 적의 [불의 정령] 버프 제거', 
-    effect : [{code : cons.EFFECT_TYPE_OPP_REMOVE_BUFF, active : cons.ACTIVE_TYPE_TURN_END, chance : 0.5, buffTarget : [90003]}] };
+    effectDesc : '턴 종료 시 40% 확률로 적의 버프 1개 제거', 
+    effect : [{code : cons.EFFECT_TYPE_OPP_REMOVE_BUFF, active : cons.ACTIVE_TYPE_TURN_END, chance : 0.4, all : true, limit : 1}] };
 itemList[421] = { id : 421, name : '해제의 지팡이', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SKILL_ARTIFACT, flavor : '', rank : 7, rarity : cons.ITEM_RARITY_UNCOMMON, stat : {  }, 
-    effectDesc : '타오르는 영석술사와 전투 시 10의 배수 턴마다 자신과 적의 모든 효과 제거', 
-    effect : [{code : cons.EFFECT_TYPE_REMOVE_BUFF, active : cons.ACTIVE_TYPE_TURN_END, all : true, setCooldown : 9, chkTurn : 10, chkName : '타오르는 영석술사'},
-              {code : cons.EFFECT_TYPE_OPP_REMOVE_BUFF, active : cons.ACTIVE_TYPE_TURN_END, all : true, setCooldown : 9, chkTurn : 10, chkName : '타오르는 영석술사'}] };
+    effectDesc : '10의 배수 턴마다 자신과 적의 모든 버프·디버프를 제거', 
+    effect : [{code : cons.EFFECT_TYPE_REMOVE_BUFF, active : cons.ACTIVE_TYPE_TURN_END, all : true, setCooldown : 9, chkTurn : 10},
+              {code : cons.EFFECT_TYPE_OPP_REMOVE_BUFF, active : cons.ACTIVE_TYPE_TURN_END, all : true, setCooldown : 9, chkTurn : 10}] };
 itemList[422] = { id : 422, name : '석상 파괴자', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SKILL_ARTIFACT, flavor : '', rank : 7, rarity : cons.ITEM_RARITY_RARE, stat : { pierce : 0.04 }, 
-    effectDesc : '공격 시 적의 [가고일] 버프 제거', 
-    effect : [{code : cons.EFFECT_TYPE_OPP_REMOVE_BUFF, active : cons.ACTIVE_TYPE_ATTACK, buffTarget : [90011]}] };
+    effectDesc : '공격 성공 시 적의 보호막을 부순다', 
+    effect : [{code : 'removeOppShield', active : cons.ACTIVE_TYPE_ATTACK}] };
 itemList[423] = { id : 423, name : '무결한 물의 정령석', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_SKILL_ARTIFACT, flavor : '', rank : 7, rarity : cons.ITEM_RARITY_UNIQUE, stat : {  }, 
-    effectDesc : '불타는 과수원에서 전투 시작 시 적에게 20턴 [봉인] 상태이상 부여', 
-    effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, active : cons.ACTIVE_TYPE_BATTLE_START, buffCode : 10, buffDur : 20, chkTitle : '불타는 과수원'}] };
+    effectDesc : '전투 시작 시 적에게 3턴 [봉인] 상태이상 부여', 
+    effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, active : cons.ACTIVE_TYPE_BATTLE_START, buffCode : 10, buffDur : 3}] };
 itemList[434] = { id : 434, name : '과수원의 메마른 결실', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_SKILL_ARTIFACT, flavor : '', rank : 9, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 25 }, 
     effectDesc : '', effect : [] };
 itemList[435] = { id : 435, name : '과수원의 충만한 결실', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_SKILL_ARTIFACT, flavor : '', rank : 8, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 45 }, 
@@ -2045,6 +2045,53 @@ itemList[912] = { id : 912, name : '루니샤의 큰 손수건', nameType : cons
     effectDesc : '소모품 사용 시 60% 확률로 소모되지 않음', effect : [], runEffect : { key : 'potionSave', value : 0.6 } };
 itemList[913] = { id : 913, name : '줄리어스의 중단점', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '줄리어스는 돌아갈 자리를 먼저 찍어 두고 움직였다. 잘못되면 거기서 다시 시작했다. 몇 번을 다시 했는지는 본인도 세지 않았다.', rank : 1, rarity : cons.ITEM_RARITY_EPIC, stat : { maxHp : 280, spRegen : 2, crit : 0.04 }, 
     effectDesc : '런당 1회, 이번 사이클이 시작된 시점으로 되돌아간다 (층·골드·덱·장비·소모품 전부). 캐릭터 화면에서 사용', effect : [], runEffect : { key : 'breakpoint', value : 1 } };
+// ---------- 스킬 아티팩트 5~1급 (23종) ----------
+itemList[914] = { id : 914, name : '되감은 태엽', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SKILL_ARTIFACT, flavor : '한 번 더 감아 둔 태엽. 첫 수가 조금 더 빠르다.', rank : 5, rarity : cons.ITEM_RARITY_RARE, stat : {  }, 
+    effectDesc : '가위 스킬 계수 +0.15', effect : [], skillMod : { add : [0.15, 0, 0] } };
+itemList[915] = { id : 915, name : '무거운 추', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SKILL_ARTIFACT, flavor : '손목에 매단 추. 주먹이 무거워지고 발은 느려진다.', rank : 5, rarity : cons.ITEM_RARITY_RARE, stat : { evasion : -0.03 }, 
+    effectDesc : '바위 스킬 계수 +0.15, 회피 -3%p', effect : [], skillMod : { add : [0, 0.15, 0] } };
+itemList[916] = { id : 916, name : '뒤집힌 손바닥', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SKILL_ARTIFACT, flavor : '손바닥을 뒤집으면 힘의 결이 바뀐다.', rank : 5, rarity : cons.ITEM_RARITY_UNIQUE, stat : {  }, 
+    effectDesc : '보 스킬의 피해 타입이 물리/마법 중 자신의 높은 쪽으로 바뀐다', effect : [], skillMod : { typeHigh : [2] } };
+itemList[917] = { id : 917, name : '세 번째 손', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SKILL_ARTIFACT, flavor : '내밀 손이 하나 더 있다. 진 뒤에야 생각난다.', rank : 5, rarity : cons.ITEM_RARITY_UNIQUE, stat : {  }, 
+    effectDesc : '상성 패배 시 12% 확률로 스킬 재선택', effect : [{code : cons.EFFECT_TYPE_REDECIDE, active : cons.ACTIVE_TYPE_SKILL_LOSE, chance : 0.12}] };
+itemList[918] = { id : 918, name : '가이우스의 별자리표', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SKILL_ARTIFACT, flavor : '가이우스는 별을 보고 다음 수를 정했다. 별은 틀린 적이 없었다.', rank : 5, rarity : cons.ITEM_RARITY_EPIC, stat : { crit : 0.03 }, 
+    effectDesc : '같은 스킬을 3연속 사용한 뒤 4번째로 또 사용하면 그 피해 2배', effect : [{code : cons.EFFECT_TYPE_MULTIPLY_DAMAGE, active : cons.ACTIVE_TYPE_CALC_DAMAGE, anySkill : true, chkSameSkillStreak : 3, value : 2, printText : '별자리가 맞아떨어졌다!'}] };
+itemList[919] = { id : 919, name : '짧게 잡은 자루', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SKILL_ARTIFACT, flavor : '자루를 짧게 잡으면 세 가지 초식이 전부 조금씩 빨라진다.', rank : 4, rarity : cons.ITEM_RARITY_RARE, stat : {  }, 
+    effectDesc : '모든 스킬 계수 +0.1', effect : [], skillMod : { addAll : 0.1 } };
+itemList[920] = { id : 920, name : '늦게 터지는 심지', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SKILL_ARTIFACT, flavor : '맞은 자리에 심지가 남는다. 한 턴 뒤에 터진다.', rank : 4, rarity : cons.ITEM_RARITY_RARE, stat : {  }, 
+    effectDesc : '공격 성공 시 상대에게 1턴 [지연 폭발] (턴 종료 시 물리 0.3 피해)', effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, active : cons.ACTIVE_TYPE_ATTACK, buffCode : 10600, buffDur : 1}] };
+itemList[921] = { id : 921, name : '비어 있는 슬롯', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SKILL_ARTIFACT, flavor : '한 칸을 비워 두면 나머지가 가벼워진다.', rank : 4, rarity : cons.ITEM_RARITY_UNIQUE, stat : {  }, 
+    effectDesc : '스페셜 비용 -20%, 스페셜 계수 -15%', effect : [], skillMod : { specialCostMul : 0.8, specialDmgMul : 0.85 } };
+itemList[922] = { id : 922, name : '첫 수의 무게', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SKILL_ARTIFACT, flavor : '첫 수를 무엇으로 두었느냐가 그 판을 정한다.', rank : 4, rarity : cons.ITEM_RARITY_UNIQUE, stat : {  }, 
+    effectDesc : '전투에서 처음 사용한 스킬은 그 전투 내내 피해 +25%', effect : [{code : cons.EFFECT_TYPE_MULTIPLY_DAMAGE, active : cons.ACTIVE_TYPE_CALC_DAMAGE, anySkill : true, chkFirstSkill : true, value : 1.25}] };
+itemList[923] = { id : 923, name : '카이네스의 시간 폭풍', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SKILL_ARTIFACT, flavor : '카이네스가 지나간 자리엔 시간이 고르게 흐르지 않았다. 손에 든 패가 매 순간 달라졌다.', rank : 4, rarity : cons.ITEM_RARITY_EPIC, stat : { spRegen : 1 }, 
+    effectDesc : '매 턴 시작 시 손패를 전부 다시 뽑는다 (카드 소모 없음). 무승부 시 SP +10', effect : [{code : cons.EFFECT_TYPE_SELF_SP, active : cons.ACTIVE_TYPE_TIE, value : 10}], runEffect : { key : 'shuffleEveryTurn', value : true } };
+itemList[924] = { id : 924, name : '굳은살', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SKILL_ARTIFACT, flavor : '손바닥의 굳은살. 기술이 한 번 더 먹힌다.', rank : 3, rarity : cons.ITEM_RARITY_RARE, stat : { chanceEnh : 0.15 }, 
+    effectDesc : '스킬·아이템 효과 발동 확률 +15%', effect : [] };
+itemList[925] = { id : 925, name : '두 겹 칼날', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SKILL_ARTIFACT, flavor : '날이 두 겹이다. 한 번 그으면 두 줄이 난다.', rank : 3, rarity : cons.ITEM_RARITY_RARE, stat : {  }, 
+    effectDesc : '가위 스킬이 두 번 타격한다 (각 60%)', effect : [{code : cons.EFFECT_TYPE_ADD_HIT, active : cons.ACTIVE_TYPE_ATTACK, chkMySkillIdx : 0, type : cons.DAMAGE_TYPE_PHYSICAL, isPercentSkillUsed : true, percentKey : 'damage', value : 0.6}], skillMod : { mult : [0.6, 1, 1] } };
+itemList[926] = { id : 926, name : '바꿔치기', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SKILL_ARTIFACT, flavor : '소매 안에서 패가 바뀐다. 한 번은 들키지 않는다.', rank : 3, rarity : cons.ITEM_RARITY_UNIQUE, stat : {  }, 
+    effectDesc : '전투당 1회, 두 스킬의 자리를 서로 바꾼다 (전투 화면)', effect : [], runEffect : { key : 'swapSkill', value : 1 } };
+itemList[927] = { id : 927, name : '사라진 슬롯', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SKILL_ARTIFACT, flavor : '상대의 기술 하나가 어디론가 새어 나간다.', rank : 3, rarity : cons.ITEM_RARITY_UNIQUE, stat : {  }, 
+    effectDesc : '전투 시작 시 상대 스킬 하나의 계수 -30% (무작위)', effect : [{code : 'weakenOppSkill', active : cons.ACTIVE_TYPE_BATTLE_START, value : 0.7}] };
+itemList[928] = { id : 928, name : '프사이의 거울', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SKILL_ARTIFACT, flavor : '프사이는 상대의 기술을 보고 그대로 되돌려 줬다. 이름은 몰라도 됐다.', rank : 3, rarity : cons.ITEM_RARITY_EPIC, stat : {  }, 
+    effectDesc : '상성 패배 시 30% 확률로 상대가 쓴 스킬을 그 계수 그대로 되돌려준다', effect : [{code : 'mirror', active : cons.ACTIVE_TYPE_SKILL_LOSE, chance : 0.3}] };
+itemList[929] = { id : 929, name : '세 손가락', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SKILL_ARTIFACT, flavor : '세 손가락이 같은 길이다. 어느 것을 내도 같은 무게.', rank : 2, rarity : cons.ITEM_RARITY_RARE, stat : {  }, 
+    effectDesc : '세 스킬의 계수가 평균으로 맞춰진다', effect : [], skillMod : { average : true } };
+itemList[930] = { id : 930, name : '이름 없는 초식', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SKILL_ARTIFACT, flavor : '이름이 없으면 읽을 수도 없다.', rank : 2, rarity : cons.ITEM_RARITY_UNIQUE, stat : {  }, 
+    effectDesc : '상대가 자신의 스킬 이름을 볼 수 없고, 상대 AI가 자신의 수를 예측하지 못한다', effect : [], runEffect : { key : 'hideSkills', value : true } };
+itemList[931] = { id : 931, name : '마지막 초식', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SKILL_ARTIFACT, flavor : '쓰러지기 직전에만 나오는 초식이 있다.', rank : 2, rarity : cons.ITEM_RARITY_UNIQUE, stat : {  }, 
+    effectDesc : '생명력 20% 이하일 때 모든 스킬 계수 +0.5', effect : [], skillMod : { lowHpAdd : { hp : 0.2, add : 0.5 } } };
+itemList[932] = { id : 932, name : '세리어스의 봉인 해제', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SKILL_ARTIFACT, flavor : '세리어스는 봉인을 풀 때 늘 세 번 확인했다. 네 번째는 없었다.', rank : 2, rarity : cons.ITEM_RARITY_EPIC, stat : { spRegen : 1 }, 
+    effectDesc : '스페셜 비용 절반. 스페셜 사용 후 3턴 동안 스페셜 사용 불가', effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_USE_SPECIAL, buffCode : 10601, buffDur : 3}], skillMod : { specialCostMul : 0.5 } };
+itemList[933] = { id : 933, name : '완성된 형', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SKILL_ARTIFACT, flavor : '더 고칠 데가 없는 형. 셋이 전부 한 뼘씩 자랐다.', rank : 1, rarity : cons.ITEM_RARITY_RARE, stat : {  }, 
+    effectDesc : '모든 스킬 계수 +0.2', effect : [], skillMod : { addAll : 0.2 } };
+itemList[934] = { id : 934, name : '되풀이', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SKILL_ARTIFACT, flavor : '한 번 통한 것은 한 번 더 통한다.', rank : 1, rarity : cons.ITEM_RARITY_UNIQUE, stat : {  }, 
+    effectDesc : '상성 승리 시 25% 확률로 같은 스킬을 즉시 한 번 더 사용', effect : [{code : 'repeatSkill', active : cons.ACTIVE_TYPE_SKILL_WIN, chance : 0.25}] };
+itemList[935] = { id : 935, name : '상대의 손', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SKILL_ARTIFACT, flavor : '상대의 손을 먼저 본다. 그리고 빌린다.', rank : 1, rarity : cons.ITEM_RARITY_UNIQUE, stat : {  }, 
+    effectDesc : '전투 시작 시 상대의 스킬 하나를 복사해 자신의 스페셜로 (SP 100)', effect : [{code : 'stealSkill', active : cons.ACTIVE_TYPE_BATTLE_START, value : 100}] };
+itemList[936] = { id : 936, name : '아리스란의 마지막 가르침', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SKILL_ARTIFACT, flavor : '아리스란은 마지막에 한 가지만 가르쳤다. 그것으로 충분했다.', rank : 1, rarity : cons.ITEM_RARITY_EPIC, stat : {  }, 
+    effectDesc : '캐릭터 화면에서 스킬 하나를 고른다. 그 스킬은 계수 2배, 나머지 둘은 절반', effect : [], skillMod : { focus : true }, runEffect : { key : 'focusSkill', value : 1 } };
 
 itemList.forEach(function(tgt) {
   tgt.base = JSON.parse(JSON.stringify(tgt.stat));

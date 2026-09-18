@@ -482,6 +482,11 @@ Battlemodule.prototype._doBattleTurnManual = function(left, right) {
   }
 
   this.resolveTurnEnd(winner, loser);
+  for (const [c, sk] of [[winner, skillUsed], [loser, skillFailed]]) {
+    if (!sk) continue;
+    c.sameSkillStreak = (c.lastSkillCode === sk.code) ? (c.sameSkillStreak || 1) + 1 : 1;
+    if (c.firstSkillCode === undefined) c.firstSkillCode = sk.code;
+  }
   if (skillUsed) winner.lastSkillCode = skillUsed.code;   // 직전 턴 스킬 기록 (맹세하는 강철 등)
   if (skillFailed) loser.lastSkillCode = skillFailed.code;
 
@@ -972,6 +977,18 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
       continue;
     }
     if (eff.chkOppNoSlot && (loser.items && loser.items[eff.chkOppNoSlot] && loser.items[eff.chkOppNoSlot].name)) {
+      continue;
+    }
+    if (eff.chkSameSkillStreak && !(skill && winner.lastSkillCode === skill.code && (winner.sameSkillStreak || 0) >= eff.chkSameSkillStreak)) {
+      continue;
+    }
+    if (eff.chkFirstSkill && !(skill && winner.firstSkillCode !== undefined && winner.firstSkillCode === skill.code)) {
+      continue;
+    }
+    if (eff.chkOppIsMonster && !loser.isMonster) {
+      continue;
+    }
+    if (eff.chkOppIsFallen && !loser.isFallen) {
       continue;
     }
     if (eff.chkMySkillIdx !== undefined && !(winner.skill && winner.skill.base[eff.chkMySkillIdx] && winner.skill.base[eff.chkMySkillIdx].code === winner.curSkillCode)) {   // 이번 턴 자신이 낸 스킬 슬롯
@@ -1568,6 +1585,32 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
       calcStats(winner, loser);
       winner.curHp = 179;
       this.result += '<span class="skillDamage">[ ' + eff.name + ' ] 맹약이 발동한다 — ' + winner.name + '으로 변모했다! (179 / 1799)</span><br>';
+    } else if (eff.code === 'weakenOppSkill') {   // 상대 스킬 하나 무작위 계수 감소 (전투 내내)
+      const r = Math.floor(Math.random() * 3); const sk = loser.skillOri && loser.skillOri.base[r];
+      if (sk && sk.damage) { sk.damage = Math.round(sk.damage * eff.value * 100) / 100; this.result += '[ ' + eff.name + ' ] 효과로 ' + loser.name + '의 [ ' + sk.name + ' ] 계수가 줄었다!<br>'; }
+    } else if (eff.code === 'mirror') {   // 상대가 쓴 스킬 계수로 되돌려주기
+      if (!skill || !skill.damage) skill = (damage && damage.damage && damage.name) ? damage : null;   // SKILL_LOSE 훅은 상대 스킬을 damage 자리로 넘김
+      if (!skill || !skill.damage) continue;
+      const usePhy = (winner.stat.phyAtk || 0) >= (winner.stat.magAtk || 0);
+      const atk = usePhy ? winner.stat.phyAtk : winner.stat.magAtk;
+      const red = usePhy ? (loser.stat.phyReduce || 0) : (loser.stat.magReduce || 0);
+      const v = Math.max(1, Math.round(atk * skill.damage * (1 - red)));
+      loser.curHp -= v;
+      this.result += '<span class="skillDamage">[ ' + eff.name + ' ] ' + skill.name + '을(를) 그대로 되돌려 ' + loser.name + '에게 ' + v + ' 피해!</span><br>';
+    } else if (eff.code === 'repeatSkill') {   // 방금 쓴 스킬 한 번 더
+      if (!skill) continue;
+      const idx = winner.skill.base.findIndex(x => x && x.code === skill.code); if (idx < 0) continue;
+      const rd = this.calcDamage(winner, loser, winner.skill.base[idx]);
+      if (rd.hit) { this.dealDamage(winner, loser, rd); this.result += '<span class="skillDamage">[ ' + eff.name + ' ] ' + winner.name + getIga(winner.nameType) + ' [ ' + skill.name + ' ] ' + getUro(skill.nameType) + ' 다시 ' + loser.name + getUlrul(loser.nameType) + ' 공격해 ' + rd.value + '대미지!</span><br>'; }
+    } else if (eff.code === 'stealSkill') {   // 상대 스킬 하나를 스페셜로 복사
+      const r = Math.floor(Math.random() * 3); const sk = loser.skillOri && loser.skillOri.base[r]; if (!sk) continue;
+      const sp = JSON.parse(JSON.stringify(sk)); sp.type = cons.SKILL_TYPE_SPECIAL; sp.damageType = sk.type; sp.cost = eff.value; sp.name = '훔친 ' + sk.name;
+      winner.skillOri.special = sp; winner.skill.special = JSON.parse(JSON.stringify(sp));
+      this.result += '[ ' + eff.name + ' ] 효과로 ' + loser.name + '의 [ ' + sk.name + ' ] 을(를) 훔쳤다! (스페셜, SP ' + eff.value + ')<br>';
+    } else if (eff.code === 'removeOppShield') {   // 상대 보호막 제거
+      const sh = (loser.buffs || []).filter(b => (b.effect || []).some(e => e.code === cons.EFFECT_TYPE_SHIELD));
+      for (const b of sh) removeBuff(b);
+      if (sh.length) this.result += '[ ' + eff.name + ' ] 효과로 ' + loser.name + '의 보호막이 부서졌다!<br>';
     } else if (eff.code === 'spZero') {
       winner.curSp = 0;
       this.result += '[ ' + eff.name + ' ] 효과로 SP가 0이 됐다.<br>';
@@ -2094,6 +2137,12 @@ function calcStats(chara, opp) {
     if (val.chk && findBuffByIds(chara, val.chk).length === 0) {
       continue;
     }
+    if (val.chkOppIsFallen && !(opp && opp.isFallen)) {
+      continue;
+    }
+    if (val.chkOppIsMonster && !(opp && opp.isMonster)) {
+      continue;
+    }
     if (val.chkTitle && opp.title !== val.chkTitle) {
       continue;
     }
@@ -2167,6 +2216,18 @@ function calcStats(chara, opp) {
   }
   chara.stat.hpRegen = Math.round(10 * chara.stat.hpRegen) / 10;
   chara.stat.spRegen = Math.round(10 * chara.stat.spRegen) / 10;
+  for (const k in (chara.items || {})) {   // 스킬 아티팩트: 스킬 변조
+    const it = chara.items[k]; if (!it || !it.skillMod) continue;
+    const m = it.skillMod;
+    if (m.add) chara.skill.base.forEach((sk, i) => { if (sk && sk.damage !== undefined && m.add[i]) sk.damage = Math.round((sk.damage + m.add[i]) * 100) / 100; });
+    if (m.addAll) chara.skill.base.forEach(sk => { if (sk && sk.damage !== undefined) sk.damage = Math.round((sk.damage + m.addAll) * 100) / 100; });
+    if (m.mult) chara.skill.base.forEach((sk, i) => { if (sk && sk.damage !== undefined && m.mult[i]) sk.damage = Math.round(sk.damage * m.mult[i] * 100) / 100; });
+    if (m.average) { const ds = chara.skill.base.map(sk => sk && sk.damage || 0); const avg = Math.round(ds.reduce((a, b) => a + b, 0) / ds.length * 100) / 100; chara.skill.base.forEach(sk => { if (sk && sk.damage !== undefined) sk.damage = avg; }); }
+    if (m.typeHigh) for (const i of m.typeHigh) { const sk = chara.skill.base[i]; if (sk) sk.type = (chara.stat.phyAtk || 0) >= (chara.stat.magAtk || 0) ? cons.DAMAGE_TYPE_PHYSICAL : cons.DAMAGE_TYPE_MAGICAL; }
+    if (chara.skill.special) { if (m.specialCostMul) chara.skill.special.cost = Math.round(chara.skill.special.cost * m.specialCostMul); if (m.specialDmgMul && chara.skill.special.damage) chara.skill.special.damage = Math.round(chara.skill.special.damage * m.specialDmgMul * 100) / 100; }
+    if (m.focus !== undefined && chara.run && chara.run.focusSkill !== undefined) chara.skill.base.forEach((sk, i) => { if (sk && sk.damage !== undefined) sk.damage = Math.round(sk.damage * (i === chara.run.focusSkill ? 2 : 0.5) * 100) / 100; });
+    if (m.lowHpAdd && chara.curHp <= chara.stat.maxHp * m.lowHpAdd.hp) chara.skill.base.forEach(sk => { if (sk && sk.damage !== undefined) sk.damage = Math.round((sk.damage + m.lowHpAdd.add) * 100) / 100; });
+  }
   if (chara.skillScale) {   // 로그라이크 몬스터 정규화: 버프로 세팅된 스킬 계수·스페셜 비용 보정 (사천왕/레드)
     for (const sk of chara.skill.base) if (sk && sk.damage) sk.damage = Math.round(sk.damage * chara.skillScale.damage * 100) / 100;
     if (chara.skill.special && chara.skillScale.specialCost) chara.skill.special.cost = Math.round(chara.skill.special.cost * chara.skillScale.specialCost);

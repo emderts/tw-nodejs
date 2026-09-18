@@ -6971,6 +6971,16 @@ module.exports.getBuffData = function(eff) {
   // ---- 2급 신규 아이템 버프 ----
 
   // ---- 1급 신규 아이템 버프 ----
+
+  // ---- 스킬 아티팩트 버프 ----
+  case 10600 :   // 늦게 터지는 심지 [지연 폭발]
+    retObj.name = '지연 폭발'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 1; retObj.isDebuff = true;
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_TURN_END, code : cons.EFFECT_TYPE_SELF_HIT, type : cons.DAMAGE_TYPE_PHYSICAL_FIXED, isPercentOppStat : true, percentKey : 'phyAtk', value : 0.3 });
+    break;
+  case 10601 :   // 세리어스의 봉인 해제 [봉인 확인] — 스페셜 사용 불가
+    retObj.name = '봉인 확인'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 1; retObj.isDebuff = false;
+    retObj.effect.push({ code : 10005 });
+    break;
   case 10588 :   // 프로스트 블레이드 [절대영도]
     retObj.name = '절대영도'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 1; retObj.isDebuff = true;
     retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'evasion', value : -0.15 });

@@ -48,6 +48,7 @@ const app = express()
 .post('/floorCard', procFloorCard)
 .post('/removeCard', procRemoveCard)
 .post('/breakpoint', procBreakpoint)
+.post('/focusSkill', procFocusSkill)
 .get('/join', (req, res) => res.render('pages/join'))
 .post('/join', procJoin)
 .get('/logout', procLogout)
@@ -285,6 +286,17 @@ io.on('connection', (socket) => {
     t.undos--; t.snapshot = null;
     socket.emit('floorSelectAck', '<span class="skillDamage">한 번만 물러줘라 — 방금 턴을 물렀다.</span><br>', floorState(t));
   });
+  socket.on('floorSwap', function(room, uid, a, b) {   // 바꿔치기: 스킬 두 슬롯 교체 (전투당 N회)
+    const t = trades[room];
+    if (!t || !t.floor || t.leftUid != uid || t.result || t.busy) return;
+    if (t.swaps === undefined) t.swaps = run.runEffect(t.leftChr, 'swapSkill') || 0;
+    a = parseInt(a, 10); b = parseInt(b, 10);
+    if (!t.swaps || a === b || ![0, 1, 2].includes(a) || ![0, 1, 2].includes(b)) return;
+    const L = t.leftChr;
+    for (const key of ['skill', 'skillOri']) { if (L[key] && L[key].base) { const tmp = L[key].base[a]; L[key].base[a] = L[key].base[b]; L[key].base[b] = tmp; } }
+    t.swaps--;
+    socket.emit('floorSelectAck', '<span class="skillDamage">소매 안에서 패가 바뀌었다. [ ' + L.skill.base[a].name + ' ] ↔ [ ' + L.skill.base[b].name + ' ]</span><br>', floorState(t), floorNames(L));
+  });
   socket.on('floorRedraw', function(room, uid) {
     const t = trades[room];
     if (!t || !t.floor || t.leftUid != uid || t.result || t.busy || !t.redraws) return;
@@ -316,7 +328,7 @@ io.on('connection', (socket) => {
     if (t.undos) t.snapshot = JSON.stringify({ bm: t.bmod, L: t.leftChr, R: t.rightChr, pdeck: t.pdeck, edeck: t.edeck, eplayed: t.eplayed, resets: t.resets, redraws: t.redraws, used: t.used || [] });
     else t.snapshot = null;
     const want = monster.selectFunc[t.rightChr.skillSelect](t.rightChr, key);
-    const eKey = run.aiPick(t.edeck, want);
+    const eKey = run.aiPick(t.edeck, run.runEffect(t.leftChr, 'hideSkills') ? Math.floor(Math.random() * 3) : want);   // 이름 없는 초식: 반응형 예측 무효
     const result = t.bmod.procBattleTurn(key, eKey, 1);
     const tie = key === eKey && result.redecide;
     if (!freeCard && !(tie && run.runEffect(t.leftChr, 'keepCardOnTie'))) run.playCard(t.pdeck, key);   // 엇갈린 두 자루: 무승부 시 카드 유지
@@ -3654,7 +3666,7 @@ function floorState(t) {
     hand: run.handTypes(t.pdeck), draw: t.pdeck.draw.length, discard: t.pdeck.discard.length,
     hp: [Math.max(0, Math.round(L.curHp)), Math.round(L.stat.maxHp)], sp: sp(L),
     ehp: [Math.max(0, Math.round(R.curHp)), Math.round(R.stat.maxHp)], esp: sp(R),
-    eplayed: t.eplayed, edraw: t.edeck.draw.length, resets: t.resets, redraws: t.redraws, undos: t.undos && t.snapshot ? t.undos : 0,
+    eplayed: t.eplayed, edraw: t.edeck.draw.length, resets: t.resets, redraws: t.redraws, undos: t.undos && t.snapshot ? t.undos : 0, swaps: t.swaps === undefined ? (run.runEffect(L, 'swapSkill') || 0) : t.swaps,
     items: (L.inventory || []).map((it, i) => ({ i, code: it.code, name: it.name, tooltip: it.tooltip, card: it.card })).filter(x => x.code && consumables.DEFS[x.code]),
     ehint: enemyHint(t)
   };
@@ -3737,7 +3749,7 @@ async function procNextFloor (req, res) {
         if (code) { leftCopy.startEffects = (leftCopy.startEffects || []).concat([{ code: cons.EFFECT_TYPE_SELF_BUFF, buffCode: code, buffDur: null }]); }
       }
       trades[roomNum] = { leftUid: charRow.uid, leftChr: leftCopy, rightChr: enemy, floor: true, goldStart: leftCopy.gold,
-                          pdeck: run.newDeckState(char.deck), edeck: run.newDeckState(enemy.deck, enemy.deckOpts) };
+                          pdeck: run.newDeckState(char.deck, run.runEffect(char, 'shuffleEveryTurn') ? { shuffleEveryTurn: true } : null), edeck: run.newDeckState(enemy.deck, enemy.deckOpts) };
       sess.floorBattle = { key, room: roomNum };
       res.render('pages/floorBattle', { room: roomNum, uid: charRow.uid, rv: runView(char), char, enemy });
     }
@@ -3759,6 +3771,16 @@ async function pickEnemy (char, userId) {
 }
 
 // 전투 후 얻은 카드 수락/거부
+// 아리스란의 마지막 가르침: 집중할 스킬 선택
+async function procFocusSkill (req, res) {
+  try {
+    const ctx = await loadRunChar(req, res); if (!ctx) return;
+    const { charRow, char } = ctx;
+    const idx = parseInt(req.body.idx, 10);
+    if (run.runEffect(char, 'focusSkill') && [0, 1, 2].includes(idx)) { char.run.focusSkill = idx; await saveChar(char, charRow.uid); }
+    res.redirect('/');
+  } catch (e) { console.log(e); res.redirect('/'); }
+}
 // 줄리어스의 중단점: 이번 사이클 시작 시점으로 복원 (런당 1회)
 async function procBreakpoint (req, res) {
   try {
