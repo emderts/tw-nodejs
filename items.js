@@ -2093,7 +2093,7 @@ itemList[935] = { id : 935, name : '상대의 손', nameType : cons.NAME_KOR_NO_
 itemList[936] = { id : 936, name : '아리스란의 마지막 가르침', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SKILL_ARTIFACT, flavor : '아리스란은 마지막에 한 가지만 가르쳤다. 그것으로 충분했다.', rank : 1, rarity : cons.ITEM_RARITY_EPIC, stat : {  }, 
     effectDesc : '캐릭터 화면에서 스킬 하나를 고른다. 그 스킬은 계수 2배, 나머지 둘은 절반', effect : [], skillMod : { focus : true }, runEffect : { key : 'focusSkill', value : 1 } };
 // ---------- 5급 유니크 장신구 (대통주 계열) ----------
-itemList[937] = { id : 937, name : '삐에로의 맛있게먹어', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '아직 반쯤 남은 캔. 김이 다 빠졌는데도 이상하게 목이 시원해진다.', rank : 5, rarity : cons.ITEM_RARITY_UNIQUE, stat : { spCharge : 9, spRegen : 2, maxHp : -120 }, 
+itemList[937] = { id : 937, name : '삐에로의 맛있게먹어', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '\'맛있게먹어\'라는 스티커가 붙어 있다.', rank : 5, rarity : cons.ITEM_RARITY_UNIQUE, stat : { spCharge : 9, spRegen : 2, maxHp : -120 }, 
     effectDesc : '생명력이 40% 이하가 되면 남은 것을 한 번에 들이켠다 — SP +60 (전투당 1회)<br>해체 시 골드 3배 (유니크 45 → 135)', dustMod : 3,
     effect : [{code : cons.EFFECT_TYPE_SELF_SP, active : cons.ACTIVE_TYPE_TURN_START, chkHp : 0.4, value : 60, maxUses : 1, printText : '남은 것을 한 번에 들이켰다. 맛있게 먹어.'}] };
 
