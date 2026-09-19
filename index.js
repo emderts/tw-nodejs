@@ -329,7 +329,7 @@ io.on('connection', (socket) => {
     } else if (!run.handTypes(t.pdeck).includes(key)) return;
     t.busy = true;
     // 한 번 무르기: 턴 처리 전 상태 스냅샷
-    if (t.undos) t.snapshot = JSON.stringify({ bm: t.bmod, L: t.leftChr, R: t.rightChr, pdeck: t.pdeck, edeck: t.edeck, eplayed: t.eplayed, resets: t.resets, redraws: t.redraws, used: t.used || [] });
+    if (t.undos) { try { t.snapshot = JSON.stringify({ bm: t.bmod, L: t.leftChr, R: t.rightChr, pdeck: t.pdeck, edeck: t.edeck, eplayed: t.eplayed, resets: t.resets, redraws: t.redraws, used: t.used || [] }, (k, v) => (k === 'buff' || k === 'item' || k === 'charLeft' || k === 'charRight') ? undefined : v); } catch (e) { console.log('snapshot failed', e.message); t.snapshot = null; } }
     else t.snapshot = null;
     const want = monster.selectFunc[t.rightChr.skillSelect](t.rightChr, key);
     const eKey = run.aiPick(t.edeck, run.runEffect(t.leftChr, 'hideSkills') ? Math.floor(Math.random() * 3) : want);   // 이름 없는 초식: 반응형 예측 무효
