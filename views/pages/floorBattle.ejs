@@ -59,7 +59,7 @@
     box.innerHTML = '';
     items.forEach(function (it) {
       var b = document.createElement('button'); b.type = 'button';
-      b.innerHTML = '<b>' + it.name + '</b><br><small>' + (it.tooltip || '').replace('전투 중 사용: ', '') + '</small>';
+      b.innerHTML = '<b>' + it.name + (it.temp ? ' <span style="color:var(--brass)">(임시)</span>' : '') + '</b><br><small>' + (it.tooltip || '').replace('전투 중 사용: ', '') + '</small>';
       b.addEventListener('click', function () {
         itemsOpen = false; renderItems(); lockHand();
         if (it.card !== undefined && it.card !== null) socket.emit('floorSelect', '<%= room %>', '<%= uid %>', it.card, it.i);
@@ -71,6 +71,8 @@
   }
   document.getElementById('itemBtn').addEventListener('click', function () { itemsOpen = !itemsOpen; renderItems(); });
   function renderState(s) {
+    if (s.names) names = s.names;                 // 전투 중 스킬 교체 반영
+    if (s.enemyNames) oNames = s.enemyNames;
     items = s.items || []; renderItems();
     bar('hp', s.hp[0], s.hp[1]); bar('ehp', s.ehp[0], s.ehp[1]);
     bar('sp', s.sp[0], s.sp[1]); bar('esp', s.esp[0], s.esp[1]);

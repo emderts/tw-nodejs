@@ -23,16 +23,18 @@ const DEFS = {
 };
 const STATUS = { poison: [2, 3], fire: [1, 3], stun: [4, 1], silence: [7, 2] };   // [buffCode, dur]
 
-function make(code) {
+function make(code, temp) {
   const d = DEFS[code]; if (!d) return null;
-  return { type: TYPE, code, name: d.name, tooltip: d.tooltip, card: d.card };
+  const it = { type: TYPE, code, name: d.name, tooltip: d.tooltip, card: d.card };
+  if (temp) { it.temp = true; it.name = '임시 ' + d.name; it.tooltip = d.tooltip + ' (이번 전투에만 쓸 수 있다)'; }
+  return it;
 }
-function random(exclude) {
+function random(exclude, temp) {
   const keys = Object.keys(DEFS).filter(k => !exclude || !exclude.includes(k));
   const total = keys.reduce((a, k) => a + DEFS[k].w, 0);
   let r = Math.random() * total;
-  for (const k of keys) { r -= DEFS[k].w; if (r <= 0) return make(k); }
-  return make(keys[keys.length - 1]);
+  for (const k of keys) { r -= DEFS[k].w; if (r <= 0) return make(k, temp); }
+  return make(keys[keys.length - 1], temp);
 }
 function price(code, cycle) {
   const base = { hp_s: 25, hp_l: 60, sp: 30, atk: 35, crit: 30, evade: 30, guard: 30, cleanse: 25, bomb: 40, poison: 30, fire: 30, stun: 45, silence: 40, card0: 20, card1: 20, card2: 20 }[code] || 30;

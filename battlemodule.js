@@ -1082,6 +1082,7 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
       }
       var buffObj = buffMdl.getBuffData(eff);
       buffObj.dur = eff.buffDurDiv ? Math.max(1, Math.round(((winner.skill.special && winner.skill.special.cost) || 0) / eff.buffDurDiv)) : eff.buffDur;
+      if (eff.stack && buffObj.stackType === 2) buffObj.stack = eff.stack;   // 여러 중첩을 한 번에 부여
       if (eff.addEffect) {
         buffObj.effect = buffObj.effect.concat(eff.addEffect);
       }
@@ -1707,7 +1708,8 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
       if (gained > 0) {
         const bo = buffMdl.getBuffData({ buffCode : eff.buffCode }); bo.dur = null; bo.stack = gained;
         this.giveBuff(winner, winner, bo, false, eff.name);
-        this.result += '[ ' + eff.name + ' ] 효과로 [ ' + bo.name + ' ] ' + gained + '중첩!<br>';
+        const cur = (winner.buffs || []).find(x => x.id === eff.buffCode);
+        this.result += '[ ' + eff.name + ' ] 효과로 [ ' + bo.name + ' ] +' + gained + ' (총 ' + (cur ? cur.stack : gained) + '중첩)<br>';
       }
     } else if (eff.code === cons.EFFECT_TYPE_SET_ALL_BUFF_DURATION || eff.code === cons.EFFECT_TYPE_OPP_SET_ALL_BUFF_DURATION) {
       const recv = (eff.code === cons.EFFECT_TYPE_SET_ALL_BUFF_DURATION) ? winner : loser;
@@ -1941,7 +1943,8 @@ Battlemodule.prototype.giveBuff = function(src, recv, buffObj, printFlag, name) 
   this.resolveEffects(recv, src, getItemEffects(recv, cons.ACTIVE_TYPE_RECEIVE_BUFF), buffObj);
   
   if (printFlag) {
-    this.result += srcText + recv.name + getUnnun(recv.nameType) + ' [ ' + buffObj.name + ' ] 효과를 받았습니다!<br>';
+    const curB = (recv.buffs || []).find(x => x.id === buffObj.id);
+    this.result += srcText + recv.name + getUnnun(recv.nameType) + ' [ ' + buffObj.name + ' ] 효과를 받았습니다!' + (curB && curB.stack > 1 ? ' (' + curB.stack + '중첩)' : '') + '<br>';
   }
   
   for (var eff of buffObj.effect) {
@@ -1969,10 +1972,10 @@ Battlemodule.prototype.giveBuff = function(src, recv, buffObj, printFlag, name) 
       if (buffChk.dur) {
         buffChk.dur = buffObj.dur;        
       }
-      if (buffChk.stack) {
-        buffChk.stack += 1;
-      } else {
-        buffChk.stack = 2;
+      const add = buffObj.stack && buffObj.stack > 1 ? buffObj.stack : 1;   // 여러 중첩을 한 번에 주는 경우 반영
+      buffChk.stack = (buffChk.stack || 1) + add;
+      if (buffChk.maxStack && buffChk.stack > buffChk.maxStack) {
+        buffChk.stack = buffChk.maxStack;
       }
     } else if (buffObj.stackType === 3) {
       recv.buffs.push(buffObj);
@@ -1983,6 +1986,8 @@ Battlemodule.prototype.giveBuff = function(src, recv, buffObj, printFlag, name) 
       }
     }
   } else {
+    if (buffObj.stackType === 2 && !buffObj.stack) buffObj.stack = 1;   // 스택형은 첫 부여도 1중첩으로 표기
+    if (buffObj.maxStack && buffObj.stack > buffObj.maxStack) buffObj.stack = buffObj.maxStack;
     recv.buffs.push(buffObj);
   }       
   

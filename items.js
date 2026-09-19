@@ -1304,7 +1304,7 @@ itemList[546] = { id : 546, name : '약재상의 절구', nameType : cons.NAME_K
     effectDesc : '회복 소모품 효과 +50%', effect : [], runEffect : { key : 'healPotionBonus', value : 0.5 } };
 itemList[547] = { id : 547, name : '독병 걸이', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '허리에 병을 여럿 매다는 걸이. 흔들리면서 약이 더 진해진다.', rank : 9, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 19, hit : 0.05 }, 
     effectDesc : '상태이상 소모품 지속시간 +1턴', effect : [], runEffect : { key : 'statusPotionBonus', value : 1 } };
-itemList[548] = { id : 548, name : '비상용 주머니', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '언제나 물약 하나가 들어 있는 주머니. 꺼내 써도 다음 싸움엔 다시 차 있다.', rank : 9, rarity : cons.ITEM_RARITY_EPIC, stat : { maxHp : 20 }, 
+itemList[548] = { id : 548, name : '비상용 주머니', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '누가 채워 두는지 모를 주머니. 싸움이 시작될 때마다 안에 병 하나가 들어 있고, 끝나면 사라진다.', rank : 9, rarity : cons.ITEM_RARITY_EPIC, stat : { maxHp : 20 }, 
     effectDesc : '전투 시작 시 치유 물약 1개 임시 지급 (전투 종료 시 소멸)', effect : [], runEffect : { key : 'freePotion', value : 'hp_s' } };
 itemList[549] = { id : 549, name : '길드 회원증', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '상인 길드의 회원증. 값을 부를 때 이걸 먼저 보인다.', rank : 9, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 20 }, 
     effectDesc : '상점 장비 가격 -20%', effect : [], runEffect : { key : 'gearDiscount', value : 0.2 } };

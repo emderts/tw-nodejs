@@ -262,7 +262,7 @@ io.on('connection', (socket) => {
     if (fresh) {
       const L = t.leftChr;
       const fh = run.runEffect(L, 'firstHandBonus'); if (fh) run.drawExtra(t.pdeck, fh);   // 한 장 접은 카드
-      const fp = run.runEffect(L, 'freePotion'); if (fp) { const n = fp === 'random2' ? 2 : 1; for (let k = 0; k < n; k++) { const it = (fp === 'random' || fp === 'random2') ? consumables.random() : consumables.make(fp); if (it) { it.temp = true; L.inventory = L.inventory || []; L.inventory.push(it); } } }   // 비상용 주머니 / 카시엔의 보따리 / 뤼순 창의 예비 명부
+      const fp = run.runEffect(L, 'freePotion'); if (fp) { const n = fp === 'random2' ? 2 : 1; for (let k = 0; k < n; k++) { const it = (fp === 'random' || fp === 'random2') ? consumables.random(null, true) : consumables.make(fp, true); if (it) { L.inventory = L.inventory || []; L.inventory.push(it); } } }   // 비상용 주머니 / 카시엔의 보따리 / 뤼순 창의 예비 명부
     }
     if (!t.eplayed) t.eplayed = [0, 0, 0];
     const oneMore = run.runEffect(t.leftChr, 'oneMore') || 0;
@@ -3683,7 +3683,8 @@ function floorState(t) {
     hp: [Math.max(0, Math.round(L.curHp)), Math.round(L.stat.maxHp)], sp: sp(L),
     ehp: [Math.max(0, Math.round(R.curHp)), Math.round(R.stat.maxHp)], esp: sp(R),
     eplayed: t.eplayed, edraw: t.edeck.draw.length, resets: t.resets, redraws: t.redraws, undos: t.undos && t.snapshot ? t.undos : 0, swaps: t.swaps === undefined ? (run.runEffect(L, 'swapSkill') || 0) : t.swaps,
-    items: (L.inventory || []).map((it, i) => ({ i, code: it.code, name: it.name, tooltip: it.tooltip, card: it.card })).filter(x => x.code && consumables.DEFS[x.code]),
+    names: floorNames(L), enemyNames: floorNames(R),
+    items: (L.inventory || []).map((it, i) => ({ i, code: it.code, name: it.name, tooltip: it.tooltip, card: it.card, temp: !!it.temp })).filter(x => x.code && consumables.DEFS[x.code]),
     ehint: enemyHint(t)
   };
 }
