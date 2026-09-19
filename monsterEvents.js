@@ -62,7 +62,7 @@ const before = {
     ] },
   oStoneist: { title: '영석 파편', desc: '영석술사가 흘린 돌 조각이 반짝인다.',
     options: [
-      { label: '파편을 부순다 (적 버프 스킬 발동 확률 0)', effect: (ch, mon) => { for (const s of mon.skill.base) for (const e of (s.effect || [])) if (e.buffCode) e.chance = 0; return '술사의 돌이 힘을 잃었다.'; } },
+      { label: '파편을 부순다 (적 버프 스킬 무효)', effect: (ch, mon) => { for (const s of mon.skill.base) s.effect = (s.effect || []).filter(e => !e.buffCode); return '술사의 돌이 힘을 잃었다.'; } },
       { label: '파편을 판다 (골드 +50)', effect: (ch) => { ch.gold += 50; return '50골드.'; } }
     ] },
   oDeathKnight: { title: '검은 기사의 갑주', desc: '죽음의 기사가 벗어 둔 갑주 한 벌이 서 있다.',
@@ -122,7 +122,7 @@ const before = {
     ] },
   rsNagpa: { title: '저주의 두루마리', desc: '나그파의 주문이 적힌 두루마리다.',
     options: [
-      { label: '태운다 (적 디버프 스킬 무효)', effect: (ch, mon) => { for (const s of mon.skill.base) for (const e of (s.effect || [])) if (e.buffCode) e.chance = 0; return '주문이 재가 됐다.'; } },
+      { label: '태운다 (적 디버프 스킬 무효)', effect: (ch, mon) => { for (const s of mon.skill.base) s.effect = (s.effect || []).filter(e => !e.buffCode); return '주문이 재가 됐다.'; } },
       { label: '읽는다 (마법 공격 +10 영구, 적도 +10)', effect: (ch, mon, h) => { ch.base.magAtk += 10; mon.base.magAtk += 10; h.calcStats(mon); return '둘 다 주문을 익혔다.'; } }
     ] },
 
