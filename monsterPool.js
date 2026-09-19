@@ -42,7 +42,21 @@ const TIERS = {
   13: [   // 보스
     { key: 'd725',  deck: [3, 3, 3], extraFav: 2, note: '레드 — 이상해꽃·거북왕·잠만보·피카츄 (4폼, -75%)', tune: (e) => { e.base.maxHp = Math.round(e.base.maxHp * 0.85); } },
     { key: 'rAeika', deck: [3, 3, 3], extraFav: 1, note: '움직이는 요새 에이카 — 에너지 코어 모듈' },
-    { key: 'rsNagpa', deck: [3, 3, 3], extraFav: 3, tune: (e) => { delete e.startEffects; e.name = '각성한 ' + e.name; for (const k of e.skill.base) k.damage = Math.round(k.damage * 1.1 * 100) / 100; e.skill.base[0].effect[0].chance = 0.4; } },
+    { key: 'rsNagpa', deck: [2, 4, 4], extraFav: 3, note: '각성한 나그파', tune: (e) => {
+      delete e.startEffects; e.name = '각성한 ' + e.name;
+      e.skill.base[0].name = '감언이설'; e.skill.base[0].damage = 1.0;
+      e.skill.base[0].effect = [{ code: cons.EFFECT_TYPE_OPP_BUFF, chance: 0.5, buffCode: 11, buffDur: 2 }];
+      e.skill.base[0].tooltip = '마법 1.0 피해, 50% 확률로 [광란] 2턴';
+      e.skill.base[1].name = '입을 봉하는 주문'; e.skill.base[1].damage = 1.15;
+      e.skill.base[1].effect = [{ code: cons.EFFECT_TYPE_OPP_BUFF, chance: 0.4, buffCode: 7, buffDur: 2 }, { code: cons.EFFECT_TYPE_OPP_SP, value: -14 }];
+      e.skill.base[1].tooltip = '마법 1.15 피해, 40% 확률로 [침묵] 2턴, 상대 SP -14';
+      e.skill.base[2].name = '에너지 쇼크'; e.skill.base[2].damage = 1.25; e.skill.base[2].type = cons.DAMAGE_TYPE_PHYSICAL;
+      e.skill.base[2].effect = [{ code: cons.EFFECT_TYPE_MULTIPLE, chance: 0.5, target: [{ code: cons.EFFECT_TYPE_OPP_BUFF, buffCode: 6, buffDur: 2 }, { code: cons.EFFECT_TYPE_OPP_BUFF, buffCode: 8, buffDur: 2 }, { code: cons.EFFECT_TYPE_OPP_BUFF, buffCode: 4, buffDur: 1 }] }];
+      e.skill.base[2].tooltip = '물리 1.25 피해, 50% 확률로 [마비]/[암흑]/[기절] 중 하나';
+      e.skill.special.name = '파멸의 끝을 받아들여라'; e.skill.special.cost = 170;
+      e.skill.special.effect = [{ code: cons.EFFECT_TYPE_OPP_BUFF, buffCode: 90066, buffDur: 4 }, { code: cons.EFFECT_TYPE_OPP_BUFF, buffCode: 10, buffDur: 3 }];
+      e.skill.special.tooltip = '[파멸의 끝] 4턴 (턴 종료 시 절대 150), [봉인] 3턴';
+    } },
   ],
   15: [   // 최종 보스
     { key: 'rsDeci', deck: [3, 3, 3], extraFav: 2, note: '파멸자 데시메이트 — 기절 연타, 안 걸리면 파멸', tune: (e) => {
@@ -54,8 +68,36 @@ const TIERS = {
     } },
   ],
   9: [
-    { key: 'rsInzeal',      deck: [3, 3, 3], extraFav: 2, tune: (e) => { delete e.startEffects; } },
-    { key: 'rsNagpa',       deck: [3, 3, 3], extraFav: 2, tune: (e) => { delete e.startEffects; e.skill.base[0].effect[0].chance = 0.4; } },
+    { key: 'rsInzeal',      deck: [4, 2, 3], extraFav: 2, note: '인-질 — 파멸을 퍼뜨린다', tune: (e) => {
+      delete e.startEffects;
+      e.skill.base[0].name = '파멸의 전도'; e.skill.base[0].damage = 0.8;
+      e.skill.base[0].effect = [{ code: cons.EFFECT_TYPE_OPP_BUFF, chance: 1, buffCode: 90065, buffDur: 8 }];
+      e.skill.base[0].tooltip = '마법 0.8 피해, [파멸] 8턴 부여 (턴 종료 시 현재 생명력의 1%)';
+      e.skill.base[1].name = '썩어가는 축복'; e.skill.base[1].damage = 1.1;
+      e.skill.base[1].effect = [{ code: cons.EFFECT_TYPE_OPP_BUFF, chance: 0.5, buffCode: 2, buffDur: 3 }];
+      e.skill.base[1].tooltip = '마법 1.1 피해, 50% 확률로 [중독] 3턴';
+      e.skill.base[2].name = '역병의 손길'; e.skill.base[2].damage = 1.2; e.skill.base[2].type = cons.DAMAGE_TYPE_PHYSICAL;
+      e.skill.base[2].effect = [{ code: cons.EFFECT_TYPE_OPP_BUFF, chance: 0.4, buffCode: 10505, buffDur: 3 }];
+      e.skill.base[2].tooltip = '물리 1.2 피해, 40% 확률로 [벌어진 상처] 3턴 (회복량 -50%)';
+      e.skill.special.name = '모두 썩어 문드러져라'; e.skill.special.cost = 120;
+      e.skill.special.effect = [{ code: cons.EFFECT_TYPE_OPP_BUFF, buffCode: 90065, buffDur: 12 }, { code: cons.EFFECT_TYPE_OPP_BUFF, buffCode: 2, buffDur: 5 }];
+      e.skill.special.tooltip = '[파멸] 12턴, [중독] 5턴 부여';
+    } },
+    { key: 'rsNagpa',       deck: [2, 4, 3], extraFav: 2, note: '나그파 — 정신을 묶는다', tune: (e) => {
+      delete e.startEffects;
+      e.skill.base[0].name = '감언이설'; e.skill.base[0].damage = 0.9;
+      e.skill.base[0].effect = [{ code: cons.EFFECT_TYPE_OPP_BUFF, chance: 0.4, buffCode: 11, buffDur: 2 }];
+      e.skill.base[0].tooltip = '마법 0.9 피해, 40% 확률로 [광란] 2턴';
+      e.skill.base[1].name = '입을 봉하는 주문'; e.skill.base[1].damage = 1.0;
+      e.skill.base[1].effect = [{ code: cons.EFFECT_TYPE_OPP_BUFF, chance: 0.3, buffCode: 7, buffDur: 1 }, { code: cons.EFFECT_TYPE_OPP_SP, value: -8 }];
+      e.skill.base[1].tooltip = '마법 1.0 피해, 30% 확률로 [침묵] 1턴, 상대 SP -8';
+      e.skill.base[2].name = '에너지 쇼크'; e.skill.base[2].damage = 1.1; e.skill.base[2].type = cons.DAMAGE_TYPE_PHYSICAL;
+      e.skill.base[2].effect = [{ code: cons.EFFECT_TYPE_MULTIPLE, chance: 0.35, target: [{ code: cons.EFFECT_TYPE_OPP_BUFF, buffCode: 6, buffDur: 1 }, { code: cons.EFFECT_TYPE_OPP_BUFF, buffCode: 8, buffDur: 2 }, { code: cons.EFFECT_TYPE_OPP_BUFF, buffCode: 4, buffDur: 1 }] }];
+      e.skill.base[2].tooltip = '물리 1.1 피해, 35% 확률로 [마비]/[암흑]/[기절] 중 하나';
+      e.skill.special.name = '파멸의 끝을 받아들여라'; e.skill.special.cost = 190;
+      e.skill.special.effect = [{ code: cons.EFFECT_TYPE_OPP_BUFF, buffCode: 90066, buffDur: 3 }, { code: cons.EFFECT_TYPE_OPP_BUFF, buffCode: 10, buffDur: 2 }];
+      e.skill.special.tooltip = '[파멸의 끝] 3턴 (턴 종료 시 절대 150), [봉인] 2턴';
+    } },
     { key: 'oLegor',        deck: [3, 3, 3], extraFav: 2, tune: (e) => { e.skill.drive.chance = 0.1; e.skill.base[1].effect[0].value = 0.3; e.skill.base[0].damage = 1.0; e.skill.base[2].damage = 1.1; } },
     { key: 'rInfernal',     deck: [4, 1, 2], extraFav: 2 },
   ],
