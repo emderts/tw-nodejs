@@ -52,7 +52,7 @@ const before = {
     ] },
   oFlame: { title: '불씨', desc: '과수원 한가운데 불씨가 살아 있다. 업화가 이걸 먹고 자란다.',
     options: [
-      { label: '물을 붓는다 (적 흡혈 무효)', effect: (ch, mon) => { for (const s of mon.skill.base) for (const e of (s.effect || [])) if (e.value && e.value < 1) e.value = 0; return '불이 사그라든다.'; } },
+      { label: '물을 붓는다 (적 흡혈 무효)', effect: (ch, mon) => { for (const s of mon.skill.base) s.effect = (s.effect || []).filter(e => !(e.code === 4 && e.isPercentDamage)); return '불이 사그라든다.'; } },
       { label: '가져간다 (다음 전투 내 공격 +20%)', effect: (ch, mon, h) => { h.addBuff(ch, { key: 'atk', mult: 1.2, battles: 1, label: '공격력 +20%' }); return '손이 뜨겁다.'; } }
     ] },
   oEleLord: { title: '꺼져가는 불', desc: '정령왕의 힘이 새어 나오는 균열이다.',

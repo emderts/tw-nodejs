@@ -1181,7 +1181,7 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
         return valueUsed;
       }
       
-      if (eff.value) {        
+      if (eff.value !== undefined && eff.value !== null) {   // 0도 유효한 값 (0으로 두면 NaN이 되던 문제)
         valueUsed = _setupValue(eff, eff.value);
         
         if (eff.addAttackCount) {
