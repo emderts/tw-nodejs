@@ -482,6 +482,7 @@ Battlemodule.prototype._doBattleTurnManual = function(left, right) {
   }
 
   this.resolveTurnEnd(winner, loser);
+  for (const c of [winner, loser]) { if (!isFinite(c.curHp)) { console.log('[NaN curHp]', c.name); c.curHp = 0; } if (!isFinite(c.curSp)) c.curSp = 0; }
   for (const [c, sk] of [[winner, skillUsed], [loser, skillFailed]]) {
     if (!sk) continue;
     c.sameSkillStreak = (c.lastSkillCode === sk.code) ? (c.sameSkillStreak || 1) + 1 : 1;
@@ -800,6 +801,7 @@ Battlemodule.prototype.calcDamage = function(winner, loser, skill) {
 }
 
 Battlemodule.prototype.dealDamage = function(src, dst, damage) {
+  if (!isFinite(damage.value)) { console.log('[NaN damage]', JSON.stringify({ src: src && src.name, dst: dst && dst.name, type: damage.type, atkRat: damage.atkRat, reduce: damage.reduce, skillRat: damage.skillRat })); damage.value = 0; }
   var damageShield = Math.round(damage.value / (1- damage.reduce));
   var shielded = false;
   for (val of getBuffEffects(dst, cons.ACTIVE_TYPE_DEAL_DAMAGE_RECEIVE)) {
@@ -1193,6 +1195,10 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
         }
       }
       valueUsed = Math.round(valueUsed * stackMpl);
+      if (!isFinite(valueUsed)) {   // NaN 방어: 원인 추적용 로그 남기고 무시
+        console.log('[NaN effect]', JSON.stringify({ name: eff.name, code: eff.code, value: eff.value, flags: Object.keys(eff).filter(k => k.startsWith('isPercent')), dmg: damage && damage.value, who: winner && winner.name }));
+        continue;
+      }
       if (valueUsed > eff.maxApply) {
         valueUsed = eff.maxApply;
       }
