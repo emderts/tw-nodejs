@@ -1163,7 +1163,7 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
         } else if (eff.isPercentOppStat) {
           valueUsed *= loser.stat[eff.percentKey];
         } else if (eff.isPercentSkillUsed) {
-          valueUsed *= skill[eff.percentKey];
+          valueUsed *= ((skill && skill[eff.percentKey]) || 0);
         } else if (eff.isPercentHpLost) {
           valueUsed *= (winner.stat.maxHp - winner.curHp);
         } else if (eff.isPercentOppHpLost) {
@@ -2199,9 +2199,9 @@ function calcStats(chara, opp) {
     } else if (val.isPercentItemValue) {
       stackMpl *= val.item.itemValue;
     } else if (val.isPercentSkill) {
-      stackMpl *= chara.skill[val.skillKey][val.percentKey];
+      stackMpl *= ((chara.skill[val.skillKey] || {})[val.percentKey] || 0);   // 드라이브/스페셜이 없는 캐릭터(정규화 몬스터) 방어
     } else if (val.isPercentCurSp) {
-      stackMpl *= ((chara.curSp * 100) / chara.skill.special.cost);
+      stackMpl *= (chara.skill.special && chara.skill.special.cost ? ((chara.curSp * 100) / chara.skill.special.cost) : 0);
     }
     
     if (val.countInv) {
@@ -2274,7 +2274,7 @@ function calcStats(chara, opp) {
     } else if (val.code === cons.EFFECT_TYPE_STAT_PERCENTAGE) {
       chara.stat[val.key] *= (1 + val.value * stackMpl);
     } else if (val.code === cons.EFFECT_TYPE_SP_COST_PERCENTAGE) {
-      chara.skill[val.key].cost *= (1 + val.value * stackMpl);
+      if (chara.skill[val.key]) chara.skill[val.key].cost *= (1 + val.value * stackMpl);
     }
   }
   for (val of getItemEffects(chara, cons.ACTIVE_TYPE_CALC_STATS)) {
@@ -2284,7 +2284,7 @@ function calcStats(chara, opp) {
     } else if (val.code === cons.EFFECT_TYPE_STAT_PERCENTAGE) {
       chara.stat[val.key] *= (1 + val.value * stackMpl);
     } else if (val.code === cons.EFFECT_TYPE_SP_COST_PERCENTAGE) {
-      chara.skill[val.key].cost *= (1 + val.value * stackMpl);
+      if (chara.skill[val.key]) chara.skill[val.key].cost *= (1 + val.value * stackMpl);
     }
   }
   
