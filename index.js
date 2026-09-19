@@ -257,7 +257,6 @@ io.on('connection', (socket) => {
     if (t.redraws === undefined) t.redraws = (run.runEffect(t.leftChr, 'redrawHand') || 0) + oneMore;
     if (t.undos === undefined) t.undos = (run.runEffect(t.leftChr, 'undoTurn') || 0) + oneMore;
     if (t.resets === undefined) t.resets = run.RESETS_PER_BATTLE + ((t.leftChr.run && t.leftChr.run.extraResets) || 0) + (run.runEffect(t.leftChr, 'extraResets') || 0) + oneMore;
-    if (t.log === undefined) t.log = t.startHtml || '';
     socket.emit('floorAck', t.startHtml, floorNames(t.leftChr), floorNames(t.rightChr), floorState(t), run.deckCounts(t.rightChr.deck));
   });
   socket.on('floorUse', function(room, uid, idx) {
@@ -267,16 +266,17 @@ io.on('connection', (socket) => {
     const it = t.leftChr.inventory && t.leftChr.inventory[idx];
     if (!it || it.type !== consumables.TYPE || !consumables.DEFS[it.code]) return;
     if (consumables.DEFS[it.code].card !== undefined) return;   // 카드는 floorSelect로
+    const before = t.bmod.result || '';
     t.bmod.result = '';
     const mods = { healBonus: run.runEffect(t.leftChr, 'healPotionBonus') || 0, statusBonus: run.runEffect(t.leftChr, 'statusPotionBonus') || 0 };
     const html = consumables.apply(it.code, t.bmod, t.leftChr, t.rightChr, buffMdl, mods);
     const out = html + t.bmod.result;
+    t.bmod.result = before + out;
     const save = run.runEffect(t.leftChr, 'potionSave');
     let outText = out;
-    if (save && Math.random() < save) outText += '<span class="skillDamage">손수건 안에 하나가 더 있었다. ' + it.name + '이(가) 남았다.</span><br>';
+    if (save && Math.random() < save) { const extra = '<span class="skillDamage">손수건 안에 하나가 더 있었다. ' + it.name + '이(가) 남았다.</span><br>'; outText += extra; t.bmod.result += extra; }
     else { t.leftChr.inventory.splice(idx, 1); if (!it.temp) { if (!t.used) t.used = []; t.used.push(it.code); } }
-    t.log = (t.log || '') + outText;
-    socket.emit('floorSelectAck', outText, floorState(t));
+    socket.emit('floorSelectAck', t.bmod.result, floorState(t));
   });
   socket.on('floorUndo', function(room, uid) {
     const t = trades[room];
@@ -286,8 +286,8 @@ io.on('connection', (socket) => {
     t.leftChr = snap.L; t.rightChr = snap.R; bm.charLeft = t.leftChr; bm.charRight = t.rightChr; bm.result = '';
     t.bmod = bm; t.pdeck = snap.pdeck; t.edeck = snap.edeck; t.eplayed = snap.eplayed; t.resets = snap.resets; t.redraws = snap.redraws; t.used = snap.used;
     t.undos--; t.snapshot = null;
-    t.log = (t.log || '') + '<span class="skillDamage">한 번만 물러줘라 — 방금 턴을 물렀다.</span><br>';
-    socket.emit('floorSelectAck', '<span class="skillDamage">한 번만 물러줘라 — 방금 턴을 물렀다.</span><br>', floorState(t));
+    t.bmod.result = (snap.bm.result || '') + '<span class="skillDamage">한 번만 물러줘라 — 방금 턴을 물렀다.</span><br>';
+    socket.emit('floorSelectAck', t.bmod.result, floorState(t));
   });
   socket.on('floorSwap', function(room, uid, a, b) {   // 바꿔치기: 스킬 두 슬롯 교체 (전투당 N회)
     const t = trades[room];
@@ -298,7 +298,8 @@ io.on('connection', (socket) => {
     const L = t.leftChr;
     for (const key of ['skill', 'skillOri']) { if (L[key] && L[key].base) { const tmp = L[key].base[a]; L[key].base[a] = L[key].base[b]; L[key].base[b] = tmp; } }
     t.swaps--;
-    socket.emit('floorSelectAck', '<span class="skillDamage">소매 안에서 패가 바뀌었다. [ ' + L.skill.base[a].name + ' ] ↔ [ ' + L.skill.base[b].name + ' ]</span><br>', floorState(t), floorNames(L));
+    t.bmod.result = (t.bmod.result || '') + '<span class="skillDamage">소매 안에서 패가 바뀌었다. [ ' + L.skill.base[a].name + ' ] ↔ [ ' + L.skill.base[b].name + ' ]</span><br>';
+    socket.emit('floorSelectAck', t.bmod.result, floorState(t), floorNames(L));
   });
   socket.on('floorRedraw', function(room, uid) {
     const t = trades[room];
@@ -333,7 +334,6 @@ io.on('connection', (socket) => {
     const want = monster.selectFunc[t.rightChr.skillSelect](t.rightChr, key);
     const eKey = run.aiPick(t.edeck, run.runEffect(t.leftChr, 'hideSkills') ? Math.floor(Math.random() * 3) : want);   // 이름 없는 초식: 반응형 예측 무효
     const result = t.bmod.procBattleTurn(key, eKey, 1);
-    t.log = (t.log || '') + (result.result || '');   // 전투 로그 누적 (기록 저장용)
     const tie = key === eKey && result.redecide;
     if (!freeCard && !(tie && run.runEffect(t.leftChr, 'keepCardOnTie'))) run.playCard(t.pdeck, key);   // 엇갈린 두 자루: 무승부 시 카드 유지
     run.playCard(t.edeck, eKey);
@@ -3910,7 +3910,7 @@ async function procFloorResult (req, res) {
       try {
         const who = newsName(char);
         const title = '[' + char.run.floor + '층 · ' + char.run.cycle + '사이클' + (enemy.isBoss ? ' 보스' : '') + '] ' + who + ' vs ' + enemy.name + ' - ' + (re.winnerLeft ? who + ' 승리' : enemy.name + ' 승리');
-        await client.query('insert into results(title, result, date) values ($1, $2, $3)', [title, (t.log || '') + '<div class="note-box">' + (re.winnerLeft ? '승리' : '패배') + '</div>', new Date()]);
+        await client.query('insert into results(title, result, date) values ($1, $2, $3)', [title, (re.result || '') + '<div class="note-box">' + (re.winnerLeft ? '승리' : '패배') + '</div>', new Date()]);
       } finally { client.release(); }
     } catch (e) { console.log('battle log save failed', e.message); }
     const rv = runView(char);
