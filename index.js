@@ -114,6 +114,18 @@ var ring = [[], []];
 var people = [];
 var trades = {};
 var curRoom = 1;
+// 전투 소켓 핸들러 보호: 예외가 나도 서버가 멈추지 않고, 원인을 로그와 클라이언트에 남긴다
+function guard(name, fn) {
+  return function() {
+    try { return fn.apply(this, arguments); }
+    catch (e) {
+      console.log('[socket ' + name + ' error]', e && e.stack ? e.stack.split('\n').slice(0, 4).join(' | ') : e);
+      const room = arguments[0]; const t = trades[room];
+      if (t) t.busy = false;
+      try { this.emit('floorSelectAck', '<span class="skillDamage">전투 처리 중 오류가 났습니다 (' + name + '): ' + (e && e.message) + '</span><br>', t ? floorState(t) : null); } catch (e2) {}
+    }
+  };
+}
 io.on('connection', (socket) => {
   socket.on('login', function(userName, uid, side) {
     socket.request.session.userName = userName;
@@ -236,7 +248,7 @@ io.on('connection', (socket) => {
     }
   });
 
-  socket.on('floorInit', function(room, uid) {
+  socket.on('floorInit', guard('floorInit', function(room, uid) {
     const t = trades[room];
     if (!t || !t.floor || t.leftUid != uid) return;
     t.left = socket;
@@ -258,8 +270,8 @@ io.on('connection', (socket) => {
     if (t.undos === undefined) t.undos = (run.runEffect(t.leftChr, 'undoTurn') || 0) + oneMore;
     if (t.resets === undefined) t.resets = run.RESETS_PER_BATTLE + ((t.leftChr.run && t.leftChr.run.extraResets) || 0) + (run.runEffect(t.leftChr, 'extraResets') || 0) + oneMore;
     socket.emit('floorAck', t.startHtml, floorNames(t.leftChr), floorNames(t.rightChr), floorState(t), run.deckCounts(t.rightChr.deck));
-  });
-  socket.on('floorUse', function(room, uid, idx) {
+  }));
+  socket.on('floorUse', guard('floorUse', function(room, uid, idx) {
     const t = trades[room];
     if (!t || !t.floor || t.leftUid != uid || t.result || t.busy) return;
     idx = parseInt(idx, 10);
@@ -277,8 +289,8 @@ io.on('connection', (socket) => {
     if (save && Math.random() < save) { const extra = '<span class="skillDamage">손수건 안에 하나가 더 있었다. ' + it.name + '이(가) 남았다.</span><br>'; outText += extra; t.bmod.result += extra; }
     else { t.leftChr.inventory.splice(idx, 1); if (!it.temp) { if (!t.used) t.used = []; t.used.push(it.code); } }
     socket.emit('floorSelectAck', t.bmod.result, floorState(t));
-  });
-  socket.on('floorUndo', function(room, uid) {
+  }));
+  socket.on('floorUndo', guard('floorUndo', function(room, uid) {
     const t = trades[room];
     if (!t || !t.floor || t.leftUid != uid || t.result || t.busy || !t.undos || !t.snapshot) return;
     const snap = JSON.parse(t.snapshot);
@@ -288,8 +300,8 @@ io.on('connection', (socket) => {
     t.undos--; t.snapshot = null;
     t.bmod.result = (snap.bm.result || '') + '<span class="skillDamage">한 번만 물러줘라 — 방금 턴을 물렀다.</span><br>';
     socket.emit('floorSelectAck', t.bmod.result, floorState(t));
-  });
-  socket.on('floorSwap', function(room, uid, a, b) {   // 바꿔치기: 스킬 두 슬롯 교체 (전투당 N회)
+  }));
+  socket.on('floorSwap', guard('floorSwap', function(room, uid, a, b) {   // 바꿔치기: 스킬 두 슬롯 교체 (전투당 N회)
     const t = trades[room];
     if (!t || !t.floor || t.leftUid != uid || t.result || t.busy) return;
     if (t.swaps === undefined) t.swaps = run.runEffect(t.leftChr, 'swapSkill') || 0;
@@ -300,22 +312,22 @@ io.on('connection', (socket) => {
     t.swaps--;
     t.bmod.result = (t.bmod.result || '') + '<span class="skillDamage">소매 안에서 패가 바뀌었다. [ ' + L.skill.base[a].name + ' ] ↔ [ ' + L.skill.base[b].name + ' ]</span><br>';
     socket.emit('floorSelectAck', t.bmod.result, floorState(t), floorNames(L));
-  });
-  socket.on('floorRedraw', function(room, uid) {
+  }));
+  socket.on('floorRedraw', guard('floorRedraw', function(room, uid) {
     const t = trades[room];
     if (!t || !t.floor || t.leftUid != uid || t.result || t.busy || !t.redraws) return;
     t.redraws--;
     run.redrawHand(t.pdeck);
     socket.emit('floorSelectAck', null, floorState(t));
-  });
-  socket.on('floorReset', function(room, uid) {
+  }));
+  socket.on('floorReset', guard('floorReset', function(room, uid) {
     const t = trades[room];
     if (!t || !t.floor || t.leftUid != uid || t.result || t.busy || !t.resets) return;
     t.resets--;
     run.resetDeck(t.pdeck);
     socket.emit('floorSelectAck', null, floorState(t));
-  });
-  socket.on('floorSelect', function(room, uid, key, useIdx) {
+  }));
+  socket.on('floorSelect', guard('floorSelect', function(room, uid, key, useIdx) {
     const t = trades[room];
     if (!t || !t.floor || t.leftUid != uid || t.result || t.busy) return;
     key = parseInt(key, 10);
@@ -349,7 +361,7 @@ io.on('connection', (socket) => {
       t.result = result;
       socket.emit('floorSelectEnd', result.result);
     }
-  });
+  }));
   socket.on('manualAdmin', function(room, luid, ruid, lc, rc) {
     trades[1000] = {};
     trades[1000].obv = [];

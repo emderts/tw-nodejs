@@ -155,7 +155,7 @@
   socket.on('floorSelectAck', function (result, state, newNames) {
     if (newNames) names = newNames;
     if (result !== null) document.getElementById('result').innerHTML = result;
-    renderState(state);
+    if (state) renderState(state); else { for (var i = 0; i < 4; i++) document.getElementById('handBtn' + i).removeAttribute('disabled'); }
     if (result !== null) window.scrollTo(0, document.body.scrollHeight);
   });
   socket.on('floorSelectEnd', function (result) {
