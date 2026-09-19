@@ -374,6 +374,7 @@ Battlemodule.prototype._doBattleTurnManual = function(left, right) {
   } 
   skillUsed.skillNum = skillNum;
   winner.curSkillCode = skillUsed ? skillUsed.code : undefined; loser.curSkillCode = skillFailed ? skillFailed.code : undefined;   // 이번 턴 사용 스킬
+  if (winner.hpBeforeTurn === undefined) winner.hpBeforeTurn = winner.curHp; if (loser.hpBeforeTurn === undefined) loser.hpBeforeTurn = loser.curHp;
   this.resolveEffects(winner, loser, getBuffEffects(winner, cons.ACTIVE_TYPE_SKILL_WIN), skillUsed, skillUsed);
   this.resolveEffects(winner, loser, getItemEffects(winner, cons.ACTIVE_TYPE_SKILL_WIN), skillUsed, skillUsed);
   this.resolveEffects(loser, winner, getBuffEffects(loser, cons.ACTIVE_TYPE_SKILL_LOSE), skillUsed);
@@ -482,7 +483,7 @@ Battlemodule.prototype._doBattleTurnManual = function(left, right) {
   }
 
   this.resolveTurnEnd(winner, loser);
-  for (const c of [winner, loser]) { if (!isFinite(c.curHp)) { console.log('[NaN curHp]', c.name); c.curHp = 0; } if (!isFinite(c.curSp)) c.curSp = 0; }
+  for (const c of [winner, loser]) { if (!isFinite(c.curHp)) { console.log('[NaN curHp]', c.name, 'restore', c.hpBeforeTurn); c.curHp = isFinite(c.hpBeforeTurn) ? c.hpBeforeTurn : c.stat.maxHp; } if (!isFinite(c.curSp)) c.curSp = 0; c.hpBeforeTurn = c.curHp; }
   for (const [c, sk] of [[winner, skillUsed], [loser, skillFailed]]) {
     if (!sk) continue;
     c.sameSkillStreak = (c.lastSkillCode === sk.code) ? (c.sameSkillStreak || 1) + 1 : 1;
