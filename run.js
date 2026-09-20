@@ -277,6 +277,15 @@ function snapshotForFallen(char) {
 }
 
 // ---------- 상점 ----------
+// 세트 컬렉션: 특별 상점이 한 번에 파는 묶음 (같은 슬롯끼리 겹쳐도 그대로 — 고르는 재미)
+const COLLECTIONS = [
+  { name: '불타는 과수원의 유물', desc: '과수원에서 건져 올린 것들', match: (it) => /과수원|결실/.test(it.name) },
+  { name: '생태 복원 뱃지함', desc: '동물 스택을 쌓는 뱃지들', match: (it) => /뱃지|포식동물 제어장치/.test(it.name) },
+  { name: '도시 건설 계획서', desc: '[도시 태그]를 굴리는 장비들', match: (it) => /이민자 도시|녹티스|로버 공장|광역 대도시권|대수도|상업 지구/.test(it.name) },
+  { name: '화성 연구단 보급품', desc: '[과학 태그]를 굴리는 장비들', match: (it) => /올림푸스|화성 연구자|화성 대학교|반중력|라그랑주|생명체 탐사|성층권|제한 구역|첨단 합금|연구 전초기지|워프 드라이브|AI 센트럴/.test(it.name) },
+  { name: '목성권 원정 장비', desc: '[외우주 태그]를 굴리는 장비들', match: (it) => /가니메데|이오 탐사|유로파/.test(it.name) },
+  { name: '엘바스의 유산', desc: '네 자루 중 남은 것들', match: (it) => /엘바스의 유산/.test(it.name) },
+];
 const SHOP_INFO = {
   gear:       { label: '장비 상인',        blurb: '슬롯 무작위 레어 이상 장비 4개' },
   gearSlot:   { label: '전문 장비 상인',   blurb: '한 슬롯의 레어 이상 장비 4개' },
@@ -285,14 +294,18 @@ const SHOP_INFO = {
   result:     { label: '리설트 카드 상인', blurb: '슬롯별 리설트 카드 4장' },
   resultRare: { label: '고급 리설트 카드 상인', blurb: '레어·유니크 확정 리설트 카드' },
   alchemist:  { label: '연금술사',         blurb: '스탯 포인트, 재도전(♥) 회복' },
+  collector:  { label: '수집가',           blurb: '한 계열의 장비를 통째로 판다' },
 };
 const SHOP_TYPES = Object.keys(SHOP_INFO);
 const SLOT_NAMES = ['무기', '방어구', '보조방어구', '장신구'];
+function itemList() { return require('./items').list; }
 // 상점 후보 2곳 (서로 다른 종류)
 function makeShopOffers(char) {
   const n = Math.min(SHOP_TYPES.length, 2 + (runEffect(char, 'shopOffers') || 0));
+  const common = SHOP_TYPES.filter(t => t !== 'collector');
   const picked = [];
-  while (picked.length < n) { const t = SHOP_TYPES[Math.floor(Math.random() * SHOP_TYPES.length)]; if (!picked.includes(t)) picked.push(t); }
+  if (Math.random() < 0.1) picked.push('collector');   // 수집가는 12% 확률로만 후보에 오른다
+  while (picked.length < n) { const t = common[Math.floor(Math.random() * common.length)]; if (!picked.includes(t)) picked.push(t); }
   return picked.map(t => {
     const o = { type: t, label: SHOP_INFO[t].label, blurb: SHOP_INFO[t].blurb };
     if (t === 'gearSlot') { o.slot = Math.floor(Math.random() * 4); o.label = SLOT_NAMES[o.slot] + ' 상인'; o.blurb = SLOT_NAMES[o.slot] + ' 레어 이상 4개'; }
@@ -335,6 +348,17 @@ function makeShop(char, typeIn, opts) {
     goods.push({ kind: 'item', item: rare(), price: Math.round((75 + 6 * cycle) * allDisc) });
     goods.push({ kind: 'item', item: uniq(), price: Math.round((150 + 10 * cycle) * allDisc) });
     goods.push({ kind: 'item', item: roster.makeResultCard(char.rank, Math.floor(Math.random() * 4)), price: Math.round((50 + 5 * cycle) * allDisc) });
+  } else if (type === 'collector') {
+    // 한 계열을 골라, 현재 급수 이하에서 그 계열 장비를 전부 진열 (급수가 낮을수록 저렴)
+    const pool = COLLECTIONS.map(col => ({ col, items: itemList().filter(x => x && x.type <= 4 && x.rank >= char.rank && x.rank <= Math.min(9, char.rank + 2) && col.match(x)) })).filter(x => x.items.length >= 3);
+    if (pool.length) {
+      const pickCol = pool[Math.floor(Math.random() * pool.length)];
+      label = '수집가 — ' + pickCol.col.name;
+      for (const it of pickCol.items.slice(0, 6)) {
+        const price = Math.round((45 + [0, 15, 35, 0, 70, 120][it.rarity] + 5 * cycle) * (1 + (it.rank - char.rank) * -0.12) * allDisc * 1.15);
+        goods.push({ kind: 'item', item: JSON.parse(JSON.stringify(it)), price: Math.max(20, price) });
+      }
+    }
   } else if (type === 'alchemist') {
     goods.push({ kind: 'stat', value: 2, name: '스탯 포인트 +2', price: Math.round((60 + 8 * cycle) * allDisc) });
     goods.push({ kind: 'stat', value: 2, name: '스탯 포인트 +2', price: Math.round((60 + 8 * cycle) * allDisc) });
@@ -361,10 +385,10 @@ function eventPool(char) {
 
   // --- 카드 제거 (유일한 통로) ---
   pool.push({
-    code: 'altar', weight: 3, title: '낡은 제단', desc: '제단에 카드 한 장을 바치면 덱이 가벼워진다.',
+    code: 'altar', weight: 3, title: '낡은 제단', desc: '제단에 카드 한 장을 바치면 덱이 가벼워진다. 바친 자리에는 무언가가 남는다.',
     options: [0, 1, 2].filter(t => char.deck.some(c => c.type === t)).map(t => ({
       label: T[t] + ' 카드 1장 제거', arg: t,
-      effect: (ch, arg) => { const i = ch.deck.findIndex(c => c.type === arg); if (i !== -1) ch.deck.splice(i, 1); return T[arg] + ' 카드를 바쳤다. 덱 ' + ch.deck.length + '장.'; }
+      effect: (ch, arg) => { const i = ch.deck.findIndex(c => c.type === arg); if (i !== -1) ch.deck.splice(i, 1); const rc = roster.makeResultCard(ch.rank, Math.floor(Math.random() * 4)); ch.inventory.push(rc); return T[arg] + ' 카드를 바쳤다. 덱 ' + ch.deck.length + '장. 제단이 ' + rc.name + '을(를) 남겼다.'; }
     })).concat([{ label: '지나친다', effect: () => '제단을 지나쳤다.' }])
   });
 
@@ -546,9 +570,9 @@ function eventPool(char) {
     desc: has('master') && d.skill
       ? '"' + d.from + '에게 배운 기술이다. 네 ' + ['가위', '바위', '보'][d.idx] + ' 기술과 바꿔 주마. 되돌릴 수는 없다."'
       : '늙은 사범이 검을 닦고 있다.',
-    html: has('master') && d.skill ? '<b>' + d.skill.name + '</b> <small>계수 ' + d.skill.damage + '</small><br>' + (d.skill.tooltip || '') + (d.skill.flavor ? '<br><span class="tooltipFlavor">' + d.skill.flavor + '</span>' : '') : '',
+    html: has('master') && d.skill ? '<b>' + d.skill.name + '</b> <small>' + dmgTypeName(d.skill) + ' 계수 ' + d.skill.damage + '</small><br>' + (d.skill.tooltip || '') + (d.skill.flavor ? '<br><span class="tooltipFlavor">' + d.skill.flavor + '</span>' : '') : '',
     options: has('master') && d.skill ? [
-      { label: char.skill.base[d.idx].name + ' (' + char.skill.base[d.idx].damage + ') → ' + d.skill.name + ' (' + d.skill.damage + ')', effect: (ch) => { ch.skill.base[d.idx] = JSON.parse(JSON.stringify(d.skill)); return d.skill.name + '을(를) 익혔다.'; } },
+      { label: char.skill.base[d.idx].name + ' (' + dmgTypeName(char.skill.base[d.idx]) + ' ' + char.skill.base[d.idx].damage + ') → ' + d.skill.name + ' (' + dmgTypeName(d.skill) + ' ' + d.skill.damage + ')', effect: (ch) => { ch.skill.base[d.idx] = JSON.parse(JSON.stringify(d.skill)); return d.skill.name + '을(를) 익혔다.'; } },
       { label: '거절한다', effect: () => '사범은 고개를 끄덕이고 눈을 감았다.' }
     ] : [ { label: '지나간다', effect: () => '아무 일도 없었다.' } ]
   });
@@ -637,6 +661,11 @@ function monsterHelpers() {
     artifact: (rank) => pickArtifact(rank),
     consumable: (code) => code ? consumables.make(code) : consumables.random(),
   };
+}
+// 스킬의 피해 타입 표기
+function dmgTypeName(sk) {
+  if (!sk) return '';
+  return ({ [cons.DAMAGE_TYPE_PHYSICAL]: '물리', [cons.DAMAGE_TYPE_MAGICAL]: '마법', [cons.DAMAGE_TYPE_PHYSICAL_FIXED]: '물리 고정', [cons.DAMAGE_TYPE_MAGICAL_FIXED]: '마법 고정', [cons.DAMAGE_TYPE_ABSOLUTE]: '절대' })[sk.type] || '';
 }
 // 정찰용 적 요약
 function enemyBrief(e) {
