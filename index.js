@@ -3945,6 +3945,9 @@ async function procFloorResult (req, res) {
       addSpecialResultCard(char, 4);
       char.battleCnt = (char.battleCnt || 0) + 1; char.winCnt = (char.winCnt || 0) + 1;
       var rewardLines = ['<b>승리!</b> ' + gold + '골드, 스탯 포인트 3, ' + char.rank + '급 장비 리설트 카드 1장 획득.'];
+      if (enemy.isBoss && char.run.cycle !== 3) {
+        try { await client.query('insert into news(content, date) values ($1, $2)', [newsName(char) + getIga(char.nameType) + ' ' + run.floorNo(char) + '층에서 ' + char.run.cycle + '사이클 보스 ' + enemy.name + getUlrul(enemy.nameType) + ' 쓰러뜨렸다.', new Date()]); } catch (e) {}
+      }
       // 쓰러진 모험가를 이겼다면 그 덱에서 카드 1장
       var pendingCard = null;
       if (enemy.fallenId && enemy.deck && enemy.deck.length) {
@@ -3953,6 +3956,7 @@ async function procFloorResult (req, res) {
       }
       const cleared = run.advance(char);
       if (cleared) {
+        try { await client.query('insert into news(content, date) values ($1, $2)', [newsName(char) + getIga(char.nameType) + ' ' + run.TOTAL_CYCLES + '사이클을 모두 돌파해 탑을 정복했다!', new Date()]); } catch (e) {}
         const key = await unlockRandomChar(sess.userUid);
         await client.query('delete from characters where uid = $1', [charRow.uid]);
         await client.query('update users set uid = null where id = $1', [sess.userUid]);
@@ -3970,6 +3974,9 @@ async function procFloorResult (req, res) {
       res.render('pages/floorEnd', { title: '패배', lines: ['쓰러졌지만 아직 끝은 아니다. 남은 재도전 <b>' + char.run.lives + '</b>회.', '같은 층에서 다시 싸운다. 상대는 바뀔 수 있다.'], result: re.result, dead: false, rv: runView(char), pendingCard: null, retry: true });
     } else {
       // 사망: 스냅샷 저장 후 캐릭터 삭제
+      if (char.run.cycle >= 10) {
+        try { await client.query('insert into news(content, date) values ($1, $2)', [newsName(char) + getIga(char.nameType) + ' ' + run.floorNo(char) + '층(' + char.run.cycle + '사이클)에서 ' + enemy.name + '에게 쓰러져 여정을 마쳤다.', new Date()]); } catch (e) {}
+      }
       try {
         await client.query('insert into fallen(user_id, floor, cycle, char_data, date) values ($1, $2, $3, $4, $5)',
           [sess.userUid, run.floorNo(char), char.run.cycle, JSON.stringify(run.snapshotForFallen(char)), new Date()]);
