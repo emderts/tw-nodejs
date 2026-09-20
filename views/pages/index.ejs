@@ -428,8 +428,14 @@
   <div class="grid grid-main" style="margin-top:16px">
     <div class="grid">
       <section class="panel">
-        <h2>소식</h2>
+        <h2>등반 소식</h2>
         <ul class="news"><% for (const val of news) { %><li><%- val %></li><% } %></ul>
+        <% if (!news.length) { %><ul class="news"><li style="color:var(--ash)">아직 소식이 없다.</li></ul><% } %>
+      </section>
+      <section class="panel">
+        <h2>획득 소식</h2>
+        <ul class="news"><% for (const val of (typeof itemNews !== 'undefined' ? itemNews : [])) { %><li><%- val %></li><% } %></ul>
+        <% if (typeof itemNews === 'undefined' || !itemNews.length) { %><ul class="news"><li style="color:var(--ash)">아직 뽑은 것이 없다.</li></ul><% } %>
       </section>
       <section class="panel">
         <h2>내 기록</h2>

@@ -592,7 +592,9 @@ async function procIndex (req, res) {
   try {
     const sess = req.session; 
     const charRow = await getCharacter(sess.userUid);
-    const news = await getNews(5);
+    const newsAll = await getNews(5);
+    const news = newsAll.filter(x => newsKind(x) !== 'item').slice(0, 6);
+    const itemNews = newsAll.filter(x => newsKind(x) === 'item').slice(0, 6);
     if (!sess.userUid) {
       res.render('pages/login');
     } else if (!charRow.char_data) {
@@ -615,6 +617,7 @@ async function procIndex (req, res) {
       }*/
       const charObj = charRow.char_data ? JSON.parse(charRow.char_data) : undefined;
       res.render('pages/index', {
+        itemNews : itemNews,
         user: {name: sess.userName, uid : sess.userUid},
         char: charObj,
         rv: (charObj && charObj.run) ? runView(charObj) : null,
@@ -3528,11 +3531,17 @@ async function addItemNews (client, chara, tgtObj, picked) {
       [newsName(chara) + getIga(chara.nameType) + ' ' + tgtObj.name + '에서 <span class=\"has-tip rarity' + rarity + '\">' + picked.name + '<div class="itemTooltip">' + makeTooltip(picked) + '</div></span>' + getUlrul(picked.nameType) + ' 뽑았습니다!', new Date()]);
 }
 
+// 소식 분류: 아이템 획득(툴팁이 들어간 것)과 등반(층·사이클·보스·정복)을 나눠서 반환
+function newsKind (text) {
+  if (/itemTooltip/.test(text)) return 'item';
+  if (/층|사이클|보스|정복|여정을 마쳤다|돌파|넘어섰다/.test(text)) return 'climb';
+  return 'etc';
+}
 async function getNews (cnt) {
   try {
     var rval = [];
     const client = await pool.connect();
-    const result = await client.query('select * from news order by date desc fetch first 10 rows only', []);
+    const result = await client.query('select * from news order by date desc fetch first 40 rows only', []);
     for (const val of result.rows) {
       rval.push(val.content);
     }
