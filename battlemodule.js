@@ -138,6 +138,18 @@ function _applySetBonus(char) {
   }
 }
 
+// 무작위 장비의 능력치를 버프로 덧입힌다 (올림푸스 제어봉 / AI 센트럴 접근장치)
+Battlemodule.prototype._borrowGear = function(winner, loser, rank, name) {
+  const itemMdl = require('./items');
+  const pool = itemMdl.list.filter(x => x && x.rank === rank && x.type <= 3 && x.stat && Object.keys(x.stat).length && !x.runEffect && !x.timeMult);
+  if (!pool.length) return;
+  const pick = pool[Math.floor(Math.random() * pool.length)];
+  const bo = buffMdl.getBuffData({ buffCode : 10611 }); bo.dur = null; bo.name = '빌려온 설계 - ' + pick.name;
+  bo.effect = Object.entries(pick.stat).map(([k2, v]) => ({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : k2, value : v, name : bo.name }));
+  bo.id = 10611 + Math.random();   // 중첩 누적을 위해 별개 버프로
+  this.giveBuff(winner, winner, bo, false, name);
+  this.result += '[ ' + name + ' ] 설계도가 펼쳐진다 — ' + pick.name + '의 능력치를 덧입었다!<br>';
+};
 // [네크로멘시](10534): 사망 시 최대 생명력 4%로 부활하고 그만큼 상대에게 마법 피해. 부활하면 소거
 Battlemodule.prototype._checkRevive = function() {
   for (const [me, opp] of [[this.charLeft, this.charRight], [this.charRight, this.charLeft]]) {
@@ -1593,24 +1605,47 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
       calcStats(winner, loser);
       winner.curHp = 179;
       this.result += '<span class="skillDamage">[ ' + eff.name + ' ] 맹약이 발동한다 — ' + winner.name + '으로 변모했다! (179 / 1799)</span><br>';
+    } else if (eff.code === 'borrowGear') {   // AI 센트럴 접근장치: 무작위 장비 능력치 덧입기
+      this._borrowGear(winner, loser, eff.gearRank || 4, eff.name);
+    } else if (eff.code === 'tagGive') {   // 범용 태그 부여: eff.tag = 버프 코드, 아이템의 onTag 훅 실행, tagMul로 증폭
+      if (eff.spCost && (winner.curSp || 0) < eff.spCost) continue;
+      if (eff.spCost) winner.curSp -= eff.spCost;
+      let n = eff.value || 1;
+      for (const k in (winner.items || {})) { const it = winner.items[k]; if (it && it.tagMul && it.tagMul.tag === eff.tag) n += it.tagMul.value; }
+      const tg = buffMdl.getBuffData({ buffCode : eff.tag }); tg.dur = null; tg.stack = n;
+      this.giveBuff(winner, winner, tg, false, eff.name);
+      const cur = (winner.buffs || []).find(x => x.id === eff.tag);
+      this.result += '[ ' + eff.name + ' ] 효과로 [ ' + tg.name + ' ] +' + n + ' (총 ' + (cur ? cur.stack : n) + '중첩)<br>';
+      if (eff.heal) { const v = Math.round(winner.stat.maxHp * eff.heal); winner.curHp = Math.min(winner.stat.maxHp, winner.curHp + v); this.result += '[ ' + eff.name + ' ] 효과로 HP를 ' + v + ' 회복했다!<br>'; }
+      for (let k2 = 0; k2 < n; k2++) for (const key in (winner.items || {})) {
+        const it = winner.items[key]; if (!it || !it.onTag || it.onTag.tag !== eff.tag) continue;
+        const h = it.onTag;
+        if (h.stackBuff) { const bo = buffMdl.getBuffData({ buffCode : h.stackBuff }); bo.dur = null; bo.stack = 1; this.giveBuff(winner, winner, bo, false, it.name); const c2 = (winner.buffs || []).find(x => x.id === h.stackBuff); this.result += '[ ' + it.name + ' ] 효과로 [ ' + bo.name + ' ] ' + (c2 ? c2.stack : 1) + '중첩!<br>'; }
+        if (h.shieldPct) { const add = Math.round(winner.stat.maxHp * h.shieldPct); const ex = (winner.buffs || []).find(x => x.id === h.shieldBuff); if (ex) { for (const be of ex.effect) if (be.code === cons.EFFECT_TYPE_SHIELD) be.value += add; } else { const bo = buffMdl.getBuffData({ buffCode : h.shieldBuff }); bo.dur = null; for (const be of bo.effect) if (be.code === cons.EFFECT_TYPE_SHIELD) be.value = add; this.giveBuff(winner, winner, bo, false, it.name); } this.result += '[ ' + it.name + ' ] 보호막 +' + add + '<br>'; }
+        if (h.randomDebuff) { const ids = [1, 2, 3, 4, 6, 7, 8, 11]; const bd = buffMdl.getBuffData({ buffCode : ids[Math.floor(Math.random() * ids.length)] }); bd.dur = h.randomDebuff; this.giveBuff(winner, loser, bd, true, it.name); }
+      }
+    } else if (eff.code === 'tagHit') {   // 태그 중첩당 절대 피해
+      const tb = (winner.buffs || []).find(x => x.id === eff.tag); const st = tb ? (tb.stack || 1) : 0;
+      if (st > 0) { const v = st * eff.value; loser.curHp -= v; this.result += '<span class="skillDamage">[ ' + eff.name + ' ] 효과로 ' + loser.name + '에게 ' + v + ' 절대 피해! (' + st + '중첩)</span><br>'; }
+    } else if (eff.code === 'predator') {   // 포식동물 제어장치: 동물 스택 → [포식]
+      let total = 0;
+      for (const b of (winner.buffs || [])) if (b.id >= 10620 && b.id <= 10624) { total += (b.stack || 1); removeBuff(b); }
+      if (total > 0) { const bo = buffMdl.getBuffData({ buffCode : 10626 }); bo.dur = null; bo.stack = total; this.giveBuff(winner, winner, bo, false, eff.name); const c2 = (winner.buffs || []).find(x => x.id === 10626); this.result += '[ ' + eff.name + ' ] 동물 ' + total + '중첩을 [ 포식 ] 으로 전환 (총 ' + (c2 ? c2.stack : total) + ')<br>'; }
     } else if (eff.code === 'sciTag') {   // 테라포밍 세트: [과학 태그] 획득 + 부가 효과
+      if (eff.spCost && (winner.curSp || 0) < eff.spCost) continue;
+      if (eff.spCost) winner.curSp -= eff.spCost;
+      if (eff.heal) { const v = Math.round(winner.stat.maxHp * eff.heal); winner.curHp = Math.min(winner.stat.maxHp, winner.curHp + v); this.result += '[ ' + eff.name + ' ] 효과로 HP를 ' + v + ' 회복했다!<br>'; }
       const n = eff.value || 1;
       const tag = buffMdl.getBuffData({ buffCode : 10610 }); tag.dur = null; tag.stack = n;
       this.giveBuff(winner, winner, tag, false, eff.name);
       const cur = (winner.buffs || []).find(x => x.id === 10610);
       this.result += '[ ' + eff.name + ' ] 효과로 [ 과학 태그 ] ' + (cur ? cur.stack : n) + '중첩!<br>';
       for (let k = 0; k < n; k++) {
-        if (eff.borrowGear) {   // 올림푸스 제어봉: 무작위 장비의 능력치를 덧입는다
-          const itemMdl = require('./items');
-          const pool = itemMdl.list.filter(x => x && x.rank === (eff.gearRank || 3) && x.type <= 3 && x.stat && Object.keys(x.stat).length && !x.runEffect && !x.timeMult);
-          if (pool.length) {
-            const pick = pool[Math.floor(Math.random() * pool.length)];
-            const bo = buffMdl.getBuffData({ buffCode : 10611 }); bo.dur = null; bo.name = '빌려온 설계 - ' + pick.name;
-            bo.effect = Object.entries(pick.stat).map(([k2, v]) => ({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : k2, value : v, name : bo.name }));
-            bo.id = 10611 + Math.random();   // 중첩 누적을 위해 별개 버프로
-            this.giveBuff(winner, winner, bo, false, eff.name);
-            this.result += '[ ' + eff.name + ' ] 설계도가 펼쳐진다 — ' + pick.name + '의 능력치를 덧입었다!<br>';
-          }
+        if (eff.borrowGear) this._borrowGear(winner, loser, eff.gearRank || 3, eff.name);   // 올림푸스 제어봉
+        for (const key in (winner.items || {})) {   // 과학 태그 획득 훅 (성층권 동물 망토 등)
+          const it = winner.items[key]; if (!it || !it.onTag || it.onTag.tag !== 10610 || !it.onTag.stackBuff) continue;
+          const bo = buffMdl.getBuffData({ buffCode : it.onTag.stackBuff }); bo.dur = null; bo.stack = 1; this.giveBuff(winner, winner, bo, false, it.name);
+          const c2 = (winner.buffs || []).find(x => x.id === it.onTag.stackBuff); this.result += '[ ' + it.name + ' ] 효과로 [ ' + bo.name + ' ] ' + (c2 ? c2.stack : 1) + '중첩!<br>';
         }
         if (eff.randomDebuff) {   // 학사모: 무작위 상태이상
           const ids = [1, 2, 3, 4, 6, 7, 8, 11];
@@ -2315,9 +2350,17 @@ function calcStats(chara, opp) {
     for (const sk of chara.skill.base) if (sk && sk.damage) sk.damage = Math.round(sk.damage * chara.skillScale.damage * 100) / 100;
     if (chara.skill.special && chara.skillScale.specialCost) chara.skill.special.cost = Math.round(chara.skill.special.cost * chara.skillScale.specialCost);
   }
+  for (const k in (chara.items || {})) {   // 태그 중첩당 스탯 (외우주 라인)
+    const it = chara.items[k]; if (!it || !it.perTag) continue;
+    const tb = (chara.buffs || []).find(b => b.id === it.perTag.tag); const st = tb ? (tb.stack || 1) : 0;
+    if (st > 0) for (const sk in it.perTag.stat) chara.stat[sk] = (chara.stat[sk] || 0) + it.perTag.stat[sk] * st;
+  }
+  chara.stat.maxHp = Math.round(chara.stat.maxHp);
   const sciTag = (chara.buffs || []).find(b => b.id === 10610);
-  if (chara.skill.special && sciTag) {   // 반중력 기술 문서: 태그 N중첩 이상이면 스페셜 비용 할인
-    for (const k in (chara.items || {})) { const it = chara.items[k]; if (it && it.sciSpDiscount && (sciTag.stack || 1) >= it.sciSpDiscount.stack) chara.skill.special.cost *= (1 - it.sciSpDiscount.value); }
+  if (chara.skill.special && sciTag) {   // 반중력 기술 문서 / 첨단 합금 분열포: 태그에 따른 스페셜 비용 할인
+    for (const k in (chara.items || {})) { const it = chara.items[k]; if (!it || !it.sciSpDiscount) continue;
+      if (it.sciSpDiscount.perStack) chara.skill.special.cost *= (1 - Math.min(it.sciSpDiscount.max || 1, it.sciSpDiscount.perStack * (sciTag.stack || 1)));
+      else if ((sciTag.stack || 1) >= it.sciSpDiscount.stack) chara.skill.special.cost *= (1 - it.sciSpDiscount.value); }
   }
   if (chara.skill.special) {
     chara.skill.special.cost = Math.round(10 * chara.skill.special.cost) / 10;
