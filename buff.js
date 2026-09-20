@@ -2988,7 +2988,7 @@ module.exports.getBuffData = function(eff) {
     effectObj.code = cons.EFFECT_TYPE_SELF_HP;
     effectObj.isPercentStat = true;
     effectObj.percentKey = 'maxHp';
-    effectObj.value = 0.0002;
+    effectObj.value = 0.03;   // 원본 0.0002는 레이드 체력(6만+) 기준 — 캐릭터 스케일로 보정
     retObj.effect.push(effectObj);
     break;
   case 201726 : 
