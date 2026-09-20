@@ -31,8 +31,9 @@
   socket.emit('login', '<%= user.name %>', '<%= user.uid %>', '<%= char.raidSide %>');
   
   function sendMessage() {
-    socket.emit('chat message', document.getElementById('msg').value);
-    document.getElementById('msg').value = '';
+    var el = document.getElementById('msg'); if (!el) return false;
+    socket.emit('chat message', el.value);
+    el.value = '';
     return false;
   };
   
@@ -62,7 +63,7 @@
   });
   
   function addMessage(userName, msg) {
-    var ul = document.getElementById('messages');
+    var ul = document.getElementById('messages'); if (!ul) return;
     var li = document.createElement('li');
     li.appendChild(document.createTextNode(userName + ' : ' + msg));
     ul.appendChild(li);
@@ -70,6 +71,7 @@
   }
   
   function addPerson(peopleList) {
+    var __c = document.getElementById('people'); if (!__c) return;
     var ul = document.getElementById('people');
     while (ul.lastChild) {
       ul.removeChild(ul.lastChild);
@@ -301,7 +303,7 @@
           <tr><td class="k">중단점</td><td class="v"><form action="/breakpoint" method="post" onsubmit="return confirm('이번 사이클 시작 시점으로 되돌아갑니다. 되돌릴 수 없습니다.')"><button type="submit" style="width:auto;min-height:0;padding:3px 10px;font-size:12px">이번 사이클 처음으로 되돌아간다</button></form></td><td class="a"></td></tr>
           <% } %>
           <tr><td class="k">스탯 포인트</td><td class="v"><%= char.statPoint %></td><td class="a"></td></tr>
-          <tr><td class="k">전적</td><td class="v"><%= char.battleCnt %>전 <%= char.winCnt %>승 (<%= winRate %>%)<br><span style="color:var(--ash);font-size:12px">최근 50전 <%= char.recentRecord.filter(x => x).length %>승</span></td><td class="a"></td></tr>
+          <tr><td class="k">전적</td><td class="v"><%= char.battleCnt %>전 <%= char.winCnt %>승 (<%= winRate %>%)</td><td class="a"></td></tr>
         </table>
       </section>
 
@@ -365,6 +367,21 @@
           <% } %>
         <% } %>
       </section>
+      <section class="panel">
+        <h2 class="sub-head">인벤토리</h2>
+        <div class="inventory" id="inventory">
+          <% for (const [key, val] of Object.entries(char.inventory)) { if (val) { %>
+          <div class="inventoryItem">
+            <form action="/useItem" method="post">
+              <button class="<%= getButtonText(val.rarity) %> inventoryButton" onclick="invClick(this, event)" type="button"><%= val.name %>
+                <div class="itemTooltip"><%- makeTooltip(val) %></div>
+              </button>
+              <input type="hidden" name="itemNum" value="<%= key %>">
+            </form>
+          </div>
+          <% } } %>
+        </div>
+      </section>
 
       <section class="panel">
         <% var deckCounts = [0, 0, 0], deckExtra = [];
@@ -407,19 +424,6 @@
           <% } %>
         </div>
         <% } %>
-        <h2 class="sub-head">인벤토리</h2>
-        <div class="inventory" id="inventory">
-          <% for (const [key, val] of Object.entries(char.inventory)) { if (val) { %>
-          <div class="inventoryItem">
-            <form action="/useItem" method="post">
-              <button class="<%= getButtonText(val.rarity) %> inventoryButton" onclick="invClick(this, event)" type="button"><%= val.name %>
-                <div class="itemTooltip"><%- makeTooltip(val) %></div>
-              </button>
-              <input type="hidden" name="itemNum" value="<%= key %>">
-            </form>
-          </div>
-          <% } } %>
-        </div>
       </section>
     </div>
 
@@ -443,17 +447,7 @@
       </section>
     </div>
     <div class="grid">
-      <section class="panel">
-        <h2><%= sideName ? sideName + ' 공격대 채팅' : '채팅' %></h2>
-        <div class="chat">
-          <ul id="messages"></ul>
-          <ul id="people"></ul>
-          <form action="" name="chatForm" onsubmit="return sendMessage();">
-            <input type="text" id="msg" placeholder="메시지 입력" autocomplete="off" />
-            <button type="submit">보내기</button>
-          </form>
-        </div>
-      </section>
+      <%# 채팅 패널 숨김 (로그라이크 단일 플레이) %>
       <section class="panel">
         <h2>행동</h2>
         <nav class="menu">
