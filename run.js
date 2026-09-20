@@ -299,12 +299,16 @@ const SHOP_INFO = {
 const SHOP_TYPES = Object.keys(SHOP_INFO);
 const SLOT_NAMES = ['무기', '방어구', '보조방어구', '장신구'];
 function itemList() { return require('./items').list; }
+// 현재 급수에서 살 만한 컬렉션 (해당 급수 ~ 2급 위, 3종 이상)
+function collectionsFor(char) {
+  return COLLECTIONS.map(col => ({ col, items: itemList().filter(x => x && x.type <= 4 && x.rank >= char.rank && x.rank <= Math.min(9, char.rank + 2) && col.match(x)) })).filter(x => x.items.length >= 3);
+}
 // 상점 후보 2곳 (서로 다른 종류)
 function makeShopOffers(char) {
   const n = Math.min(SHOP_TYPES.length, 2 + (runEffect(char, 'shopOffers') || 0));
   const common = SHOP_TYPES.filter(t => t !== 'collector');
   const picked = [];
-  if (Math.random() < 0.1) picked.push('collector');   // 수집가는 12% 확률로만 후보에 오른다
+  if (Math.random() < 0.1 && collectionsFor(char).length) picked.push('collector');   // 수집가는 10% 확률, 살 게 있을 때만
   while (picked.length < n) { const t = common[Math.floor(Math.random() * common.length)]; if (!picked.includes(t)) picked.push(t); }
   return picked.map(t => {
     const o = { type: t, label: SHOP_INFO[t].label, blurb: SHOP_INFO[t].blurb };
@@ -350,7 +354,7 @@ function makeShop(char, typeIn, opts) {
     goods.push({ kind: 'item', item: roster.makeResultCard(char.rank, Math.floor(Math.random() * 4)), price: Math.round((50 + 5 * cycle) * allDisc) });
   } else if (type === 'collector') {
     // 한 계열을 골라, 현재 급수 이하에서 그 계열 장비를 전부 진열 (급수가 낮을수록 저렴)
-    const pool = COLLECTIONS.map(col => ({ col, items: itemList().filter(x => x && x.type <= 4 && x.rank >= char.rank && x.rank <= Math.min(9, char.rank + 2) && col.match(x)) })).filter(x => x.items.length >= 3);
+    const pool = collectionsFor(char);
     if (pool.length) {
       const pickCol = pool[Math.floor(Math.random() * pool.length)];
       label = '수집가 — ' + pickCol.col.name;
