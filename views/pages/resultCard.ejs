@@ -7,6 +7,14 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Noto+Serif+KR:wght@600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/stylesheets/main.css">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#181c28">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="ThirdWorld">
+  <link rel="apple-touch-icon" href="/icons/icon-192.png">
+  <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(function () {});</script>
+
   <style>
       .card-stage { position: relative; width: 160px; height: 242px; margin: 40px auto 0; perspective: 800px; }
       .card-stage > div { position: absolute; inset: 0; width: 160px; height: 242px; border-radius: 10%; }
