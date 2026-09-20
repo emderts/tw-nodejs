@@ -2972,9 +2972,10 @@ module.exports.getBuffData = function(eff) {
     retObj.effect.push(effectObj);
     effectObj = {};
     effectObj.active = cons.ACTIVE_TYPE_DURATION_END;
-    effectObj.code = cons.EFFECT_TYPE_SELF_BUFF;
-    effectObj.buffCode = 201725;
-    effectObj.buffDur = 5;
+    effectObj.code = cons.EFFECT_TYPE_SELF_HP;   // [방전]이 끝나며 재구축 — 즉시 회복
+    effectObj.value = 0.15;
+    effectObj.isPercentStat = true;
+    effectObj.percentKey = 'maxHp';
     retObj.effect.push(effectObj);
     break;
   case 201725 : 
