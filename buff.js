@@ -2899,7 +2899,7 @@ module.exports.getBuffData = function(eff) {
     effectObj = {};
     effectObj.active = cons.ACTIVE_TYPE_DEAL_DAMAGE_RECEIVE;
     effectObj.code = cons.EFFECT_TYPE_SHIELD;
-    effectObj.value = 0.0014;
+    effectObj.value = 0.1;   // 툴팁대로 최대 생명력의 10% (원본 0.0014는 사실상 0)
     retObj.effect.push(effectObj);
     break;
   case 201720 : 
