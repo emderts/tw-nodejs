@@ -2927,13 +2927,13 @@ module.exports.getBuffData = function(eff) {
     effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
     effectObj.code = cons.EFFECT_TYPE_STAT_ADD;
     effectObj.key = 'phyReduce';
-    effectObj.value = -0.3;
+    effectObj.value = -0.5;
     retObj.effect.push(effectObj);
     effectObj = {};
     effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
     effectObj.code = cons.EFFECT_TYPE_STAT_ADD;
     effectObj.key = 'magReduce';
-    effectObj.value = -0.3;
+    effectObj.value = -0.5;
     retObj.effect.push(effectObj);
     effectObj = {};
     effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
@@ -2972,10 +2972,10 @@ module.exports.getBuffData = function(eff) {
     retObj.effect.push(effectObj);
     effectObj = {};
     effectObj.active = cons.ACTIVE_TYPE_DURATION_END;
-    effectObj.code = cons.EFFECT_TYPE_SELF_HP;   // [방전]이 끝나며 재구축 — 즉시 회복
-    effectObj.value = 0.15;
-    effectObj.isPercentStat = true;
-    effectObj.percentKey = 'maxHp';
+    effectObj.code = cons.EFFECT_TYPE_SELF_BUFF;   // 툴팁대로: 종료 시 [전하 충전] (최대 5중첩)
+    effectObj.buffCode = 10660;
+    effectObj.buffDur = null;
+    effectObj.stack = 1;
     retObj.effect.push(effectObj);
     break;
   case 201725 : 
@@ -6976,6 +6976,11 @@ module.exports.getBuffData = function(eff) {
   // ---- 스킬 아티팩트 버프 ----
 
   // ---- 테라포밍 마스 태그 계열 ----
+  case 10660 :   // 에이카 [전하 충전]
+    retObj.name = '전하 충전'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 2; retObj.maxStack = 5; retObj.isDebuff = false; retObj.durOff = null;
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'phyReduce', value : 0.02 });
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'magReduce', value : 0.02 });
+    break;
   case 10620 :
     retObj.name = '소형 동물'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 2; retObj.maxStack = 12; retObj.isDebuff = false; retObj.durOff = null;
     retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'maxHp', value : 12 });

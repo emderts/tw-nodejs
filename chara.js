@@ -630,7 +630,7 @@ const item = require('./items');
                 {code : cons.EFFECT_TYPE_SELF_HP, isPercentStat : true, percentKey : 'maxHp', value : 0.3},
                 {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201722, buffDur : 8}]};
   skillObj.effect.push(effectObj);
-  skillObj.tooltip = '턴 종료 시 자신에게 [에너지 코어] 버프가 없다면 100\% 확률로 자신에게 1턴간 [방전] 버프 부여 및 [에너지 코어] 버프 3중첩 부여, 추가로 현재 생명력이 20\% 이하일 시 최대 생명력의 30\%만큼 생명력을 즉시 회복하고 자신에게 3턴 간 [재구축 중..] 버프 부여<br><br>(재구축 회복은 전투당 1회)<br><br>[방전] : [기절] 상태이상, 종료 시 최대 생명력의 15%만큼 즉시 회복<br>[재구축 중..] : 물리/마법 저항 -30\%p, SP 재생 0';
+  skillObj.tooltip = '턴 종료 시 자신에게 [에너지 코어] 버프가 없다면 100\% 확률로 자신에게 1턴간 [방전] 버프 부여 및 [에너지 코어] 버프 3중첩 부여, 추가로 현재 생명력이 20\% 이하일 시 최대 생명력의 30\%만큼 생명력을 즉시 회복하고 자신에게 3턴 간 [재구축 중..] 버프 부여<br><br><br><br>[방전] : [기절] 상태이상, 종료 시 자신에게 [전하 충전] 버프 부여 (최대 5중첩)<br>[재구축 중..] : 물리/마법 저항 -50\%p, SP 재생 0으로 고정<br>[전하 충전] : 물리/마법저항 +2\%p';
   skillObj.flavor = '에이카가 붕괴 위험을 감지하고 재구축 프로토콜에 들어갑니다.';
   charAeika.skill.drive = skillObj;
 
