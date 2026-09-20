@@ -40,7 +40,7 @@ const TIERS = {
     { key: 'd724', deck: [3, 3, 3], extraFav: 1, note: '목호 — 리자몽·갸라도스·망나뇽', tune: (e) => { e.base.maxHp = Math.round(e.base.maxHp * 0.8); e.skillScale = { damage: 0.55, specialCost: 3 }; } },
   ],
   13: [   // 보스
-    { key: 'd725',  deck: [3, 3, 3], extraFav: 2, note: '레드 — 이상해꽃·거북왕·잠만보·피카츄 (4폼, -75%)', tune: (e) => { e.base.maxHp = Math.round(e.base.maxHp * 0.85); } },
+    { key: 'd725',  deck: [3, 3, 3], extraFav: 2, note: '레드 — 이상해꽃·거북왕·잠만보·피카츄 (4폼, -75%)', tune: (e) => { e.base.maxHp = Math.round(e.base.maxHp * 0.85); e.skillScale = { damage: 0.7, specialCost: 4 }; } },   // 수면가루(SP 25) 등 저비용 스페셜 억제
     { key: 'rAeika', deck: [3, 3, 3], extraFav: 1, note: '움직이는 요새 에이카 — 에너지 코어 모듈' },
     { key: 'rsNagpa', deck: [2, 4, 4], extraFav: 3, note: '각성한 나그파', tune: (e) => {
       delete e.startEffects; e.name = '각성한 ' + e.name;

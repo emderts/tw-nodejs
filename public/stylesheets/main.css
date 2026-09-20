@@ -205,6 +205,7 @@ button:disabled { opacity: 0.4; cursor: not-allowed; }
 .news { margin: 0; padding: 0; list-style: none; }
 .news li { padding: 8px 14px; border-top: 1px solid var(--line); font-size: 13.5px; }
 .news li:first-child { border-top: 0; }
+.news .has-tip { position: relative; cursor: pointer; border-bottom: 1px dotted var(--brass-dim); }
 .news-personal li { border-left: 3px solid var(--side); }
 
 /* ---------- 채팅 ---------- */

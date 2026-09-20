@@ -49,6 +49,8 @@ const app = express()
 .post('/removeCard', procRemoveCard)
 .post('/breakpoint', procBreakpoint)
 .post('/focusSkill', procFocusSkill)
+.get('/hall', procHall)
+.post('/hall', procHallView)
 .get('/join', (req, res) => res.render('pages/join'))
 .post('/join', procJoin)
 .get('/logout', procLogout)
@@ -3523,7 +3525,7 @@ async function procActionAccel(req, res) {
 async function addItemNews (client, chara, tgtObj, picked) {
   const rarity = picked.rarity == cons.ITEM_RARITY_RARE ? 'Rare' : (picked.rarity == cons.ITEM_RARITY_UNIQUE ? 'Unique' : (picked.rarity == cons.ITEM_RARITY_COMMON_UNCOMMON ? 'Rare' : 'Epic'));
   await client.query('insert into news(content, date) values ($1, $2)', 
-      [newsName(chara) + getIga(chara.nameType) + ' ' + tgtObj.name + '에서 <span class=\"rarity' + rarity + '\">' + picked.name + '<div class="itemTooltip">' + makeTooltip(picked) + '</div></span>' + getUlrul(picked.nameType) + ' 뽑았습니다!', new Date()]);
+      [newsName(chara) + getIga(chara.nameType) + ' ' + tgtObj.name + '에서 <span class=\"has-tip rarity' + rarity + '\">' + picked.name + '<div class="itemTooltip">' + makeTooltip(picked) + '</div></span>' + getUlrul(picked.nameType) + ' 뽑았습니다!', new Date()]);
 }
 
 async function getNews (cnt) {
@@ -3788,6 +3790,25 @@ async function pickEnemy (char, userId) {
 }
 
 // 전투 후 얻은 카드 수락/거부
+// 명예의 전당: 탑을 정복한 캐릭터 기록
+async function procHall (req, res) {
+  const client = await pool.connect();
+  try {
+    const result = await client.query('select id, owner, char_name, char_data, date from hall order by date desc fetch first 50 rows only');
+    const list = result.rows.map(r => { let c = {}; try { c = JSON.parse(r.char_data); } catch (e) {} return { id: r.id, owner: r.owner, name: r.char_name, level: c.level, date: r.date, items: Object.values(c.items || {}).filter(x => x && x.name).map(x => x.name).join(', ') }; });
+    res.render('pages/hall', { list, error: null });
+  } catch (e) { console.error(e); res.render('pages/hall', { list: [], error: '명예의 전당 테이블이 아직 없습니다.' }); }
+  finally { client.release(); }
+}
+async function procHallView (req, res) {
+  const client = await pool.connect();
+  try {
+    const result = await client.query('select char_data from hall where id = $1', [req.body.id]);
+    if (!result.rows.length) { res.redirect('/hall'); return; }
+    res.render('pages/viewChar', { char: JSON.parse(result.rows[0].char_data) });
+  } catch (e) { console.error(e); res.redirect('/hall'); }
+  finally { client.release(); }
+}
 // 아리스란의 마지막 가르침: 집중할 스킬 선택
 async function procFocusSkill (req, res) {
   try {
@@ -3955,12 +3976,19 @@ async function procFloorResult (req, res) {
         pendingCard = { type: cd.type, from: enemy.fallenName };
       }
       const cleared = run.advance(char);
+      if (!cleared && char.run.cycle >= 11 && !char.run.unlockGiven) {   // 10사이클을 넘기면 캐릭터 해금
+        char.run.unlockGiven = true;
+        const ukey = await unlockRandomChar(sess.userUid);
+        rewardLines.push(ukey ? '10사이클 돌파 — 새 캐릭터 해금: <b>' + roster.template(ukey).name + '</b>' : '10사이클 돌파 — 해금할 캐릭터가 더 없다.');
+        try { await client.query('insert into news(content, date) values ($1, $2)', [newsName(char) + getIga(char.nameType) + ' 10사이클을 넘어섰다.', new Date()]); } catch (e) {}
+      }
       if (cleared) {
         try { await client.query('insert into news(content, date) values ($1, $2)', [newsName(char) + getIga(char.nameType) + ' ' + run.TOTAL_CYCLES + '사이클을 모두 돌파해 탑을 정복했다!', new Date()]); } catch (e) {}
-        const key = await unlockRandomChar(sess.userUid);
+        try { await client.query('insert into hall(user_id, owner, char_name, char_data, date) values ($1, $2, $3, $4, $5)', [sess.userUid, char.owner || sess.userUid, char.name, JSON.stringify(char), new Date()]); } catch (e) { console.error('hall 저장 실패 (테이블 없음?)', e.message); }
+        const key = char.run.unlockGiven ? null : await unlockRandomChar(sess.userUid);
         await client.query('delete from characters where uid = $1', [charRow.uid]);
         await client.query('update users set uid = null where id = $1', [sess.userUid]);
-        res.render('pages/floorEnd', { pendingCard: null, title: '탑을 정복했다', lines: rewardLines.concat([key ? '새 캐릭터 해금: ' + roster.template(key).name : '해금할 캐릭터가 더 없다.']), result: re.result, dead: false, rv: null });
+        res.render('pages/floorEnd', { pendingCard: null, title: '탑을 정복했다', lines: rewardLines.concat([key ? '새 캐릭터 해금: ' + roster.template(key).name : '명예의 전당에 기록되었다.']), result: re.result, dead: false, rv: null });
         return;
       }
       char.run.pendingCard = pendingCard;

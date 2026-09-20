@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>명예의 전당</title>
+  <link rel="stylesheet" href="/stylesheets/main.css">
+</head>
+<body>
+<div class="wrap">
+  <div class="page-title"><h1>명예의 전당</h1><span class="meta">탑을 정복한 이들</span></div>
+  <% if (error) { %><div class="note-box"><%= error %></div><% } %>
+  <% if (!list.length && !error) { %><div class="note-box">아직 아무도 탑 꼭대기에 닿지 못했다.</div><% } %>
+  <div class="list">
+  <% list.forEach(function (h) { %>
+    <div class="charItem">
+      <form action="/hall" method="post">
+        <input type="hidden" name="id" value="<%= h.id %>">
+        <button type="submit"><b><%= h.owner %>(<%= h.name %>)</b> <small style="color:var(--ash)">Lv <%= h.level %> · <%= new Date(h.date).toLocaleDateString('ko-KR') %></small><br><span style="color:var(--ash);font-size:12px"><%= h.items %></span></button>
+      </form>
+    </div>
+  <% }); %>
+  </div>
+  <div class="backLink"><a href="/">돌아가기</a></div>
+</div>
+</body>
+</html>
