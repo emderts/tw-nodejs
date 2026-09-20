@@ -1283,7 +1283,7 @@ itemList[535] = { id : 535, name : '인장 박힌 워커', nameType : cons.NAME_
 itemList[536] = { id : 536, name : '세공대의 글러브', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '길드의 세공대에 앉는 자가 처음 받는다. 손끝 감각을 죽이지 않게 얇게 뜬다.', rank : 9, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 19, hit : 0.075, crit : 0.03, critDmg : 0.08 }, 
     effectDesc : '', effect : [] };
 itemList[537] = { id : 537, name : '흔적만 남은 요일석 방패', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '박혀 있던 요일석은 떨어져 나가고 자국만 남았다. 그래도 승부가 멈춘 틈이면 남은 온기가 숨을 고르게 해 준다.', rank : 9, rarity : cons.ITEM_RARITY_EPIC, stat : { maxHp : 22, dmgReduce : 3, phyReduce : 0.02, magReduce : 0.02 }, 
-    effectDesc : '가위바위보 무승부 시 최대 생명력의 1.2% 회복', effect : [{code : cons.EFFECT_TYPE_SELF_HP, active : cons.ACTIVE_TYPE_TIE, value : 0.012, isPercentStat : true, percentKey : 'maxHp'}] };
+    effectDesc : '가위바위보 무승부 시 최대 생명력의 1.5% 회복', effect : [{code : cons.EFFECT_TYPE_SELF_HP, active : cons.ACTIVE_TYPE_TIE, value : 0.015, isPercentStat : true, percentKey : 'maxHp'}] };
 itemList[538] = { id : 538, name : '나무 구슬 목걸이', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '', rank : 9, rarity : cons.ITEM_RARITY_COMMON, stat : { maxHp : 18, hpRegen : 1 }, 
     effectDesc : '', effect : [] };
 itemList[539] = { id : 539, name : '이름 새긴 영석 부적', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '영석 하나를 통째로 깎는다. 공방이 제 이름을 새기는 몇 안 되는 물건.', rank : 9, rarity : cons.ITEM_RARITY_UNIQUE, stat : { maxHp : 20 }, 
@@ -1496,7 +1496,7 @@ itemList[640] = { id : 640, name : '상단 연합 인장', nameType : cons.NAME_
 itemList[641] = { id : 641, name : '전승자의 금고', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '이긴 자의 것만 들어가는 금고. 잠긴 적이 없다.', rank : 6, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 65, hpRegen : 1.5, spRegen : 1 }, 
     effectDesc : '전투 승리 골드 +60%', effect : [], runEffect : { key : 'winGoldBonus', value : 0.6 } };
 itemList[642] = { id : 642, name : '하나로 벼린 쌍검', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_WEAPON, flavor : '두 자루가 한 자루처럼 움직인다. 막힌 순간에도 힘이 남는다.', rank : 6, rarity : cons.ITEM_RARITY_UNIQUE, stat : { phyAtkMin : 44, phyAtkMax : 52, magAtkMin : 44, magAtkMax : 52, crit : 0.06 }, 
-    effectDesc : '무승부 시 덱 카드를 소모하지 않고 SP +5', effect : [{code : cons.EFFECT_TYPE_SELF_SP, active : cons.ACTIVE_TYPE_TIE, value : 5}], runEffect : { key : 'keepCardOnTie', value : true } };
+    effectDesc : '무승부 시 덱 카드를 소모하지 않고 SP +8', effect : [{code : cons.EFFECT_TYPE_SELF_SP, active : cons.ACTIVE_TYPE_TIE, value : 8}], runEffect : { key : 'keepCardOnTie', value : true } };
 itemList[643] = { id : 643, name : '모든 것을 본 수정구', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '들여다보면 상대의 손이 전부 비친다. 오래 보면 눈이 아프다.', rank : 6, rarity : cons.ITEM_RARITY_UNIQUE, stat : { maxHp : 80, spRegen : 1, crit : 0.03 }, 
     effectDesc : '전투 시작 시 적 손패 전체 공개', effect : [], runEffect : { key : 'revealEnemyAll', value : true } };
 itemList[644] = { id : 644, name : '다섯 갈래 이정표', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '다섯 방향을 가리키는 이정표. 길이 둘 더 있다.', rank : 6, rarity : cons.ITEM_RARITY_UNIQUE, stat : { maxHp : 80, hit : 0.05, crit : 0.03 }, 
@@ -1763,7 +1763,7 @@ itemList[772] = { id : 772, name : '라스트 리벨리온', nameType : cons.NAM
 itemList[773] = { id : 773, name : '뒤집어 입는 클로크', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '안쪽은 흰색이다. 쫓기는 자가 먼저 배우는 기술.', rank : 4, rarity : cons.ITEM_RARITY_UNIQUE, stat : { maxHp : 220, spCharge : 3, evasion : 0.04 }, 
     effectDesc : '생명력 30% 이하로 피격 시 2턴 간 [흰 안감] (회피 +30%p). 전투당 1회', effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_TAKE_HIT, chkHp : 0.3, buffCode : 10539, buffDur : 2, removeEffect : true}] };
 itemList[774] = { id : 774, name : '무승부로 하지 않을래?', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '비기는 것도 기술이다. 손을 내밀기 전에 이미 상대가 무엇을 낼지 읽고 있다.', rank : 4, rarity : cons.ITEM_RARITY_UNIQUE, stat : { maxHp : 220, hit : 0.075 }, 
-    effectDesc : '무승부 시 SP +3, 무승부 시 덱 카드를 소모하지 않는다', effect : [{code : cons.EFFECT_TYPE_SELF_SP, active : cons.ACTIVE_TYPE_TIE, value : 3}], runEffect : { key : 'keepCardOnTie', value : true } };
+    effectDesc : '무승부 시 SP +5, 무승부 시 덱 카드를 소모하지 않는다', effect : [{code : cons.EFFECT_TYPE_SELF_SP, active : cons.ACTIVE_TYPE_TIE, value : 5}], runEffect : { key : 'keepCardOnTie', value : true } };
 itemList[775] = { id : 775, name : '헤르미아 - 쉽게 털어내는 발걸음', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '헤르미아는 넘어져도 먼지 털듯 일어났다. 진 자리에서도 저주는 그 발목을 붙들지 못했다.', rank : 4, rarity : cons.ITEM_RARITY_UNIQUE, stat : { maxHp : 220, evasion : 0.08, hit : 0.03 }, 
     effectDesc : '상성 패배 시 이번 턴 [털어내기] (모든 상태이상 저항 +30%)', effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_SKILL_LOSE, buffCode : 10541, buffDur : 1}] };
 itemList[776] = { id : 776, name : '출석 도장', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '찍으면 그날은 어떻게든 굴러간다.', rank : 4, rarity : cons.ITEM_RARITY_UNIQUE, stat : { maxHp : 120, hpRegen : 2 }, 
@@ -1825,7 +1825,7 @@ itemList[803] = { id : 803, name : '대륙 상단 증서', nameType : cons.NAME_
 itemList[804] = { id : 804, name : '정복자의 보고', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '정복한 자의 보고는 늘 열려 있다. 넣는 손만 있고 꺼내는 손은 없다.', rank : 4, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 85, hpRegen : 2, spRegen : 1 }, 
     effectDesc : '전투 승리 골드 +80%', effect : [], runEffect : { key : 'winGoldBonus', value : 0.8 } };
 itemList[805] = { id : 805, name : '한 몸이 된 쌍검', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_WEAPON, flavor : '두 자루가 한 몸처럼 움직인다. 멈춘 순간에도 숨이 남는다.', rank : 4, rarity : cons.ITEM_RARITY_UNIQUE, stat : { phyAtkMin : 70, phyAtkMax : 80, magAtkMin : 70, magAtkMax : 80, crit : 0.06 }, 
-    effectDesc : '무승부 시 덱 카드를 소모하지 않고 SP +7', effect : [{code : cons.EFFECT_TYPE_SELF_SP, active : cons.ACTIVE_TYPE_TIE, value : 7}], runEffect : { key : 'keepCardOnTie', value : true } };
+    effectDesc : '무승부 시 덱 카드를 소모하지 않고 SP +12', effect : [{code : cons.EFFECT_TYPE_SELF_SP, active : cons.ACTIVE_TYPE_TIE, value : 12}], runEffect : { key : 'keepCardOnTie', value : true } };
 itemList[806] = { id : 806, name : '전부 꿰뚫어 본 눈', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '한 번 마주치면 상대의 손이 전부 보인다. 오래 마주치면 안 된다.', rank : 4, rarity : cons.ITEM_RARITY_UNIQUE, stat : { maxHp : 120, spRegen : 1, crit : 0.03 }, 
     effectDesc : '전투 시작 시 적 손패 전체 공개', effect : [], runEffect : { key : 'revealEnemyAll', value : true } };
 itemList[807] = { id : 807, name : '일곱 갈래 이정표', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '일곱 방향을 가리키는 이정표. 고를 길이 둘 더 있다.', rank : 4, rarity : cons.ITEM_RARITY_UNIQUE, stat : { maxHp : 120, hit : 0.05, crit : 0.03 }, 
