@@ -4011,6 +4011,10 @@ async function procFloorResult (req, res) {
       addSpecialResultCard(char, 4);
       char.battleCnt = (char.battleCnt || 0) + 1; char.winCnt = (char.winCnt || 0) + 1;
       var rewardLines = ['<b>승리!</b> ' + gold + '골드, 스탯 포인트 3, ' + char.rank + '급 장비 리설트 카드 1장 획득.'];
+      if (Math.random() < (enemy.isBoss ? 0.15 : 0.06)) {   // 스킬 아티팩트: 일반 6%, 보스 15%
+        const art = run.pickArtifact(char.rank);
+        if (art) { art.tooltip = makeTooltip(art); char.inventory.push(art); rewardLines.push('<span class="colorGold">스킬 아티팩트를 발견했다: <b>' + art.name + '</b></span>'); }
+      }
       if (!enemy.isBoss && Math.random() < 0.25) {   // 일반 전투 승리 시 25% 확률로 소모품
         const drop = consumables.random();
         if (drop) { char.inventory.push(drop); rewardLines.push('전리품 속에서 <b>' + drop.name + '</b>을(를) 찾았다.'); }
