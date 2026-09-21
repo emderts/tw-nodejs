@@ -26,6 +26,38 @@ printName.pierce = '관통';
 
 
 module.exports.bmodule = Battlemodule;
+
+// ---- 전투 상태 직렬화/복원 (DB 저장용) ----
+// 역참조(effect.buff / effect.item / charLeft / charRight)는 제외하고 저장, 복원 시 다시 연결한다.
+function serializeReplacer(k, v) {
+  return (k === 'buff' || k === 'item' || k === 'charLeft' || k === 'charRight' || k === 'left' || k === 'right') ? undefined : v;
+}
+module.exports.serialize = function(bm, L, R, extra) {
+  return JSON.stringify(Object.assign({ bm, L, R }, extra || {}), serializeReplacer);
+};
+module.exports.restore = function(json) {
+  const snap = JSON.parse(json);
+  // modFunc(함수 배열)는 직렬화되지 않으므로 빈 인스턴스에서 한 번 만들어 둔 뒤 상태만 덮어쓴다
+  const proto = new Battlemodule();
+  const bm = Object.assign(proto, snap.bm);
+  bm.modFunc = makeModFuncs();
+  bm.charLeft = snap.L; bm.charRight = snap.R;
+  // effect.buff 재연결 (버프 효과는 자신이 속한 버프를 참조 — 스택·지속 조작용)
+  for (const c of [snap.L, snap.R]) for (const b of (c.buffs || [])) for (const e of (b.effect || [])) e.buff = b;
+  // effect.item 재연결 (아이템 값 비례 효과용)
+  for (const c of [snap.L, snap.R]) for (const k in (c.items || {})) { const it = c.items[k]; if (it && it.effect) for (const e of it.effect) e.item = it; }
+  // 쿨다운 목록 재구성: 저장된 turnCooldown > 0 인 효과들을 다시 모은다
+  const cds = [];
+  for (const c of [snap.L, snap.R]) {
+    for (const k in (c.items || {})) { const it = c.items[k]; if (it && it.effect) for (const e of it.effect) if (e.turnCooldown > 0) cds.push(e); }
+    for (const b of (c.buffs || [])) for (const e of (b.effect || [])) if (e.turnCooldown > 0) cds.push(e);
+    const sk = c.skillOri || c.skill;
+    if (sk) { for (const b of (sk.base || [])) for (const e of ((b && b.effect) || [])) if (e.turnCooldown > 0) cds.push(e); for (const key of ['special', 'drive']) if (sk[key]) for (const e of (sk[key].effect || [])) if (e.turnCooldown > 0) cds.push(e); }
+    for (const e of (c.startEffects || [])) if (e.turnCooldown > 0) cds.push(e);
+  }
+  bm.cooldowns = cds;
+  return { bm, L: snap.L, R: snap.R, extra: snap };
+};
   
 function Battlemodule() {
   this.charLeft = {};
@@ -79,21 +111,7 @@ Battlemodule.prototype._doBattleStart = function (flag) {
   this.timeCrash = 0;
   this.cooldowns = [];
 
-  this.modFunc = [];
-  this.modFunc[0] = function (chara, opp, chance) {
-    var tmp = opp.curHp / opp.stat.maxHp - chara.curHp / chara.stat.maxHp; 
-    console.log(tmp);
-    tmp = tmp > 0 ? tmp : 0;
-    return chance + tmp;
-  }
-  this.modFunc[1] = function (chara, opp, data) {
-    var ens = findBuffByIds(chara, [201793]);
-    return (ens.length == 0 || ens[0].stack < 12) && (data.leftWin == data.rightWin);
-  }
-  this.modFunc[2] = function (chara, opp, data) {
-    var ens = getShieldValue2(chara);
-    return (chara.curHp * 0.2 <= ens) && (chara.stat.maxHp * 0.05 <= ens);
-  }
+  this.modFunc = makeModFuncs();
 
   _initChar(this.charLeft, flag);
   _initChar(this.charRight, flag);
@@ -2376,6 +2394,14 @@ function calcStats(chara, opp) {
   }
 }
 
+// 드라이브 조건/확률 보정 함수 (인스턴스마다 동일, 직렬화 대상 아님)
+function makeModFuncs() {
+  const f = [];
+  f[0] = function (chara, opp, chance) { var tmp = opp.curHp / opp.stat.maxHp - chara.curHp / chara.stat.maxHp; tmp = tmp > 0 ? tmp : 0; return chance + tmp; };
+  f[1] = function (chara, opp, data) { var ens = findBuffByIds(chara, [201793]); return (ens.length == 0 || ens[0].stack < 12) && (data.leftWin == data.rightWin); };
+  f[2] = function (chara, opp, data) { var ens = getShieldValue2(chara); return (chara.curHp * 0.2 <= ens) && (chara.stat.maxHp * 0.05 <= ens); };
+  return f;
+}
 Battlemodule.prototype._isBattleFinished = function() {
   return (this.charLeft.curHp <= 0 || this.charRight.curHp <= 0);
 }

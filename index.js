@@ -264,6 +264,7 @@ io.on('connection', (socket) => {
       t.bmod = (new battlemodule.bmodule());
       delete t.leftChr.curHp; delete t.leftChr.curSp; delete t.rightChr.curHp; delete t.rightChr.curSp;
       t.startHtml = t.bmod.procBattleStart(t.leftChr, t.rightChr, 1);
+      persistBattle(t);
     }
     const fresh = t.eplayed === undefined;
     run.drawHand(t.pdeck); run.drawHand(t.edeck);
@@ -277,7 +278,7 @@ io.on('connection', (socket) => {
     if (t.redraws === undefined) t.redraws = (run.runEffect(t.leftChr, 'redrawHand') || 0) + oneMore;
     if (t.undos === undefined) t.undos = (run.runEffect(t.leftChr, 'undoTurn') || 0) + oneMore;
     if (t.resets === undefined) t.resets = run.RESETS_PER_BATTLE + ((t.leftChr.run && t.leftChr.run.extraResets) || 0) + (run.runEffect(t.leftChr, 'extraResets') || 0) + oneMore;
-    socket.emit('floorAck', t.startHtml, floorNames(t.leftChr), floorNames(t.rightChr), floorState(t), run.deckCounts(t.rightChr.deck));
+    socket.emit('floorAck', t.restored ? (t.bmod.result || t.startHtml) : t.startHtml, floorNames(t.leftChr), floorNames(t.rightChr), floorState(t), run.deckCounts(t.rightChr.deck));
   }));
   socket.on('floorUse', guard('floorUse', function(room, uid, idx) {
     const t = trades[room];
@@ -290,6 +291,7 @@ io.on('connection', (socket) => {
       if (t.rightChr && t.rightChr.isBoss) { socket.emit('floorSelectAck', (t.bmod.result || '') + '<span class="skillDamage">보스 앞에서는 물러날 수 없다.</span><br>', floorState(t)); return; }
       t.fled = true; t.fleeItem = it.temp ? null : it.code;
       socket.emit('floorFled');
+      persistBattle(t);
       return;
     }
     const before = t.bmod.result || '';
@@ -303,6 +305,7 @@ io.on('connection', (socket) => {
     if (save && Math.random() < save) { const extra = '<span class="skillDamage">손수건 안에 하나가 더 있었다. ' + it.name + '이(가) 남았다.</span><br>'; outText += extra; t.bmod.result += extra; }
     else { t.leftChr.inventory.splice(idx, 1); if (!it.temp) { if (!t.used) t.used = []; t.used.push(it.code); } }
     socket.emit('floorSelectAck', t.bmod.result, floorState(t));
+    persistBattle(t);
   }));
   socket.on('floorUndo', guard('floorUndo', function(room, uid) {
     const t = trades[room];
@@ -314,6 +317,7 @@ io.on('connection', (socket) => {
     t.undos--; t.snapshot = null;
     t.bmod.result = (snap.bm.result || '') + '<span class="skillDamage">한 번만 물러줘라 — 방금 턴을 물렀다.</span><br>';
     socket.emit('floorSelectAck', t.bmod.result, floorState(t));
+    persistBattle(t);
   }));
   socket.on('floorSwap', guard('floorSwap', function(room, uid, a, b) {   // 바꿔치기: 스킬 두 슬롯 교체 (전투당 N회)
     const t = trades[room];
@@ -326,6 +330,7 @@ io.on('connection', (socket) => {
     t.swaps--;
     t.bmod.result = (t.bmod.result || '') + '<span class="skillDamage">소매 안에서 패가 바뀌었다. [ ' + L.skill.base[a].name + ' ] ↔ [ ' + L.skill.base[b].name + ' ]</span><br>';
     socket.emit('floorSelectAck', t.bmod.result, floorState(t), floorNames(L));
+    persistBattle(t);
   }));
   socket.on('floorRedraw', guard('floorRedraw', function(room, uid) {
     const t = trades[room];
@@ -333,6 +338,7 @@ io.on('connection', (socket) => {
     t.redraws--;
     run.redrawHand(t.pdeck);
     socket.emit('floorSelectAck', null, floorState(t));
+    persistBattle(t);
   }));
   socket.on('floorReset', guard('floorReset', function(room, uid) {
     const t = trades[room];
@@ -340,6 +346,7 @@ io.on('connection', (socket) => {
     t.resets--;
     run.resetDeck(t.pdeck);
     socket.emit('floorSelectAck', null, floorState(t));
+    persistBattle(t);
   }));
   socket.on('floorSelect', guard('floorSelect', function(room, uid, key, useIdx) {
     const t = trades[room];
@@ -382,6 +389,7 @@ io.on('connection', (socket) => {
       if ((t.edeck.shuffles || 0) !== eShuf) t.eplayed = [0, 0, 0];   // 적 덱이 다시 섞이면 낸 카드 집계 초기화
       t.busy = false;
       socket.emit('floorSelectAck', result.result, floorState(t));
+      persistBattle(t);
     } else {
       t.result = result;
       socket.emit('floorSelectEnd', result.result);
@@ -3751,6 +3759,22 @@ async function getOwnerName (userId) {
   try { const r = await client.query('select name from users where id = $1', [userId]); return (r.rows[0] && r.rows[0].name) || userId; }
   catch (e) { return userId; } finally { client.release(); }
 }
+// 전투 상태 DB 저장: char_data의 run.battle 만 갱신 (다른 필드는 건드리지 않아 결과 처리와 경합하지 않음)
+function battleKeyOf(t) { return t.battleKey; }
+async function persistBattle (t) {
+  if (!t || !t.floor || !t.bmod || t.result) return;
+  const data = battlemodule.serialize(t.bmod, t.leftChr, t.rightChr, { pdeck: t.pdeck, edeck: t.edeck, eplayed: t.eplayed, resets: t.resets, redraws: t.redraws, undos: t.undos, swaps: t.swaps, used: t.used || [], goldStart: t.goldStart, startHtml: t.startHtml, lastKey: t.lastKey, fled: !!t.fled, fleeItem: t.fleeItem || null });
+  const client = await pool.connect();
+  try { await client.query("update characters set char_data = jsonb_set(char_data::jsonb, '{run,battle}', $1::jsonb)::text where uid = $2", [JSON.stringify({ key: battleKeyOf(t), data, at: Date.now() }), t.leftUid]); }
+  catch (e) { console.log('[persistBattle]', e.message); }
+  finally { client.release(); }
+}
+async function clearBattle (uid) {
+  const client = await pool.connect();
+  try { await client.query("update characters set char_data = (char_data::jsonb #- '{run,battle}')::text where uid = $1", [uid]); }
+  catch (e) { console.log('[clearBattle]', e.message); }
+  finally { client.release(); }
+}
 async function saveChar (char, uid) {
   const client = await pool.connect();
   try { await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), uid]); }
@@ -3785,6 +3809,21 @@ async function procNextFloor (req, res) {
         res.render('pages/floorBattle', { room: sess.floorBattle.room, uid: charRow.uid, rv: runView(char), char, enemy: trades[sess.floorBattle.room].rightChr });
         return;
       }
+      // 메모리에 방이 없지만 DB에 진행 중인 전투가 있으면 그 턴 그대로 복원 (서버 재시작·다른 기기 접속)
+      const existing = Object.keys(trades).find(r => trades[r] && trades[r].floor && trades[r].leftUid == charRow.uid && trades[r].battleKey === key && !trades[r].result);
+      if (existing) { sess.floorBattle = { key, room: parseInt(existing, 10) }; res.render('pages/floorBattle', { room: parseInt(existing, 10), uid: charRow.uid, rv: runView(char), char, enemy: trades[existing].rightChr }); return; }
+      if (char.run.battle && char.run.battle.key === key && char.run.battle.data) {
+        try {
+          const r0 = battlemodule.restore(char.run.battle.data);
+          const x = r0.extra;
+          const roomNum = curRoom++;
+          trades[roomNum] = { leftUid: charRow.uid, leftChr: r0.L, rightChr: r0.R, floor: true, battleKey: key, restored: true, bmod: r0.bm, startHtml: x.startHtml,
+                              pdeck: x.pdeck, edeck: x.edeck, eplayed: x.eplayed, resets: x.resets, redraws: x.redraws, undos: x.undos, swaps: x.swaps, used: x.used, goldStart: x.goldStart, lastKey: x.lastKey, fled: x.fled, fleeItem: x.fleeItem };
+          sess.floorBattle = { key, room: roomNum };
+          res.render('pages/floorBattle', { room: roomNum, uid: charRow.uid, rv: runView(char), char, enemy: r0.R });
+          return;
+        } catch (e) { console.log('[battle restore failed]', e.message); delete char.run.battle; await saveChar(char, charRow.uid); }
+      } else if (char.run.battle) { delete char.run.battle; await saveChar(char, charRow.uid); }   // 다른 층의 잔여 기록
       let enemy;
       if (char.run.evData && char.run.evData.code === 'scout' && char.run.evData.enemy) {
         enemy = char.run.evData.enemy; char.run.evData = null; await saveChar(char, charRow.uid);   // 망루에서 본 상대 그대로
@@ -3799,7 +3838,7 @@ async function procNextFloor (req, res) {
         const code = enemy.isBoss ? 10587 : (enemy.isFallen ? 10586 : null);
         if (code) { leftCopy.startEffects = (leftCopy.startEffects || []).concat([{ code: cons.EFFECT_TYPE_SELF_BUFF, buffCode: code, buffDur: null }]); }
       }
-      trades[roomNum] = { leftUid: charRow.uid, leftChr: leftCopy, rightChr: enemy, floor: true, goldStart: leftCopy.gold,
+      trades[roomNum] = { leftUid: charRow.uid, leftChr: leftCopy, rightChr: enemy, floor: true, battleKey: key, goldStart: leftCopy.gold,
                           pdeck: run.newDeckState(char.deck, run.runEffect(char, 'shuffleEveryTurn') ? { shuffleEveryTurn: true } : null), edeck: run.newDeckState(enemy.deck, enemy.deckOpts) };
       sess.floorBattle = { key, room: roomNum };
       res.render('pages/floorBattle', { room: roomNum, uid: charRow.uid, rv: runView(char), char, enemy });
@@ -3865,6 +3904,7 @@ async function procFloorFlee (req, res) {
     if (char.run.nextMonster) char.run.nextMonster = run.makeMonster(char);
     delete trades[fb.room];
     delete sess.floorBattle;
+    delete char.run.battle;
     await saveChar(char, charRow.uid);
     res.redirect('/nextFloor');
   } catch (e) { console.error(e); res.redirect('/nextFloor'); }
@@ -3988,6 +4028,7 @@ async function procFloorResult (req, res) {
     const enemy = t.rightChr;
     delete trades[fb.room];
     delete sess.floorBattle;
+    delete char.run.battle;
     // 전투 기록 저장 (PvP results 테이블 재사용)
     try {
       const client = await pool.connect();
