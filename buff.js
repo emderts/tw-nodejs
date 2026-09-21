@@ -2497,7 +2497,7 @@ module.exports.getBuffData = function(eff) {
     effectObj.active = cons.ACTIVE_TYPE_TURN_END;
     effectObj.code = cons.EFFECT_TYPE_SELF_HIT;
     effectObj.type = cons.DAMAGE_TYPE_MAGICAL;
-    effectObj.value = eff.value;
+    effectObj.value = eff.value * 0.5;   // 자신이 맞는 지옥불길은 절반
     retObj.effect.push(effectObj);
     break;
   case 20104 : 

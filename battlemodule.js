@@ -1132,7 +1132,10 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
 
       if (eff.setStack) {        
         var valueUsed = eff.setStack * stackMpl;
-        if (eff.isPercentDamage) {
+        if (eff.isPercentRawDamage) {   // 저항 적용 전 피해량 기준 (뤼순 창 훈련)
+          const red = (damage.reduce && damage.reduce < 1) ? damage.reduce : 0;
+          valueUsed *= Math.round(damage.value / (1 - red));
+        } else if (eff.isPercentDamage) {
           valueUsed *= damage.value;
         } else if (eff.addDamage) {
           for (const neff of eff.addDamage) {

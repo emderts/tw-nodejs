@@ -46,7 +46,7 @@ const item = require('./items');
   skillObj = {code : 20105, name : '지옥불길', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 90, 
       effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 20103, buffDur : 5, value : 0.4},
                 {code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 20104, buffDur : 5, value : 0.4}],
-      tooltip : '자신과 적에게 5턴간 [지옥불길] 버프 부여<br><br>[지옥불길] : 마법 0.4 피해'};
+      tooltip : '자신과 적에게 5턴간 [지옥불길] 버프 부여<br><br>[지옥불길] : 턴 종료 시 마법 0.4 피해 (카이네스 자신은 절반)'};
   charLeft.skill.special = skillObj;
 
 
@@ -1302,14 +1302,14 @@ const item = require('./items');
   charGaius.skill.base.push(skillObj);
 
   skillObj = {code : 201752, name : '천벌', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1, 
-      effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.5, buffCode : 201758, buffDur : 2}],
-      tooltip : '50% 확률로 적에게 1턴 간 [태양 접촉] 디버프 부여<br><br>[태양 접촉] : [달빛 접촉]이 존재하면 소거되고 마법 0.6 피해 및 1턴 간 [실명]',
+      effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.7, buffCode : 201758, buffDur : 2}],
+      tooltip : '70% 확률로 적에게 1턴 간 [태양 접촉] 디버프 부여<br><br>[태양 접촉] : [달빛 접촉]이 존재하면 소거되고 마법 0.6 피해 및 1턴 간 [실명]',
       flavor : '태양의 힘을 빌려 적에게 따가운 천벌을 내린다.'};  
   charGaius.skill.base.push(skillObj);
 
   skillObj = {code : 201753, name : '달빛 섬광', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 1,
-      effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.5, buffCode : 201759, buffDur : 2}],
-      tooltip : '50% 확률로 적에게 1턴 간 [달빛 접촉] 디버프 부여<br><br>[달빛 접촉] : [태양 접촉]이 존재하면 소거되고 물리 0.6 피해 및 1턴 간 [마비]',
+      effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.7, buffCode : 201759, buffDur : 2}],
+      tooltip : '70% 확률로 적에게 1턴 간 [달빛 접촉] 디버프 부여<br><br>[달빛 접촉] : [태양 접촉]이 존재하면 소거되고 물리 0.6 피해 및 1턴 간 [마비]',
       flavor : ''};  
   charGaius.skill.base.push(skillObj);
 
@@ -1364,7 +1364,7 @@ const item = require('./items');
       flavor : '상황에 따라 전투 자세를 변경합니다.'};
   charLunisha.skill.drive = skillObj;
 
-  skillObj = {code : 201760, name : '오가스 프로토콜', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 135, 
+  skillObj = {code : 201760, name : '오가스 프로토콜', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 115, 
       effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201766, buffDur : 2},
                 {code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 201767, buffDur : 1}],
       tooltip : '잃은 체력의 [오버 클락]% 만큼의 체력을 즉시 회복한다. 다음 턴 공격 스킬의 계수가 ([오버 클락]*0.1)만큼 증가하고, 다음 턴 상성에서 무조건 승리하며, 1.6배의 피해를 입힌다. 그 후 소지한 [오버 클락] 스택의 절반을 잃는다. 만약 루니샤가 수비진 상태라면 [오버 클락] 스택을 잃지 않는다. 루니샤는 그 다음 턴부터 2턴 간 [혼란] 상태이상에 빠진다.',
@@ -1528,26 +1528,26 @@ const item = require('./items');
   charRuisun.skill.base = [];
 
   var skillObj = {code : 201781, name : '쇠뇌대 훈련', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 1.2, 
-      calcEffect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201791, buffDur : null, setStack : 1.2, isPercentDamage : true},
+      calcEffect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201791, buffDur : null, setStack : 1.2, isPercentRawDamage : true},
                     {code : cons.EFFECT_TYPE_MULTIPLY_DAMAGE, value : 0, all : true}],
       effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 2017108, buffDur : 3}],
-      tooltip : '피해를 주는 대신 피해량의 120%만큼 자신에게 [쇠뇌대] 중첩 부여, 자신에게 3턴 간 [전투의 함성] 버프 부여<br><br>[쇠뇌대] : [철갑군], [기마대]가 없을 때 피격 시 피해량만큼 중첩 소거',
+      tooltip : '피해를 주는 대신 피해량(저항 적용 전)의 120%만큼 자신에게 [쇠뇌대] 중첩 부여, 자신에게 3턴 간 [전투의 함성] 버프 부여<br><br>[쇠뇌대] : [철갑군], [기마대]가 없을 때 피격 시 피해량만큼 중첩 소거',
       flavor : '쇠뇌와 연노로 무장한 쇠뇌대를 모집하여 훈련합니다. 강한 공격력을 지닙니다.'};  
   charRuisun.skill.base.push(skillObj);
 
   skillObj = {code : 201782, name : '기마대 훈련', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1, 
-      calcEffect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201788, buffDur : null, setStack : 1.2, isPercentDamage : true},
+      calcEffect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201788, buffDur : null, setStack : 1.2, isPercentRawDamage : true},
                     {code : cons.EFFECT_TYPE_MULTIPLY_DAMAGE, value : 0, all : true}],
       effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 2017108, buffDur : 3}],
-      tooltip : '피해를 주는 대신 피해량의 120%만큼 자신에게 [기마대] 중첩 부여, 자신에게 3턴 간 [전투의 함성] 버프 부여<br><br>[기마대] : [철갑군]이 없을 때 피격 시 피해량의 50%만큼 중첩 소거',
+      tooltip : '피해를 주는 대신 피해량(저항 적용 전)의 120%만큼 자신에게 [기마대] 중첩 부여, 자신에게 3턴 간 [전투의 함성] 버프 부여<br><br>[기마대] : [철갑군]이 없을 때 피격 시 피해량의 50%만큼 중첩 소거',
       flavor : '월도와 장검으로 무장한 기마대를 훈련합니다. 빠른 기동력으로 적을 혼란에 빠트립니다.'};  
   charRuisun.skill.base.push(skillObj);
 
   skillObj = {code : 201783, name : '철갑군 훈련', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 0.8,
-      calcEffect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201789, buffDur : null, setStack : 1.2, isPercentDamage : true},
+      calcEffect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201789, buffDur : null, setStack : 1.2, isPercentRawDamage : true},
                     {code : cons.EFFECT_TYPE_MULTIPLY_DAMAGE, value : 0, all : true}],
       effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 2017108, buffDur : 3}],
-      tooltip : '피해를 주는 대신 피해량의 120%만큼 자신에게 [철갑군] 중첩 부여, 자신에게 3턴 간 [전투의 함성] 버프 부여<br><br>[철갑군] : 물리/마법저항 +0.2%p, 피격 시 피해량의 20%만큼 중첩 소거',
+      tooltip : '피해를 주는 대신 피해량(저항 적용 전)의 120%만큼 자신에게 [철갑군] 중첩 부여, 자신에게 3턴 간 [전투의 함성] 버프 부여<br><br>[철갑군] : 물리/마법저항 +0.2%p, 피격 시 피해량의 20%만큼 중첩 소거',
       flavor : '철갑과 큰 방패로 무장한 철갑군을 훈련합니다. 단단한 진형을 통해 아군을 지킵니다.'};  
   charRuisun.skill.base.push(skillObj);
 
