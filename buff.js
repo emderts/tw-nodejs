@@ -2497,7 +2497,7 @@ module.exports.getBuffData = function(eff) {
     effectObj.active = cons.ACTIVE_TYPE_TURN_END;
     effectObj.code = cons.EFFECT_TYPE_SELF_HIT;
     effectObj.type = cons.DAMAGE_TYPE_MAGICAL;
-    effectObj.value = eff.value * 0.5;   // 자신이 맞는 지옥불길은 절반
+    effectObj.value = eff.value * 0.65;   // 자신이 맞는 지옥불길은 65%
     retObj.effect.push(effectObj);
     break;
   case 20104 : 
@@ -3697,7 +3697,7 @@ module.exports.getBuffData = function(eff) {
     effectObj.active = cons.ACTIVE_TYPE_RECEIVE_BUFF;
     effectObj.code = cons.EFFECT_TYPE_OPP_HIT;
     effectObj.type = cons.DAMAGE_TYPE_MAGICAL;
-    effectObj.value = 0.6;
+    effectObj.value = 0.9;
     effectObj.chkBuffCode = 201759;
     effectObj.removeBuff = true;
     retObj.effect.push(effectObj);
@@ -3726,7 +3726,7 @@ module.exports.getBuffData = function(eff) {
     effectObj = {};
     effectObj.active = cons.ACTIVE_TYPE_RECEIVE_BUFF;
     effectObj.code = cons.EFFECT_TYPE_SELF_BUFF;
-    effectObj.buffCode = 9;
+    effectObj.buffCode = 6;   // 마비 (9는 Unused 버프였음)
     effectObj.buffDur = 1;
     effectObj.chkBuffCode = 201758;
     retObj.effect.push(effectObj);
@@ -3734,7 +3734,7 @@ module.exports.getBuffData = function(eff) {
     effectObj.active = cons.ACTIVE_TYPE_RECEIVE_BUFF;
     effectObj.code = cons.EFFECT_TYPE_OPP_HIT;
     effectObj.type = cons.DAMAGE_TYPE_PHYSICAL;
-    effectObj.value = 0.6;
+    effectObj.value = 0.9;
     effectObj.chkBuffCode = 201758;
     effectObj.removeBuff = true;
     retObj.effect.push(effectObj);

@@ -46,7 +46,7 @@ const item = require('./items');
   skillObj = {code : 20105, name : '지옥불길', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 90, 
       effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 20103, buffDur : 5, value : 0.4},
                 {code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 20104, buffDur : 5, value : 0.4}],
-      tooltip : '자신과 적에게 5턴간 [지옥불길] 버프 부여<br><br>[지옥불길] : 턴 종료 시 마법 0.4 피해 (카이네스 자신은 절반)'};
+      tooltip : '자신과 적에게 5턴간 [지옥불길] 버프 부여<br><br>[지옥불길] : 턴 종료 시 마법 0.4 피해 (카이네스 자신은 65%)'};
   charLeft.skill.special = skillObj;
 
 
@@ -1303,13 +1303,13 @@ const item = require('./items');
 
   skillObj = {code : 201752, name : '천벌', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1, 
       effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.7, buffCode : 201758, buffDur : 2}],
-      tooltip : '70% 확률로 적에게 1턴 간 [태양 접촉] 디버프 부여<br><br>[태양 접촉] : [달빛 접촉]이 존재하면 소거되고 마법 0.6 피해 및 1턴 간 [실명]',
+      tooltip : '70% 확률로 적에게 1턴 간 [태양 접촉] 디버프 부여<br><br>[태양 접촉] : [달빛 접촉]이 존재하면 소거되고 마법 0.9 피해 및 1턴 간 [실명]',
       flavor : '태양의 힘을 빌려 적에게 따가운 천벌을 내린다.'};  
   charGaius.skill.base.push(skillObj);
 
   skillObj = {code : 201753, name : '달빛 섬광', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 1,
       effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.7, buffCode : 201759, buffDur : 2}],
-      tooltip : '70% 확률로 적에게 1턴 간 [달빛 접촉] 디버프 부여<br><br>[달빛 접촉] : [태양 접촉]이 존재하면 소거되고 물리 0.6 피해 및 1턴 간 [마비]',
+      tooltip : '70% 확률로 적에게 1턴 간 [달빛 접촉] 디버프 부여<br><br>[달빛 접촉] : [태양 접촉]이 존재하면 소거되고 물리 0.9 피해 및 1턴 간 [마비]',
       flavor : ''};  
   charGaius.skill.base.push(skillObj);
 
