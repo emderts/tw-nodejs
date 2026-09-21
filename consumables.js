@@ -20,6 +20,7 @@ const DEFS = {
   card0:   { name: '일회용 가위 카드', tooltip: '전투 중 사용: 손패와 상관없이 이번 턴 가위를 낸다 (덱 카드 소모 없음)', w: 2, card: 0 },
   card1:   { name: '일회용 바위 카드', tooltip: '전투 중 사용: 손패와 상관없이 이번 턴 바위를 낸다 (덱 카드 소모 없음)', w: 2, card: 1 },
   card2:   { name: '일회용 보 카드',   tooltip: '전투 중 사용: 손패와 상관없이 이번 턴 보를 낸다 (덱 카드 소모 없음)', w: 2, card: 2 },
+  flee:    { name: '연막탄',           tooltip: '전투 중 사용: 전투를 그만두고 물러난다. 같은 층에 새로운 적이 나타난다 (보스전 불가)', w: 1, flee: true },
 };
 const STATUS = { poison: [2, 3], fire: [1, 3], stun: [4, 1], silence: [7, 2] };   // [buffCode, dur]
 
@@ -37,7 +38,7 @@ function random(exclude, temp) {
   return make(keys[keys.length - 1], temp);
 }
 function price(code, cycle) {
-  const base = { hp_s: 25, hp_l: 60, sp: 30, atk: 35, crit: 30, evade: 30, guard: 30, cleanse: 25, bomb: 40, poison: 30, fire: 30, stun: 45, silence: 40, card0: 20, card1: 20, card2: 20 }[code] || 30;
+  const base = { hp_s: 25, hp_l: 60, sp: 30, atk: 35, crit: 30, evade: 30, guard: 30, cleanse: 25, bomb: 40, poison: 30, fire: 30, stun: 45, silence: 40, card0: 20, card1: 20, card2: 20, flee: 70 }[code] || 30;
   return base + 3 * cycle;
 }
 // 전투 중 사용. 반환: 로그 문자열. bm: battlemodule 인스턴스, L/R: 전투용 캐릭터 복사본

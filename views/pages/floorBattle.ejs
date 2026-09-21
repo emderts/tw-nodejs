@@ -168,6 +168,12 @@
     if (state) renderState(state); else { for (var i = 0; i < 4; i++) document.getElementById('handBtn' + i).removeAttribute('disabled'); }
     if (result !== null) window.scrollTo(0, document.body.scrollHeight);
   });
+  socket.on('floorFled', function () {
+    document.getElementById('result').innerHTML += '<div class="note-box">연막이 퍼진다. 물러난다...</div>';
+    lockHand();
+    var f = document.createElement('form'); f.method = 'post'; f.action = '/floorFlee'; document.body.appendChild(f);
+    setTimeout(function () { f.submit(); }, 700);
+  });
   socket.on('floorSelectEnd', function (result) {
     document.getElementById('result').innerHTML = result + '<div class="backLink"><a href="/floorResult" class="btn-primary" style="padding:12px 24px">결과 보기</a></div>';
     lockHand(); document.getElementById('resetBtn').setAttribute('disabled', true); document.getElementById('redrawBtn').setAttribute('disabled', true); items = []; renderItems();

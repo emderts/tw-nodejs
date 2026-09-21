@@ -48,6 +48,7 @@ const app = express()
 .post('/floorCard', procFloorCard)
 .post('/removeCard', procRemoveCard)
 .post('/breakpoint', procBreakpoint)
+.post('/floorFlee', procFloorFlee)
 .post('/focusSkill', procFocusSkill)
 .get('/hall', procHall)
 .post('/hall', procHallView)
@@ -280,6 +281,12 @@ io.on('connection', (socket) => {
     const it = t.leftChr.inventory && t.leftChr.inventory[idx];
     if (!it || it.type !== consumables.TYPE || !consumables.DEFS[it.code]) return;
     if (consumables.DEFS[it.code].card !== undefined) return;   // 카드는 floorSelect로
+    if (consumables.DEFS[it.code].flee) {   // 연막탄: 전투 이탈
+      if (t.rightChr && t.rightChr.isBoss) { socket.emit('floorSelectAck', (t.bmod.result || '') + '<span class="skillDamage">보스 앞에서는 물러날 수 없다.</span><br>', floorState(t)); return; }
+      t.fled = true; t.fleeItem = it.temp ? null : it.code;
+      socket.emit('floorFled');
+      return;
+    }
     const before = t.bmod.result || '';
     t.bmod.result = '';
     const mods = { healBonus: run.runEffect(t.leftChr, 'healPotionBonus') || 0, statusBonus: run.runEffect(t.leftChr, 'statusPotionBonus') || 0 };
@@ -3827,6 +3834,24 @@ async function procFocusSkill (req, res) {
     if (run.runEffect(char, 'focusSkill') && [0, 1, 2].includes(idx)) { char.run.focusSkill = idx; await saveChar(char, charRow.uid); }
     res.redirect('/');
   } catch (e) { console.log(e); res.redirect('/'); }
+}
+// 연막탄: 전투 이탈 → 같은 층 새 적 (몬스터 사이클이면 몬스터도 다시 뽑음)
+async function procFloorFlee (req, res) {
+  try {
+    const ctx = await loadRunChar(req, res); if (!ctx) return;
+    const { charRow, char } = ctx;
+    const sess = req.session;
+    const fb = sess.floorBattle;
+    const t = fb && trades[fb.room];
+    if (!t || !t.fled) { res.redirect('/nextFloor'); return; }
+    if (t.fleeItem) { const i = char.inventory.findIndex(x => x && x.type === consumables.TYPE && x.code === t.fleeItem); if (i >= 0) char.inventory.splice(i, 1); }
+    for (const code of (t.used || [])) { const i = char.inventory.findIndex(x => x.type === consumables.TYPE && x.code === code); if (i >= 0) char.inventory.splice(i, 1); }
+    if (char.run.nextMonster) char.run.nextMonster = run.makeMonster(char);
+    delete trades[fb.room];
+    delete sess.floorBattle;
+    await saveChar(char, charRow.uid);
+    res.redirect('/nextFloor');
+  } catch (e) { console.error(e); res.redirect('/nextFloor'); }
 }
 // 줄리어스의 중단점: 이번 사이클 시작 시점으로 복원 (런당 1회)
 async function procBreakpoint (req, res) {

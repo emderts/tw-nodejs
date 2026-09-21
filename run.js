@@ -581,6 +581,53 @@ function eventPool(char) {
     ] : [ { label: '지나간다', effect: () => '아무 일도 없었다.' } ]
   });
 
+  // --- 세부 능력치 영구 상승 (수련장) ---
+  const SUBSTAT = [
+    { key: 'spRegen', label: 'SP 재생 +1', add: 1 },
+    { key: 'spCharge', label: 'SP 충전 +2', add: 2 },
+    { key: 'hpRegen', label: '생명력 회복 +2', add: 2 },
+    { key: 'crit', label: '치명 +3%p', add: 0.03 },
+    { key: 'critDmg', label: '치명 피해 +10%p', add: 0.1 },
+    { key: 'evasion', label: '회피 +3%p', add: 0.03 },
+    { key: 'hit', label: '명중 +4%p', add: 0.04 },
+    { key: 'pierce', label: '관통 +4%p', add: 0.04 },
+    { key: 'dmgReduce', label: '피해감소 +3', add: 3 },
+  ];
+  pool.push({
+    code: 'dojo', weight: 2, title: '떠돌이 수련장',
+    prepare: () => { const pick = []; while (pick.length < 3) { const x = Math.floor(Math.random() * SUBSTAT.length); if (!pick.includes(x)) pick.push(x); } return { picks: pick }; },
+    desc: '낡은 수련장이다. 한 가지만 몸에 익힐 시간이 있다.',
+    options: (has('dojo') && d.picks ? d.picks : [0, 1, 2]).map(ix => ({
+      label: SUBSTAT[ix].label + ' (영구)',
+      effect: (ch) => { ch.base[SUBSTAT[ix].key] = Math.round(((ch.base[SUBSTAT[ix].key] || 0) + SUBSTAT[ix].add) * 1000) / 1000; deps.calcStats(ch); return SUBSTAT[ix].label + '. 몸이 기억한다.'; }
+    })).concat([{ label: '지나간다', effect: () => '수련장을 지나쳤다.' }])
+  });
+
+  // --- 드라이브 / 스페셜 교체 (다른 캐릭터의 것) ---
+  // 고유 버프·스택에 묶인 것은 제외 (옮겨가면 작동하지 않거나, 빼앗기면 본체가 무너짐)
+  const BOUND = { ruisun: ['special', 'drive'], lunisha: ['drive', 'special'], aeika: ['drive'], gaius: ['special', 'drive'], seriers: ['special'], gabi: ['drive'], julius: ['drive'] };
+  const canSwap = (key, slot) => !(BOUND[key] || []).includes(slot);
+  pool.push({
+    code: 'secret', weight: 1, title: '봉인된 비전서',
+    prepare: (ch) => {
+      const slots = ['drive', 'special'].filter(sl => canSwap(ch.rosterKey, sl));
+      if (!slots.length) return { skill: null };
+      const slot = slots[Math.floor(Math.random() * slots.length)];
+      const keys = roster.KEYS.filter(k => k !== ch.rosterKey && canSwap(k, slot) && roster.template(k).skill[slot]);
+      const key = keys[Math.floor(Math.random() * keys.length)];
+      const src = roster.template(key);
+      return { key, slot, from: src.name, skill: JSON.parse(JSON.stringify(src.skill[slot])) };
+    },
+    desc: has('secret') && d.skill
+      ? d.from + '의 ' + (d.slot === 'drive' ? '드라이브' : '스페셜') + ' 스킬이 적힌 비전서다. 익히면 지금의 것은 잊는다.'
+      : '봉인된 책이 놓여 있다.',
+    html: has('secret') && d.skill ? '<b>' + d.skill.name + '</b>' + (d.slot === 'special' ? ' <small>SP ' + d.skill.cost + '</small>' : ' <small>드라이브</small>') + '<br>' + (d.skill.tooltip || '') + (d.skill.flavor ? '<br><span class="tooltipFlavor">' + d.skill.flavor + '</span>' : '') : '',
+    options: has('secret') && d.skill ? [
+      { label: ((char.skill[d.slot] && char.skill[d.slot].name) || '없음') + ' → ' + d.skill.name, effect: (ch) => { ch.skill[d.slot] = JSON.parse(JSON.stringify(d.skill)); return d.skill.name + '을(를) 익혔다.'; } },
+      { label: '덮는다', effect: () => '비전서를 다시 봉인했다.' }
+    ] : [ { label: '지나간다', effect: () => '아무 일도 없었다.' } ]
+  });
+
   // --- 스킬 계수 강화 ---
   const honeCost = 40 + 10 * char.run.cycle;
   pool.push({
