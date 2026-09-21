@@ -40,6 +40,9 @@ function maxLives(char) { return 3 + (runEffect(char, 'luckyCoin') ? 1 : 0); }
 function initRun(char) {
   char.run = { cycle: 1, stageIdx: 0, floor: 1, lives: 1 };   // lives = 남은 재도전 횟수
   char.gold = 80;
+  char.inventory = char.inventory || [];
+  const starter = consumables.random(['flee']);   // 시작 소모품 1개 (첫 전투부터 연막은 제외)
+  if (starter) char.inventory.push(starter);
   prepareCycle(char);
   return char;
 }

@@ -4011,6 +4011,10 @@ async function procFloorResult (req, res) {
       addSpecialResultCard(char, 4);
       char.battleCnt = (char.battleCnt || 0) + 1; char.winCnt = (char.winCnt || 0) + 1;
       var rewardLines = ['<b>승리!</b> ' + gold + '골드, 스탯 포인트 3, ' + char.rank + '급 장비 리설트 카드 1장 획득.'];
+      if (!enemy.isBoss && Math.random() < 0.25) {   // 일반 전투 승리 시 25% 확률로 소모품
+        const drop = consumables.random();
+        if (drop) { char.inventory.push(drop); rewardLines.push('전리품 속에서 <b>' + drop.name + '</b>을(를) 찾았다.'); }
+      }
       if (enemy.isBoss && enemy.skill && enemy.skill.base) {   // 보스의 기술 1회용
         const slots = [0, 1, 2].filter(i => enemy.skill.base[i] && enemy.skill.base[i].name);
         if (slots.length) {
