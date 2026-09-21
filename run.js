@@ -633,6 +633,44 @@ function eventPool(char) {
     ] : [ { label: '지나간다', effect: () => '아무 일도 없었다.' } ]
   });
 
+  // --- 장비 변환 (결과는 비공개) ---
+  const SLOTK = ['weapon', 'armor', 'subarmor', 'trinket'];
+  const equipped = SLOTK.map((k, t) => ({ k, t, it: char.items && char.items[k] })).filter(x => x.it && x.it.name);
+  if (equipped.length) pool.push({
+    code: 'transmute', weight: 2, title: '형태를 바꾸는 가마',
+    desc: '가마에 장비를 넣으면 같은 자리에 쓰는, 전혀 다른 무언가가 되어 나온다. 무엇이 나올지는 꺼내 봐야 안다.',
+    options: equipped.map(x => ({
+      label: SLOT_NAMES[x.t] + ' — ' + x.it.name + ' 을(를) 넣는다',
+      effect: (ch) => {
+        const r = Math.random(), rar = r < 0.3 ? 1 : r < 0.65 ? 2 : r < 0.9 ? 4 : 5;   // 언커먼 30 / 레어 35 / 유니크 25 / 에픽 10
+        let it = null; for (let n = 0; n < 12 && !(it && it.name && !/^무형의/.test(it.name) && it.name !== x.it.name); n++) it = getItemSafe(ch.rank, rar, x.t);
+        if (!it || !it.name) return '가마가 식어 버렸다. 아무 일도 없었다.';
+        const before = ch.items[x.k].name; ch.items[x.k] = it; deps.calcStats(ch);
+        return before + '이(가) 가마 속에서 녹아내리고… <b>' + it.name + '</b>이(가) 되어 나왔다.';
+      }
+    })).concat([{ label: '지나간다', effect: () => '가마를 지나쳤다.' }])
+  });
+
+  // --- 스킬 효과 발동률 강화 ---
+  const chanceTargets = [0, 1, 2].map(i => ({ i, sk: char.skill.base[i] })).filter(x => x.sk && (x.sk.effect || []).some(e => e.chance && e.chance < 1))
+    .map(x => ({ slot: 'base', i: x.i, label: ['가위', '바위', '보'][x.i] + ' · ' + x.sk.name, cur: (x.sk.effect || []).filter(e => e.chance && e.chance < 1).map(e => Math.round(e.chance * 100) + '%').join('/') }))
+    .concat(char.skill.drive && char.skill.drive.chance && char.skill.drive.chance < 1 ? [{ slot: 'drive', label: '드라이브 · ' + char.skill.drive.name, cur: Math.round(char.skill.drive.chance * 100) + '%' }] : []);
+  if (chanceTargets.length) pool.push({
+    code: 'omen', weight: 1.5, title: '행운을 비는 석상',
+    desc: '석상 앞에 동전을 놓으면, 기술 하나가 조금 더 자주 통하게 된다고 한다.',
+    options: chanceTargets.map(ct => ({
+      label: ct.label + ' (현재 ' + ct.cur + ' → ×1.3)',
+      effect: (ch) => {
+        const up = (c) => Math.min(1, Math.round(c * 1.3 * 1000) / 1000);
+        if (ct.slot === 'drive') { ch.skill.drive.chance = up(ch.skill.drive.chance); return ch.skill.drive.name + '의 발동률이 ' + Math.round(ch.skill.drive.chance * 100) + '%가 되었다.'; }
+        const sk = ch.skill.base[ct.i];
+        for (const e of (sk.effect || [])) if (e.chance && e.chance < 1) e.chance = up(e.chance);
+        if (sk.tooltip) sk.tooltip = sk.tooltip.replace(/(\d+)\\?% 확률/g, (m, n) => Math.min(100, Math.round(parseInt(n, 10) * 1.3)) + '% 확률');
+        return sk.name + '이(가) 더 자주 통하게 되었다.';
+      }
+    })).concat([{ label: '지나간다', effect: () => '석상을 지나쳤다.' }])
+  });
+
   // --- 스킬 계수 강화 ---
   const honeCost = 40 + 10 * char.run.cycle;
   pool.push({
