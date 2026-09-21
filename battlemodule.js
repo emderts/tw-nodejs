@@ -1420,7 +1420,8 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
       this.resolveEffects(winner, loser, skill.effect, damage);
     } else if (eff.code === cons.EFFECT_TYPE_CONVERT_ITEM) {
       if (eff.randomItem) {
-        var tgtList = item.list.filter(x => x.rank === eff.randomItem && x.type < 4);
+        var tgtList = item.list.filter(x => x && x.rank === eff.randomItem && x.type < 4 && !x.runEffect && !x.driveOverride && !/^무형의/.test(x.name)
+          && !(x.effect || []).some(e => e.code === 'marsRobe' || e.code === 'itemBreak'));   // 로그라이크 전용·슬롯 고정·자기 계열 제외
         var picked = JSON.parse(JSON.stringify(tgtList[Math.floor(Math.random() * tgtList.length)]));
       } else {
         var picked = JSON.parse(JSON.stringify(tgtList[eff.value]));

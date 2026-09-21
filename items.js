@@ -2158,6 +2158,17 @@ itemList[964] = { id : 964, name : '유로파 물 전달 장갑', nameType : con
     effectDesc : '상성 패배 시 45% 확률로 [외우주 태그] 1중첩. 외우주 태그 1중첩당 생명력회복 +1<br><br>[외우주 태그] : 중첩당 치명 +0.5%p', effect : [{code : 'tagGive', active : cons.ACTIVE_TYPE_SKILL_LOSE, chance : 0.45, tag : 10640, value : 1}], perTag : { tag : 10640, stat : { hpRegen : 1 } } };
 itemList[965] = { id : 965, name : '가니메데 테라포머 메달', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '목성권 테라포밍 위원회가 단 한 번 수여한 메달. 받은 사람의 이름은 기록되지 않았다.', rank : 2, rarity : cons.ITEM_RARITY_EPIC, stat : { maxHp : 230, crit : 0.04, spRegen : 1 }, 
     effectDesc : '드라이브 발동 시 [외우주 태그] 1중첩을 얻고, 외우주 태그 1중첩당 상대에게 절대 피해 12<br><br>[외우주 태그] : 중첩당 치명 +0.5%p', effect : [{code : 'tagGive', active : cons.ACTIVE_TYPE_USE_DRIVE, tag : 10640, value : 1}, {code : 'tagHit', active : cons.ACTIVE_TYPE_USE_DRIVE, tag : 10640, value : 12}] };
+// ---------- 무형 시리즈 5~1급 ----------
+itemList[966] = { id : 966, name : '무형의 결정', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '그 어떤 형태로도 확정할 수 없는 결정. 손에 쥔 순간에만 모양이 정해진다.', rank : 5, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { }, 
+    effectDesc : '전투 시작 시 무작위 5급 아이템 하나가 선택된다. 그 전투 동안 이 아이템은 그 아이템의 능력을 발휘한다.', effect : [{code : cons.EFFECT_TYPE_CONVERT_ITEM, active : cons.ACTIVE_TYPE_BATTLE_START, key : 'trinket', randomItem : 5}] };
+itemList[967] = { id : 967, name : '무형의 큰 결정', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '그 어떤 형태로도 확정할 수 없는 큰 결정. 들여다보면 다른 무언가가 비친다.', rank : 4, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { }, 
+    effectDesc : '전투 시작 시 무작위 4급 아이템 하나가 선택된다. 그 전투 동안 이 아이템은 그 아이템의 능력을 발휘한다.', effect : [{code : cons.EFFECT_TYPE_CONVERT_ITEM, active : cons.ACTIVE_TYPE_BATTLE_START, key : 'trinket', randomItem : 4}] };
+itemList[968] = { id : 968, name : '무형의 원석', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '결정이 되기를 그만둔 원석. 무엇이든 될 수 있지만, 아무것도 되려 하지 않는다.', rank : 3, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { }, 
+    effectDesc : '전투 시작 시 무작위 3급 아이템 하나가 선택된다. 그 전투 동안 이 아이템은 그 아이템의 능력을 발휘한다.', effect : [{code : cons.EFFECT_TYPE_CONVERT_ITEM, active : cons.ACTIVE_TYPE_BATTLE_START, key : 'trinket', randomItem : 3}] };
+itemList[969] = { id : 969, name : '무형의 핵', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '무형이 모여 이룬 핵. 가까이 두면 주변의 형태까지 흔들린다.', rank : 2, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { }, 
+    effectDesc : '전투 시작 시 무작위 2급 아이템 하나가 선택된다. 그 전투 동안 이 아이템은 그 아이템의 능력을 발휘한다.', effect : [{code : cons.EFFECT_TYPE_CONVERT_ITEM, active : cons.ACTIVE_TYPE_BATTLE_START, key : 'trinket', randomItem : 2}] };
+itemList[970] = { id : 970, name : '무형의 근원', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '형태가 생기기 이전의 것. 이것이 무엇이었는지 기억하는 자는 없다.', rank : 1, rarity : cons.ITEM_RARITY_UNCOMMON, stat : { }, 
+    effectDesc : '전투 시작 시 무작위 1급 아이템 하나가 선택된다. 그 전투 동안 이 아이템은 그 아이템의 능력을 발휘한다.', effect : [{code : cons.EFFECT_TYPE_CONVERT_ITEM, active : cons.ACTIVE_TYPE_BATTLE_START, key : 'trinket', randomItem : 1}] };
 
 itemList.forEach(function(tgt) {
   tgt.base = JSON.parse(JSON.stringify(tgt.stat));
