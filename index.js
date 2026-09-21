@@ -22,11 +22,16 @@ run.configure({ getItem: _getItem, calcStats: calcStats, makeDayStone: makeDaySt
 const cons = require('./constant');
 const item = require('./items');
 const monster = require('./monster');
+// 세션을 Postgres에 저장: 서버 재시작·재배포에도 로그인과 진행 중인 층 정보가 유지된다
+const PgSession = require('connect-pg-simple')(session);
 const sessionMiddleware = session({
-  secret: 'ewqwwolpe!d.ldx42EsCCXD#!$()_*#@',
-  resave: true,
-  saveUninitialized: true
-});;
+  store: new PgSession({ pool: pool, tableName: 'session', createTableIfMissing: true, pruneSessionInterval: 60 * 60 }),
+  secret: process.env.SESSION_SECRET || 'ewqwwolpe!d.ldx42EsCCXD#!$()_*#@',
+  resave: false,
+  saveUninitialized: false,
+  rolling: true,
+  cookie: { maxAge: 1000 * 60 * 60 * 24 * 30 }   // 30일
+});
 const favicon = require('serve-favicon');
 
 const app = express()
