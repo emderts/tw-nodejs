@@ -565,11 +565,11 @@ function eventPool(char) {
   pool.push({
     code: 'master', weight: 2, title: '은둔한 사범',
     prepare: (ch) => {
-      const keys = roster.KEYS.filter(k => k !== ch.rosterKey);
+      const keys = roster.KEYS.filter(k => k !== ch.rosterKey && k !== 'ruisun');   // 뤼순 훈련 스킬은 스택 전제라 제외
       const key = keys[Math.floor(Math.random() * keys.length)];
       const idx = Math.floor(Math.random() * 3);
       const src = roster.template(key);
-      return { key, idx, from: src.name, skill: JSON.parse(JSON.stringify(src.skill.base[idx])) };
+      return { key, idx, from: src.name, skill: inherit(src.skill.base[idx], 'base') };
     },
     desc: has('master') && d.skill
       ? '"' + d.from + '에게 배운 기술이다. 네 ' + ['가위', '바위', '보'][d.idx] + ' 기술과 바꿔 주마. 되돌릴 수는 없다."'
@@ -616,7 +616,7 @@ function eventPool(char) {
       const keys = roster.KEYS.filter(k => k !== ch.rosterKey && canSwap(k, slot) && roster.template(k).skill[slot]);
       const key = keys[Math.floor(Math.random() * keys.length)];
       const src = roster.template(key);
-      return { key, slot, from: src.name, skill: JSON.parse(JSON.stringify(src.skill[slot])) };
+      return { key, slot, from: src.name, skill: inherit(src.skill[slot], slot) };
     },
     desc: has('secret') && d.skill
       ? d.from + '의 ' + (d.slot === 'drive' ? '드라이브' : '스페셜') + ' 스킬이 적힌 비전서다. 익히면 지금의 것은 잊는다.'
@@ -712,6 +712,15 @@ function monsterHelpers() {
     artifact: (rank) => pickArtifact(rank),
     consumable: (code) => code ? consumables.make(code) : consumables.random(),
   };
+}
+// 전수: 다른 캐릭터의 스킬을 넘겨받을 때의 보정 (고유 연계를 잃는 대신)
+function inherit(skill, slot) {
+  const sk = JSON.parse(JSON.stringify(skill));
+  sk.name = '[전수] ' + sk.name;
+  if (slot === 'base' && sk.damage) { sk.damage = Math.round(sk.damage * 1.2 * 100) / 100; sk.tooltip = (sk.tooltip || '') + '<br><br><span class="colorGold">전수 : 계수 +20%</span>'; }
+  if (slot === 'drive') { if (sk.chance) sk.chance = Math.min(1, Math.round(sk.chance * 1.5 * 1000) / 1000); sk.tooltip = (sk.tooltip || '') + '<br><br><span class="colorGold">전수 : 발동률 ×1.5 (최대 100%)</span>'; }
+  if (slot === 'special' && sk.cost) { sk.cost = Math.round(sk.cost * 0.8); sk.tooltip = (sk.tooltip || '') + '<br><br><span class="colorGold">전수 : SP 비용 -20%</span>'; }
+  return sk;
 }
 // 스킬의 피해 타입 표기
 function dmgTypeName(sk) {
