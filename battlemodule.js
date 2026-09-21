@@ -2356,6 +2356,14 @@ function calcStats(chara, opp) {
   }
   
   chara.stat.maxHp = Math.round(chara.stat.maxHp);
+  // 체력 증가 버프(도시 태그·동물 스택 등): 전투 중 최대 체력이 새 최고치를 찍으면 늘어난 만큼 현재 체력도 올린다.
+  // 최고치 기준이라 버프가 꺼졌다 켜지는 식으로 반복 회복되지는 않는다.
+  if (chara.maxHpPeak === undefined || chara.curHp === undefined) {
+    chara.maxHpPeak = chara.stat.maxHp;
+  } else if (chara.stat.maxHp > chara.maxHpPeak) {
+    if (chara.curHp > 0) chara.curHp += chara.stat.maxHp - chara.maxHpPeak;
+    chara.maxHpPeak = chara.stat.maxHp;
+  }
   if (chara.curHp > chara.stat.maxHp) {
     chara.curHp = chara.stat.maxHp;
   }
@@ -2435,6 +2443,7 @@ function _initChar(char, flag) {
   char.buffs = [];
   char.nameOri = char.name;
   char.nameTypeOri = char.nameType;
+  delete char.maxHpPeak;   // 체력 최고치 기록은 전투마다 새로
   char.skillOri = JSON.parse(JSON.stringify(char.skill));
   for (const k in (char.items || {})) {   // 드라이브 교체 아이템 (흑마법 의식 로브)
     const it = char.items[k]; if (it && it.driveOverride) char.skillOri.drive = JSON.parse(JSON.stringify(it.driveOverride));
