@@ -566,19 +566,24 @@ function eventPool(char) {
     code: 'master', weight: 2, title: '은둔한 사범',
     prepare: (ch) => {
       const keys = roster.KEYS.filter(k => k !== ch.rosterKey && k !== 'ruisun');   // 뤼순 훈련 스킬은 스택 전제라 제외
-      const key = keys[Math.floor(Math.random() * keys.length)];
-      const idx = Math.floor(Math.random() * 3);
-      const src = roster.template(key);
-      return { key, idx, from: src.name, skill: inherit(src.skill.base[idx], 'base') };
+      const offers = [];
+      while (offers.length < 2) {   // 서로 다른 캐릭터에게서 두 가지
+        const key = keys[Math.floor(Math.random() * keys.length)];
+        if (offers.some(o => o.key === key)) continue;
+        const idx = Math.floor(Math.random() * 3);
+        const src = roster.template(key);
+        offers.push({ key, idx, from: src.name, skill: inherit(src.skill.base[idx], 'base') });
+      }
+      return { offers, skill: offers[0].skill };
     },
-    desc: has('master') && d.skill
-      ? '"' + d.from + '에게 배운 기술이다. 네 ' + ['가위', '바위', '보'][d.idx] + ' 기술과 바꿔 주마. 되돌릴 수는 없다."'
+    desc: has('master') && d.offers
+      ? '"두 가지를 보여 주마. 하나만 가져가라. 되돌릴 수는 없다."'
       : '늙은 사범이 검을 닦고 있다.',
-    html: has('master') && d.skill ? '<b>' + d.skill.name + '</b> <small>' + dmgTypeName(d.skill) + ' 계수 ' + d.skill.damage + '</small><br>' + (d.skill.tooltip || '') + (d.skill.flavor ? '<br><span class="tooltipFlavor">' + d.skill.flavor + '</span>' : '') : '',
-    options: has('master') && d.skill ? [
-      { label: char.skill.base[d.idx].name + ' (' + dmgTypeName(char.skill.base[d.idx]) + ' ' + char.skill.base[d.idx].damage + ') → ' + d.skill.name + ' (' + dmgTypeName(d.skill) + ' ' + d.skill.damage + ')', effect: (ch) => { ch.skill.base[d.idx] = JSON.parse(JSON.stringify(d.skill)); return d.skill.name + '을(를) 익혔다.'; } },
-      { label: '거절한다', effect: () => '사범은 고개를 끄덕이고 눈을 감았다.' }
-    ] : [ { label: '지나간다', effect: () => '아무 일도 없었다.' } ]
+    html: has('master') && d.offers ? d.offers.map(o => '<b>' + ['가위', '바위', '보'][o.idx] + ' · ' + o.skill.name + '</b> <small>' + o.from + ' · ' + dmgTypeName(o.skill) + ' 계수 ' + o.skill.damage + '</small><br>' + (o.skill.tooltip || '')).join('<hr style="border:0;border-top:1px solid var(--line);margin:8px 0">') : '',
+    options: has('master') && d.offers ? d.offers.map(o => ({
+      label: '[' + ['가위', '바위', '보'][o.idx] + '] ' + char.skill.base[o.idx].name + ' (' + dmgTypeName(char.skill.base[o.idx]) + ' ' + char.skill.base[o.idx].damage + ') → ' + o.skill.name + ' (' + dmgTypeName(o.skill) + ' ' + o.skill.damage + ')',
+      effect: (ch) => { ch.skill.base[o.idx] = JSON.parse(JSON.stringify(o.skill)); return o.skill.name + '을(를) 익혔다.'; }
+    })).concat([{ label: '거절한다', effect: () => '사범은 고개를 끄덕이고 눈을 감았다.' }]) : [ { label: '지나간다', effect: () => '아무 일도 없었다.' } ]
   });
 
   // --- 세부 능력치 영구 상승 (수련장) ---

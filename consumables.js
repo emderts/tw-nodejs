@@ -20,10 +20,17 @@ const DEFS = {
   card0:   { name: '일회용 가위 카드', tooltip: '전투 중 사용: 손패와 상관없이 이번 턴 가위를 낸다 (덱 카드 소모 없음)', w: 2, card: 0 },
   card1:   { name: '일회용 바위 카드', tooltip: '전투 중 사용: 손패와 상관없이 이번 턴 바위를 낸다 (덱 카드 소모 없음)', w: 2, card: 1 },
   card2:   { name: '일회용 보 카드',   tooltip: '전투 중 사용: 손패와 상관없이 이번 턴 보를 낸다 (덱 카드 소모 없음)', w: 2, card: 2 },
+  boss:    { name: '보스의 기술',     tooltip: '', w: 0, card: 0 },
   flee:    { name: '연막탄',           tooltip: '전투 중 사용: 전투를 그만두고 물러난다. 같은 층에 새로운 적이 나타난다 (보스전 불가)', w: 1, flee: true },
 };
 const STATUS = { poison: [2, 3], fire: [1, 3], stun: [4, 1], silence: [7, 2] };   // [buffCode, dur]
 
+// 보스의 기술: 보스를 쓰러뜨리면 얻는 1회용 스킬 (가위/바위/보 슬롯에 그대로 낸다)
+function makeBossSkill(bossName, slot, skill) {
+  const sk = JSON.parse(JSON.stringify(skill));
+  return { type: TYPE, code: 'boss', name: bossName + '의 ' + sk.name, card: slot, bossSkill: sk,
+    tooltip: '전투 중 사용: 이번 턴 [' + ['가위', '바위', '보'][slot] + '] 로 [' + sk.name + '] 을(를) 쓴다 (덱 카드 소모 없음)<br><br>' + ({ 1: '물리', 2: '마법', 3: '물리 고정', 4: '마법 고정', 0: '절대' }[sk.type] || '') + (sk.damage !== undefined ? ' 계수 ' + sk.damage : '') + (sk.tooltip ? '<br>' + sk.tooltip : '') };
+}
 function make(code, temp) {
   const d = DEFS[code]; if (!d) return null;
   const it = { type: TYPE, code, name: d.name, tooltip: d.tooltip, card: d.card };
@@ -68,4 +75,4 @@ function apply(code, bm, L, R, buffMdl, mods) {
     }
   }
 }
-module.exports = { TYPE, DEFS, make, random, price, apply, T };
+module.exports = { makeBossSkill, TYPE, DEFS, make, random, price, apply, T };

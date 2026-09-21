@@ -345,7 +345,13 @@ io.on('connection', (socket) => {
       const it = t.leftChr.inventory && t.leftChr.inventory[parseInt(useIdx, 10)];
       if (!it || it.type !== consumables.TYPE || it.card === undefined) return;
       key = it.card; freeCard = true;
-      const save = run.runEffect(t.leftChr, 'potionSave');
+      if (it.bossSkill) {   // 보스의 기술: 이번 턴만 해당 슬롯 스킬을 교체
+        const L = t.leftChr;
+        t.restoreSkill = { slot: key, skill: L.skill.base[key], ori: L.skillOri ? L.skillOri.base[key] : null };
+        L.skill.base[key] = JSON.parse(JSON.stringify(it.bossSkill));
+        if (L.skillOri) L.skillOri.base[key] = JSON.parse(JSON.stringify(it.bossSkill));
+      }
+      const save = it.bossSkill ? 0 : run.runEffect(t.leftChr, 'potionSave');
       if (!(save && Math.random() < save)) { t.leftChr.inventory.splice(parseInt(useIdx, 10), 1); if (!it.temp) { if (!t.used) t.used = []; t.used.push(it.code); } }
     } else if (!run.handTypes(t.pdeck).includes(key)) return;
     t.busy = true;
@@ -355,6 +361,11 @@ io.on('connection', (socket) => {
     const want = monster.selectFunc[t.rightChr.skillSelect](t.rightChr, key);
     const eKey = run.aiPick(t.edeck, run.runEffect(t.leftChr, 'hideSkills') ? Math.floor(Math.random() * 3) : want);   // 이름 없는 초식: 반응형 예측 무효
     const result = t.bmod.procBattleTurn(key, eKey, 1);
+    if (t.restoreSkill) {   // 보스의 기술 사용 후 원래 스킬로
+      const L = t.leftChr, r0 = t.restoreSkill;
+      L.skill.base[r0.slot] = r0.skill; if (L.skillOri && r0.ori) L.skillOri.base[r0.slot] = r0.ori;
+      t.restoreSkill = null;
+    }
     const tie = key === eKey && result.redecide;
     if (!freeCard && !(tie && run.runEffect(t.leftChr, 'keepCardOnTie'))) run.playCard(t.pdeck, key);   // 엇갈린 두 자루: 무승부 시 카드 유지
     run.playCard(t.edeck, eKey);
@@ -4000,6 +4011,15 @@ async function procFloorResult (req, res) {
       addSpecialResultCard(char, 4);
       char.battleCnt = (char.battleCnt || 0) + 1; char.winCnt = (char.winCnt || 0) + 1;
       var rewardLines = ['<b>승리!</b> ' + gold + '골드, 스탯 포인트 3, ' + char.rank + '급 장비 리설트 카드 1장 획득.'];
+      if (enemy.isBoss && enemy.skill && enemy.skill.base) {   // 보스의 기술 1회용
+        const slots = [0, 1, 2].filter(i => enemy.skill.base[i] && enemy.skill.base[i].name);
+        if (slots.length) {
+          const sl = slots[Math.floor(Math.random() * slots.length)];
+          const bs = consumables.makeBossSkill(enemy.name, sl, enemy.skill.base[sl]);
+          char.inventory.push(bs);
+          rewardLines.push('보스의 기술을 얻었다: <b>' + bs.name + '</b> (1회용)');
+        }
+      }
       if (enemy.isBoss && char.run.cycle !== 3) {
         try { await client.query('insert into news(content, date) values ($1, $2)', [newsName(char) + getIga(char.nameType) + ' ' + run.floorNo(char) + '층에서 ' + char.run.cycle + '사이클 보스 ' + enemy.name + getUlrul(enemy.nameType) + ' 쓰러뜨렸다.', new Date()]); } catch (e) {}
       }
