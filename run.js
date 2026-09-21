@@ -281,7 +281,7 @@ function snapshotForFallen(char) {
 const COLLECTIONS = [
   { name: '불타는 과수원의 유물', desc: '과수원에서 건져 올린 것들', match: (it) => /과수원|결실/.test(it.name) },
   { name: '생태 복원 뱃지함', desc: '동물 스택을 쌓는 뱃지들', match: (it) => /뱃지|포식동물 제어장치/.test(it.name) },
-  { name: '도시 건설 계획서', desc: '[도시 태그]를 굴리는 장비들', match: (it) => /이민자 도시|녹티스|로버 공장|광역 대도시권|대수도|상업 지구/.test(it.name) },
+  { name: '도시 건설 계획서', desc: '[도시 태그]를 굴리는 장비들', match: (it) => /이민자 도시|녹티스|로버 공장|광역 대도시권|대수도|상업 지구|지하 도시|돔 크레이터|용암동굴|타르시스/.test(it.name) },
   { name: '화성 연구단 보급품', desc: '[과학 태그]를 굴리는 장비들', match: (it) => /올림푸스|화성 연구자|화성 대학교|반중력|라그랑주|생명체 탐사|성층권|제한 구역|첨단 합금|연구 전초기지|워프 드라이브|AI 센트럴/.test(it.name) },
   { name: '목성권 원정 장비', desc: '[외우주 태그]를 굴리는 장비들', match: (it) => /가니메데|이오 탐사|유로파/.test(it.name) },
   { name: '엘바스의 유산', desc: '네 자루 중 남은 것들', match: (it) => /엘바스의 유산/.test(it.name) },

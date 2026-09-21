@@ -1623,10 +1623,12 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
       if (eff.heal) { const v = Math.round(winner.stat.maxHp * eff.heal); winner.curHp = Math.min(winner.stat.maxHp, winner.curHp + v); this.result += '[ ' + eff.name + ' ] 효과로 HP를 ' + v + ' 회복했다!<br>'; }
       for (let k2 = 0; k2 < n; k2++) for (const key in (winner.items || {})) {
         const it = winner.items[key]; if (!it || !it.onTag || it.onTag.tag !== eff.tag) continue;
-        const h = it.onTag;
+        const h = it.onTag;   // 한 아이템당 훅 하나
         if (h.stackBuff) { const bo = buffMdl.getBuffData({ buffCode : h.stackBuff }); bo.dur = null; bo.stack = 1; this.giveBuff(winner, winner, bo, false, it.name); const c2 = (winner.buffs || []).find(x => x.id === h.stackBuff); this.result += '[ ' + it.name + ' ] 효과로 [ ' + bo.name + ' ] ' + (c2 ? c2.stack : 1) + '중첩!<br>'; }
         if (h.shieldPct) { const add = Math.round(winner.stat.maxHp * h.shieldPct); const ex = (winner.buffs || []).find(x => x.id === h.shieldBuff); if (ex) { for (const be of ex.effect) if (be.code === cons.EFFECT_TYPE_SHIELD) be.value += add; } else { const bo = buffMdl.getBuffData({ buffCode : h.shieldBuff }); bo.dur = null; for (const be of bo.effect) if (be.code === cons.EFFECT_TYPE_SHIELD) be.value = add; this.giveBuff(winner, winner, bo, false, it.name); } this.result += '[ ' + it.name + ' ] 보호막 +' + add + '<br>'; }
         if (h.randomDebuff) { const ids = [1, 2, 3, 4, 6, 7, 8, 11]; const bd = buffMdl.getBuffData({ buffCode : ids[Math.floor(Math.random() * ids.length)] }); bd.dur = h.randomDebuff; this.giveBuff(winner, loser, bd, true, it.name); }
+        if (h.healPct) { const v = Math.round(winner.stat.maxHp * h.healPct); winner.curHp = Math.min(winner.stat.maxHp, winner.curHp + v); this.result += '[ ' + it.name + ' ] 효과로 HP를 ' + v + ' 회복했다!<br>'; }
+        if (h.oppBuff && Math.random() < (h.oppBuff.chance || 1)) { const bd = buffMdl.getBuffData({ buffCode : h.oppBuff.buffCode }); bd.dur = h.oppBuff.dur; this.giveBuff(winner, loser, bd, true, it.name); }
       }
     } else if (eff.code === 'tagHit') {   // 태그 중첩당 절대 피해
       const tb = (winner.buffs || []).find(x => x.id === eff.tag); const st = tb ? (tb.stack || 1) : 0;
