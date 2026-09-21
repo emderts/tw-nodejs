@@ -1086,9 +1086,12 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
     }
     if (eff.code === cons.EFFECT_TYPE_SELF_BUFF || eff.code === cons.EFFECT_TYPE_OPP_BUFF) {
       if (eff.direct) {
-        damage.dur *= eff.durMod;
-        if (damage.dur < 1) {
-          this.giveBuff(winner, loser, damage, true);
+        // 되비침: 무효화한 상태이상을 절반 턴(올림)으로 상대에게. 반사된 것은 다시 반사되지 않고, 자기 자신에게는 돌려주지 않는다
+        if (damage && !damage.reflected && loser && loser !== winner) {
+          const refl = JSON.parse(JSON.stringify(damage));
+          refl.dur = Math.max(1, Math.ceil((damage.dur || 1) * eff.durMod));
+          refl.reflected = true;
+          this.giveBuff(winner, loser, refl, true);
         }
         continue;
       }
@@ -1963,7 +1966,7 @@ Battlemodule.prototype.giveBuff = function(src, recv, buffObj, printFlag, name) 
       return;
     }
   }
-  for (eff of findBuffByCode(recv, cons.EFFECT_TYPE_PREVENT_DEBUFF)) {
+  for (eff of (src === recv ? [] : findBuffByCode(recv, cons.EFFECT_TYPE_PREVENT_DEBUFF))) {   // 자기 부작용은 막지 않음 (되비침이 자신에게 무한 반사되던 문제)
     if (eff.turnCooldown && eff.turnCooldown > 0) {
       continue;
     }
