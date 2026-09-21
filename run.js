@@ -607,7 +607,7 @@ function eventPool(char) {
   // 고유 버프·스택에 묶인 것은 제외 (옮겨가면 작동하지 않거나, 빼앗기면 본체가 무너짐)
   const BOUND = { ruisun: ['special', 'drive'], lunisha: ['drive', 'special'], aeika: ['drive'], gaius: ['special', 'drive'], seriers: ['special'], gabi: ['drive'], julius: ['drive'] };
   const canSwap = (key, slot) => !(BOUND[key] || []).includes(slot);
-  pool.push({
+  if (['drive', 'special'].some(sl => canSwap(char.rosterKey, sl))) pool.push({   // 바꿀 수 있는 슬롯이 없는 캐릭터에겐 등장하지 않음
     code: 'secret', weight: 1, title: '봉인된 비전서',
     prepare: (ch) => {
       const slots = ['drive', 'special'].filter(sl => canSwap(ch.rosterKey, sl));
