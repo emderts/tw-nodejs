@@ -1142,9 +1142,9 @@ const item = require('./items');
   charDekais.skill = {};
   charDekais.skill.base = [];
 
-  var skillObj = {code : 201736, name : '버스트 캐논 리로드', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 0.5, 
+  var skillObj = {code : 201736, name : '버스트 캐논 리로드', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 1.1, 
       effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201745, buffDur : null, chkNot : [201745]}],
-      tooltip : '100\% 확률로 자신에게 [버스트 캐논] 버프 부여<br><br>[버스트 캐논] : 재부여 시 소거 후 물리 1.2 추가 피해',
+      tooltip : '[버스트 캐논]이 없으면 장전, 있으면 발사한다<br><br>[버스트 캐논] : 다음 [버스트 캐논 리로드] 사용 시 소거되며 물리 1.2 추가 피해',
       flavor : '무장을 순식간에 핸드캐논 형태로 바꾸어 발사한다.'};  
   charDekais.skill.base.push(skillObj);
 
