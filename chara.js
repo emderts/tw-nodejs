@@ -1157,7 +1157,7 @@ const item = require('./items');
 
   skillObj = {code : 201738, name : '파괴의 창', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1.5, hitMod : 0.75,
       effect : [{code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL, value : 0.5}],
-      tooltip : '이 스킬의 명중률은 기본값의 75\\%가 된다. 100\\% 확률로 물리 0.5 추가 피해',
+      tooltip : '이 스킬의 명중률은 기본값의 75\%가 된다. 100\% 확률로 물리 0.5 추가 피해',
       flavor : '갑주를 무수한 투창으로 변환하여 적에게 흩뿌린다.'};  
   charDekais.skill.base.push(skillObj);
 
