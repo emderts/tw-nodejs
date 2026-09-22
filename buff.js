@@ -6818,7 +6818,7 @@ module.exports.getBuffData = function(eff) {
     retObj.effect.push(effectObj);
     break;
   // ---- 9급 신규 아이템 버프 ----
-  case 10500 :   // 손수 칠한 흑철
+  case 10500 :   // 신입 기사의 흑철갑옷 등
     retObj.name = '검은 칠';
     retObj.nameType = cons.NAME_KOR_NO_END_CONS;
     retObj.stackType = 1;
@@ -6828,7 +6828,7 @@ module.exports.getBuffData = function(eff) {
     effectObj = { active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'magReduce', value : 0.05 };
     retObj.effect.push(effectObj);
     break;
-  case 10501 :   // 배웅받은 겉옷
+  case 10501 :   // 배웅의 겉옷
     retObj.name = '배웅';
     retObj.nameType = cons.NAME_KOR_NO_END_CONS;
     retObj.stackType = 1;
@@ -6836,7 +6836,7 @@ module.exports.getBuffData = function(eff) {
     effectObj = { active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'evasion', value : 0.1 };
     retObj.effect.push(effectObj);
     break;
-  case 10502 :   // 이름 새긴 영석 부적
+  case 10502 :   // 공방 인장 영석 부적
     retObj.name = '영석의 온기';
     retObj.nameType = cons.NAME_KOR_NO_END_CONS;
     retObj.stackType = 1;
@@ -6845,7 +6845,7 @@ module.exports.getBuffData = function(eff) {
     effectObj = { active : cons.ACTIVE_TYPE_DEAL_DAMAGE_RECEIVE, code : cons.EFFECT_TYPE_SHIELD, value : 20 };
     retObj.effect.push(effectObj);
     break;
-  case 10504 :   // 울음을 막는 라운드실드
+  case 10504 :   // 괴수 사냥 원형방패
     retObj.name = '울음 막기';
     retObj.nameType = cons.NAME_KOR_NO_END_CONS;
     retObj.stackType = 1;
@@ -7431,7 +7431,7 @@ module.exports.getBuffData = function(eff) {
     effectObj = { active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_PERCENTAGE, key : 'magAtk', value : 0.05 };
     retObj.effect.push(effectObj);
     break;
-  case 10507 :   // 연승자의 스케일아머
+  case 10507 :   // 연승자의 비늘갑옷
     retObj.name = '연승';
     retObj.nameType = cons.NAME_KOR_NO_END_CONS;
     retObj.stackType = 2;
@@ -7441,7 +7441,7 @@ module.exports.getBuffData = function(eff) {
     effectObj = { active : cons.ACTIVE_TYPE_CALC_DAMAGE, code : cons.EFFECT_TYPE_MULTIPLY_DAMAGE, anySkill : true, stackable : true, value : 0.04 };
     retObj.effect.push(effectObj);
     break;
-  case 10503 :   // 결을 따른 영석 뱅글
+  case 10503 :   // 영석 결무늬 팔찌
     retObj.name = '영석의 결';
     retObj.nameType = cons.NAME_KOR_NO_END_CONS;
     retObj.stackType = 1;

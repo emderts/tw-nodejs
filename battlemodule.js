@@ -519,7 +519,7 @@ Battlemodule.prototype._doBattleTurnManual = function(left, right) {
     c.sameSkillStreak = (c.lastSkillCode === sk.code) ? (c.sameSkillStreak || 1) + 1 : 1;
     if (c.firstSkillCode === undefined) c.firstSkillCode = sk.code;
   }
-  if (skillUsed) winner.lastSkillCode = skillUsed.code;   // 직전 턴 스킬 기록 (맹세하는 강철 등)
+  if (skillUsed) winner.lastSkillCode = skillUsed.code;   // 직전 턴 스킬 기록 (선서의 장검 등)
   if (skillFailed) loser.lastSkillCode = skillFailed.code;
 
   this.result += '</div></div>';
