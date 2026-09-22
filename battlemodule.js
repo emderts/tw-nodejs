@@ -863,8 +863,9 @@ Battlemodule.prototype.dealDamage = function(src, dst, damage) {
       } 
     }
   }
-  if (src !== dst) {
+  if (src !== dst && !damage.noProc) {
     this.resolveEffects(src, dst, getBuffEffects(src, cons.ACTIVE_TYPE_DEAL_DAMAGE), damage);
+    this.resolveEffects(src, dst, getItemEffects(src, cons.ACTIVE_TYPE_DEAL_DAMAGE), damage);   // 아이템의 '피해를 줄 때' 효과 (누락돼 있던 훅)
     this.resolveEffects(dst, src, getItemEffects(dst, cons.ACTIVE_TYPE_DEAL_DAMAGE_RECEIVE), damage);
   }
   var damageDealt = shielded ? damageShield : damage.value;
@@ -1009,6 +1010,9 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
       continue;
     }
     if (eff.chkOppHpOver && (loser.curHp / loser.stat.maxHp) <= eff.chkOppHpOver) {   // 상대 체력 비율이 N 초과일 때만
+      continue;
+    }
+    if (eff.chkDmgType !== undefined && !(damage && damage.type === eff.chkDmgType)) {   // 받은/준 피해의 타입
       continue;
     }
     if (eff.chkDmgPct && !(damage && damage.value >= winner.stat.maxHp * eff.chkDmgPct)) {   // 받은 피해가 최대 생명력의 N 이상
@@ -1310,7 +1314,7 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
       if (eff.buffTarget) {
         if (eff.separate) {
           for (val of findBuffByIds(source, eff.buffTarget)) {
-            var damageAdd = this.calcDamage(source, target, tempObj);
+            var damageAdd = this.calcDamage(source, target, tempObj); damageAdd.noProc = true;   // 추가타는 '피해를 줄 때' 효과를 다시 부르지 않음
 
             this.result += '<span class="skillDamage">' + target.name + getUnnun(target.nameType) + ' 추가로 ' + damageAdd.value + '대미지를 입었습니다!';
             if (damageAdd.crit) {
@@ -1324,7 +1328,7 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
           tempObj.damage *= findBuffByIds(source, eff.buffTarget).length;
         }
       }
-      var damageAdd = this.calcDamage(source, target, tempObj);
+      var damageAdd = this.calcDamage(source, target, tempObj); damageAdd.noProc = true;   // 추가타는 '피해를 줄 때' 효과를 다시 부르지 않음
 
       if (!eff.hitMod || damageAdd.hit) {
         var sourceTxt = eff.name ? ' [ ' + eff.name + ' ] 효과로 ' : ' 추가로 ';
@@ -1638,6 +1642,86 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
       calcStats(winner, loser);
       winner.curHp = 179;
       this.result += '<span class="skillDamage">[ ' + eff.name + ' ] 맹약이 발동한다 — ' + winner.name + '으로 변모했다! (179 / 1799)</span><br>';
+    } else if (eff.code === 'drain') {   // 착취의 무리: 이 버프를 가진 쪽(winner)에서 상대(loser)로 생명력 이동
+      const v = Math.max(1, Math.round((winner.curHp || 0) * eff.value));
+      winner.curHp -= v; loser.curHp = Math.min(loser.stat.maxHp, loser.curHp + v);
+      this.result += '[ 착취의 무리 ] ' + loser.name + getIga(loser.nameType) + ' ' + v + '만큼 빨아들였다!<br>';
+    } else if (eff.code === 'lichGuard') {   // 켈투자드: 얼음왕관의 수호자 N기
+      for (let k = 0; k < (eff.count || 4); k++) {
+        const bo = buffMdl.getBuffData({ buffCode : 10689 }); bo.dur = null;
+        for (const be of bo.effect) if (be.code === cons.EFFECT_TYPE_SHIELD) be.value = Math.round(winner.stat.maxHp * (eff.value || 0.05));
+        this.giveBuff(winner, winner, bo, false, eff.name);
+      }
+      this.result += '<span class="skillDamage">[ ' + eff.name + ' ] 얼음왕관의 수호자 ' + (eff.count || 4) + '기가 깨어났다. 얼음 속에 갇힌다!</span><br>';
+    } else if (eff.code === 'valanyr') {   // 발아니르: 보호 중첩 + 누적 보호막 (최대 4중첩)
+      const st = (winner.buffs || []).find(x => x.id === 10690);
+      if (st && (st.stack || 1) >= 4) continue;
+      const bo = buffMdl.getBuffData({ buffCode : 10690 }); bo.dur = null; bo.stack = 1; this.giveBuff(winner, winner, bo, false, eff.name);
+      const add = Math.round(winner.stat.maxHp * eff.value);
+      const sh = (winner.buffs || []).find(x => x.id === 10691);
+      if (sh) { for (const be of sh.effect) if (be.code === cons.EFFECT_TYPE_SHIELD) be.value += add; }
+      else { const b2 = buffMdl.getBuffData({ buffCode : 10691 }); b2.dur = null; for (const be of b2.effect) if (be.code === cons.EFFECT_TYPE_SHIELD) be.value = add; this.giveBuff(winner, winner, b2, false, eff.name); }
+      this.result += '[ ' + eff.name + ' ] 고대 왕의 빛이 막아선다. 보호막 +' + add + '<br>';
+    } else if (eff.code === 'castSlot') {   // 누더기골렘: 지정 슬롯 스킬 즉시 시전
+      const sk = winner.skill.base[eff.slot]; if (!sk) continue;
+      const rd = this.calcDamage(winner, loser, sk);
+      if (rd.hit) { this.dealDamage(winner, loser, rd); this.result += '<span class="skillDamage">[ ' + eff.name + ' ] ' + winner.name + getIga(winner.nameType) + ' [ ' + sk.name + ' ] ' + getUro(sk.nameType) + ' 한 번 더! ' + rd.value + '대미지</span><br>'; }
+      if (eff.removeSelfBuff) for (const b of (winner.buffs || []).filter(x => eff.removeSelfBuff.includes(x.id))) removeBuff(b);
+    } else if (eff.code === 'soulGain') {   // 어둠한: 준 피해만큼 영혼 조각
+      if (!damage || !damage.value) continue;
+      const bo = buffMdl.getBuffData({ buffCode : 10694 }); bo.dur = null; bo.stack = Math.round(damage.value); this.giveBuff(winner, winner, bo, false, eff.name);
+    } else if (eff.code === 'soulBurst') {
+      const b = (winner.buffs || []).find(x => x.id === 10694); if (!b) continue;
+      if ((b.stack || 0) < loser.stat.maxHp * eff.threshold) continue;
+      removeBuff(b);
+      const v = Math.round(winner.stat.phyAtk * eff.value); loser.curHp -= v;
+      const bl = buffMdl.getBuffData({ buffCode : 8 }); bl.dur = 1; this.giveBuff(winner, loser, bl, true, eff.name);
+      this.result += '<span class="skillDamage">[ ' + eff.name + ' ] 영혼 조각이 터져 나온다! ' + loser.name + '에게 ' + v + ' 절대 피해!</span><br>';
+    } else if (eff.code === 'yogg') {   // 요그사론: 사용한 스킬 대신 무작위 자기 스킬 (다른 게 나오면 계수 +20%)
+      if (!skill || !winner.skillOri) continue;
+      const r = Math.floor(Math.random() * 3); const src = winner.skillOri.base[r]; if (!src) continue;
+      const same = src.code === skill.code;
+      const orig = skill.name;
+      Object.assign(skill, JSON.parse(JSON.stringify(src)));
+      if (!same && skill.damage) skill.damage = Math.round(skill.damage * 1.2 * 100) / 100;
+      if (!same) this.result += '[ ' + eff.name + ' ] 속삭임이 손을 비튼다 — [ ' + orig + ' ] 대신 [ ' + skill.name + ' ]!<br>';
+    } else if (eff.code === 'counterRandom') {   // 요그사론 (패배 시): 무작위 스킬로 반격
+      const sk = winner.skill.base[Math.floor(Math.random() * 3)]; if (!sk) continue;
+      const rd = this.calcDamage(winner, loser, sk);
+      if (rd.hit) { this.dealDamage(winner, loser, rd); this.result += '<span class="skillDamage">[ ' + eff.name + ' ] 촉수가 대신 [ ' + sk.name + ' ] 으로 반격! ' + rd.value + '대미지</span><br>'; }
+    } else if (eff.code === 'randDebuff') {   // 느조스: 무작위 표준 상태이상
+      const ids = [1, 2, 3, 4, 6, 7, 8, 11]; const bd = buffMdl.getBuffData({ buffCode : ids[Math.floor(Math.random() * ids.length)] }); bd.dur = eff.dur || 2;
+      this.giveBuff(winner, loser, bd, true, eff.name);
+    } else if (eff.code === 'cthunBlast') {   // 크툰: 강화 중첩 비례 마법 즉발
+      const b = (winner.buffs || []).find(x => x.id === 10696); const st = b ? (b.stack || 1) : 0;
+      if (!st) { this.result += '[ ' + eff.name + ' ] 크툰 강화가 없다.<br>'; continue; }
+      removeBuff(b);
+      const rd = { value : Math.max(1, Math.round(winner.stat.magAtk * eff.value * st * (1 - (loser.stat.magReduce || 0)))), type : cons.DAMAGE_TYPE_MAGICAL, reduce : 0 };
+      this.dealDamage(winner, loser, rd);
+      this.result += '<span class="skillDamage">[ ' + eff.name + ' ] 크툰! 크툰! 크툰! (' + st + '중첩) ' + loser.name + '에게 ' + rd.value + ' 마법 피해!</span><br>';
+    } else if (eff.code === 'freeStrike') {   // 바쉬: 반드시 맞는 즉발 공격
+      const sk = { name : eff.skillName, type : eff.type || cons.DAMAGE_TYPE_MAGICAL, damage : eff.value, nameType : cons.NAME_KOR_NO_END_CONS, effect : [] };
+      const rd = this.calcDamage(winner, loser, sk); rd.hit = true;
+      this.dealDamage(winner, loser, rd);
+      this.result += '<span class="skillDamage">[ ' + eff.name + ' ] ' + winner.name + getIga(winner.nameType) + ' [ ' + sk.name + ' ] ' + getUro(sk.nameType) + ' ' + loser.name + getUlrul(loser.nameType) + ' 꿰뚫었다! ' + rd.value + '대미지' + (rd.crit ? ' (치명타)' : '') + '</span><br>';
+    } else if (eff.code === 'randomOf') {   // 프레이야: 효과 중 하나 무작위
+      const pick = eff.options[Math.floor(Math.random() * eff.options.length)];
+      this.resolveEffects(winner, loser, [Object.assign({ name : eff.name }, pick)], damage, skill);
+    } else if (eff.code === 'transform') {   // 자락서스: N턴 변신 (스킬 전체 교체), 종료 시 원래대로
+      if (winner.formBackup) continue;
+      winner.formBackup = { skillOri : JSON.parse(JSON.stringify(winner.skillOri)), name : winner.nameOri };
+      const sk = JSON.parse(JSON.stringify(eff.skill));
+      winner.skillOri.base = [0, 1, 2].map(k => Object.assign({}, sk, { code : sk.code + k }));
+      winner.nameOri = eff.formName;
+      const bo = buffMdl.getBuffData({ buffCode : eff.buffCode }); bo.dur = eff.dur; this.giveBuff(winner, winner, bo, false, eff.name);
+      calcStats(winner, loser);
+      if (winner.curHp > 0) winner.curHp = Math.min(winner.stat.maxHp, winner.curHp);
+      this.result += '<span class="skillDamage">[ ' + eff.name + ' ] 「내가 바로 자락서스, 불타는 군단의 군주다!」</span><br>';
+    } else if (eff.code === 'restoreForm') {
+      if (!winner.formBackup) continue;
+      winner.skillOri = winner.formBackup.skillOri; winner.nameOri = winner.formBackup.name; delete winner.formBackup;
+      calcStats(winner, loser);
+      this.result += '[ ' + winner.name + ' ] 원래 모습으로 돌아왔다.<br>';
     } else if (eff.code === 'gloryGain') {   // 글로리 맥스: 안 맞은 턴이면 2배
       const n = winner.hitThisTurn ? 1 : 2;
       const bo = buffMdl.getBuffData({ buffCode : 10666 }); bo.dur = null; bo.stack = n; this.giveBuff(winner, winner, bo, false, eff.name);

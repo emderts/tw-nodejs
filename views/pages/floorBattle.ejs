@@ -34,7 +34,7 @@
       <div class="bar hp"><i id="hpBar"></i></div><span class="num" id="hpNum"></span>
       <div class="bar sp" id="spWrap"><i id="spBar"></i></div><span class="num" id="spNum"></span>
     </div>
-    <div class="rb-tools"><span id="deckInfo"></span><span><button id="itemBtn" type="button" disabled>소모품</button> <button id="swapBtn" type="button" style="display:none" disabled>바꿔치기</button> <button id="undoBtn" type="button" style="display:none" disabled>무르기</button> <button id="redrawBtn" type="button" style="display:none" disabled>손패 교체</button> <button id="resetBtn" type="button" disabled>덱 리셋</button></span></div>
+    <div class="rb-tools"><span id="deckInfo"></span><span><button id="itemBtn" type="button" disabled>소모품</button> <span id="useBtns"></span> <button id="swapBtn" type="button" style="display:none" disabled>바꿔치기</button> <button id="undoBtn" type="button" style="display:none" disabled>무르기</button> <button id="redrawBtn" type="button" style="display:none" disabled>손패 교체</button> <button id="resetBtn" type="button" disabled>덱 리셋</button></span></div>
     <div class="rb-items" id="itemList" style="display:none"></div>
     <div class="charItem"><button id="handBtn0" type="button" disabled></button></div>
     <div class="charItem"><button id="handBtn1" type="button" disabled></button></div>
@@ -95,6 +95,16 @@
       if (s.predict && s.predict.key === i) hint += ' <span style="color:#7fb8ff" title="' + s.predict.name + '">다음 수? ◎</span>';
       b.innerHTML = glyph[i] + ' <span class="colorGold">×' + oDeckCnt[i] + '</span>' + (s.eplayed[i] ? ' <span style="color:var(--ash)">낸 ' + s.eplayed[i] + '</span>' : '') + hint + '<br>' + oNames[i];
     }
+    var ub0 = document.getElementById('useBtns'); ub0.innerHTML = '';
+    (s.uses || []).forEach(function (u) {
+      var b = document.createElement('button'); b.type = 'button';
+      var off = u.cd > 0 || (u.left !== null && u.left <= 0);
+      b.textContent = '[사용] ' + u.label + (u.cd > 0 ? ' (쿨 ' + u.cd + ')' : (u.left !== null ? ' (' + u.left + ')' : ''));
+      b.title = u.name;
+      if (off) b.setAttribute('disabled', true);
+      b.addEventListener('click', function () { this.setAttribute('disabled', true); socket.emit('floorItemUse', '<%= room %>', '<%= uid %>', u.slot); });
+      ub0.appendChild(b);
+    });
     var sw = document.getElementById('swapBtn');
     sw.style.display = s.swaps > 0 ? '' : 'none';
     sw.textContent = '바꿔치기 (' + s.swaps + ')';

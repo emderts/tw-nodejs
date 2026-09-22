@@ -307,13 +307,31 @@ io.on('connection', (socket) => {
     socket.emit('floorSelectAck', t.bmod.result, floorState(t));
     persistBattle(t);
   }));
+  socket.on('floorItemUse', guard('floorItemUse', function(room, uid, slot) {   // [사용] 장비
+    const t = trades[room];
+    if (!t || !t.floor || t.leftUid != uid || t.result || t.busy) return;
+    const L = t.leftChr, it = L.items && L.items[slot];
+    if (!it || !it.use) return;
+    t.useState = t.useState || {};
+    const st = t.useState[slot] || (t.useState[slot] = { uses: 0, cd: 0 });
+    if (st.cd > 0 || (it.use.maxUses && st.uses >= it.use.maxUses)) return;
+    t.bmod.result = (t.bmod.result || '') + '<div class="note-box" style="margin:6px 0">[사용] ' + it.name + ' — ' + it.use.label + '</div>';
+    const effs = JSON.parse(JSON.stringify(it.use.effect)).map(e => Object.assign({ name: it.name }, e));
+    t.bmod.resolveEffects(L, t.rightChr, effs, null, null);
+    st.uses++; st.cd = it.use.cooldown || 0;
+    if (t.rightChr.curHp <= 0 || L.curHp <= 0) {   // 사용으로 전투가 끝난 경우
+      const res = t.bmod._doBattleEnd(1); t.result = res; socket.emit('floorSelectEnd', t.bmod.result); return;
+    }
+    socket.emit('floorSelectAck', t.bmod.result, floorState(t));
+    persistBattle(t);
+  }));
   socket.on('floorUndo', guard('floorUndo', function(room, uid) {
     const t = trades[room];
     if (!t || !t.floor || t.leftUid != uid || t.result || t.busy || !t.undos || !t.snapshot) return;
     const snap = JSON.parse(t.snapshot);
     const bm = Object.assign(new battlemodule.bmodule(), snap.bm);
     t.leftChr = snap.L; t.rightChr = snap.R; bm.charLeft = t.leftChr; bm.charRight = t.rightChr; bm.result = '';
-    t.bmod = bm; t.pdeck = snap.pdeck; t.edeck = snap.edeck; t.eplayed = snap.eplayed; t.resets = snap.resets; t.redraws = snap.redraws; t.used = snap.used; t.nextEKey = snap.nextEKey; t.lastKey = snap.lastKey; t.predict = snap.predict;
+    t.bmod = bm; t.pdeck = snap.pdeck; t.edeck = snap.edeck; t.eplayed = snap.eplayed; t.resets = snap.resets; t.redraws = snap.redraws; t.used = snap.used; t.nextEKey = snap.nextEKey; t.lastKey = snap.lastKey; t.predict = snap.predict; t.useState = snap.useState;
     t.undos--; t.snapshot = null;
     t.bmod.result = (snap.bm.result || '') + '<span class="skillDamage">한 번만 물러줘라 — 방금 턴을 물렀다.</span><br>';
     socket.emit('floorSelectAck', t.bmod.result, floorState(t));
@@ -368,7 +386,7 @@ io.on('connection', (socket) => {
     } else if (!run.handTypes(t.pdeck).includes(key)) return;
     t.busy = true;
     // 한 번 무르기: 턴 처리 전 상태 스냅샷
-    if (t.undos) { try { t.snapshot = JSON.stringify({ bm: t.bmod, L: t.leftChr, R: t.rightChr, pdeck: t.pdeck, edeck: t.edeck, eplayed: t.eplayed, resets: t.resets, redraws: t.redraws, used: t.used || [], nextEKey: t.nextEKey, lastKey: t.lastKey, predict: t.predict || null }, (k, v) => (k === 'buff' || k === 'item' || k === 'charLeft' || k === 'charRight') ? undefined : v); } catch (e) { console.log('snapshot failed', e.message); t.snapshot = null; } }
+    if (t.undos) { try { t.snapshot = JSON.stringify({ bm: t.bmod, L: t.leftChr, R: t.rightChr, pdeck: t.pdeck, edeck: t.edeck, eplayed: t.eplayed, resets: t.resets, redraws: t.redraws, used: t.used || [], nextEKey: t.nextEKey, lastKey: t.lastKey, predict: t.predict || null, useState: t.useState || null }, (k, v) => (k === 'buff' || k === 'item' || k === 'charLeft' || k === 'charRight') ? undefined : v); } catch (e) { console.log('snapshot failed', e.message); t.snapshot = null; } }
     else t.snapshot = null;
     // 적의 이번 수는 지난 턴 끝에 미리 정해 둔 것 (손패에 없으면 다시 고름)
     let eKey = (t.nextEKey !== undefined && run.handTypes(t.edeck).includes(t.nextEKey)) ? t.nextEKey : decideEnemyKey(t);
@@ -389,6 +407,7 @@ io.on('connection', (socket) => {
       run.drawHand(t.edeck);
       if ((t.edeck.shuffles || 0) !== eShuf) t.eplayed = [0, 0, 0];   // 적 덱이 다시 섞이면 낸 카드 집계 초기화
       t.lastKey = playedKey;
+      if (t.useState) for (const k in t.useState) if (t.useState[k].cd > 0 && !result.redecide) t.useState[k].cd--;   // [사용] 쿨다운 (무승부는 턴이 아님)
       t.nextEKey = decideEnemyKey(t);   // 다음 턴 적의 수 선결정
       t.predict = null;
       const pr = predictAcc(t.leftChr);   // 채찍-PT: 피격된 턴이면 다음 수를 알려준다
@@ -3389,6 +3408,7 @@ async function procDismantleItem (req, res) {
       var dustVal = (goldInfo[tgt.rarity] || 5) * (tgt.dustMod || 1);   // 해체 → 골드 (대통주 등 dustMod 반영)
       const dustB = char.run ? (run.runEffect(char, 'dustBonus') || 0) : 0; if (dustB) dustVal = Math.round(dustVal * (1 + dustB));   // 쌀다팜
       char.gold = (char.gold || 0) + dustVal;
+      if (tgt.dismantleCards && char.run) { for (let k = 0; k < tgt.dismantleCards; k++) char.inventory.push(roster.makeResultCard(char.rank, Math.floor(Math.random() * 4))); }   // 신록의 구슬
       if (char.run && tgt.runEffect && tgt.runEffect.key === 'hyperloop') {   // 루미아 섬의 하이퍼루프: 무작위 층으로
         const from = run.floorNo(char); const to = run.jumpFloor(char, tgt.runEffect.value || 3);
         delete sess.floorShop; delete sess.floorEvent; delete sess.floorBattle;
@@ -3746,7 +3766,11 @@ function floorState(t) {
     names: floorNames(L), enemyNames: floorNames(R),
     items: (L.inventory || []).map((it, i) => ({ i, code: it.code, name: it.name, tooltip: it.tooltip, card: it.card, temp: !!it.temp })).filter(x => x.code && consumables.DEFS[x.code]),
     ehint: enemyHint(t),
-    predict: t.predict || null
+    predict: t.predict || null,
+    uses: ['weapon', 'armor', 'subarmor', 'trinket', 'skillArtifact'].filter(k => L.items && L.items[k] && L.items[k].use).map(k => {
+      const it = L.items[k], st = (t.useState && t.useState[k]) || { uses: 0, cd: 0 };
+      return { slot: k, name: it.name, label: it.use.label, cd: st.cd, left: it.use.maxUses ? it.use.maxUses - st.uses : null };
+    })
   };
 }
 // 적 AI: 지난 턴 플레이어가 낸 수(lastKey)를 보고 다음 수를 정한다
@@ -3793,7 +3817,7 @@ async function getOwnerName (userId) {
 function battleKeyOf(t) { return t.battleKey; }
 async function persistBattle (t) {
   if (!t || !t.floor || !t.bmod || t.result) return;
-  const data = battlemodule.serialize(t.bmod, t.leftChr, t.rightChr, { pdeck: t.pdeck, edeck: t.edeck, eplayed: t.eplayed, resets: t.resets, redraws: t.redraws, undos: t.undos, swaps: t.swaps, used: t.used || [], goldStart: t.goldStart, startHtml: t.startHtml, lastKey: t.lastKey, nextEKey: t.nextEKey, predict: t.predict || null, fled: !!t.fled, fleeItem: t.fleeItem || null });
+  const data = battlemodule.serialize(t.bmod, t.leftChr, t.rightChr, { pdeck: t.pdeck, edeck: t.edeck, eplayed: t.eplayed, resets: t.resets, redraws: t.redraws, undos: t.undos, swaps: t.swaps, used: t.used || [], goldStart: t.goldStart, startHtml: t.startHtml, lastKey: t.lastKey, nextEKey: t.nextEKey, predict: t.predict || null, useState: t.useState || null, fled: !!t.fled, fleeItem: t.fleeItem || null });
   const client = await pool.connect();
   try { await client.query("update characters set char_data = jsonb_set(char_data::jsonb, '{run,battle}', $1::jsonb)::text where uid = $2", [JSON.stringify({ key: battleKeyOf(t), data, at: Date.now() }), t.leftUid]); }
   catch (e) { console.log('[persistBattle]', e.message); }
@@ -3848,7 +3872,7 @@ async function procNextFloor (req, res) {
           const x = r0.extra;
           const roomNum = curRoom++;
           trades[roomNum] = { leftUid: charRow.uid, leftChr: r0.L, rightChr: r0.R, floor: true, battleKey: key, restored: true, bmod: r0.bm, startHtml: x.startHtml,
-                              pdeck: x.pdeck, edeck: x.edeck, eplayed: x.eplayed, resets: x.resets, redraws: x.redraws, undos: x.undos, swaps: x.swaps, used: x.used, goldStart: x.goldStart, lastKey: x.lastKey, nextEKey: x.nextEKey, predict: x.predict, fled: x.fled, fleeItem: x.fleeItem };
+                              pdeck: x.pdeck, edeck: x.edeck, eplayed: x.eplayed, resets: x.resets, redraws: x.redraws, undos: x.undos, swaps: x.swaps, used: x.used, goldStart: x.goldStart, lastKey: x.lastKey, nextEKey: x.nextEKey, predict: x.predict, useState: x.useState, fled: x.fled, fleeItem: x.fleeItem };
           sess.floorBattle = { key, room: roomNum };
           res.render('pages/floorBattle', { room: roomNum, uid: charRow.uid, rv: runView(char), char, enemy: r0.R });
           return;
