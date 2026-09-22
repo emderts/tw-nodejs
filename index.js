@@ -313,7 +313,7 @@ io.on('connection', (socket) => {
     const snap = JSON.parse(t.snapshot);
     const bm = Object.assign(new battlemodule.bmodule(), snap.bm);
     t.leftChr = snap.L; t.rightChr = snap.R; bm.charLeft = t.leftChr; bm.charRight = t.rightChr; bm.result = '';
-    t.bmod = bm; t.pdeck = snap.pdeck; t.edeck = snap.edeck; t.eplayed = snap.eplayed; t.resets = snap.resets; t.redraws = snap.redraws; t.used = snap.used;
+    t.bmod = bm; t.pdeck = snap.pdeck; t.edeck = snap.edeck; t.eplayed = snap.eplayed; t.resets = snap.resets; t.redraws = snap.redraws; t.used = snap.used; t.nextEKey = snap.nextEKey; t.lastKey = snap.lastKey; t.predict = snap.predict;
     t.undos--; t.snapshot = null;
     t.bmod.result = (snap.bm.result || '') + '<span class="skillDamage">한 번만 물러줘라 — 방금 턴을 물렀다.</span><br>';
     socket.emit('floorSelectAck', t.bmod.result, floorState(t));
@@ -368,10 +368,11 @@ io.on('connection', (socket) => {
     } else if (!run.handTypes(t.pdeck).includes(key)) return;
     t.busy = true;
     // 한 번 무르기: 턴 처리 전 상태 스냅샷
-    if (t.undos) { try { t.snapshot = JSON.stringify({ bm: t.bmod, L: t.leftChr, R: t.rightChr, pdeck: t.pdeck, edeck: t.edeck, eplayed: t.eplayed, resets: t.resets, redraws: t.redraws, used: t.used || [] }, (k, v) => (k === 'buff' || k === 'item' || k === 'charLeft' || k === 'charRight') ? undefined : v); } catch (e) { console.log('snapshot failed', e.message); t.snapshot = null; } }
+    if (t.undos) { try { t.snapshot = JSON.stringify({ bm: t.bmod, L: t.leftChr, R: t.rightChr, pdeck: t.pdeck, edeck: t.edeck, eplayed: t.eplayed, resets: t.resets, redraws: t.redraws, used: t.used || [], nextEKey: t.nextEKey, lastKey: t.lastKey, predict: t.predict || null }, (k, v) => (k === 'buff' || k === 'item' || k === 'charLeft' || k === 'charRight') ? undefined : v); } catch (e) { console.log('snapshot failed', e.message); t.snapshot = null; } }
     else t.snapshot = null;
-    const want = monster.selectFunc[t.rightChr.skillSelect](t.rightChr, key);
-    const eKey = run.aiPick(t.edeck, run.runEffect(t.leftChr, 'hideSkills') ? Math.floor(Math.random() * 3) : want);   // 이름 없는 초식: 반응형 예측 무효
+    // 적의 이번 수는 지난 턴 끝에 미리 정해 둔 것 (손패에 없으면 다시 고름)
+    let eKey = (t.nextEKey !== undefined && run.handTypes(t.edeck).includes(t.nextEKey)) ? t.nextEKey : decideEnemyKey(t);
+    const playedKey = key;
     const result = t.bmod.procBattleTurn(key, eKey, 1);
     if (t.restoreSkill) {   // 보스의 기술 사용 후 원래 스킬로
       const L = t.leftChr, r0 = t.restoreSkill;
@@ -387,6 +388,15 @@ io.on('connection', (socket) => {
       const eShuf = t.edeck.shuffles || 0;
       run.drawHand(t.edeck);
       if ((t.edeck.shuffles || 0) !== eShuf) t.eplayed = [0, 0, 0];   // 적 덱이 다시 섞이면 낸 카드 집계 초기화
+      t.lastKey = playedKey;
+      t.nextEKey = decideEnemyKey(t);   // 다음 턴 적의 수 선결정
+      t.predict = null;
+      const pr = predictAcc(t.leftChr);   // 채찍-PT: 피격된 턴이면 다음 수를 알려준다
+      if (pr && t.leftChr.hitThisTurn) {
+        const right = Math.random() < pr.acc;
+        const shown = right ? t.nextEKey : [0, 1, 2].filter(x => x !== t.nextEKey)[Math.floor(Math.random() * 2)];
+        t.predict = { key: shown, name: pr.name };
+      }
       t.busy = false;
       socket.emit('floorSelectAck', result.result, floorState(t));
       persistBattle(t);
@@ -3377,7 +3387,13 @@ async function procDismantleItem (req, res) {
     if (tgt.type <= 4) {
       char.inventory.splice(body.itemNum, 1);
       var dustVal = (goldInfo[tgt.rarity] || 5) * (tgt.dustMod || 1);   // 해체 → 골드 (대통주 등 dustMod 반영)
+      const dustB = char.run ? (run.runEffect(char, 'dustBonus') || 0) : 0; if (dustB) dustVal = Math.round(dustVal * (1 + dustB));   // 쌀다팜
       char.gold = (char.gold || 0) + dustVal;
+      if (char.run && tgt.runEffect && tgt.runEffect.key === 'hyperloop') {   // 루미아 섬의 하이퍼루프: 무작위 층으로
+        const from = run.floorNo(char); const to = run.jumpFloor(char, tgt.runEffect.value || 3);
+        delete sess.floorShop; delete sess.floorEvent; delete sess.floorBattle;
+        char.hyperloopJump = { from, to };
+      }
       if (char.quest[6]) {
         char.quest[6].progress += 1;
       }
@@ -3385,7 +3401,9 @@ async function procDismantleItem (req, res) {
         char.quest[9].progress += 1;
       }
     }
+    const jump = char.hyperloopJump; delete char.hyperloopJump;
     await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
+    if (jump && !res.headersSent) { res.send('<!doctype html><meta charset="utf-8"><link rel="stylesheet" href="/stylesheets/main.css"><div class="wrap"><div class="note-box">하이퍼루프가 요동친다… <b>' + jump.from + '층</b>에서 <b>' + jump.to + '층</b>으로 튕겨 나왔다.</div><div class="backLink"><a href="/nextFloor">계속</a></div></div>'); return; }
     if (!res.headersSent) {
       res.render('pages/selectItem', {title : '아이템 해체', inv : char.inventory, mode : 2, dustVal : dustVal, dust : char.gold, usedItem : 0});
     }
@@ -3727,8 +3745,20 @@ function floorState(t) {
     eplayed: t.eplayed, edraw: t.edeck.draw.length, resets: t.resets, redraws: t.redraws, undos: t.undos && t.snapshot ? t.undos : 0, swaps: t.swaps === undefined ? (run.runEffect(L, 'swapSkill') || 0) : t.swaps,
     names: floorNames(L), enemyNames: floorNames(R),
     items: (L.inventory || []).map((it, i) => ({ i, code: it.code, name: it.name, tooltip: it.tooltip, card: it.card, temp: !!it.temp })).filter(x => x.code && consumables.DEFS[x.code]),
-    ehint: enemyHint(t)
+    ehint: enemyHint(t),
+    predict: t.predict || null
   };
+}
+// 적 AI: 지난 턴 플레이어가 낸 수(lastKey)를 보고 다음 수를 정한다
+function decideEnemyKey(t) {
+  if (run.runEffect(t.leftChr, 'hideSkills')) return run.aiPick(t.edeck, Math.floor(Math.random() * 3));   // 이름 없는 초식
+  const want = monster.selectFunc[t.rightChr.skillSelect](t.rightChr, t.lastKey === undefined ? Math.floor(Math.random() * 3) : t.lastKey);
+  return run.aiPick(t.edeck, want);
+}
+// 채찍-PT 계열: 예측 정확도
+function predictAcc(L) {
+  for (const k in (L.items || {})) { const it = L.items[k]; if (it && it.predictAcc) return { acc: it.predictAcc, name: it.name }; }
+  return null;
 }
 // 아이템 효과로 공개되는 적 손패 정보
 function enemyHint(t) {
@@ -3763,7 +3793,7 @@ async function getOwnerName (userId) {
 function battleKeyOf(t) { return t.battleKey; }
 async function persistBattle (t) {
   if (!t || !t.floor || !t.bmod || t.result) return;
-  const data = battlemodule.serialize(t.bmod, t.leftChr, t.rightChr, { pdeck: t.pdeck, edeck: t.edeck, eplayed: t.eplayed, resets: t.resets, redraws: t.redraws, undos: t.undos, swaps: t.swaps, used: t.used || [], goldStart: t.goldStart, startHtml: t.startHtml, lastKey: t.lastKey, fled: !!t.fled, fleeItem: t.fleeItem || null });
+  const data = battlemodule.serialize(t.bmod, t.leftChr, t.rightChr, { pdeck: t.pdeck, edeck: t.edeck, eplayed: t.eplayed, resets: t.resets, redraws: t.redraws, undos: t.undos, swaps: t.swaps, used: t.used || [], goldStart: t.goldStart, startHtml: t.startHtml, lastKey: t.lastKey, nextEKey: t.nextEKey, predict: t.predict || null, fled: !!t.fled, fleeItem: t.fleeItem || null });
   const client = await pool.connect();
   try { await client.query("update characters set char_data = jsonb_set(char_data::jsonb, '{run,battle}', $1::jsonb)::text where uid = $2", [JSON.stringify({ key: battleKeyOf(t), data, at: Date.now() }), t.leftUid]); }
   catch (e) { console.log('[persistBattle]', e.message); }
@@ -3818,7 +3848,7 @@ async function procNextFloor (req, res) {
           const x = r0.extra;
           const roomNum = curRoom++;
           trades[roomNum] = { leftUid: charRow.uid, leftChr: r0.L, rightChr: r0.R, floor: true, battleKey: key, restored: true, bmod: r0.bm, startHtml: x.startHtml,
-                              pdeck: x.pdeck, edeck: x.edeck, eplayed: x.eplayed, resets: x.resets, redraws: x.redraws, undos: x.undos, swaps: x.swaps, used: x.used, goldStart: x.goldStart, lastKey: x.lastKey, fled: x.fled, fleeItem: x.fleeItem };
+                              pdeck: x.pdeck, edeck: x.edeck, eplayed: x.eplayed, resets: x.resets, redraws: x.redraws, undos: x.undos, swaps: x.swaps, used: x.used, goldStart: x.goldStart, lastKey: x.lastKey, nextEKey: x.nextEKey, predict: x.predict, fled: x.fled, fleeItem: x.fleeItem };
           sess.floorBattle = { key, room: roomNum };
           res.render('pages/floorBattle', { room: roomNum, uid: charRow.uid, rv: runView(char), char, enemy: r0.R });
           return;
@@ -3831,6 +3861,13 @@ async function procNextFloor (req, res) {
       if (run.applyEnemyDebuffs(char, enemy)) calcStats(enemy);
       const roomNum = curRoom++;
       const leftCopy = JSON.parse(JSON.stringify(char));
+      const gb = run.runEffect(leftCopy, 'groupBuy');
+      if (gb) {   // 공동구매: 최근 3시간 안에 페이지를 연 로그인 사용자 수
+        let n = 1;
+        try { const cq = await pool.query("select count(*) as c from session where expire > now() + interval '30 days' - interval '3 hours' and sess::jsonb ? 'userUid'"); n = Math.max(1, parseInt(cq.rows[0].c, 10) || 1); } catch (e) { console.log('[groupBuy]', e.message); }
+        const bonus = Math.min(0.5, gb * n);
+        for (const k in leftCopy.items) { const it = leftCopy.items[k]; if (it && it.runEffect && it.runEffect.key === 'groupBuy') { it.pctStat = { phyAtk: bonus, magAtk: bonus }; it.effectDesc = (it.effectDesc || '') + '<br>(지금 ' + n + '명 — 공격력 +' + Math.round(bonus * 100) + '%)'; } }
+      }
       const rb = run.runEffect(leftCopy, 'rockBonus');
       if (rb && leftCopy.deck.filter(c => c.type === 1).length >= 3) { leftCopy.base.phyAtk = Math.round(leftCopy.base.phyAtk * (1 + rb) * 100) / 100; calcStats(leftCopy); }   // 난 주먹만 내
       if (run.applyBuffs(leftCopy)) calcStats(leftCopy);

@@ -458,7 +458,7 @@ Battlemodule.prototype._doBattleTurnManual = function(left, right) {
     this.resolveEffects(winner, loser, getItemEffects(winner, cons.ACTIVE_TYPE_ATTACK), damage, skillUsed);
     this.resolveEffects(loser, winner, getBuffEffects(loser, cons.ACTIVE_TYPE_TAKE_HIT), damage, skillUsed);
     this.resolveEffects(loser, winner, getItemEffects(loser, cons.ACTIVE_TYPE_TAKE_HIT), damage, skillUsed);
-    this.resolveEffects(winner, loser, skillUsed.effect, damage);
+    if (!(winner.buffs || []).some(b => b.id === 10665)) this.resolveEffects(winner, loser, skillUsed.effect, damage);   // [당연] 이면 부가 효과 없음
     if (skillFailed.loseEffect) {
       this.resolveEffects(loser, winner, skillFailed.loseEffect, damage);
     }
@@ -678,7 +678,7 @@ Battlemodule.prototype._doBattleTurn = function() {
     this.resolveEffects(winner, loser, getItemEffects(winner, cons.ACTIVE_TYPE_ATTACK), damage, skillUsed);
     this.resolveEffects(loser, winner, getBuffEffects(loser, cons.ACTIVE_TYPE_TAKE_HIT), damage, skillUsed);
     this.resolveEffects(loser, winner, getItemEffects(loser, cons.ACTIVE_TYPE_TAKE_HIT), damage, skillUsed);
-    this.resolveEffects(winner, loser, skillUsed.effect, damage);
+    if (!(winner.buffs || []).some(b => b.id === 10665)) this.resolveEffects(winner, loser, skillUsed.effect, damage);   // [당연] 이면 부가 효과 없음
     if (skillFailed.loseEffect) {
       this.resolveEffects(loser, winner, skillFailed.loseEffect, damage);
     }
@@ -773,6 +773,8 @@ Battlemodule.prototype.calcDamage = function(winner, loser, skill) {
     hitUsed *= skill.hitMod;
   }
   retObj.hit = getRandom(hitUsed - loser.stat.evasion);
+  if (retObj.hit && loser.stat.forceEvade && Math.random() < loser.stat.forceEvade) { retObj.hit = false; retObj.forced = 'evade'; }   // 아니아니마
+  else if (!retObj.hit && winner.stat.forceHit && Math.random() < winner.stat.forceHit) { retObj.hit = true; retObj.forced = 'hit'; }   // 맞아맞아마
   var critMod = loser.stat.evasion < 0 ? -loser.stat.evasion : 0;
   retObj.crit = getRandom(winner.stat.crit + critMod);
   retObj.type = skill.type;
@@ -832,6 +834,12 @@ Battlemodule.prototype.calcDamage = function(winner, loser, skill) {
 }
 
 Battlemodule.prototype.dealDamage = function(src, dst, damage) {
+  if (damage && damage.value > 0) dst.hitThisTurn = true;
+  if (damage && dst.stat && dst.stat.hitCapPct && damage.value > dst.stat.maxHp * dst.stat.hitCapPct) {   // 정상화의 신: 과한 한 방의 초과분 절반
+    const cap = dst.stat.maxHp * dst.stat.hitCapPct; const before = damage.value;
+    damage.value = Math.round(cap + (damage.value - cap) / 2);
+    this.result += '[ 정상화의 신 ] 불합리한 피해를 정상화했다! (' + before + ' → ' + damage.value + ')<br>';
+  }
   if (!isFinite(damage.value)) { console.log('[NaN damage]', JSON.stringify({ src: src && src.name, dst: dst && dst.name, type: damage.type, atkRat: damage.atkRat, reduce: damage.reduce, skillRat: damage.skillRat })); damage.value = 0; }
   var damageShield = Math.round(damage.value / (1- damage.reduce));
   var shielded = false;
@@ -1630,6 +1638,23 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
       calcStats(winner, loser);
       winner.curHp = 179;
       this.result += '<span class="skillDamage">[ ' + eff.name + ' ] 맹약이 발동한다 — ' + winner.name + '으로 변모했다! (179 / 1799)</span><br>';
+    } else if (eff.code === 'gloryGain') {   // 글로리 맥스: 안 맞은 턴이면 2배
+      const n = winner.hitThisTurn ? 1 : 2;
+      const bo = buffMdl.getBuffData({ buffCode : 10666 }); bo.dur = null; bo.stack = n; this.giveBuff(winner, winner, bo, false, eff.name);
+      const cur = (winner.buffs || []).find(x => x.id === 10666);
+      this.result += '[ ' + eff.name + ' ] [ MAX 100% ] +' + n + ' (총 ' + (cur ? cur.stack : n) + ')<br>';
+      if (cur && cur.stack >= 5) { removeBuff(cur); const g = buffMdl.getBuffData({ buffCode : 10667 }); g.dur = 3; this.giveBuff(winner, winner, g, true, eff.name); this.result += '<span class="skillDamage">GLORY MAX!</span><br>'; }
+    } else if (eff.code === 'gloryHalve') {
+      const cur = (winner.buffs || []).find(x => x.id === 10666);
+      if (cur) { cur.stack = Math.floor((cur.stack || 1) / 2); if (cur.stack <= 0) removeBuff(cur); }
+    } else if (eff.code === 'spFill') {   // 기회는 그립감이 좋다: SP를 스페셜 비용까지
+      const need = (winner.skill.special && winner.skill.special.cost) || 100;
+      if ((winner.curSp || 0) < need) winner.curSp = need;
+      this.result += '[ ' + eff.name + ' ] 기회를 움켜쥐었다! SP ' + Math.round(winner.curSp) + '<br>';
+    } else if (eff.code === 'stock') {   // 꽉 잡아!: 50% −2중첩 / 50% +1중첩
+      const cur = (winner.buffs || []).find(x => x.id === 10668); if (!cur) continue;
+      if (Math.random() < 0.5) { cur.stack = Math.max(0, (cur.stack || 1) - 2); this.result += '[ ' + eff.name + ' ] 내려간다! (' + cur.stack + ')<br>'; if (cur.stack <= 0) removeBuff(cur); }
+      else { cur.stack = Math.min(cur.maxStack || 20, (cur.stack || 1) + 1); this.result += '[ ' + eff.name + ' ] 반등! (' + cur.stack + ')<br>'; }
     } else if (eff.code === 'borrowGear') {   // AI 센트럴 접근장치: 무작위 장비 능력치 덧입기
       this._borrowGear(winner, loser, eff.gearRank || 4, eff.name);
     } else if (eff.code === 'tagGive') {   // 범용 태그 부여: eff.tag = 버프 코드, 아이템의 onTag 훅 실행, tagMul로 증폭
@@ -1858,6 +1883,7 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
 }
 
 Battlemodule.prototype.resolveTurnBegin = function(winner, loser) {
+  winner.hitThisTurn = false; loser.hitThisTurn = false;   // 글로리 맥스·채찍-PT용
   this.resolveEffects(winner, loser, getItemEffects(winner, cons.ACTIVE_TYPE_TURN_START), null);
   this.resolveEffects(loser, winner, getItemEffects(loser, cons.ACTIVE_TYPE_TURN_START), null);
   if (this.checkDrive(winner, cons.ACTIVE_TYPE_TURN_START, loser)) {
@@ -1971,7 +1997,7 @@ Battlemodule.prototype.giveBuff = function(src, recv, buffObj, printFlag, name) 
     buffObj.dur += ((src.stat && src.stat.stunGive) || 0) + ((recv.stat && recv.stat.stunRecv) || 0);
   }
   // 상태이상 저항: stat.resistAll + stat['resist_<id>'] 확률로 무효 (디버프에만)
-  if (buffObj.isDebuff && src !== recv && recv.stat) {
+  if (buffObj.isDebuff && src !== recv && recv.stat && !buffObj.unresistable) {
     const res = (recv.stat.resistAll || 0) + (recv.stat['resist_' + buffObj.id] || 0);
     if (res > 0 && Math.random() < res) {
       this.result += srcText + '[ ' + buffObj.name + ' ] 효과를 ' + recv.name + '이(가) 저항했다!<br>';

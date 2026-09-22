@@ -66,6 +66,19 @@ function rankForCycle(cycle) { return RANK_BY_CYCLE[Math.min(Math.max(cycle, 1),
 function stageLabel(char) { return ({ shop: '상점', event: '이벤트', battle: isBossCycle(char.run.cycle) ? '보스 전투' : '전투' })[stage(char)]; }
 
 // 스테이지 하나 소화 후 호출. 사이클이 끝나면 레벨/급수 반영. 마지막 사이클 전투까지 끝났으면 true(클리어)
+// 하이퍼루프: 현재 층 기준 ±range 무작위 층으로 이동 (1층 ~ 마지막 층 안에서, 현재 층 제외)
+function jumpFloor(char, range) {
+  const cur = floorNo(char), maxF = TOTAL_CYCLES * STAGES.length;
+  const cands = []; for (let f = Math.max(1, cur - range); f <= Math.min(maxF, cur + range); f++) if (f !== cur) cands.push(f);
+  if (!cands.length) return cur;
+  const target = cands[Math.floor(Math.random() * cands.length)];
+  const newCycle = Math.floor((target - 1) / STAGES.length) + 1;
+  const cycleChanged = newCycle !== char.run.cycle;
+  char.run.cycle = newCycle; char.run.stageIdx = (target - 1) % STAGES.length; char.run.floor = target;
+  delete char.run.battle; char.run.evData = null;
+  if (cycleChanged) { char.level = newCycle; char.rank = rankForCycle(newCycle); prepareCycle(char); }
+  return target;
+}
 function advance(char) {
   const fg = runEffect(char, 'skipShop'); if (typeof fg === 'number' && fg > 0) char.gold = (char.gold || 0) + fg;   // 나백수의 취업준비카드: 층마다 골드
   char.run.stageIdx++;
@@ -842,7 +855,7 @@ function applyEvent(char, code, optIdx) {
   return r;
 }
 
-module.exports = { pickArtifact,
+module.exports = { jumpFloor, pickArtifact,
   configure, TOTAL_CYCLES, HAND_SIZE, RESETS_PER_BATTLE, resetDeck, redrawHand, drawExtra, runEffect, maxLives, initRun, stage, stageLabel, floorNo, isBossCycle, rankForCycle, advance,
   newDeckState, drawHand, playCard, handTypes, deckCounts, aiPick, makeEnemy, enemyFromFallen, snapshotForFallen,
   makeMonster, makeRosterEnemy, makeShop, makeShopOffers, makeEvent, makeEventByCode, applyEvent, applyBuffs, applyEnemyDebuffs, tickBuffs

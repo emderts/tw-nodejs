@@ -6981,6 +6981,78 @@ module.exports.getBuffData = function(eff) {
     retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'phyReduce', value : 0.02 });
     retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'magReduce', value : 0.02 });
     break;
+  // ---- 패러디 아이템 버프 ----
+  case 10661 :
+    retObj.name = '앵콜'; retObj.nameType = cons.NAME_KOR_END_CONS; retObj.stackType = 2; retObj.maxStack = 5; retObj.isDebuff = false; retObj.durOff = null;
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'crit', value : 0.02 });
+    break;
+  case 10662 :
+    retObj.name = '탄산'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 1; retObj.isDebuff = false;
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'evasion', value : 0.1 });
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'spCharge', value : 2 });
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_DURATION_END, code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 10663, buffDur : 1 });
+    break;
+  case 10663 :
+    retObj.name = '김 빠진 탄산'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 1; retObj.isDebuff = true;
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'evasion', value : -0.05 });
+    break;
+  case 10664 :
+    retObj.name = '고동'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 1; retObj.isDebuff = false;
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'phyReduce', value : 0.08 });
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'magReduce', value : 0.08 });
+    break;
+  case 10665 :
+    retObj.name = '당연'; retObj.nameType = cons.NAME_KOR_END_CONS; retObj.stackType = 1; retObj.isDebuff = true;
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'hit', value : 0 });
+    break;
+  case 10666 :
+    retObj.name = 'MAX 100%'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 2; retObj.maxStack = 9; retObj.isDebuff = false; retObj.durOff = null;
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'hit', value : 0 });
+    break;
+  case 10667 :
+    retObj.name = 'GLORY MAX'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 1; retObj.isDebuff = false;
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_PERCENTAGE, key : 'phyAtk', value : 0.25 });
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_PERCENTAGE, key : 'magAtk', value : 0.25 });
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'crit', value : 0.15 });
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_DAMAGE_RECEIVE, code : cons.EFFECT_TYPE_MULTIPLY_DAMAGE, anySkill : true, value : 0.85 });
+    break;
+  case 10668 :
+    retObj.name = '주가'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 2; retObj.maxStack = 20; retObj.isDebuff = false; retObj.durOff = null;
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_PERCENTAGE, key : 'phyAtk', value : 0.03 });
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_PERCENTAGE, key : 'magAtk', value : 0.03 });
+    break;
+  case 10669 :
+    retObj.name = '오늘의 메뉴'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 1; retObj.isDebuff = false; retObj.durOff = null;
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'spRegen', value : 4 });
+    break;
+  case 10670 :
+    retObj.name = '개지랄'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 1; retObj.isDebuff = true;
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_MULTIPLY, key : 'spRegen', value : 0 });
+    break;
+  case 10671 :
+    retObj.name = '표백'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 1; retObj.isDebuff = true;
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'magReduce', value : -0.08 });
+    retObj.effect.push({ active : 31, code : cons.EFFECT_TYPE_MULTIPLY_HEAL, value : 0.7 }   /* 벌어진 상처와 같은 방식 */);
+    break;
+  case 10672 :
+    retObj.name = '캔버스'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 1; retObj.isDebuff = false; retObj.durOff = null;
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_MULTIPLY, key : 'phyReduce', value : 0 });
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_MULTIPLY, key : 'magReduce', value : 0 });
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_MULTIPLY, key : 'evasion', value : 0 });
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_MULTIPLY, key : 'hpRegen', value : 0 });
+    break;
+  case 10673 :
+    retObj.name = '고마주'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 1; retObj.isDebuff = true; retObj.durOff = null; retObj.dispellable = false; retObj.unresistable = true;
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_MULTIPLY, key : 'phyReduce', value : 0 });
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_MULTIPLY, key : 'magReduce', value : 0 });
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_MULTIPLY, key : 'evasion', value : 0 });
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_MULTIPLY, key : 'hpRegen', value : 0 });
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_TURN_START, code : cons.EFFECT_TYPE_SELF_HIT, type : cons.DAMAGE_TYPE_ABSOLUTE, isPercentChar : true, percentKey : 'curHp', value : 0.12 });
+    break;
+  case 10674 :
+    retObj.name = '결정적 순간'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 1; retObj.isDebuff = false;
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'crit', value : 1 });
+    break;
   case 10620 :
     retObj.name = '소형 동물'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 2; retObj.maxStack = 12; retObj.isDebuff = false; retObj.durOff = null;
     retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'maxHp', value : 12 });
