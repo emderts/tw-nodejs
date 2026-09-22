@@ -3408,6 +3408,7 @@ module.exports.getBuffData = function(eff) {
     effectObj.value = 1.2;
     effectObj.chkSkillCode = 201736;
     effectObj.removeBuff = true;
+    effectObj.chkNotFresh = true;   // 이번 턴에 장전한 것은 발사하지 않음 (장전 → 다음 사용 때 발사)
     retObj.effect.push(effectObj);
     break;
   case 201746 : 

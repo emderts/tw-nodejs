@@ -1012,6 +1012,9 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
     if (eff.chkOppHpOver && (loser.curHp / loser.stat.maxHp) <= eff.chkOppHpOver) {   // 상대 체력 비율이 N 초과일 때만
       continue;
     }
+    if (eff.chkNotFresh && eff.buff && eff.buff.gainTurn === this.turnCount) {   // 이번 턴에 얻은 버프면 발동하지 않음
+      continue;
+    }
     if (eff.chkDmgType !== undefined && !(damage && damage.type === eff.chkDmgType)) {   // 받은/준 피해의 타입
       continue;
     }
@@ -2159,6 +2162,7 @@ Battlemodule.prototype.giveBuff = function(src, recv, buffObj, printFlag, name) 
     }
   } else {
     if (buffObj.stackType === 2 && !buffObj.stack) buffObj.stack = 1;   // 스택형은 첫 부여도 1중첩으로 표기
+    buffObj.gainTurn = this.turnCount;
     if (buffObj.maxStack && buffObj.stack > buffObj.maxStack) buffObj.stack = buffObj.maxStack;
     recv.buffs.push(buffObj);
   }       
