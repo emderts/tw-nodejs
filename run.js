@@ -371,6 +371,9 @@ function makeShop(char, typeIn, opts) {
     goods.push({ kind: 'stat', value: 2, name: '스탯 포인트 +2', price: Math.round((60 + 8 * cycle) * allDisc) });
     goods.push({ kind: 'life', name: '재도전 +1 (최대 ' + maxLives(char) + ')', price: Math.round((70 + 10 * cycle) * allDisc) });
   }
+  if (cycle >= TOTAL_CYCLES) {   // 마지막 사이클: 어느 상점이든 1급 리설트 카드를 정가의 115%로 무제한 판매
+    goods.push({ kind: 'resultStock', rank: char.rank, unlimited: true, name: char.rank + '급 리설트 카드 (무작위 부위 · 무제한)', price: Math.round((50 + 5 * cycle) * 1.15 * allDisc) });
+  }
   return { type, label, goods, bought: [] };
 }
 

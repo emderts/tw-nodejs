@@ -3974,6 +3974,7 @@ async function procFloorShop (req, res) {
     if (!g || shop.bought.includes(idx)) { res.redirect('/nextFloor'); return; }
     if (char.gold < g.price) { sess.floorShop.msg = '골드가 부족합니다.'; res.redirect('/nextFloor'); return; }
     char.gold -= g.price;
+    if (g.kind === 'resultStock') { char.inventory.push(roster.makeResultCard(g.rank, Math.floor(Math.random() * 4))); await saveChar(char, charRow.uid); res.redirect('/nextFloor'); return; }   // 무제한 판매
     if (g.kind === 'item') char.inventory.push(g.item);
     else if (g.kind === 'card') char.deck.push(g.card);
     else if (g.kind === 'stat') char.statPoint = (char.statPoint || 0) + g.value;
@@ -4053,10 +4054,10 @@ async function procFloorResult (req, res) {
     if (re.winnerLeft) {
       const gold = Math.round((60 + 12 * char.run.cycle + (enemy.isBoss ? 100 : 0)) * (1 + (run.runEffect(char, 'winGoldBonus') || 0)) * (1 - (run.runEffect(char, 'creditCard') || 0)));
       char.gold += gold;
-      char.statPoint += 3;
+      char.statPoint += 4;
       addSpecialResultCard(char, 4);
       char.battleCnt = (char.battleCnt || 0) + 1; char.winCnt = (char.winCnt || 0) + 1;
-      var rewardLines = ['<b>승리!</b> ' + gold + '골드, 스탯 포인트 3, ' + char.rank + '급 장비 리설트 카드 1장 획득.'];
+      var rewardLines = ['<b>승리!</b> ' + gold + '골드, 스탯 포인트 4, ' + char.rank + '급 장비 리설트 카드 1장 획득.'];
       if (Math.random() < (enemy.isBoss ? 0.15 : 0.06)) {   // 스킬 아티팩트: 일반 6%, 보스 15%
         const art = run.pickArtifact(char.rank);
         if (art) { art.tooltip = makeTooltip(art); char.inventory.push(art); rewardLines.push('<span class="colorGold">스킬 아티팩트를 발견했다: <b>' + art.name + '</b></span>'); }
