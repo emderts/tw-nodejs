@@ -2223,6 +2223,7 @@ function describeBuff(b) {
     else if (e.code === 10010) lines.push('스킬 봉인');
     else if (e.code === cons.EFFECT_TYPE_REMOVE_BUFF) lines.push(pre + '버프 제거');
   }
+  if (b.tooltip && b.id >= 1 && b.id <= 12) return b.tooltip;   // 표준 상태이상은 설명문만
   if (b.tooltip) lines.unshift(b.tooltip);
   return lines.length ? [...new Set(lines)].join('<br>') : (b.isDebuff ? '디버프' : '버프');
 }
