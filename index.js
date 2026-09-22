@@ -3892,7 +3892,7 @@ async function procNextFloor (req, res) {
         let n = 1;
         try { const cq = await pool.query("select count(*) as c from session where expire > now() + interval '30 days' - interval '3 hours' and sess::jsonb ? 'userUid'"); n = Math.max(1, parseInt(cq.rows[0].c, 10) || 1); } catch (e) { console.log('[groupBuy]', e.message); }
         const bonus = Math.min(0.5, gb * n);
-        for (const k in leftCopy.items) { const it = leftCopy.items[k]; if (it && it.runEffect && it.runEffect.key === 'groupBuy') { it.pctStat = { phyAtk: bonus, magAtk: bonus }; it.effectDesc = (it.effectDesc || '') + '<br>(지금 ' + n + '명 — 공격력 +' + Math.round(bonus * 100) + '%)'; } }
+        for (const k in leftCopy.items) { const it = leftCopy.items[k]; if (it && it.runEffect && it.runEffect.key === 'groupBuy') { it.effect = (it.effect || []).concat([{ code: cons.EFFECT_TYPE_MULTIPLY_DAMAGE, active: cons.ACTIVE_TYPE_CALC_DAMAGE, anySkill: true, value: 1 + bonus, name: it.name }]); it.effectDesc = (it.effectDesc || '') + '<br>(지금 ' + n + '명 — 주는 피해 +' + Math.round(bonus * 100) + '%)'; } }
       }
       const rb = run.runEffect(leftCopy, 'rockBonus');
       if (rb && leftCopy.deck.filter(c => c.type === 1).length >= 3) { leftCopy.base.phyAtk = Math.round(leftCopy.base.phyAtk * (1 + rb) * 100) / 100; calcStats(leftCopy); }   // 난 주먹만 내

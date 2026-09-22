@@ -1,5 +1,22 @@
 const cons = require('./constant');
 
+function atkPctToDamage(effects, stacked) {
+  const isAtk = (e) => e && e.active === cons.ACTIVE_TYPE_CALC_STATS && e.code === cons.EFFECT_TYPE_STAT_PERCENTAGE && (e.key === 'phyAtk' || e.key === 'magAtk');
+  const phy = effects.find(e => isAtk(e) && e.key === 'phyAtk'), mag = effects.find(e => isAtk(e) && e.key === 'magAtk');
+  if (!phy && !mag) return;
+  const make = (v, dmgType) => {
+    const e = { active : cons.ACTIVE_TYPE_CALC_DAMAGE, code : cons.EFFECT_TYPE_MULTIPLY_DAMAGE, anySkill : true, value : stacked ? v : 1 + v, fromAtkPct : true };
+    if (stacked) e.stackable = true;
+    if (dmgType !== undefined) e.chkDmgType = dmgType;
+    return e;
+  };
+  const out = [];
+  if (phy && mag && phy.value === mag.value) out.push(make(phy.value));
+  else { if (phy) out.push(make(phy.value, cons.DAMAGE_TYPE_PHYSICAL)); if (mag) out.push(make(mag.value, cons.DAMAGE_TYPE_MAGICAL)); }
+  for (let k = effects.length - 1; k >= 0; k--) if (isAtk(effects[k])) effects.splice(k, 1);
+  effects.push.apply(effects, out);
+}
+module.exports.atkPctToDamage = atkPctToDamage;
 module.exports.getBuffData = function(eff) {
   var retObj = {};
   
@@ -7562,5 +7579,7 @@ module.exports.getBuffData = function(eff) {
     12 : '이겨도 공격하지 못한다. 공격을 막힐 때마다 지속 시간 1턴 감소, 턴 종료 시 최대 생명력의 1% 절대 피해',
   };
   if (STD_TIPS[retObj.id]) retObj.tooltip = STD_TIPS[retObj.id];
+  // 추가 아이템 버프: 공격력 % 는 기본 공격력에만 곱해져 체감이 약하므로 '주는 피해 %'로 바꿔 적용
+  if (retObj.id >= 10500 && retObj.id <= 10699 && retObj.effect) atkPctToDamage(retObj.effect, retObj.stackType === 2);
   return retObj;
 }

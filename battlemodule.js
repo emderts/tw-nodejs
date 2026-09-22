@@ -1858,7 +1858,8 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
       if (bonus > 0 && damage) { damage.skillRat *= (1 + bonus); this.result += '[ ' + eff.name + ' ] 효과로 피해 +' + Math.round(bonus * 100) + '%!<br>'; }
     } else if (eff.code === 'itemBreak') {   // 건틀릿 오브 오거 파워: 이 슬롯의 % 스탯 상실
       const it = winner.items && winner.items[eff.slot];
-      if (it && it.pctStat) { delete it.pctStat; calcStats(winner, loser); this.result += '[ ' + eff.name + ' ] 기능이 멈췄다!<br>'; }
+      const pcts = it ? (it.effect || []).filter(e => e.fromAtkPct && e.code !== -1) : [];
+      if (it && (it.pctStat || pcts.length)) { delete it.pctStat; for (const e of pcts) e.code = -1; calcStats(winner, loser); this.result += '[ ' + eff.name + ' ] 기능이 멈췄다!<br>'; }
     } else if (eff.code === 'shieldPct') {   // 최대 생명력 비율 보호막 버프
       const bo = buffMdl.getBuffData({ buffCode : eff.buffCode }); bo.dur = null;
       for (const be of bo.effect) if (be.code === cons.EFFECT_TYPE_SHIELD) be.value = Math.round(winner.stat.maxHp * eff.value);
