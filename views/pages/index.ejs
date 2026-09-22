@@ -325,9 +325,10 @@
           }
         %>
         <table class="kv">
-        <% for (const r of statRows.filter(x => x.main)) { %>
+        <% const MAIN_ORDER = ['maxHp', 'phyAtk', 'magAtk']; const alloc = char.statAlloc || {};
+           for (const r of statRows.filter(x => x.main).sort((a, b) => MAIN_ORDER.indexOf(a.key) - MAIN_ORDER.indexOf(b.key))) { %>
           <tr>
-            <td class="k"><%= r.label %></td>
+            <td class="k"><%= r.label %><% if (alloc[r.key]) { %> <small style="color:var(--ash)">(+<%= alloc[r.key] %>)</small><% } %></td>
             <td class="v"><%= r.text %></td>
             <td class="a">
               <% if (char.statPoint > 0) { %>

@@ -3534,6 +3534,8 @@ async function procUseStatPoint (req, res) {
     char.statPoint -= 1;
     var value = (req.body.keyType === 'maxHp') ? 10 : 1.5;
     char.base[req.body.keyType] += value;
+    char.statAlloc = char.statAlloc || {};   // 스탯 포인트를 몇 번 찍었는지 (표시용)
+    char.statAlloc[req.body.keyType] = (char.statAlloc[req.body.keyType] || 0) + 1;
     char.statistics[req.body.keyType + 'Stat'] += 1;
     char.lastStat = req.body.keyType;
     calcStats(char);
