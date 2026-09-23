@@ -983,11 +983,11 @@ const chara = require('./chara');
       base : [
               {code : 90420, name : '프로스트 블레이드', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1.4,
                 effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.5, buffCode : 12, buffDur : 2}],
-                tooltip : '50% 확률로 적에게 2턴 간 [빙결]. 적에게 [화상]이 있으면 계수 2배',
+                tooltip : '50% 확률로 적에게 2턴 간 [빙결]. 적에게 [화상]이 있으면 계수 1.7배',
                 flavor : '서리의 칼날. 불에 그을린 자리를 먼저 찾는다.'},
               {code : 90421, name : '소드 오브 파이어', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 1.4,
                 effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.5, buffCode : 1, buffDur : 2}],
-                tooltip : '50% 확률로 적에게 2턴 간 [화상]. 적에게 [빙결]이 있으면 계수 2배',
+                tooltip : '50% 확률로 적에게 2턴 간 [화상]. 적에게 [빙결]이 있으면 계수 1.7배',
                 flavor : '불꽃의 칼날. 얼어붙은 자리를 먼저 찾는다.'},
               {code : 90422, name : '쌍검사의 반격술', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 0.3,
                 effect : [],
