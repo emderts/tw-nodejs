@@ -1667,6 +1667,10 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
       calcStats(winner, loser);
       winner.curHp = 179;
       this.result += '<span class="skillDamage">[ ' + eff.name + ' ] 맹약이 발동한다 — ' + winner.name + '으로 변모했다! (179 / 1799)</span><br>';
+    } else if (eff.code === 'buildShield') {   // 네온: 최대 생명력 비례 보호막 버프를 세운다
+      const bo = buffMdl.getBuffData({ buffCode : eff.buffCode }); bo.dur = eff.buffDur;
+      for (const be of bo.effect) if (be.code === cons.EFFECT_TYPE_SHIELD) be.value = Math.round(winner.stat.maxHp * eff.value);
+      this.giveBuff(winner, winner, bo, true, eff.name);
     } else if (eff.code === 'shuffleDeck') {   // 프레나 [환기]: 자기 덱을 다시 섞는다
       winner.pendingShuffle = true;
       this.result += '[ ' + (eff.name || '환기') + ' ] ' + winner.name + getIga(winner.nameType) + ' 패를 흐트러뜨렸다.<br>';

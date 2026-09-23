@@ -1123,6 +1123,35 @@ const chara = require('./chara');
        tooltip : '[기절]을 제외한 모든 표준 상태이상을 2턴 간 부여', flavor : '남김없이 물들인다.'} };
   module.exports.mIZ = charLeft;
 
+  // ---- 달빛의 공학자 네온 (13사이클) ----
+  charLeft = {name : '달빛의 공학자 네온', nameType : cons.NAME_KOR_NO_END_CONS, title : '공학자', rank : 2, level : 36,
+      stat : {maxHp : 55000, phyAtk : 240, magAtk : 240, spCharge : 16}};
+  _initChar(charLeft); charLeft.items = {}; charLeft.boss = 0.96; charLeft.bossStatus = 0.2;
+  charLeft.skill = { base : [
+      {code : 90470, name : '폭탄 로봇', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 0.4,
+       effect : [{code : 'buildShield', buffCode : 10723, buffDur : 3, value : 0.07}],
+       tooltip : '자신에게 3턴 간 [폭탄 로봇] (최대 생명력 7% 보호막, 시간이 다 되면 터지며 물리 1.5 피해)',
+       flavor : '굴러가는 쇳덩이. 멈추면 터진다.'},
+      {code : 90471, name : '방어탑 건설', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 0.4,
+       effect : [{code : 'buildShield', buffCode : 10724, buffDur : null, value : 0.06}],
+       tooltip : '자신에게 [방어탑] (최대 생명력 6% 보호막, 턴 종료마다 마법 0.2 피해, 중첩)',
+       flavor : '세워 두면 알아서 쏜다. 그게 공학이다.'},
+      {code : 90472, name : '폭격 지시', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 0.5,
+       effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, chance : 1, buffCode : 10725, buffDur : 2}],
+       tooltip : '자신에게 2턴 간 [폭격 지시] (시간이 다 되면 마법 1.2 피해, 피격 시 소거)',
+       flavor : '좌표를 불러 두면 하늘이 대신 답한다.'}
+     ],
+     drive : {code : 90473, name : '보호 실드', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.SKILL_TYPE_DRIVE, active : cons.ACTIVE_TYPE_TAKE_HIT,
+       cost : 12, chance : 0.35, effect : [{code : 'buildShield', buffCode : 10724, buffDur : null, value : 0.05}],
+       tooltip : '피격 시 35% 확률로 최대 생명력 5% 보호막을 세운다',
+       flavor : '맞을 것 같으면 먼저 막는다.'},
+     special : {code : 90474, name : '기절 포격', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 99,
+       effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, chance : 1, buffCode : 4, buffDur : 1}],
+       tooltip : '적에게 1턴 간 [기절]',
+       flavor : '한 발이면 충분하다. 맞은 쪽은 한동안 서 있지도 못한다.'} };
+  module.exports.mNeon = charLeft;
+
+
 
   
   charLeft = {name : '프사이', nameType : cons.NAME_KOR_NO_END_CONS, title : '승급 시험관', rank : 9, level : 40, 

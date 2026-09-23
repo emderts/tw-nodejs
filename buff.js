@@ -7268,6 +7268,24 @@ module.exports.getBuffData = function(eff) {
     retObj.name = '데키'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 2; retObj.maxStack = 9999999; retObj.isDebuff = false; retObj.durOff = null;
     retObj.tooltip = '보로 받은 피해가 쌓인다. 최대 생명력의 35%를 넘으면 자신의 바위 카드가 사라진다';
     break;
+  case 10723 :   // 달빛의 공학자 [폭탄 로봇]
+    retObj.name = '폭탄 로봇'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 3; retObj.isDebuff = false;
+    retObj.tooltip = '보호막이 되어 막아 주고, 지속 시간이 끝나면 터지며 물리 1.5 피해';
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_DEAL_DAMAGE_RECEIVE, code : cons.EFFECT_TYPE_SHIELD, value : 1 });
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_DURATION_END, code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL, value : 1.5 });
+    break;
+  case 10724 :   // [방어탑]
+    retObj.name = '방어탑'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 3; retObj.isDebuff = false; retObj.durOff = null;
+    retObj.tooltip = '보호막이 되어 막아 주고, 턴 종료마다 마법 0.2 피해 (보호막이 깨지면 무너진다)';
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_DEAL_DAMAGE_RECEIVE, code : cons.EFFECT_TYPE_SHIELD, value : 1 });
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_TURN_END, code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_MAGICAL, value : 0.2 });
+    break;
+  case 10725 :   // [폭격 지시]
+    retObj.name = '폭격 지시'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 3; retObj.isDebuff = false;
+    retObj.tooltip = '지속 시간이 끝나면 마법 1.2 피해. 피격당하면 지워진다';
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_DURATION_END, code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_MAGICAL, value : 1.2 });
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_TAKE_HIT, code : cons.EFFECT_TYPE_REMOVE_BUFF, buffTarget : [10725], removeBuff : true });
+    break;
   case 10620 :
     retObj.name = '소형 동물'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 2; retObj.maxStack = 12; retObj.isDebuff = false; retObj.durOff = null;
     retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'maxHp', value : 12 });
