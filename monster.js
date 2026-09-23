@@ -1101,7 +1101,7 @@ const chara = require('./chara');
   module.exports.mCouncil = charLeft;
 
   // ---- 달빛의 타락자 iZ (13사이클) ----
-  charLeft = {name : '달빛의 타락자 iZ', nameType : cons.NAME_KOR_END_CONS, title : '타락자', rank : 2, level : 36,
+  charLeft = {name : '달빛의 타락자 iZ', nameType : cons.NAME_KOR_NO_END_CONS, title : '타락자', rank : 2, level : 36,
       stat : {maxHp : 60000, phyAtk : 260, magAtk : 260, spCharge : 18}};
   _initChar(charLeft); charLeft.items = {}; charLeft.boss = 0.96; charLeft.bossStatus = 0.2;
   charLeft.skill = { base : [
