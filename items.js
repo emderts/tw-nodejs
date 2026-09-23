@@ -2111,15 +2111,15 @@ itemList[941] = { id : 941, name : '반중력 기술 문서', nameType : cons.NA
     effect : [{code : 'sciTag', active : cons.ACTIVE_TYPE_ATTACK, value : 1}] };
 // ---------- 테라포밍 마스 태그 계열 (동물·도시·과학 5/4급·외우주) ----------
 itemList[942] = { id : 942, name : '소형 동물 뱃지', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '가장 먼저 풀어놓은 것은 작고 빠른 것들이었다. 아무도 잡지 못했다.', rank : 8, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 38, evasion : 0.05 }, 
-    effectDesc : '회피 성공 시 [소형 동물] 1중첩 (체력 +12, 최대 12)', effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_EVADE, buffCode : 10620, buffDur : null, stack : 1}] };
+    effectDesc : '회피 성공 시 [소형 동물] 1중첩 (체력 +10, 최대 10)', effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_EVADE, buffCode : 10620, buffDur : null, stack : 1}] };
 itemList[943] = { id : 943, name : '가축 뱃지', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '사람보다 먼저 자리를 잡았다. 먹이는 나중 문제였다.', rank : 7, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 72, hpRegen : 2 }, 
-    effectDesc : '드라이브 발동 시 [가축] 1중첩 (체력 +25, 생명력회복 +0.4, 최대 10)', effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_USE_DRIVE, buffCode : 10621, buffDur : null, stack : 1}] };
+    effectDesc : '드라이브 발동 시 [가축] 1중첩 (체력 +22, 생명력회복 +0.4, 최대 10)', effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_USE_DRIVE, buffCode : 10621, buffDur : null, stack : 1}] };
 itemList[944] = { id : 944, name : '펭귄 뱃지', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '추위를 견디는 법을 아는 쪽이 먼저 들어왔다.', rank : 6, rarity : cons.ITEM_RARITY_UNIQUE, stat : { maxHp : 110, spCharge : 2 }, 
-    effectDesc : '상성 패배 시 [펭귄] 1중첩 (체력 +40, SP충전 +1, 최대 8)', effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_SKILL_LOSE, buffCode : 10622, buffDur : null, stack : 1}] };
+    effectDesc : '상성 패배 시 [펭귄] 1중첩 (체력 +35, SP충전 +1, 최대 8)', effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_SKILL_LOSE, buffCode : 10622, buffDur : null, stack : 1}] };
 itemList[945] = { id : 945, name : '물고기 뱃지', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '물이 고이자마자 풀어넣었다. 살아남은 종만 뱃지가 된다.', rank : 5, rarity : cons.ITEM_RARITY_UNIQUE, stat : { maxHp : 155, spRegen : 1 }, 
-    effectDesc : '상성 승리 시 [물고기] 1중첩 (체력 +55, SP재생 +0.4, 최대 8)', effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_SKILL_WIN, buffCode : 10623, buffDur : null, stack : 1}] };
+    effectDesc : '상성 승리 시 [물고기] 1중첩 (체력 +45, SP재생 +0.4, 최대 8)', effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_SKILL_WIN, buffCode : 10623, buffDur : null, stack : 1}] };
 itemList[946] = { id : 946, name : '새 뱃지', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '하늘이 생겼다는 증거. 이 뱃지를 단 사람은 위를 자주 본다.', rank : 4, rarity : cons.ITEM_RARITY_UNIQUE, stat : { maxHp : 225, phyReduce : 0.03 }, 
-    effectDesc : '턴 시작 시 [새] 1중첩 (체력 +70, 물리저항 +0.8%p, 최대 8)', effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_TURN_START, buffCode : 10624, buffDur : null, stack : 1}] };
+    effectDesc : '턴 시작 시 [새] 1중첩 (체력 +45, 물리저항 +0.5%p, 최대 6)', effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_TURN_START, buffCode : 10624, buffDur : null, stack : 1}] };
 itemList[947] = { id : 947, name : '포식동물 제어장치', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '생태계에 마지막으로 들여보내는 것. 이것이 들어가면 나머지는 전부 먹이로 다시 분류된다.', rank : 5, rarity : cons.ITEM_RARITY_EPIC, stat : { maxHp : 100, hpRegen : 2, spRegen : 1 }, 
     effectDesc : '턴 시작 시 자신의 모든 동물 스택을 소거하고 그만큼 [포식] 중첩 (중첩당 체력 +60, 생명력회복 +0.8, SP재생 +0.5, 상한 없음)', effect : [{code : 'predator', active : cons.ACTIVE_TYPE_TURN_START}] };
 itemList[948] = { id : 948, name : '이민자 도시 시장 증명서', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '첫 이민선이 내린 자리에 세운 도시. 시장은 매번 바뀌었지만 증명서는 하나였다.', rank : 8, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 28, hpRegen : 1 }, 
