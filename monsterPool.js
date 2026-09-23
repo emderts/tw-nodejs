@@ -34,20 +34,17 @@ const TIERS = {
     { key: 'oEleLord',     deck: [3, 1, 3], tune: (e) => { e.skill.drive.chance = 0.08; e.skill.base[0].damage = 1.1; } },
     { key: 'oStoneist',    deck: [2, 4, 2], },
     { key: 'oDeathKnight', deck: [1, 4, 2], tune: (e) => { e.skill.base[2].damage = 1.1; e.skill.special.cost = 140; } },
-    { key: 'oLegor',       deck: [3, 3, 3], tune: (e) => { e.skill.drive.chance = 0.1; e.skill.base[1].effect[0].value = 0.3; e.skill.base[0].damage = 1.0; e.skill.base[2].damage = 1.1; } },
   ],
   7: [
     { key: 'd7Knight',      deck: [2, 3, 2] },
     { key: 'd7EliteKnight', deck: [2, 3, 3] },
     { key: 'd7Lohengrin',   deck: [3, 3, 3], tune: (e) => { for (const k of e.skill.base) k.damage = 1.2; } },
-    { key: 'rKines1',       deck: [3, 2, 2], tune: (e) => { e.skill.drive.effect[1].value = -8; } },
     { key: 'rInfernal',     deck: [4, 1, 2] },
     { key: 'mFrena',        deck: [1, 1, 1], extraFav: 2, note: '대마법사 프레나 — 삼원소와 마법 폭풍', tune: (e) => {
       for (const sk of e.skill.base) { sk.damage = 1.15; for (const ef of (sk.effect || [])) if (ef.chance) ef.chance = 0.25; sk.tooltip = sk.tooltip.replace('33%', '25%'); }
       e.skill.special.cost = 115;
     } },
     { key: 'rTimeStorm',    deck: [2, 2, 2], shuffleEveryTurn: true, note: '매 턴 덱 재셔플', tune: (e) => { delete e.skill.drive; delete e.startEffects; for (const k of e.skill.base) k.damage = 1.3; } },   // 51턴 즉사 타이머·공격 불가 제거
-    { key: 'rJulius',       deck: [2, 2, 2] },
   ],
   11: [   // 보스: 사천왕 (포켓몬 3폼 교체, 각 폼 체력 -67%)
     { key: 'd721', deck: [4, 2, 3], note: '칸나 — 파르셀·루주라·라프라스' },
@@ -118,7 +115,6 @@ const TIERS = {
       e.skill.special.tooltip = '[파멸의 끝] 3턴 (턴 종료 시 절대 150), [봉인] 2턴';
     } },
     { key: 'oLegor',        deck: [3, 3, 3], extraFav: 2, tune: (e) => { e.skill.drive.chance = 0.1; e.skill.base[1].effect[0].value = 0.3; e.skill.base[0].damage = 1.0; e.skill.base[2].damage = 1.1; } },
-    { key: 'rInfernal',     deck: [4, 1, 2], extraFav: 2 },
   ],
 };
 function tierFor(cycle) { const t = [15, 13, 11, 9, 7, 5, 3, 1].find(x => x <= cycle); return t; }
