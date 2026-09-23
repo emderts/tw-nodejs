@@ -19,7 +19,7 @@
       <div class="charItem">
         <form action="/altar" method="post">
           <input type="hidden" name="action" value="take"><input type="hidden" name="k" value="<%= k %>">
-          <button type="submit"><span class="rarityUnique"><%= p.name %></span> <small style="color:var(--ash)"><%= p.rank %>급 → <%= offer.toRank %>급</small>
+          <button type="button" onclick="invClick(this, event)"><span class="rarityUnique"><%= p.name %></span> <small style="color:var(--ash)"><%= p.rank %>급 → <%= offer.toRank %>급</small>
             <div class="itemTooltip"><%- makeTooltip(p) %></div></button>
         </form>
       </div>
