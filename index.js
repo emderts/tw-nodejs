@@ -56,6 +56,9 @@ const app = express()
 .post('/floorFlee', procFloorFlee)
 .post('/focusSkill', procFocusSkill)
 .get('/hall', procHall)
+.post('/abandonRun', procAbandonRun)
+.get('/altar', procAltar)
+.post('/altar', procAltarPost)
 .post('/hall', procHallView)
 .get('/join', (req, res) => res.render('pages/join'))
 .post('/join', procJoin)
@@ -3388,7 +3391,7 @@ async function procDismantlingYard(req, res) {
     const sess = req.session; 
     const charRow = await getCharacter(sess.userUid);
     const char = JSON.parse(charRow.char_data);
-    res.render('pages/selectItem', {title : '아이템 해체', inv : char.inventory, mode : 2, dust : char.gold, dustVal : null, usedItem : 0});
+    res.render('pages/selectItem', {title : '아이템 판매', inv : char.inventory, mode : 2, dust : char.gold, dustVal : null, usedItem : 0});
   } catch (err) {
     console.error(err);
     res.send('내부 오류');
@@ -3425,7 +3428,7 @@ async function procDismantleItem (req, res) {
     await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), charRow.uid]);
     if (jump && !res.headersSent) { res.send('<!doctype html><meta charset="utf-8"><link rel="stylesheet" href="/stylesheets/main.css"><div class="wrap"><div class="note-box">하이퍼루프가 요동친다… <b>' + jump.from + '층</b>에서 <b>' + jump.to + '층</b>으로 튕겨 나왔다.</div><div class="backLink"><a href="/nextFloor">계속</a></div></div>'); return; }
     if (!res.headersSent) {
-      res.render('pages/selectItem', {title : '아이템 해체', inv : char.inventory, mode : 2, dustVal : dustVal, dust : char.gold, usedItem : 0});
+      res.render('pages/selectItem', {title : '아이템 판매', inv : char.inventory, mode : 2, dustVal : dustVal, dust : char.gold, usedItem : 0});
     }
   } catch (err) {
     console.error(err);
@@ -3924,6 +3927,63 @@ async function pickEnemy (char, userId) {
 }
 
 // 전투 후 얻은 카드 수락/거부
+// 모험 포기: 캐릭터 삭제 (쓰러진 모험가로는 남기지 않는다)
+async function procAbandonRun (req, res) {
+  const client = await pool.connect();
+  try {
+    const sess = req.session;
+    if (!sess.userUid || req.body.confirm !== 'ok') { res.redirect('/'); return; }
+    const charRow = await getCharacter(sess.userUid);
+    if (!charRow) { res.redirect('/'); return; }
+    const char = charRow.char_data ? JSON.parse(charRow.char_data) : null;
+    if (char && char.run && char.run.cycle >= 10) {
+      try { await client.query('insert into news(content, date) values ($1, $2)', [newsName(char) + getIga(char.nameType) + ' ' + run.floorNo(char) + '층(' + char.run.cycle + '사이클)에서 스스로 여정을 접었다.', new Date()]); } catch (e) {}
+    }
+    await client.query('delete from characters where uid = $1', [charRow.uid]);
+    await client.query('update users set uid = null where id = $1', [sess.userUid]);
+    delete sess.floorShop; delete sess.floorEvent; delete sess.floorBattle;
+    res.redirect('/');
+  } catch (e) { console.error(e); res.redirect('/'); }
+  finally { client.release(); }
+}
+// 해체의 제단: 에픽 1개 → 한 급수 아래 유니크 3개 중 하나 (런당 2회)
+const ALTAR_MAX = 2;
+async function procAltar (req, res) {
+  try {
+    const ctx = await loadRunChar(req, res); if (!ctx) return;
+    const { char } = ctx; const sess = req.session;
+    res.render('pages/altar', { char, rv: runView(char), offer: sess.altar || null, used: char.run.altarUsed || 0, max: ALTAR_MAX, makeTooltip });
+  } catch (e) { console.error(e); res.redirect('/'); }
+}
+async function procAltarPost (req, res) {
+  try {
+    const ctx = await loadRunChar(req, res); if (!ctx) return;
+    const { charRow, char } = ctx; const sess = req.session;
+    const used = char.run.altarUsed || 0;
+    if (req.body.action === 'offer') {   // 에픽을 바친다 → 후보 3개 고정
+      const idx = parseInt(req.body.idx, 10); const it = char.inventory[idx];
+      if (used >= ALTAR_MAX || !it || it.rarity !== cons.ITEM_RARITY_EPIC || it.type > 3) { res.redirect('/altar'); return; }
+      const low = Math.min(9, char.rank + 1);
+      const pool2 = item.list.filter(x => x && x.rank === low && x.type <= 3 && x.rarity === cons.ITEM_RARITY_UNIQUE && !x.runEffect && !/^무형의/.test(x.name));
+      const picks = [];
+      while (picks.length < 3 && pool2.length) { const c = pool2[Math.floor(Math.random() * pool2.length)]; if (!picks.some(y => y.name === c.name)) picks.push(JSON.parse(JSON.stringify(c))); }
+      char.inventory.splice(idx, 1);
+      char.run.altarUsed = used + 1;
+      sess.altar = { picks, name: it.name };
+      await saveChar(char, charRow.uid);
+      res.redirect('/altar'); return;
+    }
+    if (req.body.action === 'take' && sess.altar) {   // 하나 선택 (증폭해서)
+      const k = parseInt(req.body.k, 10);
+      const pick = sess.altar.picks[k];
+      if (pick) { const it = run.amplify(JSON.parse(JSON.stringify(pick)), char.rank); it.tooltip = makeTooltip(it); char.inventory.push(it); }
+      delete sess.altar;
+      await saveChar(char, charRow.uid);
+      res.redirect('/altar'); return;
+    }
+    res.redirect('/altar');
+  } catch (e) { console.error(e); res.redirect('/altar'); }
+}
 // 명예의 전당: 탑을 정복한 캐릭터 기록
 async function procHall (req, res) {
   const client = await pool.connect();

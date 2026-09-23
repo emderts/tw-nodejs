@@ -652,6 +652,36 @@ function eventPool(char) {
     ] : [ { label: '지나간다', effect: () => '아무 일도 없었다.' } ]
   });
 
+  // --- 증폭 (하위 급수 장비를 현재 급수로) ---
+  const SLOTK2 = ['weapon', 'armor', 'subarmor', 'trinket'];
+  const lowGear = SLOTK2.map((k, t) => ({ k, t, it: char.items && char.items[k] })).filter(x => x.it && x.it.name && x.it.rank > char.rank);
+  if (lowGear.length) pool.push({
+    code: 'amplify', weight: 2, title: '영석 증폭로',
+    desc: '낡은 증폭로가 아직 돌아간다. 한 점에 담긴 것이라면 급을 끌어올릴 수 있다.',
+    options: lowGear.map(x => ({
+      label: x.it.rank + '급 ' + x.it.name + ' → ' + char.rank + '급으로 증폭',
+      effect: (ch) => { const before = ch.items[x.k].name; amplify(ch.items[x.k], ch.rank); deps.calcStats(ch); return before + '이(가) ' + ch.rank + '급 [ ' + ch.items[x.k].name + ' ] 이 되었다.'; }
+    })).concat([{ label: '지나간다', effect: () => '증폭로를 지나쳤다.' }])
+  });
+
+  // --- 선택권 (하위 급수 유니크 3개 중 하나, 증폭해서) ---
+  pool.push({
+    code: 'pick3', weight: 1.5, title: '유물 진열대',
+    prepare: (ch) => {
+      const low = Math.min(9, ch.rank + 1);
+      const pool2 = itemList().filter(x => x && x.rank === low && x.type <= 3 && x.rarity === 4 && !x.runEffect && !/^무형의/.test(x.name));
+      const picks = [];
+      while (picks.length < 3 && pool2.length) { const c = pool2[Math.floor(Math.random() * pool2.length)]; if (!picks.some(y => y.name === c.name)) picks.push(JSON.parse(JSON.stringify(c))); }
+      return { picks };
+    },
+    desc: has('pick3') && d.picks ? '먼지 쌓인 진열대에 유물 셋이 놓여 있다. 하나만 가져갈 수 있고, 손에 쥐면 지금 급에 맞게 깨어난다.' : '무언가 놓여 있던 진열대다.',
+    html: has('pick3') && d.picks ? d.picks.map(x => '<b>' + x.name + '</b> <small>' + x.rank + '급 유니크</small><br>' + (x.effectDesc || '')).join('<hr style="border:0;border-top:1px solid var(--line);margin:8px 0">') : '',
+    options: has('pick3') && d.picks ? d.picks.map(x => ({
+      label: x.name + ' 을(를) 가져간다',
+      effect: (ch) => { const it = amplify(JSON.parse(JSON.stringify(x)), ch.rank); ch.inventory.push(it); return it.name + ' 을(를) 얻었다.'; }
+    })).concat([{ label: '지나간다', effect: () => '진열대를 지나쳤다.' }]) : [{ label: '지나간다', effect: () => '아무것도 없었다.' }]
+  });
+
   // --- 장비 변환 (결과는 비공개) ---
   const SLOTK = ['weapon', 'armor', 'subarmor', 'trinket'];
   const equipped = SLOTK.map((k, t) => ({ k, t, it: char.items && char.items[k] })).filter(x => x.it && x.it.name);
@@ -775,6 +805,21 @@ function monsterHelpers() {
     consumable: (code) => code ? consumables.make(code) : consumables.random(),
   };
 }
+// 아이템 증폭: 급수 기준선 비율만큼 능력치를 올리고 급수 표기도 올린다
+const RANK_SCALE = { atk: { 9: 20, 8: 24, 7: 27, 6: 32, 5: 36, 4: 40, 3: 44, 2: 48, 1: 52 }, hp: { 9: 200, 8: 250, 7: 300, 6: 350, 5: 400, 4: 450, 3: 500, 2: 550, 1: 600 } };
+function amplify(it, toRank) {
+  if (!it || !it.rank || it.rank <= toRank) return it;
+  const aM = RANK_SCALE.atk[toRank] / RANK_SCALE.atk[it.rank], hM = RANK_SCALE.hp[toRank] / RANK_SCALE.hp[it.rank];
+  const ATK = ['phyAtkMin', 'phyAtkMax', 'magAtkMin', 'magAtkMax', 'phyAtk', 'magAtk'], HP = ['maxHp', 'hpRegen', 'dmgReduce'];
+  for (const k in it.stat) {
+    if (ATK.includes(k)) it.stat[k] = Math.round(it.stat[k] * aM * 10) / 10;
+    else if (HP.includes(k)) it.stat[k] = Math.round(it.stat[k] * hM * 10) / 10;
+  }
+  it.rank = toRank;
+  if (!/^증폭된 /.test(it.name)) it.name = '증폭된 ' + it.name;
+  it.amplified = true;
+  return it;
+}
 // 전수: 다른 캐릭터의 스킬을 넘겨받을 때의 보정 (고유 연계를 잃는 대신)
 function inherit(skill, slot) {
   const sk = JSON.parse(JSON.stringify(skill));
@@ -855,7 +900,7 @@ function applyEvent(char, code, optIdx) {
   return r;
 }
 
-module.exports = { jumpFloor, pickArtifact,
+module.exports = { amplify, jumpFloor, pickArtifact,
   configure, TOTAL_CYCLES, HAND_SIZE, RESETS_PER_BATTLE, resetDeck, redrawHand, drawExtra, runEffect, maxLives, initRun, stage, stageLabel, floorNo, isBossCycle, rankForCycle, advance,
   newDeckState, drawHand, playCard, handTypes, deckCounts, aiPick, makeEnemy, enemyFromFallen, snapshotForFallen,
   makeMonster, makeRosterEnemy, makeShop, makeShopOffers, makeEvent, makeEventByCode, applyEvent, applyBuffs, applyEnemyDebuffs, tickBuffs

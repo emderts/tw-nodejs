@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>해체의 제단</title>
+  <link rel="stylesheet" href="/stylesheets/main.css">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#181c28">
+  <script src="/js/ui.js" defer></script>
+</head>
+<body>
+<div class="wrap">
+  <div class="page-title"><h1>해체의 제단</h1><span class="meta">에픽 하나를 바치면, 한 급수 아래 유물 셋 중 하나가 지금 급으로 깨어난다 · <%= used %>/<%= max %>회</span></div>
+  <% if (offer) { %>
+    <div class="note-box"><b><%= offer.name %></b>이(가) 제단 위에서 흩어진다. 남은 셋 중 하나를 가져갈 수 있다.</div>
+    <div class="list">
+    <% offer.picks.forEach(function (p, k) { %>
+      <div class="charItem">
+        <form action="/altar" method="post">
+          <input type="hidden" name="action" value="take"><input type="hidden" name="k" value="<%= k %>">
+          <button type="submit"><span class="rarityUnique"><%= p.name %></span> <small style="color:var(--ash)"><%= p.rank %>급 → <%= char.rank %>급</small>
+            <div class="itemTooltip"><%- makeTooltip(p) %></div></button>
+        </form>
+      </div>
+    <% }); %>
+    </div>
+  <% } else if (used >= max) { %>
+    <div class="note-box">제단의 힘이 다했다. 이번 모험에서는 더 쓸 수 없다.</div>
+  <% } else { %>
+    <div class="note-box">바칠 에픽 장비를 고른다.</div>
+    <div class="list">
+    <% let any = false; char.inventory.forEach(function (it, i) { if (!it || it.rarity !== 5 || it.type > 3) return; any = true; %>
+      <div class="charItem">
+        <form action="/altar" method="post">
+          <input type="hidden" name="action" value="offer"><input type="hidden" name="idx" value="<%= i %>">
+          <button type="submit"><span class="rarityEpic"><%= it.name %></span> <small style="color:var(--ash)"><%= it.rank %>급</small>
+            <div class="itemTooltip"><%- makeTooltip(it) %></div></button>
+        </form>
+      </div>
+    <% }); %>
+    </div>
+    <% if (!any) { %><div class="note-box" style="color:var(--ash)">인벤토리에 에픽 장비가 없다.</div><% } %>
+  <% } %>
+  <div class="backLink"><a href="/">돌아가기</a></div>
+</div>
+</body>
+</html>
