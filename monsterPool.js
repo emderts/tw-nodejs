@@ -58,6 +58,8 @@ const TIERS = {
   13: [   // 보스
     { key: 'd725',  deck: [3, 3, 3], extraFav: 2, note: '레드 — 이상해꽃·거북왕·잠만보·피카츄 (4폼, -75%)', tune: (e) => { e.base.maxHp = Math.round(e.base.maxHp * 0.85); e.skillScale = { damage: 0.7, specialCost: 4 }; } },   // 수면가루(SP 25) 등 저비용 스페셜 억제
     { key: 'mIZ', deck: [3, 3, 3], extraFav: 2, note: '달빛의 타락자 iZ — 중독을 깔고 증폭', tune: (e) => {
+      e.skill.base[0].damage = 0.95; e.skill.base[1].damage = 0.85;
+      e.skill.base[1].effect[0].value = 1.6; e.skill.base[1].tooltip = '적이 [중독] 상태면 계수 +0.6';
       e.skill.base[0].effect[0].chance = 0.35; e.skill.base[0].tooltip = '35% 확률로 적에게 2턴 간 [중독]';
       e.skill.base[2].effect[0].chance = 0.6; e.skill.base[2].effect[0].buffDur = 1; e.skill.base[2].tooltip = '60% 확률로 적에게 1턴 간 [수면]';
       for (const ef of e.skill.special.effect) ef.buffDur = 1;
@@ -76,7 +78,7 @@ const TIERS = {
     { key: 'rsVyres', deck: [4, 4, 3], extraFav: 2, note: '엘바스의 쌍검사 바이레스 — 서리와 불꽃 연계' },
   ],
   9: [
-    { key: 'mCouncil',      deck: [4, 4, 4], extraFav: 2, note: '달빛 의회 — 받은 만큼 상대 카드를 지운다' },
+    { key: 'mCouncil',      deck: [4, 4, 4], extraFav: 2, note: '달빛 의회 — 받은 만큼 자기 의석이 무너진다' },
     { key: 'rsInzeal',      deck: [4, 2, 3], extraFav: 2, note: '인-질 — 파멸을 퍼뜨린다', tune: (e) => {
       delete e.startEffects;
       e.skill.base[0].name = '파멸의 전도'; e.skill.base[0].damage = 0.8;

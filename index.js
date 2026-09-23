@@ -403,11 +403,13 @@ io.on('connection', (socket) => {
     const result = t.bmod.procBattleTurn(key, eKey, 1);
     if (t.rightChr.pendingShuffle) { t.rightChr.pendingShuffle = false; run.shuffleDeck(t.edeck); t.eplayed = [0, 0, 0]; }   // 환기
     if (t.leftChr.pendingShuffle) { t.leftChr.pendingShuffle = false; run.shuffleDeck(t.pdeck); }
-    for (const cut of (t.leftChr.pendingCardCut || [])) {   // 달빛 의회: 카드 제거
-      const i2 = t.leftChr.deck.findIndex(c => c.type === cut);
-      if (i2 >= 0 && t.leftChr.deck.length > 3) { t.leftChr.deck.splice(i2, 1); const j2 = t.pdeck.draw.findIndex(c => c.type === cut); if (j2 >= 0) t.pdeck.draw.splice(j2, 1); }
+    for (const [chr, st] of [[t.leftChr, t.pdeck], [t.rightChr, t.edeck]]) {   // 달빛 의회: 자기 덱에서 카드 제거
+      for (const cut of (chr.pendingCardCut || [])) {
+        const i2 = chr.deck.findIndex(c => c.type === cut);
+        if (i2 >= 0 && chr.deck.length > 3) { chr.deck.splice(i2, 1); const j2 = st.draw.findIndex(c => c.type === cut); if (j2 >= 0) st.draw.splice(j2, 1); else { const k2 = st.discard.findIndex(c => c.type === cut); if (k2 >= 0) st.discard.splice(k2, 1); } }
+      }
+      chr.pendingCardCut = null;
     }
-    t.leftChr.pendingCardCut = null;
     if (t.restoreSkill) {   // 보스의 기술 사용 후 원래 스킬로
       const L = t.leftChr, r0 = t.restoreSkill;
       L.skill.base[r0.slot] = r0.skill; if (L.skillOri && r0.ori) L.skillOri.base[r0.slot] = r0.ori;

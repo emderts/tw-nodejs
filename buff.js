@@ -7253,20 +7253,20 @@ module.exports.getBuffData = function(eff) {
     break;
   case 10719 :   // 달빛 의회
     retObj.name = '달빛 의회'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 1; retObj.isDebuff = false; retObj.durOff = null;
-    retObj.tooltip = '피격당한 기술에 따라 [필링]/[제논]/[데키]가 쌓이고, 한 쪽이 최대 생명력의 35%를 넘으면 그 기술의 카드가 상대 덱에서 사라진다';
+    retObj.tooltip = '피격당한 기술에 따라 [필링]/[제논]/[데키]가 쌓이고, 한 쪽이 최대 생명력의 35%를 넘으면 자신의 덱에서 해당 카드가 한 장 사라진다';
     retObj.effect.push({ active : cons.ACTIVE_TYPE_TAKE_HIT, code : 'councilMark' });
     break;
   case 10720 :
     retObj.name = '필링'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 2; retObj.maxStack = 9999999; retObj.isDebuff = false; retObj.durOff = null;
-    retObj.tooltip = '가위로 받은 피해가 쌓인다. 최대 생명력의 35%를 넘으면 상대의 보 카드가 사라진다';
+    retObj.tooltip = '가위로 받은 피해가 쌓인다. 최대 생명력의 35%를 넘으면 자신의 보 카드가 사라진다';
     break;
   case 10721 :
     retObj.name = '제논'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 2; retObj.maxStack = 9999999; retObj.isDebuff = false; retObj.durOff = null;
-    retObj.tooltip = '바위로 받은 피해가 쌓인다. 최대 생명력의 35%를 넘으면 상대의 가위 카드가 사라진다';
+    retObj.tooltip = '바위로 받은 피해가 쌓인다. 최대 생명력의 35%를 넘으면 자신의 가위 카드가 사라진다';
     break;
   case 10722 :
     retObj.name = '데키'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 2; retObj.maxStack = 9999999; retObj.isDebuff = false; retObj.durOff = null;
-    retObj.tooltip = '보로 받은 피해가 쌓인다. 최대 생명력의 35%를 넘으면 상대의 바위 카드가 사라진다';
+    retObj.tooltip = '보로 받은 피해가 쌓인다. 최대 생명력의 35%를 넘으면 자신의 바위 카드가 사라진다';
     break;
   case 10620 :
     retObj.name = '소형 동물'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 2; retObj.maxStack = 12; retObj.isDebuff = false; retObj.durOff = null;
