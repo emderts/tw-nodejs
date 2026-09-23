@@ -971,6 +971,50 @@ const chara = require('./chara');
                effect : [{code : cons.EFFECT_TYPE_SET_ALL_BUFF_DURATION, value : -1, buffCode : 90076, isPercentChar : true, percentKey : 'curSp'}]}
   };
   module.exports.rsDeci = charLeft;
+
+  charLeft = {name : '엘바스의 쌍검사 바이레스', nameType : cons.NAME_KOR_NO_END_CONS, title : '쌍검사', rank : 6, level : 40,
+      stat : {maxHp : 900000, phyAtk : 430, magAtk : 430, spCharge : 20}};
+  _initChar(charLeft);
+  charLeft.items = {};
+  charLeft.boss = 0.995;
+  charLeft.bossStatus = 0.2;
+  charLeft.startEffects = [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 10715, buffDur : null}];
+  charLeft.skill = {
+      base : [
+              {code : 90420, name : '프로스트 블레이드', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1.4,
+                effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.5, buffCode : 12, buffDur : 2}],
+                tooltip : '50% 확률로 적에게 2턴 간 [빙결]. 적에게 [화상]이 있으면 계수 2배',
+                flavor : '서리의 칼날. 불에 그을린 자리를 먼저 찾는다.'},
+              {code : 90421, name : '소드 오브 파이어', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 1.4,
+                effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.5, buffCode : 1, buffDur : 2}],
+                tooltip : '50% 확률로 적에게 2턴 간 [화상]. 적에게 [빙결]이 있으면 계수 2배',
+                flavor : '불꽃의 칼날. 얼어붙은 자리를 먼저 찾는다.'},
+              {code : 90422, name : '쌍검사의 반격술', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 0.3,
+                effect : [],
+                tooltip : '상성 패배 시 적이 쓴 기술을 그대로 되돌려준다',
+                flavor : '두 자루를 모두 뒤로 돌린다. 받아친 자리가 곧 빈틈이 된다.'}
+             ],
+      drive : {code : 90423, name : '한 몸이 된 쌍검', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.SKILL_TYPE_DRIVE, active : cons.ACTIVE_TYPE_TIE,
+               cost : 0, chance : 1,
+               effect : [{code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL, value : 0.2}],
+               tooltip : '가위바위보에서 비기면 발동해 물리 0.2 피해',
+               flavor : '두 자루가 하나처럼 움직인다. 멈춘 순간에도 칼끝은 나아간다.'},
+      special : {code : 90424, name : '서리와 불꽃의 칼날폭풍', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 135,
+               effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 1, buffDur : 2},
+                         {code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 12, buffDur : 2},
+                         {code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL, value : 0.2},
+                         {code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL, value : 0.2},
+                         {code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL, value : 0.2},
+                         {code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL, value : 0.2},
+                         {code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_MAGICAL, value : 0.2},
+                         {code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_MAGICAL, value : 0.2},
+                         {code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_MAGICAL, value : 0.2},
+                         {code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_MAGICAL, value : 0.2}],
+               tooltip : '적에게 2턴 간 [화상]과 [빙결], 물리 0.2 피해 4회와 마법 0.2 피해 4회',
+               flavor : '서리와 불꽃이 같은 자리에서 돈다.'}
+  };
+  module.exports.rsVyres = charLeft;
+
   
   charLeft = {name : '프사이', nameType : cons.NAME_KOR_NO_END_CONS, title : '승급 시험관', rank : 9, level : 40, 
       stat : {maxHp : 672, phyAtk : 33.75, magAtk : 61.25}};

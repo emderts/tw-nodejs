@@ -63,9 +63,10 @@ const TIERS = {
       delete e.startEffects; delete e.skill.special;
       for (const k of e.skill.base) for (const ef of (k.effect || [])) if (ef.buffCode === 4) ef.chance = 0.35;
       e.skill.drive.chance = 0.3;
-      e.skill.drive.effect = [{ code: cons.EFFECT_TYPE_ADD_HIT, type: cons.DAMAGE_TYPE_ABSOLUTE, isPercentOppStat: true, percentKey: 'maxHp', value: 0.15 }];
-      e.skill.drive.tooltip = '턴 종료 시 상대가 [기절]이 아니면 30% 확률로 상대 최대 생명력의 15% 절대 피해';
+      e.skill.drive.effect = [{ code: cons.EFFECT_TYPE_ADD_HIT, type: cons.DAMAGE_TYPE_ABSOLUTE, isPercentOppStat: true, percentKey: 'maxHp', value: 0.1275 }];
+      e.skill.drive.tooltip = '턴 종료 시 상대가 [기절]이 아니면 30% 확률로 상대 최대 생명력의 12.75% 절대 피해';
     } },
+    { key: 'rsVyres', deck: [4, 4, 3], extraFav: 2, note: '엘바스의 쌍검사 바이레스 — 서리와 불꽃 연계' },
   ],
   9: [
     { key: 'rsInzeal',      deck: [4, 2, 3], extraFav: 2, note: '인-질 — 파멸을 퍼뜨린다', tune: (e) => {

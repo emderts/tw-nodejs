@@ -7230,6 +7230,13 @@ module.exports.getBuffData = function(eff) {
     retObj.name = '영혼 축전'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 2; retObj.maxStack = 999999; retObj.isDebuff = false; retObj.durOff = null;
     retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'hit', value : 0 });
     break;
+  case 10715 :   // 엘바스의 쌍검사 바이레스
+    retObj.name = '쌍검사의 본능'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 1; retObj.isDebuff = false; retObj.durOff = null;
+    retObj.tooltip = '프로스트 블레이드는 [화상]인 적에게, 소드 오브 파이어는 [빙결]인 적에게 계수 2배. 반격술로 진 턴에는 적 기술을 되돌려준다';
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_DAMAGE, code : cons.EFFECT_TYPE_MULTIPLY_DAMAGE, anySkill : true, chkMySkillIdx : 0, chkOpp : [1], value : 2 });
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_DAMAGE, code : cons.EFFECT_TYPE_MULTIPLY_DAMAGE, anySkill : true, chkMySkillIdx : 1, chkOpp : [12], value : 2 });
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_SKILL_LOSE, code : 'mirror', chance : 1, chkMySkillIdx : 2 });
+    break;
   case 10620 :
     retObj.name = '소형 동물'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 2; retObj.maxStack = 12; retObj.isDebuff = false; retObj.durOff = null;
     retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'maxHp', value : 12 });
