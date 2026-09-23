@@ -338,6 +338,7 @@ io.on('connection', (socket) => {
     const snap = JSON.parse(t.snapshot);
     const bm = Object.assign(new battlemodule.bmodule(), snap.bm);
     t.leftChr = snap.L; t.rightChr = snap.R; bm.charLeft = t.leftChr; bm.charRight = t.rightChr; bm.result = '';
+    battlemodule.relinkRefs(t.leftChr, t.rightChr);   // 버프·아이템 역참조 복구 (중첩 수 계산용)
     t.bmod = bm; t.pdeck = snap.pdeck; t.edeck = snap.edeck; t.eplayed = snap.eplayed; t.resets = snap.resets; t.redraws = snap.redraws; t.used = snap.used; t.nextEKey = snap.nextEKey; t.lastKey = snap.lastKey; t.predict = snap.predict; t.useState = snap.useState;
     t.undos--; t.snapshot = null;
     t.bmod.result = (snap.bm.result || '') + '<span class="skillDamage">한 번만 물러줘라 — 방금 턴을 물렀다.</span><br>';

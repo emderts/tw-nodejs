@@ -35,6 +35,15 @@ function serializeReplacer(k, v) {
 module.exports.serialize = function(bm, L, R, extra) {
   return JSON.stringify(Object.assign({ bm, L, R }, extra || {}), serializeReplacer);
 };
+// 직렬화에서 빠진 역참조(effect.buff / effect.item)를 다시 잇는다 — 안 하면 중첩 수를 못 읽어 1중첩으로 계산된다
+function relinkRefs(L, R) {
+  for (const c of [L, R]) {
+    if (!c) continue;
+    for (const b of (c.buffs || [])) for (const e of (b.effect || [])) e.buff = b;
+    for (const k in (c.items || {})) { const it = c.items[k]; if (it && it.effect) for (const e of it.effect) e.item = it; }
+  }
+}
+module.exports.relinkRefs = relinkRefs;
 module.exports.restore = function(json) {
   const snap = JSON.parse(json);
   // modFunc(함수 배열)는 직렬화되지 않으므로 빈 인스턴스에서 한 번 만들어 둔 뒤 상태만 덮어쓴다
@@ -42,10 +51,7 @@ module.exports.restore = function(json) {
   const bm = Object.assign(proto, snap.bm);
   bm.modFunc = makeModFuncs();
   bm.charLeft = snap.L; bm.charRight = snap.R;
-  // effect.buff 재연결 (버프 효과는 자신이 속한 버프를 참조 — 스택·지속 조작용)
-  for (const c of [snap.L, snap.R]) for (const b of (c.buffs || [])) for (const e of (b.effect || [])) e.buff = b;
-  // effect.item 재연결 (아이템 값 비례 효과용)
-  for (const c of [snap.L, snap.R]) for (const k in (c.items || {})) { const it = c.items[k]; if (it && it.effect) for (const e of it.effect) e.item = it; }
+  relinkRefs(snap.L, snap.R);
   // 쿨다운 목록 재구성: 저장된 turnCooldown > 0 인 효과들을 다시 모은다
   const cds = [];
   for (const c of [snap.L, snap.R]) {
