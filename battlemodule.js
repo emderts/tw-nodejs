@@ -172,12 +172,17 @@ Battlemodule.prototype._borrowGear = function(winner, loser, rank, name) {
 Battlemodule.prototype._checkRevive = function() {
   for (const [me, opp] of [[this.charLeft, this.charRight], [this.charRight, this.charLeft]]) {
     if (me.curHp > 0) continue;
-    const shard = (me.buffs || []).find(x => x.id === 10713);   // [조각남]: 한 조각을 되돌려 받고 부활
-    if (shard) {
-      shard.stack = (shard.stack || 1) - 1; if (shard.stack <= 0) removeBuff(shard);
-      calcStats(me, opp); me.curHp = me.stat.maxHp;
-      this.result += '<span class="skillDamage">[ 텍터스의 조각 ] 조각조각나도 다시 살아 움직인다! (' + me.name + ' 생명력 ' + me.stat.maxHp + ')</span><br>';
-      continue;
+    const hasShard = (me.items || {}) && Object.values(me.items || {}).some(it => it && it.shardRevive);   // 텍터스의 조각
+    if (hasShard) {
+      const cur = (me.buffs || []).find(x => x.id === 10713);
+      const used = cur ? (cur.stack || 1) : 0;
+      if (used < 3) {
+        const bo = buffMdl.getBuffData({ buffCode : 10713 }); bo.dur = null; bo.stack = 1;
+        this.giveBuff(me, me, bo, false, '텍터스의 조각');
+        calcStats(me, opp); me.curHp = me.stat.maxHp;
+        this.result += '<span class="skillDamage">[ 텍터스의 조각 ] 조각조각나도 다시 살아 움직인다! (' + me.name + ' 생명력 ' + me.stat.maxHp + ')</span><br>';
+        continue;
+      }
     }
     const guard = (me.buffs || []).find(x => x.id === 10550);   // [단장의 규약]: 생명력 1로 버팀
     if (guard) { me.curHp = 1; removeBuff(guard); this.result += '<span class="skillDamage">[ 단장의 규약 ] 효과로 ' + me.name + '이(가) 생명력 1로 버텼다!</span><br>'; continue; }
@@ -1721,7 +1726,7 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
       if (eff.oppBuff) { const bd = buffMdl.getBuffData({ buffCode : eff.oppBuff.buffCode }); bd.dur = eff.oppBuff.dur; this.giveBuff(winner, loser, bd, true, eff.name); }
     } else if (eff.code === 'spBurn') {   // 설퍼라스: 현재 SP 비례 마법 피해 후 SP 0
       const sp = Math.round(winner.curSp || 0); if (sp <= 0) { this.result += '[ ' + eff.name + ' ] 남은 힘이 없다.<br>'; continue; }
-      winner.curSp = 0;
+      if (!eff.keepSp) winner.curSp = 0;
       const rd = { value : Math.max(1, Math.round(sp * eff.value * (1 - (loser.stat.magReduce || 0)))), type : cons.DAMAGE_TYPE_MAGICAL, reduce : 0, noProc : true };
       this.dealDamage(winner, loser, rd);
       this.result += '<span class="skillDamage">[ ' + eff.name + ' ] 꺼진 불을 한 번에 태웠다! ' + loser.name + '에게 ' + rd.value + ' 마법 피해 (SP ' + sp + ')</span><br>';
@@ -2546,11 +2551,17 @@ function calcStats(chara, opp) {
     for (const sk of chara.skill.base) if (sk && sk.damage) sk.damage = Math.round(sk.damage * chara.skillScale.damage * 100) / 100;
     if (chara.skill.special && chara.skillScale.specialCost) chara.skill.special.cost = Math.round(chara.skill.special.cost * chara.skillScale.specialCost);
   }
-  for (const k in (chara.items || {})) {   // 재창시의 룬: 물리/마법 공격력을 높은 쪽으로 통일
-    if (!chara.items[k] || !chara.items[k].unifyAtk) continue;
+  for (const k in (chara.items || {})) {   // 재창시의 룬: 두 갈래를 높은 쪽 하나로 합친다 (합산 × 보너스, 낮은 쪽은 0)
+    const rune = chara.items[k]; if (!rune || !rune.unifyAtk) continue;
+    const bonus = rune.unifyAtk === true ? 1.2 : rune.unifyAtk;
+    const phySum = (chara.stat.phyAtk || 0) + (chara.stat.phyAtkMin || 0), magSum = (chara.stat.magAtk || 0) + (chara.stat.magAtkMin || 0);
+    const toPhy = phySum >= magSum;
     for (const [a, b] of [['phyAtk', 'magAtk'], ['phyAtkMin', 'magAtkMin'], ['phyAtkMax', 'magAtkMax']]) {
-      const hi = Math.max(chara.stat[a] || 0, chara.stat[b] || 0); chara.stat[a] = hi; chara.stat[b] = hi;
+      const hi = toPhy ? a : b, lo = toPhy ? b : a;
+      chara.stat[hi] = Math.round(((chara.stat[a] || 0) + (chara.stat[b] || 0)) * bonus);
+      chara.stat[lo] = 0;
     }
+    break;
   }
   for (const k in (chara.items || {})) {   // 태그 중첩당 스탯 (외우주 라인)
     const it = chara.items[k]; if (!it || !it.perTag) continue;

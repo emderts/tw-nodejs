@@ -7180,7 +7180,7 @@ module.exports.getBuffData = function(eff) {
     break;
   case 10703 :
     retObj.name = '대지의 품'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 1; retObj.isDebuff = false;
-    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'dmgReduce', value : 25 });
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'dmgReduce', value : 60 });
     break;
   case 10704 :
     retObj.name = '타렉고사의 메아리'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 1; retObj.isDebuff = false; retObj.durOff = null;
@@ -7223,8 +7223,8 @@ module.exports.getBuffData = function(eff) {
     retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'crit', value : 1 });
     break;
   case 10713 :
-    retObj.name = '조각남'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 2; retObj.maxStack = 2; retObj.isDebuff = false; retObj.durOff = null;
-    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_PERCENTAGE, key : 'maxHp', value : -0.2 });
+    retObj.name = '조각남'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 2; retObj.maxStack = 3; retObj.isDebuff = false; retObj.durOff = null;
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_MULTIPLY, key : 'maxHp', value : 0.6 });
     break;
   case 10714 :
     retObj.name = '영혼 축전'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 2; retObj.maxStack = 999999; retObj.isDebuff = false; retObj.durOff = null;
