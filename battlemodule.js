@@ -952,7 +952,7 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
       if (eff.chanceAddKey == 'hit') {
         chance += winner.stat.hit > 1 ? (winner.stat.hit - 1) : 0;
       } else {
-        chance += winner.stat[eff.chanceAddKey * factor];
+        chance += (winner.stat[eff.chanceAddKey] || 0) * factor;   // 키에 곱셈을 하던 오타 — chance가 NaN이 되어 확률 효과가 전혀 발동하지 않았다
       }
     }
     if (eff.chanceSubKeyOpp) {
