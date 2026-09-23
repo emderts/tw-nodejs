@@ -299,8 +299,12 @@ Battlemodule.prototype._doBattleTurnManual = function(left, right) {
         && !(findBuffByCode(this.charRight, 10004).length > 0 || findBuffByCode(this.charRight, 10005).length > 0)) {
       this.result += this.charLeft.name + '의 [ ' + this.charLeft.skill.base[left].name + ' ] vs ' + this.charRight.name + '의 [ ' + this.charRight.skill.base[right].name + ' ]</span><br>';
       this.result += '비겼습니다!<br>';
+      this.resolveEffects(this.charLeft, this.charRight, getBuffEffects(this.charLeft, cons.ACTIVE_TYPE_TIE), null, this.charLeft.skill.base[left]);
+      this.resolveEffects(this.charRight, this.charLeft, getBuffEffects(this.charRight, cons.ACTIVE_TYPE_TIE), null, this.charRight.skill.base[right]);
       this.resolveEffects(this.charLeft, this.charRight, getItemEffects(this.charLeft, cons.ACTIVE_TYPE_TIE), null, this.charLeft.skill.base[left]);
       this.resolveEffects(this.charRight, this.charLeft, getItemEffects(this.charRight, cons.ACTIVE_TYPE_TIE), null, this.charRight.skill.base[right]);
+      if (this.checkDrive(this.charLeft, cons.ACTIVE_TYPE_TIE)) this.resolveDrive(this.charLeft, this.charRight, null);   // 무승부 드라이브 (한 몸이 된 쌍검)
+      if (this.checkDrive(this.charRight, cons.ACTIVE_TYPE_TIE)) this.resolveDrive(this.charRight, this.charLeft, null);
       this.charLeft.lastSkillCode = this.charLeft.skill.base[left].code;
       this.charRight.lastSkillCode = this.charRight.skill.base[right].code;
       this.redecide = true;
