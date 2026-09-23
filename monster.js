@@ -1015,6 +1015,115 @@ const chara = require('./chara');
   };
   module.exports.rsVyres = charLeft;
 
+  // ---- 달빛의 수문장 (3사이클) ----
+  charLeft = {name : '달빛의 수문장', nameType : cons.NAME_KOR_NO_END_CONS, title : '수문장', rank : 7, level : 12,
+      stat : {maxHp : 1200, phyAtk : 55, magAtk : 45, spCharge : 10}};
+  _initChar(charLeft); charLeft.items = {}; charLeft.boss = 0.9; charLeft.bossStatus = 0.1;
+  charLeft.skill = { base : [
+      {code : 90430, name : '방패 일격', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1.0,
+       effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.1, buffCode : 4, buffDur : 1}],
+       tooltip : '10% 확률로 적에게 1턴 간 [기절]', flavor : '문 앞을 막아선 자의 첫 수.'},
+      {code : 90431, name : '달빛의 징표', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 0.8,
+       effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, chance : 1, buffCode : 10716, buffDur : 2}],
+       tooltip : '적에게 2턴 간 [달빛의 징표] (턴 시작 시 시전자 마법 공격력만큼 절대 피해)', flavor : '달빛이 표식을 남긴다. 표식은 사냥의 시작이다.'},
+      {code : 90432, name : '방패 일격', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1.0,
+       effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.1, buffCode : 4, buffDur : 1}],
+       tooltip : '10% 확률로 적에게 1턴 간 [기절]', flavor : '문 앞을 막아선 자의 첫 수.'}
+     ],
+     special : {code : 90433, name : '광란의 추적', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 70,
+       effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, chance : 1, buffCode : 10717, buffDur : null}],
+       tooltip : '[광란의 추적] 부여 — 가위 스킬의 계수가 2.5로 고정된다', flavor : '표식을 쫓기 시작하면 멈추지 않는다.'} };
+  module.exports.mGatekeeper = charLeft;
+
+  // ---- 대마법사 프레나 ----
+  charLeft = {name : '대마법사 프레나', nameType : cons.NAME_KOR_NO_END_CONS, title : '대마법사', rank : 5, level : 24,
+      stat : {maxHp : 9000, phyAtk : 70, magAtk : 110, spCharge : 12}};
+  _initChar(charLeft); charLeft.items = {}; charLeft.boss = 0.93; charLeft.bossStatus = 0.15;
+  charLeft.skill = { base : [
+      {code : 90434, name : '번개 충격', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1.3,
+       effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.33, buffCode : 6, buffDur : 2}],
+       tooltip : '33% 확률로 적에게 2턴 간 [마비]', flavor : '손끝에서 하늘이 갈라진다.'},
+      {code : 90435, name : '화염의 비', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 1.3,
+       effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.33, buffCode : 1, buffDur : 2}],
+       tooltip : '33% 확률로 적에게 2턴 간 [화상]', flavor : '하늘이 먼저 타고, 그다음 땅이 탄다.'},
+      {code : 90436, name : '눈보라', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 1.3,
+       effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.33, buffCode : 12, buffDur : 2}],
+       tooltip : '33% 확률로 적에게 2턴 간 [빙결]', flavor : '숨을 들이켠 자리마다 서리가 앉는다.'}
+     ],
+     drive : {code : 90437, name : '환기', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.SKILL_TYPE_DRIVE, active : cons.ACTIVE_TYPE_TAKE_HIT,
+       cost : 5, chance : 1, effect : [{code : 'shuffleDeck'}],
+       tooltip : '피격 시 발동해 자신의 덱을 다시 섞는다', flavor : '판을 흐트러뜨리는 것도 마법이다.'},
+     special : {code : 90438, name : '마법 폭풍', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 88,
+       effect : [{code : 'castHand'}],
+       tooltip : '손에 든 카드를 전부 써서 그 기술을 연달아 시전한다', flavor : '한 손에 셋을 쥐고 모두 던진다.'} };
+  module.exports.mFrena = charLeft;
+
+  // ---- 대흑마술사 R. 리베이 (3사이클) ----
+  charLeft = {name : '대흑마술사 R. 리베이', nameType : cons.NAME_KOR_NO_END_CONS, title : '대흑마술사', rank : 7, level : 12,
+      stat : {maxHp : 1100, phyAtk : 40, magAtk : 60, spCharge : 12}};
+  _initChar(charLeft); charLeft.items = {}; charLeft.boss = 0.9; charLeft.bossStatus = 0.1;
+  const darkSummon = {code : cons.EFFECT_TYPE_SELF_BUFF, chance : 1, buffCode : 10718, buffDur : 4};
+  charLeft.skill = { base : [
+      {code : 90440, name : '어둠의 소환', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 0.4,
+       effect : [JSON.parse(JSON.stringify(darkSummon))],
+       tooltip : '자신에게 4턴 간 [어둠의 소환] (턴 종료 시 마법 0.2 + 물리 0.2 피해, 중첩)', flavor : '부르면 온다. 돌려보내는 법은 적혀 있지 않다.'},
+      {code : 90441, name : '어둠의 소환', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 0.4,
+       effect : [JSON.parse(JSON.stringify(darkSummon))],
+       tooltip : '자신에게 4턴 간 [어둠의 소환] (턴 종료 시 마법 0.2 + 물리 0.2 피해, 중첩)', flavor : '부르면 온다. 돌려보내는 법은 적혀 있지 않다.'},
+      {code : 90442, name : '암흑의 화살', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 1.0,
+       effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.35, buffCode : 8, buffDur : 2}],
+       tooltip : '35% 확률로 적에게 2턴 간 [암흑]', flavor : '화살이 지나간 자리에 빛이 남지 않는다.'}
+     ],
+     special : {code : 90443, name : '대규모 소환', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 80,
+       effect : [JSON.parse(JSON.stringify(darkSummon)), JSON.parse(JSON.stringify(darkSummon)), JSON.parse(JSON.stringify(darkSummon))],
+       tooltip : '[어둠의 소환] 3개를 한 번에 부여', flavor : '한 번에 셋. 그 이상은 술자도 감당하지 못한다.'} };
+  module.exports.mLibei = charLeft;
+
+  // ---- 달빛 의회 ----
+  charLeft = {name : '달빛 의회', nameType : cons.NAME_KOR_NO_END_CONS, title : '의회', rank : 3, level : 32,
+      stat : {maxHp : 40000, phyAtk : 200, magAtk : 200, spCharge : 15}};
+  _initChar(charLeft); charLeft.items = {}; charLeft.boss = 0.96; charLeft.bossStatus = 0.2;
+  charLeft.startEffects = [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 10719, buffDur : null}];
+  charLeft.skill = { base : [
+      {code : 90450, name : '충격파', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1.0,
+       effect : [{code : cons.EFFECT_TYPE_ADD_HIT, chance : 0.35, type : cons.DAMAGE_TYPE_PHYSICAL, value : 0.4}],
+       tooltip : '35% 확률로 물리 0.4 추가 타격', flavor : '세 목소리가 같은 말을 하면 땅이 흔들린다.'},
+      {code : 90451, name : '정신의 채찍', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 1.0,
+       effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.35, buffCode : 11, buffDur : 2}],
+       tooltip : '35% 확률로 적에게 2턴 간 [광란]', flavor : '생각을 후려친다.'},
+      {code : 90452, name : '천둥충격', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1.0,
+       effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.35, buffCode : 6, buffDur : 2}],
+       tooltip : '35% 확률로 적에게 2턴 간 [마비]', flavor : '판결은 언제나 벼락처럼 내려온다.'}
+     ],
+     special : {code : 90453, name : '달의 의식', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 120,
+       effect : [{code : 'castSlot', slot : 0}, {code : 'castSlot', slot : 1}, {code : 'castSlot', slot : 2}],
+       tooltip : '가위·바위·보 기술을 한 번씩 시전한다', flavor : '셋이 모이면 의식이 시작된다.'} };
+  module.exports.mCouncil = charLeft;
+
+  // ---- 달빛의 타락자 iZ (13사이클) ----
+  charLeft = {name : '달빛의 타락자 iZ', nameType : cons.NAME_KOR_NO_END_CONS, title : '타락자', rank : 2, level : 36,
+      stat : {maxHp : 60000, phyAtk : 260, magAtk : 260, spCharge : 18}};
+  _initChar(charLeft); charLeft.items = {}; charLeft.boss = 0.96; charLeft.bossStatus = 0.2;
+  charLeft.skill = { base : [
+      {code : 90460, name : '오염', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1.1,
+       effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.45, buffCode : 2, buffDur : 2}],
+       tooltip : '45% 확률로 적에게 2턴 간 [중독]', flavor : '닿은 자리부터 물들기 시작한다.'},
+      {code : 90461, name : '오염 증폭', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 1.0,
+       effect : [{code : cons.EFFECT_TYPE_MULTIPLY_DAMAGE, active : cons.ACTIVE_TYPE_CALC_DAMAGE, anySkill : true, chkOpp : [2], value : 1.7}],
+       tooltip : '적이 [중독] 상태면 계수 +0.7', flavor : '물든 것을 더 짙게.'},
+      {code : 90462, name : '사술', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 0.3,
+       effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, chance : 1, buffCode : 5, buffDur : 2}],
+       tooltip : '적에게 2턴 간 [수면]', flavor : '눈을 감기는 데엔 힘이 필요 없다.'}
+     ],
+     drive : {code : 90463, name : '정신 혼돈', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.SKILL_TYPE_DRIVE, active : cons.ACTIVE_TYPE_SKILL_LOSE,
+       cost : 10, chance : 0.4, effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 11, buffDur : 2}],
+       tooltip : '상성 패배 시 40% 확률로 적에게 2턴 간 [광란]', flavor : '밀릴수록 상대의 머릿속이 시끄러워진다.'},
+     special : {code : 90464, name : '완연한 타락', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 99,
+       effect : [1, 2, 3, 6, 7, 8, 11, 12].map(c => ({code : cons.EFFECT_TYPE_OPP_BUFF, chance : 1, buffCode : c, buffDur : 2})),
+       tooltip : '[기절]을 제외한 모든 표준 상태이상을 2턴 간 부여', flavor : '남김없이 물들인다.'} };
+  module.exports.mIZ = charLeft;
+
+
   
   charLeft = {name : '프사이', nameType : cons.NAME_KOR_NO_END_CONS, title : '승급 시험관', rank : 9, level : 40, 
       stat : {maxHp : 672, phyAtk : 33.75, magAtk : 61.25}};

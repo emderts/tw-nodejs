@@ -1667,6 +1667,31 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
       calcStats(winner, loser);
       winner.curHp = 179;
       this.result += '<span class="skillDamage">[ ' + eff.name + ' ] 맹약이 발동한다 — ' + winner.name + '으로 변모했다! (179 / 1799)</span><br>';
+    } else if (eff.code === 'shuffleDeck') {   // 프레나 [환기]: 자기 덱을 다시 섞는다
+      winner.pendingShuffle = true;
+      this.result += '[ ' + (eff.name || '환기') + ' ] ' + winner.name + getIga(winner.nameType) + ' 패를 흐트러뜨렸다.<br>';
+    } else if (eff.code === 'castHand') {   // 프레나 [마법 폭풍]: 손에 든 카드 수만큼 기술을 연달아 시전
+      const hand = winner.handTypes || [0, 1, 2];
+      for (const idx of hand) {
+        const sk = winner.skill.base[idx]; if (!sk) continue;
+        const rd = this.calcDamage(winner, loser, sk); rd.noProc = true;
+        if (rd.hit) { this.dealDamage(winner, loser, rd); this.result += '<span class="skillDamage">[ ' + sk.name + ' ] ' + rd.value + '대미지!</span><br>';
+          this.resolveEffects(winner, loser, sk.effect || [], rd, sk); }
+        else this.result += '[ ' + sk.name + ' ] 빗나갔다!<br>';
+      }
+    } else if (eff.code === 'councilMark') {   // 달빛 의회: 피격 기술에 따라 스택을 쌓고, 임계치를 넘으면 상대 카드를 지운다
+      if (!damage || !damage.value) continue;
+      const idx = (loser.skill && loser.skill.base) ? loser.skill.base.findIndex(sk => sk && sk.code === loser.curSkillCode) : -1;
+      if (idx < 0) continue;
+      const MARK = [{ id : 10720, cut : 2 }, { id : 10721, cut : 0 }, { id : 10722, cut : 1 }][idx];
+      const bo = buffMdl.getBuffData({ buffCode : MARK.id }); bo.dur = null; bo.stack = Math.round(damage.value);
+      this.giveBuff(winner, winner, bo, false, eff.name);
+      const cur = (winner.buffs || []).find(x => x.id === MARK.id);
+      if (cur && cur.stack >= winner.stat.maxHp * 0.35) {
+        removeBuff(cur);
+        loser.pendingCardCut = (loser.pendingCardCut || []).concat([MARK.cut]);
+        this.result += '<span class="skillDamage">[ ' + eff.name + ' ] 의회가 판결을 내린다 — ' + loser.name + '의 [ ' + ['가위', '바위', '보'][MARK.cut] + ' ] 카드 한 장이 사라진다!</span><br>';
+      }
     } else if (eff.code === 'drain') {   // 착취의 무리: 이 버프를 가진 쪽(winner)에서 상대(loser)로 생명력 이동
       const v = Math.max(1, Math.round((winner.curHp || 0) * eff.value));
       winner.curHp -= v; loser.curHp = Math.min(loser.stat.maxHp, loser.curHp + v);
@@ -2512,6 +2537,12 @@ function calcStats(chara, opp) {
       continue;
     }
     
+    if (val.code === 'skillDamageSet') {   // [광란의 추적]: 지정 슬롯 계수 고정
+      const sk = chara.skill && chara.skill.base && chara.skill.base[val.slot];
+      const setv = (chara.skill && chara.skill.special && chara.skill.special.setChaseDamage) || val.value;
+      if (sk) sk.damage = setv;
+      continue;
+    }
     if (val.code === cons.EFFECT_TYPE_STAT_MULTIPLY) {
       chara.stat[val.key] *= Math.pow(val.value, stackMpl);
     } else if (val.code === cons.EFFECT_TYPE_STAT_PERCENTAGE) {

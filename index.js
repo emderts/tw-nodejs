@@ -399,7 +399,15 @@ io.on('connection', (socket) => {
     // 적의 이번 수는 지난 턴 끝에 미리 정해 둔 것 (손패에 없으면 다시 고름)
     let eKey = (t.nextEKey !== undefined && run.handTypes(t.edeck).includes(t.nextEKey)) ? t.nextEKey : decideEnemyKey(t);
     const playedKey = key;
+    t.rightChr.handTypes = run.handTypes(t.edeck);   // 마법 폭풍용
     const result = t.bmod.procBattleTurn(key, eKey, 1);
+    if (t.rightChr.pendingShuffle) { t.rightChr.pendingShuffle = false; run.shuffleDeck(t.edeck); t.eplayed = [0, 0, 0]; }   // 환기
+    if (t.leftChr.pendingShuffle) { t.leftChr.pendingShuffle = false; run.shuffleDeck(t.pdeck); }
+    for (const cut of (t.leftChr.pendingCardCut || [])) {   // 달빛 의회: 카드 제거
+      const i2 = t.leftChr.deck.findIndex(c => c.type === cut);
+      if (i2 >= 0 && t.leftChr.deck.length > 3) { t.leftChr.deck.splice(i2, 1); const j2 = t.pdeck.draw.findIndex(c => c.type === cut); if (j2 >= 0) t.pdeck.draw.splice(j2, 1); }
+    }
+    t.leftChr.pendingCardCut = null;
     if (t.restoreSkill) {   // 보스의 기술 사용 후 원래 스킬로
       const L = t.leftChr, r0 = t.restoreSkill;
       L.skill.base[r0.slot] = r0.skill; if (L.skillOri && r0.ori) L.skillOri.base[r0.slot] = r0.ori;

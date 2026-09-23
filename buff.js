@@ -7237,6 +7237,37 @@ module.exports.getBuffData = function(eff) {
     retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_DAMAGE, code : cons.EFFECT_TYPE_MULTIPLY_DAMAGE, anySkill : true, chkMySkillIdx : 1, chkOpp : [12], value : 2 });
     retObj.effect.push({ active : cons.ACTIVE_TYPE_SKILL_LOSE, code : 'mirror', chance : 1, chkMySkillIdx : 2 });
     break;
+  case 10716 :   // 달빛의 수문장 [달빛의 징표]
+    retObj.name = '달빛의 징표'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 1; retObj.isDebuff = true;
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_TURN_START, code : cons.EFFECT_TYPE_SELF_HIT, type : cons.DAMAGE_TYPE_ABSOLUTE, isPercentOppStat : true, percentKey : 'magAtk', value : 1.0 });   // 시전자 마법 공격력만큼 절대 피해 (계수 자리에 넣으면 공격력이 두 번 곱해진다)
+    break;
+  case 10717 :   // 달빛의 수문장 [광란의 추적]
+    retObj.name = '광란의 추적'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 1; retObj.isDebuff = false; retObj.durOff = null;
+    retObj.tooltip = '가위 스킬의 계수가 2.5로 고정된다';
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : 'skillDamageSet', slot : 0, value : 2.5 });
+    break;
+  case 10718 :   // 대흑마술사 [어둠의 소환]
+    retObj.name = '어둠의 소환'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 3; retObj.isDebuff = false;
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_TURN_END, code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_MAGICAL, value : 0.13 });
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_TURN_END, code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL, value : 0.13 });
+    break;
+  case 10719 :   // 달빛 의회
+    retObj.name = '달빛 의회'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 1; retObj.isDebuff = false; retObj.durOff = null;
+    retObj.tooltip = '피격당한 기술에 따라 [필링]/[제논]/[데키]가 쌓이고, 한 쪽이 최대 생명력의 35%를 넘으면 그 기술의 카드가 상대 덱에서 사라진다';
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_TAKE_HIT, code : 'councilMark' });
+    break;
+  case 10720 :
+    retObj.name = '필링'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 2; retObj.maxStack = 9999999; retObj.isDebuff = false; retObj.durOff = null;
+    retObj.tooltip = '가위로 받은 피해가 쌓인다. 최대 생명력의 35%를 넘으면 상대의 보 카드가 사라진다';
+    break;
+  case 10721 :
+    retObj.name = '제논'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 2; retObj.maxStack = 9999999; retObj.isDebuff = false; retObj.durOff = null;
+    retObj.tooltip = '바위로 받은 피해가 쌓인다. 최대 생명력의 35%를 넘으면 상대의 가위 카드가 사라진다';
+    break;
+  case 10722 :
+    retObj.name = '데키'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 2; retObj.maxStack = 9999999; retObj.isDebuff = false; retObj.durOff = null;
+    retObj.tooltip = '보로 받은 피해가 쌓인다. 최대 생명력의 35%를 넘으면 상대의 바위 카드가 사라진다';
+    break;
   case 10620 :
     retObj.name = '소형 동물'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 2; retObj.maxStack = 12; retObj.isDebuff = false; retObj.durOff = null;
     retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'maxHp', value : 12 });

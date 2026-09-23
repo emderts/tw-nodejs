@@ -104,6 +104,8 @@ function newDeckState(deck, opts) {
   return { draw: shuffle(deck.map(c => Object.assign({}, c))), hand: [], discard: [], everyTurn: !!(opts && opts.shuffleEveryTurn) };
 }
 // 손패를 3장까지 보충. 뽑을 카드가 없을 때는 손패가 비어 있어야만 버림 더미를 셔플
+// 덱을 다시 섞는다 (손패는 그대로 두고 버린 패까지 합쳐서)
+function shuffleDeck(st) { st.draw = shuffle(st.draw.concat(st.discard)); st.discard = []; st.shuffles = (st.shuffles || 0) + 1; }
 function drawHand(st) {
   if (st.everyTurn) { st.draw = shuffle(st.draw.concat(st.hand, st.discard)); st.hand = []; st.discard = []; }
   while (st.hand.length < HAND_SIZE) {
@@ -900,7 +902,7 @@ function applyEvent(char, code, optIdx) {
   return r;
 }
 
-module.exports = { amplify, jumpFloor, pickArtifact,
+module.exports = { shuffleDeck, amplify, jumpFloor, pickArtifact,
   configure, TOTAL_CYCLES, HAND_SIZE, RESETS_PER_BATTLE, resetDeck, redrawHand, drawExtra, runEffect, maxLives, initRun, stage, stageLabel, floorNo, isBossCycle, rankForCycle, advance,
   newDeckState, drawHand, playCard, handTypes, deckCounts, aiPick, makeEnemy, enemyFromFallen, snapshotForFallen,
   makeMonster, makeRosterEnemy, makeShop, makeShopOffers, makeEvent, makeEventByCode, applyEvent, applyBuffs, applyEnemyDebuffs, tickBuffs
