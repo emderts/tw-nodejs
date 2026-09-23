@@ -320,7 +320,11 @@ io.on('connection', (socket) => {
     if (st.cd > 0 || (it.use.maxUses && st.uses >= it.use.maxUses)) return;
     t.bmod.result = (t.bmod.result || '') + '<div class="note-box" style="margin:6px 0">[사용] ' + it.name + ' — ' + it.use.label + '</div>';
     const effs = JSON.parse(JSON.stringify(it.use.effect)).map(e => Object.assign({ name: it.name }, e));
-    t.bmod.resolveEffects(L, t.rightChr, effs, null, null);
+    if (effs.some(e => e.code === 'resetUses')) {   // 보장된 결과: 다른 [사용] 장비의 쿨다운·횟수 초기화
+      for (const k2 in t.useState) if (k2 !== slot) t.useState[k2] = { uses: 0, cd: 0 };
+      t.bmod.result = (t.bmod.result || '') + '[ ' + it.name + ' ] 모든 장비가 다시 준비됐다.<br>';
+    }
+    t.bmod.resolveEffects(L, t.rightChr, effs.filter(e => e.code !== 'resetUses'), null, null);
     st.uses++; st.cd = it.use.cooldown || 0;
     if (t.rightChr.curHp <= 0 || L.curHp <= 0) {   // 사용으로 전투가 끝난 경우
       const res = t.bmod._doBattleEnd(1); t.result = res; socket.emit('floorSelectEnd', t.bmod.result); return;

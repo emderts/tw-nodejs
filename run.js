@@ -167,7 +167,7 @@ function equipAndScale(e, cycle, boss) {
   if (boss && rarity < 5) rarity = rarity === 1 ? 2 : (rarity === 2 ? 4 : 5);
   e.items = {};
   // 적에게는 플레이어 전용/기믹 아이템(runEffect·드라이브 교체·시간대·커스텀 코드 효과) 제외
-  const enemyOk = (it) => it && !it.runEffect && !it.driveOverride && !it.timeMult && !(it.effect || []).some(ef => typeof ef.code === 'string');
+  const enemyOk = (it) => it && !it.runEffect && !it.driveOverride && !it.timeMult && !it.use && !(it.effect || []).some(ef => typeof ef.code === 'string');
   for (let t = 0; t <= 3; t++) {
     let it = null;
     for (let tries = 0; tries < 12 && !enemyOk(it); tries++) it = getItemSafe(e.rank, rarity, t);
