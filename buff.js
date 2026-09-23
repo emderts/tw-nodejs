@@ -7286,6 +7286,20 @@ module.exports.getBuffData = function(eff) {
     retObj.effect.push({ active : cons.ACTIVE_TYPE_DURATION_END, code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_MAGICAL, value : 1.2 });
     retObj.effect.push({ active : cons.ACTIVE_TYPE_TAKE_HIT, code : cons.EFFECT_TYPE_REMOVE_BUFF, buffTarget : [10725], removeBuff : true });
     break;
+  case 10726 :   // 초의 견갑 [초의 일격 준비]
+    retObj.name = '초의 일격'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 1; retObj.isDebuff = false; retObj.durOff = null;
+    retObj.tooltip = '다음 공격이 [초의 일격]으로 바뀐다';
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_SKILL_WIN, code : 'overrideSkill', removeBuff : true,
+      skill : { name : '초의 일격', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1.6, doubleIfOpp : 10701,
+                effect : [{ code : cons.EFFECT_TYPE_OPP_BUFF, chance : 1, buffCode : 10700, buffDur : 2 }] } });
+    break;
+  case 10727 :   // 갈의 장갑 [갈의 일격 준비]
+    retObj.name = '갈의 일격'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 1; retObj.isDebuff = false; retObj.durOff = null;
+    retObj.tooltip = '다음 공격이 [갈의 일격]으로 바뀐다';
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_SKILL_WIN, code : 'overrideSkill', removeBuff : true,
+      skill : { name : '갈의 일격', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 1.6, doubleIfOpp : 10700,
+                effect : [{ code : cons.EFFECT_TYPE_OPP_BUFF, chance : 1, buffCode : 10701, buffDur : 2 }] } });
+    break;
   case 10620 :
     retObj.name = '소형 동물'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 2; retObj.maxStack = 12; retObj.isDebuff = false; retObj.durOff = null;
     retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'maxHp', value : 12 });

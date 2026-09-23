@@ -1731,6 +1731,14 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
       const v = Math.round(winner.stat.phyAtk * eff.value); loser.curHp -= v;
       const bl = buffMdl.getBuffData({ buffCode : 8 }); bl.dur = 1; this.giveBuff(winner, loser, bl, true, eff.name);
       this.result += '<span class="skillDamage">[ ' + eff.name + ' ] 영혼 조각이 터져 나온다! ' + loser.name + '에게 ' + v + ' 절대 피해!</span><br>';
+    } else if (eff.code === 'overrideSkill') {   // 이번 턴 기술을 통째로 대체 (초/갈의 일격)
+      if (!skill) continue;
+      const rep2 = JSON.parse(JSON.stringify(eff.skill));
+      const marked = rep2.doubleIfOpp && (loser.buffs || []).some(b => b.id === rep2.doubleIfOpp);
+      if (marked) rep2.damage = Math.round(rep2.damage * 2 * 100) / 100;
+      const before = skill.name;
+      Object.assign(skill, rep2);
+      this.result += '[ ' + (eff.name || rep2.name) + ' ] ' + before + ' 대신 [ ' + rep2.name + ' ]' + (marked ? ' — 낙인이 겹쳐 두 배!' : '') + '<br>';
     } else if (eff.code === 'yogg') {   // 요그사론: 사용한 스킬 대신 무작위 자기 스킬 (다른 게 나오면 계수 +20%)
       if (!skill || !winner.skillOri) continue;
       const r = Math.floor(Math.random() * 3); const src = winner.skillOri.base[r]; if (!src) continue;

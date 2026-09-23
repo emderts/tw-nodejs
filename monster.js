@@ -1016,7 +1016,7 @@ const chara = require('./chara');
   module.exports.rsVyres = charLeft;
 
   // ---- 달빛의 수문장 (3사이클) ----
-  charLeft = {name : '달빛의 수문장', nameType : cons.NAME_KOR_NO_END_CONS, title : '수문장', rank : 7, level : 12,
+  charLeft = {name : '달빛의 수문장', nameType : cons.NAME_KOR_END_CONS, title : '수문장', rank : 7, level : 12,
       stat : {maxHp : 1200, phyAtk : 55, magAtk : 45, spCharge : 10}};
   _initChar(charLeft); charLeft.items = {}; charLeft.boss = 0.9; charLeft.bossStatus = 0.1;
   charLeft.skill = { base : [
@@ -1101,7 +1101,7 @@ const chara = require('./chara');
   module.exports.mCouncil = charLeft;
 
   // ---- 달빛의 타락자 iZ (13사이클) ----
-  charLeft = {name : '달빛의 타락자 iZ', nameType : cons.NAME_KOR_NO_END_CONS, title : '타락자', rank : 2, level : 36,
+  charLeft = {name : '달빛의 타락자 iZ', nameType : cons.NAME_KOR_END_CONS, title : '타락자', rank : 2, level : 36,
       stat : {maxHp : 60000, phyAtk : 260, magAtk : 260, spCharge : 18}};
   _initChar(charLeft); charLeft.items = {}; charLeft.boss = 0.96; charLeft.bossStatus = 0.2;
   charLeft.skill = { base : [
@@ -1124,7 +1124,7 @@ const chara = require('./chara');
   module.exports.mIZ = charLeft;
 
   // ---- 달빛의 공학자 네온 (13사이클) ----
-  charLeft = {name : '달빛의 공학자 네온', nameType : cons.NAME_KOR_NO_END_CONS, title : '공학자', rank : 2, level : 36,
+  charLeft = {name : '달빛의 공학자 네온', nameType : cons.NAME_KOR_END_CONS, title : '공학자', rank : 2, level : 36,
       stat : {maxHp : 55000, phyAtk : 240, magAtk : 240, spCharge : 16}};
   _initChar(charLeft); charLeft.items = {}; charLeft.boss = 0.96; charLeft.bossStatus = 0.2;
   charLeft.skill = { base : [
