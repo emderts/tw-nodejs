@@ -1130,7 +1130,7 @@ const chara = require('./chara');
   charLeft.skill = { base : [
       {code : 90470, name : '폭탄 로봇', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 0.4,
        effect : [{code : 'buildShield', buffCode : 10723, buffDur : 3, value : 0.07}],
-       tooltip : '자신에게 3턴 간 [폭탄 로봇] (최대 생명력 7% 보호막, 시간이 다 되면 터지며 물리 1.5 피해)',
+       tooltip : '자신에게 3턴 간 [폭탄 로봇] (최대 생명력 7% 보호막, 시간이 다 되면 터지며 물리 1.8 피해)',
        flavor : '굴러가는 쇳덩이. 멈추면 터진다.'},
       {code : 90471, name : '방어탑 건설', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 0.4,
        effect : [{code : 'buildShield', buffCode : 10724, buffDur : null, value : 0.06}],

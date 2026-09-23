@@ -7270,9 +7270,9 @@ module.exports.getBuffData = function(eff) {
     break;
   case 10723 :   // 달빛의 공학자 [폭탄 로봇]
     retObj.name = '폭탄 로봇'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 3; retObj.isDebuff = false;
-    retObj.tooltip = '보호막이 되어 막아 주고, 지속 시간이 끝나면 터지며 물리 1.5 피해';
+    retObj.tooltip = '보호막이 되어 막아 주고, 지속 시간이 끝나면 터지며 물리 1.8 피해';
     retObj.effect.push({ active : cons.ACTIVE_TYPE_DEAL_DAMAGE_RECEIVE, code : cons.EFFECT_TYPE_SHIELD, value : 1 });
-    retObj.effect.push({ active : cons.ACTIVE_TYPE_DURATION_END, code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL, value : 1.5 });
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_DURATION_END, code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL, value : 1.8 });
     break;
   case 10724 :   // [방어탑]
     retObj.name = '방어탑'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 3; retObj.isDebuff = false; retObj.durOff = null;

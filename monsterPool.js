@@ -57,7 +57,7 @@ const TIERS = {
     { key: 'mNeon', deck: [3, 3, 3], extraFav: 2, note: '달빛의 공학자 네온 — 방어탑과 폭탄으로 굳힌다', tune: (e) => {
       e.skill.base[0].effect[0].value = 0.05;   // 폭탄 로봇 보호막 7% → 5%
       e.skill.base[1].effect[0].value = 0.04;   // 방어탑 6% → 4%
-      e.skill.base[0].tooltip = '자신에게 3턴 간 [폭탄 로봇] (최대 생명력 5% 보호막, 시간이 다 되면 터지며 물리 1.5 피해)';
+      e.skill.base[0].tooltip = '자신에게 3턴 간 [폭탄 로봇] (최대 생명력 5% 보호막, 시간이 다 되면 터지며 물리 1.8 피해)';
       e.skill.base[1].tooltip = '자신에게 [방어탑] (최대 생명력 4% 보호막, 턴 종료마다 마법 0.2 피해, 중첩)';
       e.skill.drive.chance = 0.25; e.skill.drive.effect[0].value = 0.035;
       e.skill.drive.tooltip = '피격 시 25% 확률로 최대 생명력 3.5% 보호막을 세운다';
