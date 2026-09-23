@@ -3977,21 +3977,23 @@ async function procAltarPost (req, res) {
     const used = char.run.altarUsed || 0;
     if (req.body.action === 'offer') {   // 에픽을 바친다 → 후보 3개 고정
       const idx = parseInt(req.body.idx, 10); const it = char.inventory[idx];
-      if (used >= ALTAR_MAX || !it || it.rarity !== cons.ITEM_RARITY_EPIC || it.type > 3) { res.redirect('/altar'); return; }
-      const low = Math.min(9, char.rank + 1);
-      const pool2 = item.list.filter(x => x && x.rank === low && x.type <= 3 && x.rarity === cons.ITEM_RARITY_UNIQUE && !x.runEffect && !/^무형의/.test(x.name));
+      const OK_RARITY = { [cons.ITEM_RARITY_EPIC]: cons.ITEM_RARITY_UNIQUE, [cons.ITEM_RARITY_UNIQUE]: cons.ITEM_RARITY_RARE };   // 바친 등급 → 나오는 등급
+      const outRarity = it ? OK_RARITY[it.rarity] : null;
+      if (used >= ALTAR_MAX || !it || !outRarity || it.type > 3) { res.redirect('/altar'); return; }
+      const low = Math.min(9, (it.rank || char.rank) + 1);   // 바친 것보다 한 급수 아래
+      const pool2 = item.list.filter(x => x && x.rank === low && x.type <= 3 && x.rarity === outRarity && !x.runEffect && !/^무형의/.test(x.name));
       const picks = [];
       while (picks.length < 3 && pool2.length) { const c = pool2[Math.floor(Math.random() * pool2.length)]; if (!picks.some(y => y.name === c.name)) picks.push(JSON.parse(JSON.stringify(c))); }
       char.inventory.splice(idx, 1);
       char.run.altarUsed = used + 1;
-      sess.altar = { picks, name: it.name };
+      sess.altar = { picks, name: it.name, toRank: it.rank || char.rank };
       await saveChar(char, charRow.uid);
       res.redirect('/altar'); return;
     }
     if (req.body.action === 'take' && sess.altar) {   // 하나 선택 (증폭해서)
       const k = parseInt(req.body.k, 10);
       const pick = sess.altar.picks[k];
-      if (pick) { const it = run.amplify(JSON.parse(JSON.stringify(pick)), char.rank); it.tooltip = makeTooltip(it); char.inventory.push(it); }
+      if (pick) { const it = run.amplify(JSON.parse(JSON.stringify(pick)), sess.altar.toRank || char.rank); it.tooltip = makeTooltip(it); char.inventory.push(it); }
       delete sess.altar;
       await saveChar(char, charRow.uid);
       res.redirect('/altar'); return;

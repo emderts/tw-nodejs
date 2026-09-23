@@ -11,7 +11,7 @@
 </head>
 <body>
 <div class="wrap">
-  <div class="page-title"><h1>해체의 제단</h1><span class="meta">에픽 하나를 바치면, 한 급수 아래 유물 셋 중 하나가 지금 급으로 깨어난다 · <%= used %>/<%= max %>회</span></div>
+  <div class="page-title"><h1>해체의 제단</h1><span class="meta">에픽이나 유니크를 바치면, 한 등급 아래 · 한 급수 아래 유물 셋이 제시되고 고른 것이 바친 급수로 깨어난다 · <%= used %>/<%= max %>회</span></div>
   <% if (offer) { %>
     <div class="note-box"><b><%= offer.name %></b>이(가) 제단 위에서 흩어진다. 남은 셋 중 하나를 가져갈 수 있다.</div>
     <div class="list">
@@ -19,7 +19,7 @@
       <div class="charItem">
         <form action="/altar" method="post">
           <input type="hidden" name="action" value="take"><input type="hidden" name="k" value="<%= k %>">
-          <button type="submit"><span class="rarityUnique"><%= p.name %></span> <small style="color:var(--ash)"><%= p.rank %>급 → <%= char.rank %>급</small>
+          <button type="submit"><span class="rarityUnique"><%= p.name %></span> <small style="color:var(--ash)"><%= p.rank %>급 → <%= offer.toRank %>급</small>
             <div class="itemTooltip"><%- makeTooltip(p) %></div></button>
         </form>
       </div>
@@ -28,19 +28,19 @@
   <% } else if (used >= max) { %>
     <div class="note-box">제단의 힘이 다했다. 이번 모험에서는 더 쓸 수 없다.</div>
   <% } else { %>
-    <div class="note-box">바칠 에픽 장비를 고른다.</div>
+    <div class="note-box">바칠 장비를 고른다. (에픽 → 유니크 셋 / 유니크 → 레어 셋)</div>
     <div class="list">
-    <% let any = false; char.inventory.forEach(function (it, i) { if (!it || it.rarity !== 5 || it.type > 3) return; any = true; %>
+    <% let any = false; char.inventory.forEach(function (it, i) { if (!it || (it.rarity !== 5 && it.rarity !== 4) || it.type > 3) return; any = true; %>
       <div class="charItem">
         <form action="/altar" method="post">
           <input type="hidden" name="action" value="offer"><input type="hidden" name="idx" value="<%= i %>">
-          <button type="submit"><span class="rarityEpic"><%= it.name %></span> <small style="color:var(--ash)"><%= it.rank %>급</small>
+          <button type="submit"><span class="<%= it.rarity === 5 ? 'rarityEpic' : 'rarityUnique' %>"><%= it.name %></span> <small style="color:var(--ash)"><%= it.rank %>급</small>
             <div class="itemTooltip"><%- makeTooltip(it) %></div></button>
         </form>
       </div>
     <% }); %>
     </div>
-    <% if (!any) { %><div class="note-box" style="color:var(--ash)">인벤토리에 에픽 장비가 없다.</div><% } %>
+    <% if (!any) { %><div class="note-box" style="color:var(--ash)">인벤토리에 바칠 유니크·에픽 장비가 없다.</div><% } %>
   <% } %>
   <div class="backLink"><a href="/">돌아가기</a></div>
 </div>
