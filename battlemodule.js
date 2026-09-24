@@ -44,6 +44,14 @@ function relinkRefs(L, R) {
   }
 }
 module.exports.relinkRefs = relinkRefs;
+// 직렬화된 전투 모듈 상태를 되살린다 (무르기·DB 복원 공용): 함수 배열(modFunc)은 직렬화되지 않으므로 다시 설치
+module.exports.revive = function(bmState, L, R) {
+  const bm = Object.assign(new Battlemodule(), bmState);
+  bm.modFunc = makeModFuncs();
+  bm.charLeft = L; bm.charRight = R;
+  relinkRefs(L, R);
+  return bm;
+};
 module.exports.restore = function(json) {
   const snap = JSON.parse(json);
   // modFunc(함수 배열)는 직렬화되지 않으므로 빈 인스턴스에서 한 번 만들어 둔 뒤 상태만 덮어쓴다
