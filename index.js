@@ -3861,7 +3861,10 @@ function floorNames(chara) {
 }
 // ==================== 층 진행 ====================
 // 뉴스 표기: 계정명(캐릭터명)
-function newsName(c) { return c && c.owner ? c.owner + '(' + c.name + ')' : (c ? c.name : ''); }
+function newsName(c) {
+  const asc = c && c.run && c.run.asc ? '·승천 ' + c.run.asc : '';   // 승천 중이면 표기
+  return c && c.owner ? c.owner + '(' + c.name + asc + ')' : (c ? c.name + (asc ? '(' + asc.slice(1) + ')' : '') : '');
+}
 async function loadRunChar (req, res) {
   const sess = req.session;
   if (!sess.userUid) { res.redirect('/login'); return null; }
@@ -4373,7 +4376,7 @@ async function procFloorResult (req, res) {
           await grantAchv(sess.userUid, char, acct, achv.onClear(char, acct.stats).concat(['cyc15']));
           await saveAcct(sess.userUid, acct);
         } catch (e) { console.log('[achv clear]', e.message); }
-        try { await client.query('insert into news(content, date) values ($1, $2)', [newsName(char) + getIga(char.nameType) + ' ' + (run.ascOf(char) ? '승천 ' + run.ascOf(char) + ' ' : '') + run.TOTAL_CYCLES + '사이클을 모두 돌파해 탑을 정복했다!', new Date()]); } catch (e) {}
+        try { await client.query('insert into news(content, date) values ($1, $2)', [newsName(char) + getIga(char.nameType) + ' ' + run.TOTAL_CYCLES + '사이클을 모두 돌파해 탑을 정복했다!', new Date()]); } catch (e) {}
         try { await client.query('insert into hall(user_id, owner, char_name, char_data, date) values ($1, $2, $3, $4, $5)', [sess.userUid, char.owner || sess.userUid, char.name, JSON.stringify(char), new Date()]); } catch (e) { console.error('hall 저장 실패 (테이블 없음?)', e.message); }
         const key = char.run.unlockGiven ? null : await unlockRandomChar(sess.userUid);
         await client.query('delete from characters where uid = $1', [charRow.uid]);

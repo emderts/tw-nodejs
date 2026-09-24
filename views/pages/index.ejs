@@ -302,6 +302,7 @@
           <% if (char.run && char.run.breakpoint && !char.run.breakpointUsed) { %>
           <tr><td class="k">중단점</td><td class="v"><form action="/breakpoint" method="post" onsubmit="return confirm('이번 사이클 시작 시점으로 되돌아갑니다. 되돌릴 수 없습니다.')"><button type="submit" style="width:auto;min-height:0;padding:3px 10px;font-size:12px">이번 사이클 처음으로 되돌아간다</button></form></td><td class="a"></td></tr>
           <% } %>
+          <% if (char.run) { %><tr><td class="k">승천</td><td class="v"><% if (char.run.asc) { %><span class="has-tip" style="color:#c98bff">승천 <%= char.run.asc %><div class="itemTooltip"><% for (let i = 1; i <= char.run.asc; i++) { %><%= i %>. <%= run_ASC[i] %><br><% } %></div></span><% } else { %><span style="color:var(--ash)">없음</span><% } %></td><td class="a"></td></tr><% } %>
           <tr><td class="k">스탯 포인트</td><td class="v"><%= char.statPoint %></td><td class="a"></td></tr>
           <tr><td class="k">전적</td><td class="v"><%= char.battleCnt %>전 <%= char.winCnt %>승 (<%= winRate %>%)</td><td class="a"></td></tr>
         </table>
