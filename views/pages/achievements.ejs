@@ -27,7 +27,7 @@
   <div class="page-title"><h1>업적</h1><span class="meta"><%= done %> / <%= total %></span></div>
   <div class="bar"><span style="width:<%= Math.round(100 * done / total) %>%"></span></div>
   <div class="note-box" style="margin-top:12px">누적 — 승리 <%= stats.wins || 0 %> · 정복 <%= stats.clears || 0 %> · 에픽 <%= stats.epics || 0 %> · 격파한 몬스터 <%= (stats.killed || []).length %>종 · 아티팩트 <%= (stats.artifacts || []).length %>종</div>
-  <% const cats = ['진행', '캐릭터', '보스', '수집', '도전', '재미']; cats.forEach(function (cat) { const rows = list.filter(a => a.cat === cat); const n = rows.filter(a => got[a.id]).length; %>
+  <% const cats = ['진행', '캐릭터', '승천', '보스', '수집', '도전', '재미']; cats.forEach(function (cat) { const rows = list.filter(a => a.cat === cat); const n = rows.filter(a => got[a.id]).length; %>
     <section class="panel" style="margin-top:14px">
       <h2><%= cat %> <small style="color:var(--ash);font-weight:400"><%= n %> / <%= rows.length %></small></h2>
       <div>

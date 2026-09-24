@@ -44,6 +44,11 @@ add('unlock5', '캐릭터', '새로운 얼굴', '캐릭터 5명 해금');
 add('unlockAll', '캐릭터', '모두가 모인 자리', '모든 캐릭터 해금');
 add('multi5', '캐릭터', '여러 개의 정상', '서로 다른 캐릭터 5명으로 정복');
 add('multiAll', '캐릭터', '모든 이름으로', '모든 캐릭터로 정복');
+// 승천
+const ASC_NAMES = ['', '첫 번째 승천', '가벼워진 지갑', '무장한 수호자', '읽히는 수', '모두가 무장한 탑', '더 단단한 적', '보스의 비장의 수', '줄어든 선택지', '앞서 달리는 적', '완전 무장'];
+for (let a = 1; a <= 10; a++) add('asc' + a, '승천', ASC_NAMES[a], '승천 ' + a + ' 탑 정복');
+add('asc_multi', '승천', '어느 이름으로든', '서로 다른 캐릭터 3명으로 승천 5 이상 정복');
+add('asc10_all', '승천', '정점의 정점', '승천 10을 캐릭터 5명으로 정복');
 // 3. 보스·테마
 add('boss_red', '보스', '새로운 정점', '레드 격파');
 add('boss_neon', '보스', '고장 난 공방', '달빛의 공학자 네온 격파');
@@ -145,6 +150,11 @@ function onProgress(char) {
 // 탑 정복
 function onClear(char, stats) {
   const g = ['clear1']; const a = char.run.ach || {};
+  const asc = (char.run && char.run.asc) || 0;
+  for (let i = 1; i <= asc; i++) g.push('asc' + i);   // 승천 N 정복이면 그 아래 단계도 함께 인정
+  const hi = stats.ascChars || {};   // 캐릭터별 최고 승천 정복
+  if (Object.values(hi).filter(v => v >= 5).length >= 3) g.push('asc_multi');
+  if (Object.values(hi).filter(v => v >= 10).length >= 5) g.push('asc10_all');
   if (stats.clears >= 3) g.push('clear3');
   if (stats.clears >= 10) g.push('clear10');
   if (CHAR_CLEAR[char.rosterKey]) g.push('char_' + char.rosterKey);
@@ -192,6 +202,9 @@ function progress(id, st, ext) {
   if (id.startsWith('char_')) { const k = id.slice(5); const b = (st.best || {})[k]; return b ? '이 캐릭터 최고 ' + b + '사이클 / 15' : '아직 이 캐릭터로 오른 적이 없다'; }
   if (id.startsWith('theme_')) { const th = THEMES[id.slice(6)]; if (!th) return null; const got = th.keys.filter(k => killed.has(k)); const miss = th.keys.filter(k => !killed.has(k));
     return '격파 ' + got.length + ' / ' + th.keys.length + (miss.length ? ' — 남은: ' + miss.map(name).join(', ') : ''); }
+  if (/^asc\d+$/.test(id)) { const need = +id.slice(3); const hiA = st.ascension === undefined ? 0 : st.ascension; return '최고 정복 승천 ' + Math.max(0, hiA) + ' / ' + need; }
+  if (id === 'asc_multi') return '승천 5 이상 정복한 캐릭터 ' + frac(Object.values(st.ascChars || {}).filter(v => v >= 5).length, 3);
+  if (id === 'asc10_all') return '승천 10 정복한 캐릭터 ' + frac(Object.values(st.ascChars || {}).filter(v => v >= 10).length, 5);
   if (id === 'boss_both') return '데시메이트 ' + (killed.has('rsDeci') ? '✓' : '✗') + ' · 바이레스 ' + (killed.has('rsVyres') ? '✓' : '✗');
   const setMax = { set_titan: ['titan', 4], set_god: ['god', 4], set_city: ['city', 15], set_sci: ['sci', 10], set_predator: ['predator', 10] };
   if (setMax[id]) return '최고 ' + frac((st.maxStack || {})[setMax[id][0]], setMax[id][1]) + '중첩';

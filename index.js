@@ -4367,6 +4367,7 @@ async function procFloorResult (req, res) {
           const acct = await loadAcct(sess.userUid);
           acct.stats.clears = (acct.stats.clears || 0) + 1;
           acct.stats.ascension = Math.max(acct.stats.ascension === undefined ? -1 : acct.stats.ascension, run.ascOf(char));   // 승천 N 정복 → N+1 개방
+          acct.stats.ascChars = acct.stats.ascChars || {}; if (char.rosterKey) acct.stats.ascChars[char.rosterKey] = Math.max(acct.stats.ascChars[char.rosterKey] || 0, run.ascOf(char));
           acct.stats.clearedChars = acct.stats.clearedChars || [];
           if (char.rosterKey && !acct.stats.clearedChars.includes(char.rosterKey)) acct.stats.clearedChars.push(char.rosterKey);
           await grantAchv(sess.userUid, char, acct, achv.onClear(char, acct.stats).concat(['cyc15']));
