@@ -7317,8 +7317,8 @@ module.exports.getBuffData = function(eff) {
     break;
   case 10733 :   // [회복]
     retObj.name = '회복'; retObj.nameType = cons.NAME_KOR_END_CONS; retObj.stackType = 3; retObj.isDebuff = false;
-    retObj.tooltip = '턴 시작 시 생명력 회복 × 6 만큼 회복';
-    retObj.effect.push({ active : cons.ACTIVE_TYPE_TURN_START, code : cons.EFFECT_TYPE_SELF_HP, isPercentStat : true, percentKey : 'hpRegen', value : 6 });
+    retObj.tooltip = '턴 시작 시 SP충전 × 2 만큼 회복';
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_TURN_START, code : cons.EFFECT_TYPE_SELF_HP, isPercentStat : true, percentKey : 'spCharge', value : 2 });
     break;
   case 10734 :   // [생명의 나무]
     retObj.name = '생명의 나무'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 1; retObj.isDebuff = false;
