@@ -7302,8 +7302,8 @@ module.exports.getBuffData = function(eff) {
     break;
   case 10730 :   // 세날 룬토템 [재생]
     retObj.name = '재생'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 3; retObj.isDebuff = false;
-    retObj.tooltip = '턴 종료 시 스택의 90%만큼 회복';
-    retObj.effect.push({ active : cons.ACTIVE_TYPE_TURN_END, code : 'regenTick', value : 0.9 });
+    retObj.tooltip = '턴 종료 시 스택의 75%만큼 회복';
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_TURN_END, code : 'regenTick', value : 0.75 });
     break;
   case 10731 :   // [대드루이드] (상시)
     retObj.name = '대드루이드'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 1; retObj.isDebuff = false; retObj.durOff = null; retObj.hidden = true;
