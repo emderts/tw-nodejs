@@ -945,7 +945,6 @@ async function procUseItem (req, res) {
           } else if (tgtObj.resultType <= 4) {
             // 언커먼 27.3% / 레어 55.2% / 유니크 12.5% / 에픽 5% — 승천 1단계당 에픽 +1%p (언커먼 몫에서)
             const ascB = (chara.run && chara.run.asc) ? chara.run.asc * 0.01 : 0;
-            rand = rand < 0.273 ? rand : rand;   // (기본 굴림 유지)
             if (ascB > 0 && rand < ascB) rand = 0.999;   // 언커먼 구간 앞쪽 ascB만큼을 에픽으로
             if (rand < 0.273) {
               picked = _getItem(tgtObj.rank, cons.ITEM_RARITY_UNCOMMON, tgtObj.resultType);
