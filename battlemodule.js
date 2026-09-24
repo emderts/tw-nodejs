@@ -190,7 +190,7 @@ Battlemodule.prototype._checkRevive = function() {
     if (hasShard) {
       const cur = (me.buffs || []).find(x => x.id === 10713);
       const used = cur ? (cur.stack || 1) : 0;
-      if (used < 3) {
+      if (used < 2) {   // 텍터스: 전투당 2회
         const bo = buffMdl.getBuffData({ buffCode : 10713 }); bo.dur = null; bo.stack = 1;
         this.giveBuff(me, me, bo, false, '텍터스의 조각');
         calcStats(me, opp); me.curHp = me.stat.maxHp;

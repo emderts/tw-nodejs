@@ -7223,7 +7223,7 @@ module.exports.getBuffData = function(eff) {
     retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'crit', value : 1 });
     break;
   case 10713 :
-    retObj.name = '조각남'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 2; retObj.maxStack = 3; retObj.isDebuff = false; retObj.durOff = null;
+    retObj.name = '조각남'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 2; retObj.maxStack = 2; retObj.isDebuff = false; retObj.durOff = null;
     retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_MULTIPLY, key : 'maxHp', value : 0.6 });
     break;
   case 10714 :

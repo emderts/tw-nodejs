@@ -87,7 +87,7 @@ add('rich', '도전', '부자의 등반', '골드 1000 보유', true);
 // 6. 숨김 — 재미
 add('taurus3', '재미', '왜 나한테만 이래?', '한 번의 모험에서 타우러스 계열을 3번 만남', true);
 add('ruby_down', '재미', '공평한 생명', '생명의 어머니의 루비로 생명력이 줄어듦', true);
-add('tectus3', '재미', '조각조각', '텍터스의 조각으로 세 번 부활', true);
+add('tectus3', '재미', '조각조각', '텍터스의 조각으로 두 번 부활', true);
 add('hourglass', '재미', '모래시계 너머', '청동의 모래시계로 넘긴 시간 동안 적이 쓰러짐', true);
 add('hyper_back', '재미', '다른 층으로', '하이퍼루프로 아래층으로 이동', true);
 add('mark_death', '재미', '자기 무덤', '달빛의 징표 피해로 쓰러짐', true);
@@ -132,7 +132,7 @@ function onBattle(ctx) {
   if (stackOf(10630) >= 15) g.push('set_city');
   if (stackOf(10610) >= 10) g.push('set_sci');
   if (stackOf(10626) >= 10) g.push('set_predator');
-  if (stackOf(10713) >= 3) g.push('tectus3');
+  if (stackOf(10713) >= 2) g.push('tectus3');
   if (/낙인이 겹쳐 두 배/.test(txt)) g.push('chogall');
   const ruby = [...txt.matchAll(/생명은 공평하다\. (\d+) → (\d+)/g)]; if (ruby.some(m => +m[2] < +m[1])) g.push('ruby_down');
   if (/남은 것을 한 번에 들이켰다/.test(txt)) g.push('pierrot');
