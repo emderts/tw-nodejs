@@ -65,6 +65,7 @@
       var sel = document.getElementById('ascSel'), box = document.getElementById('ascDesc');
       function draw() { var n = parseInt(sel.value, 10); var html = ''; for (var i = 1; i <= n; i++) html += '<div>' + i + '. ' + rules[i] + '</div>'; box.innerHTML = html || '일반 난이도'; document.querySelectorAll('input[name=asc]').forEach(function (x) { x.value = n; }); }
       sel.addEventListener('change', draw); draw();
+      document.addEventListener('DOMContentLoaded', draw);   // 캐릭터 폼이 그려진 뒤에도 한 번 더 반영
     })();
   </script>
   <% } %>
@@ -95,10 +96,10 @@
         <% if (c.drive) { %><div class="has-tip">드라이브 <b><%= c.drive.name %></b><div class="itemTooltip"><%- c.drive.tooltip %></div></div><% } %>
       </div>
       <% if (isUnlocked) { %>
-      <form action="/selectChar" method="post">
+      <form action="/selectChar" method="post" onsubmit="var s=document.getElementById('ascSel'); if (s) this.asc.value = s.value;">
         <button type="submit" class="btn-primary"><%= firstPick ? '이 캐릭터로 시작' : '선택' %></button>
         <input type="hidden" name="charKey" value="<%= c.key %>">
-        <input type="hidden" name="asc" value="0">
+        <input type="hidden" name="asc" value="<%= (typeof ascOpen !== 'undefined' ? ascOpen : 0) %>">
       </form>
       <% } else { %>
       <div class="lock-tag">잠김</div>
