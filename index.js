@@ -13,6 +13,7 @@ const pool = new Pool({
 const battlemodule = require('./battlemodule');
 const battlemodule2 = require('./battlemodule2');
 const ach = require('./achievement');
+const achv = require('./achv');
 const chara = require('./chara');
 const roster = require('./roster');
 const run = require('./run');
@@ -326,6 +327,7 @@ io.on('connection', (socket) => {
     }
     t.bmod.resolveEffects(L, t.rightChr, effs.filter(e => e.code !== 'resetUses'), null, null);
     st.uses++; st.cd = it.use.cooldown || 0;
+    if (t.rightChr.curHp <= 0 && effs.some(e => e.code === 'timeSkip')) t.hourglassKill = true;
     if (t.rightChr.curHp <= 0 || L.curHp <= 0) {   // 사용으로 전투가 끝난 경우
       const res = t.bmod._doBattleEnd(1); t.result = res; socket.emit('floorSelectEnd', t.bmod.result); return;
     }
@@ -340,7 +342,7 @@ io.on('connection', (socket) => {
     t.leftChr = snap.L; t.rightChr = snap.R; bm.charLeft = t.leftChr; bm.charRight = t.rightChr; bm.result = '';
     battlemodule.relinkRefs(t.leftChr, t.rightChr);   // 버프·아이템 역참조 복구 (중첩 수 계산용)
     t.bmod = bm; t.pdeck = snap.pdeck; t.edeck = snap.edeck; t.eplayed = snap.eplayed; t.resets = snap.resets; t.redraws = snap.redraws; t.used = snap.used; t.nextEKey = snap.nextEKey; t.lastKey = snap.lastKey; t.predict = snap.predict; t.useState = snap.useState;
-    t.undos--; t.snapshot = null;
+    t.undos--; t.snapshot = null; t.undoUsed = true;
     t.bmod.result = (snap.bm.result || '') + '<span class="skillDamage">한 번만 물러줘라 — 방금 턴을 물렀다.</span><br>';
     socket.emit('floorSelectAck', t.bmod.result, floorState(t));
     persistBattle(t);
@@ -698,6 +700,7 @@ async function procIndex (req, res) {
       await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), sess.userUid]);
       }*/
       const charObj = charRow.char_data ? JSON.parse(charRow.char_data) : undefined;
+      if (charObj && charObj.run) { await checkAcctGeneral(sess.userUid, charObj); try { await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(charObj), charRow.uid]); } catch (e) {} }
       res.render('pages/index', {
         itemNews : itemNews,
         user: {name: sess.userName, uid : sess.userUid},
@@ -3242,15 +3245,12 @@ async function procSortInventory(req, res) {
 
 async function procViewAchievement(req, res) {
   try {
-    const sess = req.session; 
-    const charRow = await getCharacter(sess.userUid);
-    const char = JSON.parse(charRow.char_data);
-    const globals = await getGlobals();
-    res.render('pages/achievement', {charAch : char.achievement, charStats : char.statistics, achData : ach.achData, globalAch : globals.achievement});
-  } catch (err) {
-    console.error(err);
-    res.send('내부 오류');
-  }
+    const sess = req.session;
+    if (!sess.userUid) { res.redirect('/login'); return; }
+    const acct = await loadAcct(sess.userUid);
+    const done = Object.keys(acct.achievements).length;
+    res.render('pages/achievements', { list: achv.LIST, got: acct.achievements, stats: acct.stats, done, total: achv.LIST.length });
+  } catch (err) { console.error(err); res.redirect('/'); }
 }
 
 async function procQuest(req, res) {
@@ -3435,6 +3435,7 @@ async function procDismantleItem (req, res) {
         const from = run.floorNo(char); const to = run.jumpFloor(char, tgt.runEffect.value || 3);
         delete sess.floorShop; delete sess.floorEvent; delete sess.floorBattle;
         char.hyperloopJump = { from, to };
+        if (to < from) { try { const acct = await loadAcct(sess.userUid); await grantAchv(sess.userUid, char, acct, ['hyper_back']); await saveAcct(sess.userUid, acct); } catch (e) {} }
       }
       if (char.quest[6]) {
         char.quest[6].progress += 1;
@@ -3946,6 +3947,62 @@ async function pickEnemy (char, userId) {
 }
 
 // 전투 후 얻은 카드 수락/거부
+// ===== 계정 업적 =====
+let acctColsReady = false;
+async function ensureAcctCols () {
+  if (acctColsReady) return;
+  try { await pool.query('alter table users add column if not exists achievements text'); await pool.query('alter table users add column if not exists stats text'); acctColsReady = true; }
+  catch (e) { console.log('[acct cols]', e.message); }
+}
+async function loadAcct (userId) {
+  await ensureAcctCols();
+  const r = await pool.query('select achievements, stats from users where id = $1', [userId]);
+  const row = r.rows[0] || {};
+  let a = {}, st = {};
+  try { a = row.achievements ? JSON.parse(row.achievements) : {}; } catch (e) {}
+  try { st = row.stats ? JSON.parse(row.stats) : {}; } catch (e) {}
+  return { achievements: a, stats: st };
+}
+async function saveAcct (userId, acct) {
+  await pool.query('update users set achievements = $1, stats = $2 where id = $3', [JSON.stringify(acct.achievements), JSON.stringify(acct.stats), userId]);
+}
+// 새로 달성한 업적만 기록하고, 개인 기록 + (서버 최초면) 뉴스를 남긴다
+async function grantAchv (userId, char, acct, ids) {
+  const fresh = [...new Set(ids)].filter(id => achv.BY_ID[id] && !acct.achievements[id]);
+  if (!fresh.length) return [];
+  const globals = await getGlobals();
+  for (const id of fresh) {
+    acct.achievements[id] = new Date();
+    try { await pool.query('insert into personal(uid, content, date) values ($1, $2, $3)', [char && char.uid ? char.uid : userId, '[ ' + achv.BY_ID[id].name + ' ] 업적을 달성했습니다!', new Date()]); } catch (e) {}
+    const key = 'acct_' + id;
+    if (!globals || !globals.achievement || !globals.achievement[key]) {
+      try { await setGlobals({ achievement: { type: 'achievement', idx: key, holder: char ? char.name : userId } });
+            await pool.query('insert into news(content, date) values ($1, $2)', [(char ? newsName(char) + getIga(char.nameType) : userId + '이(가)') + ' 서버 최초로 [ ' + achv.BY_ID[id].name + ' ] 업적을 달성했습니다!', new Date()]); } catch (e) {}
+    }
+  }
+  return fresh;
+}
+// 인벤토리·장착 장비를 훑어 새로 얻은 에픽·아티팩트를 누적 통계에 반영
+function tallyItems (char, stats) {
+  const all = Object.values(char.items || {}).concat(char.inventory || []);
+  stats.artifacts = stats.artifacts || [];
+  for (const it of all) {
+    if (!it || it._tallied) continue;
+    if (it.rarity === cons.ITEM_RARITY_EPIC && it.type <= 3) stats.epics = (stats.epics || 0) + 1;
+    if (it.type === cons.ITEM_TYPE_SKILL_ARTIFACT && it.name && !stats.artifacts.includes(it.name)) stats.artifacts.push(it.name);
+    if (it.name) it._tallied = true;
+  }
+}
+async function checkAcctGeneral (userId, char) {
+  try {
+    const acct = await loadAcct(userId);
+    if (char) tallyItems(char, acct.stats);
+    const unlocked = await getUnlocked(userId);
+    const ids = achv.onStats(acct.stats, unlocked.length, roster.KEYS.length).concat(char && char.run ? achv.onProgress(char) : []);
+    await grantAchv(userId, char, acct, ids);
+    await saveAcct(userId, acct);
+  } catch (e) { console.log('[achv general]', e.message); }
+}
 // 모험 포기: 캐릭터 삭제 (쓰러진 모험가로는 남기지 않는다)
 async function procAbandonRun (req, res) {
   const client = await pool.connect();
@@ -3958,6 +4015,7 @@ async function procAbandonRun (req, res) {
     if (char && char.run && char.run.cycle >= 10) {
       try { await client.query('insert into news(content, date) values ($1, $2)', [newsName(char) + getIga(char.nameType) + ' ' + run.floorNo(char) + '층(' + char.run.cycle + '사이클)에서 스스로 여정을 접었다.', new Date()]); } catch (e) {}
     }
+    try { const acct = await loadAcct(sess.userUid); await grantAchv(sess.userUid, char, acct, ['abandon']); await saveAcct(sess.userUid, acct); } catch (e) {}
     await client.query('delete from characters where uid = $1', [charRow.uid]);
     await client.query('update users set uid = null where id = $1', [sess.userUid]);
     delete sess.floorShop; delete sess.floorEvent; delete sess.floorBattle;
@@ -4120,6 +4178,7 @@ async function procFloorShop (req, res) {
     char.gold -= g.price;
     if (g.kind === 'resultStock') { char.inventory.push(roster.makeResultCard(g.rank, Math.floor(Math.random() * 4))); await saveChar(char, charRow.uid); res.redirect('/nextFloor'); return; }   // 무제한 판매
     if (g.kind === 'item') char.inventory.push(g.item);
+    if (sess.floorShop.shop && sess.floorShop.shop.type === 'collector') { try { const acct = await loadAcct(sess.userUid); acct.stats.collectorBuys = (acct.stats.collectorBuys || 0) + 1; await saveAcct(sess.userUid, acct); } catch (e) {} }
     else if (g.kind === 'card') char.deck.push(g.card);
     else if (g.kind === 'stat') char.statPoint = (char.statPoint || 0) + g.value;
     else if (g.kind === 'life') { const l = char.run.lives === undefined ? 1 : char.run.lives; if (l >= run.maxLives(char)) { char.gold += g.price; res.redirect('/nextFloor'); return; } char.run.lives = l + 1; }
@@ -4152,7 +4211,13 @@ async function procFloorEvent (req, res) {
       res.redirect('/nextFloor'); return;
     }
     if (sess.floorEvent.done) { res.redirect('/nextFloor'); return; }
-    const text = run.applyEvent(char, sess.floorEvent.code, parseInt(req.body.opt, 10));
+    const evCode = sess.floorEvent.code, evOpt = parseInt(req.body.opt, 10);
+    const evDef = run.makeEventByCode(char, evCode);
+    const evLast = evDef && evDef.options ? evDef.options.length - 1 : -1;
+    const text = run.applyEvent(char, evCode, evOpt);
+    char.run.ach = char.run.ach || {};
+    if (!/^mon_/.test(evCode) && evOpt !== evLast) char.run.ach.chose = true;   // 순수한 선택 판정
+    if (evCode === 'devil' && evOpt !== evLast) { try { const acct = await loadAcct(sess.userUid); acct.stats.devil = (acct.stats.devil || 0) + 1; await saveAcct(sess.userUid, acct); } catch (e) {} }
     if (text === null) { res.redirect('/nextFloor'); return; }
     sess.floorEvent.done = text;
     await saveChar(char, charRow.uid);
@@ -4184,6 +4249,19 @@ async function procFloorResult (req, res) {
       } finally { client.release(); }
     } catch (e) { console.log('battle log save failed', e.message); }
     const rv = runView(char);
+    // 계정 업적: 런 추적 플래그 + 전투 판정
+    char.run.ach = char.run.ach || {};
+    if ((t.used || []).length) char.run.ach.item = true;
+    if (t.undoUsed) char.run.ach.undo = true;
+    if (['mTaurus', 'mMegaTaurus'].includes(enemy.monsterKey)) char.run.ach.taurus = (char.run.ach.taurus || 0) + 1;
+    try {
+      const acct = await loadAcct(sess.userUid);
+      if (re.winnerLeft) { acct.stats.wins = (acct.stats.wins || 0) + 1; if (enemy.monsterKey) { acct.stats.killed = acct.stats.killed || []; if (!acct.stats.killed.includes(enemy.monsterKey)) acct.stats.killed.push(enemy.monsterKey); } }
+      const ids = achv.onBattle({ char, enemy, L: t.leftChr, won: !!re.winnerLeft, log: re.result, stats: acct.stats, turns: (t.bmod && t.bmod.turnCount) || 0, hourglassKill: !!t.hourglassKill });
+      if ((char.run.ach.taurus || 0) >= 3) ids.push('taurus3');
+      await grantAchv(sess.userUid, char, acct, ids);
+      await saveAcct(sess.userUid, acct);
+    } catch (e) { console.log('[achv battle]', e.message); }
 
     // 정크 젯: 전투 중 소모한 골드·커먼 장비 반영
     if (t.goldStart !== undefined && t.leftChr.gold !== undefined && t.leftChr.gold < t.goldStart) char.gold = Math.max(0, char.gold - (t.goldStart - t.leftChr.gold));
@@ -4236,6 +4314,14 @@ async function procFloorResult (req, res) {
         try { await client.query('insert into news(content, date) values ($1, $2)', [newsName(char) + getIga(char.nameType) + ' 10사이클을 넘어섰다.', new Date()]); } catch (e) {}
       }
       if (cleared) {
+        try {
+          const acct = await loadAcct(sess.userUid);
+          acct.stats.clears = (acct.stats.clears || 0) + 1;
+          acct.stats.clearedChars = acct.stats.clearedChars || [];
+          if (char.rosterKey && !acct.stats.clearedChars.includes(char.rosterKey)) acct.stats.clearedChars.push(char.rosterKey);
+          await grantAchv(sess.userUid, char, acct, achv.onClear(char, acct.stats).concat(['cyc15']));
+          await saveAcct(sess.userUid, acct);
+        } catch (e) { console.log('[achv clear]', e.message); }
         try { await client.query('insert into news(content, date) values ($1, $2)', [newsName(char) + getIga(char.nameType) + ' ' + run.TOTAL_CYCLES + '사이클을 모두 돌파해 탑을 정복했다!', new Date()]); } catch (e) {}
         try { await client.query('insert into hall(user_id, owner, char_name, char_data, date) values ($1, $2, $3, $4, $5)', [sess.userUid, char.owner || sess.userUid, char.name, JSON.stringify(char), new Date()]); } catch (e) { console.error('hall 저장 실패 (테이블 없음?)', e.message); }
         const key = char.run.unlockGiven ? null : await unlockRandomChar(sess.userUid);
@@ -4245,11 +4331,13 @@ async function procFloorResult (req, res) {
         return;
       }
       char.run.pendingCard = pendingCard;
+      await checkAcctGeneral(sess.userUid, char);   // 사이클 도달·수집 업적
       await saveChar(char, charRow.uid);
       res.render('pages/floorEnd', { title: (enemy.isBoss ? '보스 격파' : '전투 승리'), lines: rewardLines, result: re.result, dead: false, rv: runView(char), pendingCard: pendingCard });
     } else if ((char.run.lives === undefined ? 1 : char.run.lives) > 0) {
       // 패배했지만 재도전 가능: 같은 층, 적은 다시 생성됨
       char.run.lives = (char.run.lives === undefined ? 1 : char.run.lives) - 1;
+      char.run.ach = char.run.ach || {}; char.run.ach.life = true;
       char.battleCnt = (char.battleCnt || 0) + 1;
       await saveChar(char, charRow.uid);
       res.render('pages/floorEnd', { title: '패배', lines: ['쓰러졌지만 아직 끝은 아니다. 남은 재도전 <b>' + char.run.lives + '</b>회.', '같은 층에서 다시 싸운다. 상대는 바뀔 수 있다.'], result: re.result, dead: false, rv: runView(char), pendingCard: null, retry: true });

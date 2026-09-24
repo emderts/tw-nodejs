@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>업적</title>
+  <link rel="stylesheet" href="/stylesheets/main.css">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#181c28">
+  <style>
+    .ach { display: flex; justify-content: space-between; gap: 12px; padding: 10px 14px; border-top: 1px solid var(--line); }
+    .ach:first-child { border-top: 0; }
+    .ach .nm { font-weight: 600; }
+    .ach .ds { color: var(--ash); font-size: 13px; margin-top: 2px; }
+    .ach .dt { color: var(--ash); font-size: 12px; white-space: nowrap; }
+    .ach.off .nm { color: var(--ash); font-weight: 400; }
+    .ach.on .nm { color: var(--brass); }
+    .bar { height: 6px; background: var(--line); border-radius: 3px; overflow: hidden; margin-top: 6px; }
+    .bar > span { display: block; height: 100%; background: var(--brass); }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="page-title"><h1>업적</h1><span class="meta"><%= done %> / <%= total %></span></div>
+  <div class="bar"><span style="width:<%= Math.round(100 * done / total) %>%"></span></div>
+  <div class="note-box" style="margin-top:12px">누적 — 승리 <%= stats.wins || 0 %> · 정복 <%= stats.clears || 0 %> · 에픽 <%= stats.epics || 0 %> · 격파한 몬스터 <%= (stats.killed || []).length %>종 · 아티팩트 <%= (stats.artifacts || []).length %>종</div>
+  <% const cats = ['진행', '캐릭터', '보스', '수집', '도전', '재미']; cats.forEach(function (cat) { const rows = list.filter(a => a.cat === cat); const n = rows.filter(a => got[a.id]).length; %>
+    <section class="panel" style="margin-top:14px">
+      <h2><%= cat %> <small style="color:var(--ash);font-weight:400"><%= n %> / <%= rows.length %></small></h2>
+      <div>
+      <% rows.forEach(function (a) { const d = got[a.id]; const hide = a.hidden && !d; %>
+        <div class="ach <%= d ? 'on' : 'off' %>">
+          <div><div class="nm"><%= hide ? '???' : a.name %></div><div class="ds"><%= hide ? '숨겨진 업적' : a.desc %></div></div>
+          <div class="dt"><%= d ? new Date(d).toLocaleDateString('ko-KR') : '' %></div>
+        </div>
+      <% }); %>
+      </div>
+    </section>
+  <% }); %>
+  <div class="backLink"><a href="/">돌아가기</a></div>
+</div>
+</body>
+</html>
