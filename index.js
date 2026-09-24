@@ -403,10 +403,14 @@ io.on('connection', (socket) => {
     const result = t.bmod.procBattleTurn(key, eKey, 1);
     if (t.rightChr.pendingShuffle) { t.rightChr.pendingShuffle = false; run.shuffleDeck(t.edeck); t.eplayed = [0, 0, 0]; }   // 환기
     if (t.leftChr.pendingShuffle) { t.leftChr.pendingShuffle = false; run.shuffleDeck(t.pdeck); }
-    for (const [chr, st] of [[t.leftChr, t.pdeck], [t.rightChr, t.edeck]]) {   // 달빛 의회: 자기 덱에서 카드 제거
+    for (const [chr, st] of [[t.leftChr, t.pdeck], [t.rightChr, t.edeck]]) {   // 달빛 의회: 해당 종류 카드를 전부 제거 (마지막 한 종류는 남긴다)
       for (const cut of (chr.pendingCardCut || [])) {
-        const i2 = chr.deck.findIndex(c => c.type === cut);
-        if (i2 >= 0 && chr.deck.length > 3) { chr.deck.splice(i2, 1); const j2 = st.draw.findIndex(c => c.type === cut); if (j2 >= 0) st.draw.splice(j2, 1); else { const k2 = st.discard.findIndex(c => c.type === cut); if (k2 >= 0) st.discard.splice(k2, 1); } }
+        const types = new Set(chr.deck.map(c => c.type));
+        if (!types.has(cut) || types.size <= 1) continue;
+        chr.deck = chr.deck.filter(c => c.type !== cut);
+        for (const pile of ['draw', 'hand', 'discard']) if (st[pile]) st[pile] = st[pile].filter(c => c.type !== cut);
+        if (st.hand && st.hand.length === 0) run.drawHand(st);
+        if (chr === t.rightChr && t.nextEKey === cut) t.nextEKey = undefined;
       }
       chr.pendingCardCut = null;
     }

@@ -1722,8 +1722,10 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
       const cur = (winner.buffs || []).find(x => x.id === MARK.id);
       if (cur && cur.stack >= winner.stat.maxHp * 0.35) {
         removeBuff(cur);
-        winner.pendingCardCut = (winner.pendingCardCut || []).concat([MARK.cut]);   // 의회 자신의 덱에서 빠진다
-        this.result += '<span class="skillDamage">[ ' + eff.name + ' ] 의석 하나가 무너진다 — ' + winner.name + '의 [ ' + ['가위', '바위', '보'][MARK.cut] + ' ] 카드 한 장이 사라진다!</span><br>';
+        const typesLeft = new Set((winner.deck || []).map(c => c.type));
+        if (typesLeft.size <= 1 || !typesLeft.has(MARK.cut)) { this.result += '[ ' + (eff.name || '달빛 의회') + ' ] 마지막 의석은 무너지지 않는다.<br>'; continue; }
+        winner.pendingCardCut = (winner.pendingCardCut || []).concat([MARK.cut]);   // 의회 자신의 덱에서 그 종류가 전부 빠진다
+        this.result += '<span class="skillDamage">[ ' + (eff.name || '달빛 의회') + ' ] 의석 하나가 무너진다 — ' + winner.name + '의 [ ' + ['가위', '바위', '보'][MARK.cut] + ' ] 카드가 모두 사라진다!</span><br>';
       }
     } else if (eff.code === 'drain') {   // 착취의 무리: 이 버프를 가진 쪽(winner)에서 상대(loser)로 생명력 이동
       const v = Math.max(1, Math.round((winner.curHp || 0) * eff.value));
