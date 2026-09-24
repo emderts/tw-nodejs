@@ -311,6 +311,7 @@ Battlemodule.prototype._doBattleTurnManual = function(left, right) {
       this.resolveEffects(this.charRight, this.charLeft, getBuffEffects(this.charRight, cons.ACTIVE_TYPE_TIE), null, this.charRight.skill.base[right]);
       this.resolveEffects(this.charLeft, this.charRight, getItemEffects(this.charLeft, cons.ACTIVE_TYPE_TIE), null, this.charLeft.skill.base[left]);
       this.resolveEffects(this.charRight, this.charLeft, getItemEffects(this.charRight, cons.ACTIVE_TYPE_TIE), null, this.charRight.skill.base[right]);
+      this.lastTieType = left;   // 비긴 카드 종류 (필치 봉쇄용)
       if (this.checkDrive(this.charLeft, cons.ACTIVE_TYPE_TIE)) this.resolveDrive(this.charLeft, this.charRight, null);   // 무승부 드라이브 (한 몸이 된 쌍검)
       if (this.checkDrive(this.charRight, cons.ACTIVE_TYPE_TIE)) this.resolveDrive(this.charRight, this.charLeft, null);
       this.charLeft.lastSkillCode = this.charLeft.skill.base[left].code;
@@ -458,6 +459,7 @@ Battlemodule.prototype._doBattleTurnManual = function(left, right) {
 
   // calc damage
   var damage = this.calcDamage(winner, loser, skillUsed);
+  if (skillUsed.noAttack) { damage.hit = true; damage.value = 0; damage.noAttack = true; }   // 공격 없는 기술: 항상 효과만
   this.resolveTurnBegin(winner, loser);
 
   if (findBuffByCode(winner, 10011).length > 0 && getRandom(0.35)) {
@@ -469,13 +471,15 @@ Battlemodule.prototype._doBattleTurnManual = function(left, right) {
   }
   
   if (damage.hit) {
+    if (!damage.noAttack) {
     this.result += '<span class="skillDamage">' + winner.name + getIga(winner.nameType) + ' [ ' + skillUsed.name + ' ] ' + getUro(skillUsed.nameType) + ' ';
     this.result += loser.name + getUlrul(loser.nameType) + ' 공격해 ' + damage.value + '대미지를 입혔습니다!';
     if (damage.crit) {
       this.result += ' (치명타)';
     }
     this.result += '</span><br>';
-    if (damage.crit) {
+    } else { this.result += winner.name + getIga(winner.nameType) + ' [ ' + skillUsed.name + ' ] ' + getUro(skillUsed.nameType) + ' 펼쳤다.<br>'; }
+    if (damage.crit && !damage.noAttack) {
       this.resolveEffects(winner, loser, getBuffEffects(winner, cons.ACTIVE_TYPE_ATTACK_CRIT), damage);
       this.resolveEffects(winner, loser, getItemEffects(winner, cons.ACTIVE_TYPE_ATTACK_CRIT), damage);
     }
@@ -498,7 +502,7 @@ Battlemodule.prototype._doBattleTurnManual = function(left, right) {
       this.resolveDrive(winner, loser, damage);
     }
     
-    this.dealDamage(winner, loser, damage);
+    if (!damage.noAttack) this.dealDamage(winner, loser, damage);
     winner.curSp += winner.stat.spCharge;
   } else { // evaded
     this.result += loser.name + getUnnun(loser.nameType) + ' 공격을 회피했습니다!<br>'; 
@@ -678,6 +682,7 @@ Battlemodule.prototype._doBattleTurn = function() {
 
   // calc damage
   var damage = this.calcDamage(winner, loser, skillUsed);
+  if (skillUsed.noAttack) { damage.hit = true; damage.value = 0; damage.noAttack = true; }   // 공격 없는 기술: 항상 효과만
   this.resolveTurnBegin(winner, loser);
 
   if (findBuffByCode(winner, 10011).length > 0 && getRandom(0.35)) {
@@ -689,13 +694,15 @@ Battlemodule.prototype._doBattleTurn = function() {
   }
   
   if (damage.hit) {
+    if (!damage.noAttack) {
     this.result += '<span class="skillDamage">' + winner.name + getIga(winner.nameType) + ' [ ' + skillUsed.name + ' ] ' + getUro(skillUsed.nameType) + ' ';
     this.result += loser.name + getUlrul(loser.nameType) + ' 공격해 ' + damage.value + '대미지를 입혔습니다!';
     if (damage.crit) {
       this.result += ' (치명타)';
     }
     this.result += '</span><br>';
-    if (damage.crit) {
+    } else { this.result += winner.name + getIga(winner.nameType) + ' [ ' + skillUsed.name + ' ] ' + getUro(skillUsed.nameType) + ' 펼쳤다.<br>'; }
+    if (damage.crit && !damage.noAttack) {
       this.resolveEffects(winner, loser, getBuffEffects(winner, cons.ACTIVE_TYPE_ATTACK_CRIT), damage);
       this.resolveEffects(winner, loser, getItemEffects(winner, cons.ACTIVE_TYPE_ATTACK_CRIT), damage);
     }
@@ -720,7 +727,7 @@ Battlemodule.prototype._doBattleTurn = function() {
       this.resolveDrive(winner, loser, damage);
     }
     
-    this.dealDamage(winner, loser, damage);
+    if (!damage.noAttack) this.dealDamage(winner, loser, damage);
     winner.curSp += winner.stat.spCharge;
   } else { // evaded
     this.result += loser.name + getUnnun(loser.nameType) + ' 공격을 회피했습니다!<br>'; 
@@ -864,13 +871,26 @@ Battlemodule.prototype.calcDamage = function(winner, loser, skill) {
 }
 
 Battlemodule.prototype.dealDamage = function(src, dst, damage) {
-  if (damage && damage.value > 0) dst.hitThisTurn = true;
+  if (damage && damage.value > 0) { dst.hitThisTurn = true; src.landedThisTurn = true; }
   if (damage && dst.stat && dst.stat.hitCapPct && damage.value > dst.stat.maxHp * dst.stat.hitCapPct) {   // 정상화의 신: 과한 한 방의 초과분 절반
     const cap = dst.stat.maxHp * dst.stat.hitCapPct; const before = damage.value;
     damage.value = Math.round(cap + (damage.value - cap) / 2);
     this.result += '[ 정상화의 신 ] 불합리한 피해를 정상화했다! (' + before + ' → ' + damage.value + ')<br>';
   }
   if (!isFinite(damage.value)) { console.log('[NaN damage]', JSON.stringify({ src: src && src.name, dst: dst && dst.name, type: damage.type, atkRat: damage.atkRat, reduce: damage.reduce, skillRat: damage.skillRat })); damage.value = 0; }
+  if (damage.value > 0 && src !== dst) {   // 소환수(영물·신수)가 있으면 피해를 균등 분담
+    const summons = (dst.buffs || []).filter(b => b.summon && b.id > 0);
+    if (summons.length) {
+      const share = Math.floor(damage.value / (summons.length + 1)); let overflow = 0;
+      for (const b of summons) {
+        const sh = b.effect.find(e => e.code === cons.EFFECT_TYPE_SHIELD); if (!sh) continue;
+        const take = Math.min(sh.value, share); sh.value -= take; overflow += share - take;
+        this.result += '[ ' + b.name + ' ]' + getIga(b.nameType) + ' 대신 ' + take + ' 받았다' + (sh.value <= 0 ? ' — 흩어졌다' : ' (남은 ' + sh.value + ')') + '<br>';
+        if (sh.value <= 0) removeBuff(b);
+      }
+      damage.value = damage.value - share * summons.length + overflow;
+    }
+  }
   var damageShield = Math.round(damage.value / (1- damage.reduce));
   var shielded = false;
   for (val of getBuffEffects(dst, cons.ACTIVE_TYPE_DEAL_DAMAGE_RECEIVE)) {
@@ -1046,6 +1066,12 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
       continue;
     }
     if (eff.chkNotFresh && eff.buff && eff.buff.gainTurn === this.turnCount) {   // 이번 턴에 얻은 버프면 발동하지 않음
+      continue;
+    }
+    if (eff.chkRealHit && damage && damage.noAttack) {   // 실제 공격 판정이 있을 때만
+      continue;
+    }
+    if (eff.chkSkillNotCode !== undefined && skill && skill.code === eff.chkSkillNotCode) {
       continue;
     }
     if (eff.chkDmgType !== undefined && !(damage && damage.type === eff.chkDmgType)) {   // 받은/준 피해의 타입
@@ -1678,6 +1704,67 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
       calcStats(winner, loser);
       winner.curHp = 179;
       this.result += '<span class="skillDamage">[ ' + eff.name + ' ] 맹약이 발동한다 — ' + winner.name + '으로 변모했다! (179 / 1799)</span><br>';
+    } else if (eff.code === 'summon') {   // 수묵화: 소환수 버프 (체력 = base + level*per). 최대치면 남은 턴이 적은 것을 갱신
+      const lv = winner.level || 1; const hp = Math.round(eff.hpBase + lv * eff.hpPer);
+      const cur = (winner.buffs || []).filter(b => b.id === eff.buffCode);
+      if (eff.max && cur.length >= eff.max) {
+        cur.sort((a, b) => (a.dur || 0) - (b.dur || 0))[0].dur = eff.buffDur;
+        this.result += '[ ' + eff.name + ' ] 지친 ' + cur[0].name + '에게 다시 먹을 갈았다. (' + eff.buffDur + '턴)<br>';
+      } else {
+        const bo = buffMdl.getBuffData({ buffCode : eff.buffCode }); bo.dur = eff.buffDur;
+        for (const be of bo.effect) if (be.code === cons.EFFECT_TYPE_SHIELD) be.value = hp;
+        this.giveBuff(winner, winner, bo, false, eff.name);
+        this.result += '[ ' + eff.name + ' ] 붓끝에서 ' + bo.name + getIga(bo.nameType) + ' 걸어 나왔다. (체력 ' + hp + ')<br>';
+      }
+      if (eff.refreshAll) for (const b of (winner.buffs || [])) if (b.id === eff.refreshAll) b.dur = 4;
+    } else if (eff.code === 'summonIdle') {   // 소환수: 이번 턴 적중이 없었으면 턴 종료 시 약한 일격
+      if (winner.landedThisTurn) continue;
+      const sk = { name : (eff.buff && eff.buff.name) || '영물', type : cons.DAMAGE_TYPE_MAGICAL, damage : eff.value, nameType : cons.NAME_KOR_NO_END_CONS, effect : [] };
+      const rd = this.calcDamage(winner, loser, sk); rd.hit = true; rd.noProc = true; this.dealDamage(winner, loser, rd);
+      this.result += '[ ' + sk.name + ' ]' + getIga(cons.NAME_KOR_END_CONS) + ' 스스로 움직여 ' + rd.value + ' 피해!<br>';
+    } else if (eff.code === 'brushFire') {   // 그려낸 불꽃·환염: 개별 명중 다연타 + 화상 누적
+      const sk = { name : eff.skillName, type : cons.DAMAGE_TYPE_MAGICAL, damage : eff.value, nameType : cons.NAME_KOR_NO_END_CONS, effect : [], hitMod : eff.hitMul };
+      let hits = 0;
+      for (let k = 0; k < eff.count; k++) {
+        const rd = this.calcDamage(winner, loser, sk); rd.noProc = true;
+        if (!rd.hit) { this.result += '[ ' + sk.name + ' ] 붓이 빗나갔다.<br>'; continue; }
+        hits++; this.dealDamage(winner, loser, rd);
+        this.result += '<span class="skillDamage">[ ' + sk.name + ' ] ' + rd.value + '대미지' + (rd.crit ? ' (치명타)' : '') + '</span><br>';
+        if (Math.random() < eff.burnChance) {
+          const burn = (loser.buffs || []).find(b => b.id === 1);
+          if (burn) { burn.dur = (burn.dur || 0) + 1;
+            if (eff.burnTick) { const v = Math.round(loser.stat.maxHp * 0.05); loser.curHp -= v; this.result += '[ ' + sk.name + ' ] 불길이 번진다 — [화상] 즉시 ' + v + ' 피해, +1턴<br>'; }
+            else this.result += '[ ' + sk.name + ' ] [화상] +1턴<br>'; }
+          else { const bd = buffMdl.getBuffData({ buffCode : 1 }); bd.dur = 1; this.giveBuff(winner, loser, bd, true, sk.name); }
+        }
+      }
+      if (hits) winner.landedThisTurn = true;
+      if (eff.eyeConsume && hits) { const eye = (winner.buffs || []).find(b => b.id === 10744); if (eye) removeBuff(eye); }
+    } else if (eff.code === 'inkShield') {   // 발묵: 준 마법 피해의 25% → [묵운] 보호막
+      if (!damage || !damage.value || damage.type !== cons.DAMAGE_TYPE_MAGICAL) continue;
+      const add = Math.max(1, Math.round(damage.value * eff.value));
+      const ex = (winner.buffs || []).find(b => b.id === eff.buffCode);
+      if (ex) { for (const be of ex.effect) if (be.code === cons.EFFECT_TYPE_SHIELD) be.value += add; }
+      else { const bo = buffMdl.getBuffData({ buffCode : eff.buffCode }); bo.dur = null; for (const be of bo.effect) if (be.code === cons.EFFECT_TYPE_SHIELD) be.value = add; this.giveBuff(winner, winner, bo, false, '발묵'); }
+      this.result += '[ 발묵 ] 먹이 번져 [ 묵운 ] +' + add + '<br>';
+    } else if (eff.code === 'dragonEye') {   // 화룡점정: 이번 턴 일반 스킬을 강화판으로 대체
+      if (!skill || !winner.skillOri) continue;
+      const idx = winner.skillOri.base.findIndex(sk => sk && sk.code === skill.code); if (idx < 0) continue;
+      const lv = winner.level || 1;
+      const forms = [
+        { name : '수묵화 : 신수', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 0, noAttack : true, code : 90490,
+          effect : [{ code : 'summon', name : '수묵화 : 신수', buffCode : 10741, buffDur : 3, max : 1, hpBase : 50, hpPer : 35, refreshAll : 10740 }, { code : cons.EFFECT_TYPE_REMOVE_BUFF, buffTarget : [10744] }] },
+        { name : '환염', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 0, noAttack : true, code : 90491,
+          effect : [{ code : 'brushFire', name : '환염', skillName : '환염', count : 5, hitMul : 0.65, value : 0.5, burnChance : 0.25, burnTick : true, eyeConsume : true }] },
+        { name : '필법 : 광묵폭우', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1.0, code : 90492,
+          effect : [{ code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 10742, buffDur : 3 }, { code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 10745, buffDur : 3 }] },
+      ];
+      Object.assign(skill, JSON.parse(JSON.stringify(forms[idx])));
+      this.result += '<span class="skillDamage">[ 화룡점정 ] 붓이 마지막 점을 찍는다 — [ ' + skill.name + ' ]</span><br>';
+    } else if (eff.code === 'sealCard') {   // 필치 봉쇄: 비긴 카드 종류를 상대가 다음 턴 못 낸다
+      const ty = this.lastTieType !== undefined ? this.lastTieType : 0;
+      loser.bannedCardType = ty;
+      this.result += '[ ' + eff.name + ' ] ' + loser.name + getUnnun(loser.nameType) + ' 다음 턴에 [ ' + ['가위', '바위', '보'][ty] + ' ] 를 낼 수 없다!<br>';
     } else if (eff.code === 'buffCountAdd') {   // 휘감는 뿌리: 자신의 버프 수 비례 계수
       if (!damage) continue;
       const n = (winner.buffs || []).filter(b => b.id > 0 && !b.isDebuff && !b.hidden).length;
@@ -2108,6 +2195,7 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
 
 Battlemodule.prototype.resolveTurnBegin = function(winner, loser) {
   winner.hitThisTurn = false; loser.hitThisTurn = false;   // 글로리 맥스·채찍-PT용
+  winner.landedThisTurn = false; loser.landedThisTurn = false;
   this.resolveEffects(winner, loser, getItemEffects(winner, cons.ACTIVE_TYPE_TURN_START), null);
   this.resolveEffects(loser, winner, getItemEffects(loser, cons.ACTIVE_TYPE_TURN_START), null);
   if (this.checkDrive(winner, cons.ACTIVE_TYPE_TURN_START, loser)) {
@@ -2310,6 +2398,7 @@ Battlemodule.prototype.giveBuff = function(src, recv, buffObj, printFlag, name) 
 }
 
 function removeBuff(buff) {
+  if (!buff) return;   // 버프에 속하지 않은 효과(스킬 효과)의 removeBuff 플래그 방어
   buff.id = -1;
   buff.dur = 0;
   buff.effect = [];

@@ -397,6 +397,11 @@ io.on('connection', (socket) => {
       const save = it.bossSkill ? 0 : run.runEffect(t.leftChr, 'potionSave');
       if (!(save && Math.random() < save)) { t.leftChr.inventory.splice(parseInt(useIdx, 10), 1); if (!it.temp) { if (!t.used) t.used = []; t.used.push(it.code); } }
     } else if (!run.handTypes(t.pdeck).includes(key)) return;
+    if (t.leftChr.bannedCardType !== undefined && t.leftChr.bannedCardType !== null && !freeCard) {   // 필치 봉쇄 (플레이어)
+      const avail = run.handTypes(t.pdeck).filter(x => x !== t.leftChr.bannedCardType);
+      if (!avail.length) { const st = buffMdl.getBuffData({ buffCode : 4 }); st.dur = 1; t.bmod.giveBuff(t.rightChr, t.leftChr, st, true, '필치 봉쇄'); }
+      else if (key === t.leftChr.bannedCardType) return;
+    }
     t.busy = true;
     // 한 번 무르기: 턴 처리 전 상태 스냅샷
     if (t.undos) { try { t.snapshot = JSON.stringify({ bm: t.bmod, L: t.leftChr, R: t.rightChr, pdeck: t.pdeck, edeck: t.edeck, eplayed: t.eplayed, resets: t.resets, redraws: t.redraws, used: t.used || [], nextEKey: t.nextEKey, lastKey: t.lastKey, predict: t.predict || null, useState: t.useState || null }, (k, v) => (k === 'buff' || k === 'item' || k === 'charLeft' || k === 'charRight') ? undefined : v); } catch (e) { console.log('snapshot failed', e.message); t.snapshot = null; } }
@@ -418,6 +423,7 @@ io.on('connection', (socket) => {
       }
     }
     const result = t.bmod.procBattleTurn(key, eKey, 1);
+    if (!result.redecide) { t.leftChr.bannedCardType = null; t.rightChr.bannedCardType = null; }   // 봉쇄는 한 턴
     if (t.rightChr.pendingShuffle) { t.rightChr.pendingShuffle = false; run.shuffleDeck(t.edeck); t.eplayed = [0, 0, 0]; }   // 환기
     if (t.leftChr.pendingShuffle) { t.leftChr.pendingShuffle = false; run.shuffleDeck(t.pdeck); }
     for (const [chr, st] of [[t.leftChr, t.pdeck], [t.rightChr, t.edeck]]) {   // 달빛 의회: 해당 종류 카드를 전부 제거 (마지막 한 종류는 남긴다)
@@ -3818,7 +3824,7 @@ function floorState(t) {
     hp: [Math.max(0, Math.round(L.curHp)), Math.round(L.stat.maxHp)], sp: sp(L),
     ehp: [Math.max(0, Math.round(R.curHp)), Math.round(R.stat.maxHp)], esp: sp(R),
     eplayed: t.eplayed, edraw: t.edeck.draw.length, resets: t.resets, redraws: t.redraws, undos: t.undos && t.snapshot ? t.undos : 0, swaps: t.swaps === undefined ? (run.runEffect(L, 'swapSkill') || 0) : t.swaps,
-    names: floorNames(L), enemyNames: floorNames(R),
+    names: floorNames(L), enemyNames: floorNames(R), banned: (L.bannedCardType === undefined ? null : L.bannedCardType),
     items: (L.inventory || []).map((it, i) => ({ i, code: it.code, name: it.name, tooltip: it.tooltip, card: it.card, temp: !!it.temp })).filter(x => x.code && consumables.DEFS[x.code]),
     ehint: enemyHint(t),
     predict: t.predict || null,
@@ -3830,6 +3836,12 @@ function floorState(t) {
 }
 // 적 AI: 지난 턴 플레이어가 낸 수(lastKey)를 보고 다음 수를 정한다
 function decideEnemyKey(t) {
+  const R = t.rightChr;
+  if (R.bannedCardType !== undefined && R.bannedCardType !== null) {   // 필치 봉쇄 (적)
+    const avail = run.handTypes(t.edeck).filter(x => x !== R.bannedCardType);
+    if (!avail.length) { const st = buffMdl.getBuffData({ buffCode : 4 }); st.dur = 1; t.bmod.giveBuff(t.leftChr, R, st, true, '필치 봉쇄'); }
+    else { const want = run.aiPick(t.edeck, avail[Math.floor(Math.random() * avail.length)]); return avail.includes(want) ? want : avail[0]; }
+  }
   if (run.runEffect(t.leftChr, 'hideSkills')) return run.aiPick(t.edeck, Math.floor(Math.random() * 3));   // 이름 없는 초식
   if (run.ascOf(t.leftChr) >= 4 && t.pdeck) {   // 승천 4: 플레이어의 남은 덱(뽑을 패 + 손패)을 세서 가장 나올 법한 수를 이기는 쪽으로
     const cnt = [0, 0, 0];

@@ -7326,6 +7326,41 @@ module.exports.getBuffData = function(eff) {
     retObj.effect.push({ active : 31, code : cons.EFFECT_TYPE_MULTIPLY_HEAL, value : 1.3 });
     retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : 'skillDamageAdd', slot : 1, value : 0.2 });
     break;
+  case 10740 :   // 엽운학 [영물]
+    retObj.name = '영물'; retObj.nameType = cons.NAME_KOR_END_CONS; retObj.stackType = 3; retObj.isDebuff = false; retObj.summon = true;
+    retObj.tooltip = '엽운학 대신 피해를 나눠 받는 소환수. 다른 일반 스킬이 적중하면 마법 0.3, 이번 턴 적중이 없었으면 턴 종료 시 마법 0.15 피해';
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_DEAL_DAMAGE_RECEIVE, code : cons.EFFECT_TYPE_SHIELD, value : 1, summonHp : true });
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_ATTACK, code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_MAGICAL, value : 0.3, chkSkillNotCode : 90490 });
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_TURN_END, code : 'summonIdle', value : 0.15 });
+    break;
+  case 10741 :   // [신수]
+    retObj.name = '신수'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 1; retObj.isDebuff = false; retObj.summon = true;
+    retObj.tooltip = '엽운학 대신 피해를 나눠 받는 큰 소환수. 다른 일반 스킬이 적중하면 마법 0.4, 이번 턴 적중이 없었으면 턴 종료 시 마법 0.2 피해';
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_DEAL_DAMAGE_RECEIVE, code : cons.EFFECT_TYPE_SHIELD, value : 1, summonHp : true });
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_ATTACK, code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_MAGICAL, value : 0.4, chkSkillNotCode : 90490 });
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_TURN_END, code : 'summonIdle', value : 0.2 });
+    break;
+  case 10742 :   // [발묵]
+    retObj.name = '발묵'; retObj.nameType = cons.NAME_KOR_END_CONS; retObj.stackType = 1; retObj.isDebuff = false;
+    retObj.tooltip = '지속 중 적에게 준 마법 피해의 25%만큼 [묵운] 보호막. 끝나면 묵운도 사라진다';
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_DEAL_DAMAGE, code : 'inkShield', value : 0.25, buffCode : 10743 });
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_DURATION_END, code : cons.EFFECT_TYPE_REMOVE_BUFF, buffTarget : [10743] });
+    break;
+  case 10743 :   // [묵운]
+    retObj.name = '묵운'; retObj.nameType = cons.NAME_KOR_END_CONS; retObj.stackType = 1; retObj.isDebuff = false; retObj.durOff = null;
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_DEAL_DAMAGE_RECEIVE, code : cons.EFFECT_TYPE_SHIELD, value : 1 });
+    break;
+  case 10744 :   // [화룡점정]
+    retObj.name = '화룡점정'; retObj.nameType = cons.NAME_KOR_END_CONS; retObj.stackType = 1; retObj.isDebuff = false; retObj.durOff = null;
+    retObj.tooltip = '다음 일반 스킬이 강화된다 — 가위 [수묵화 : 신수] / 바위 [환염] / 보 [필법 : 광묵폭우]. 한 번이라도 적중하면 사라진다';
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_SKILL_WIN, code : 'dragonEye' });
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_ATTACK, code : cons.EFFECT_TYPE_REMOVE_BUFF, buffTarget : [10744], removeBuff : true, chkRealHit : true });
+    break;
+  case 10745 :   // [광묵폭우]
+    retObj.name = '광묵폭우'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 1; retObj.isDebuff = true;
+    retObj.tooltip = '받는 모든 피해 +35%';
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_DAMAGE_RECEIVE, code : cons.EFFECT_TYPE_MULTIPLY_DAMAGE, anySkill : true, value : 1.35 });
+    break;
   case 10620 :
     retObj.name = '소형 동물'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 2; retObj.maxStack = 10; retObj.isDebuff = false; retObj.durOff = null;
     retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'maxHp', value : 10 });

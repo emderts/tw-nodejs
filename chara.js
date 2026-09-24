@@ -1735,6 +1735,37 @@ const item = require('./items');
       tooltip : '자신에게 4턴 간 [생명의 나무] (받는 회복 1.3배, 재생 계수 +0.2). 자신의 모든 버프 지속 +1턴',
       flavor : '뿌리가 닿는 곳까지가 숲이다.'};
   charSenal.base = JSON.parse(JSON.stringify(charSenal.stat));
+  // ---- 엽운학 ----
+  var charYeop = {};
+  _initChar(charYeop);
+  charYeop.name = '엽운학';
+  charYeop.nameType = cons.NAME_KOR_END_CONS;
+  charYeop.title = '화폭에 세상을 담는 화공';
+  charYeop.skill = {};
+  charYeop.skill.base = [];
+  charYeop.skill.base.push({code : 90490, name : '수묵화 : 영물', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 0, noAttack : true,
+      effect : [{code : 'summon', name : '수묵화 : 영물', buffCode : 10740, buffDur : 4, max : 2, hpBase : 20, hpPer : 22}],
+      tooltip : '자신에게 4턴 간 [영물] 부여 (최대 2). 이미 둘이면 남은 턴이 적은 쪽을 갱신<br><br>[영물] : 20+레벨×22의 체력을 가진 소환수. 엽운학과 피해를 나눠 받는다. 다른 일반 스킬이 적중하면 마법 0.3, 이번 턴 적중이 없었으면 턴 종료 시 마법 0.15 피해',
+      flavor : '먹이 마르기 전에 짐승이 먼저 걸어 나온다.'});
+  charYeop.skill.base.push({code : 90493, name : '그려낸 불꽃', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 0, noAttack : true,
+      effect : [{code : 'brushFire', name : '그려낸 불꽃', skillName : '그려낸 불꽃', count : 3, hitMul : 0.65, value : 0.5, burnChance : 0.25, eyeConsume : false}],
+      tooltip : '명중률 65%의 마법 0.5 공격을 3회. 적중마다 25% 확률로 1턴 [화상], 이미 화상이면 지속 +1턴',
+      flavor : '종이 위의 불이 종이 밖으로 옮겨붙는다.'});
+  charYeop.skill.base.push({code : 90494, name : '필법 : 발묵', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1.0,
+      effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 10742, buffDur : 3}],
+      tooltip : '자신에게 3턴 간 [발묵] (있으면 갱신)<br><br>[발묵] : 지속 중 적에게 준 마법 피해의 25%만큼 [묵운] 보호막. 끝나면 묵운도 사라진다',
+      flavor : '먹을 쏟아 붓고, 번지는 대로 둔다.'});
+  charYeop.skill.drive = {code : 90495, name : '필치 봉쇄', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.SKILL_TYPE_DRIVE, active : cons.ACTIVE_TYPE_TIE,
+      cost : 5, chance : 1, setCooldown : 2,
+      effect : [{code : 'sealCard', name : '필치 봉쇄'}],
+      tooltip : '가위바위보에서 비기면 발동. 상대는 다음 턴에 그 종류의 카드를 낼 수 없다. 낼 카드가 없으면 1턴 [기절] (쿨다운 2턴)',
+      flavor : '한 획을 그어 상대의 붓길을 막는다.'};
+  charYeop.skill.special = {code : 90496, name : '화룡점정', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 100,
+      effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 10744, buffDur : null}],
+      tooltip : '자신에게 [화룡점정] 부여 — 다음 일반 스킬이 강화된다 (한 번이라도 적중하면 소거)<br>가위 → [수묵화 : 신수] 3턴 신수(50+레벨×35, 적중 시 마법 0.4) 소환 + 모든 영물 갱신<br>바위 → [환염] 마법 0.5 × 5회, 화상이 있으면 즉시 화상 피해 + 1턴<br>보 → [필법 : 광묵폭우] 물리 1.0 + 발묵 + 적에게 3턴 [광묵폭우] (받는 피해 +35%)',
+      flavor : '마지막 한 점이 그림을 살린다.'};
+  charYeop.base = JSON.parse(JSON.stringify(charYeop.stat));
+  module.exports.yeop = charYeop;
   module.exports.senal = charSenal;
   module.exports.gabi = charGabi;
   module.exports.illun = charIllun;

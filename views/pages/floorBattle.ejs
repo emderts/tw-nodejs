@@ -78,7 +78,9 @@
     fitPadding();
   }
   document.getElementById('itemBtn').addEventListener('click', function () { itemsOpen = !itemsOpen; renderItems(); });
+  var curState = null;
   function renderState(s) {
+    curState = s;
     if (s.names) names = s.names;                 // 전투 중 스킬 교체 반영
     if (s.enemyNames) oNames = s.enemyNames;
     items = s.items || []; renderItems();
@@ -131,6 +133,7 @@
       var b = document.getElementById('handBtn' + i);
       if (i < types.length) {
         b.innerHTML = glyph[types[i]] + '<br>' + names[types[i]];
+        if (curState && curState.banned !== null && curState.banned !== undefined && curState.banned === types[i]) { b.setAttribute('disabled', true); b.style.opacity = '.4'; b.title = '필치 봉쇄 — 이번 턴에는 낼 수 없다'; }
         b.className = 'card-t' + types[i];
         b.removeAttribute('disabled');
       } else {
