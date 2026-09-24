@@ -290,7 +290,7 @@ itemList[429] = { id : 429, name : '계승자의 의지', nameType : cons.NAME_K
               {code : cons.EFFECT_TYPE_STAT_ADD, active : cons.ACTIVE_TYPE_CALC_STATS, key : 'magReduce', value : 0.04, chkHp : 0.4}] };
 itemList[226] = { id : 226, name : '백은갑옷', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_ARMOR, flavor : '백은으로 장식된 갑옷. 백은에는 그 자체로 마력을 막아 주는 힘이 있다.', rank : 9, rarity : cons.ITEM_RARITY_UNIQUE, stat : { phyReduce : 0.02, magReduce : 0.032, maxHp : 67, evasion : -0.03 }, 
     effectDesc : '마법 공격 피격 시 20% 확률로 자신에게 3턴 간 [백은 수호] 버프 부여<br><br>[백은 수호] : 마법저항 +10%', 
-    effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_TAKE_HIT, buffCode : 10010, buffDur : 3, chkDmgType : cons.DAMAGE_TYPE_MAGICAL}] };
+    effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, chance : 0.2, active : cons.ACTIVE_TYPE_TAKE_HIT, buffCode : 10010, buffDur : 3, chkDmgType : cons.DAMAGE_TYPE_MAGICAL}] };
 itemList[430] = { id : 430, name : '수라의 판금 갑옷', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_ARMOR, flavor : '눈이 안 보이니까 단단한 걸 입어야 된다는 기막힌 발상이다.', rank : 9, rarity : cons.ITEM_RARITY_UNIQUE, stat : { phyReduce : 0.02, magReduce : 0.02, maxHp : 55 }, 
     effectDesc : '[봉인], [실명] 상태이상 지속 턴 1턴 감소', 
     effect : [{code : cons.EFFECT_TYPE_REDUCE_BUFF_DURATION, active : cons.ACTIVE_TYPE_RECEIVE_BUFF, value : 1, buffCode : 10},
