@@ -36,7 +36,10 @@ add('clear10', '진행', '익숙한 길', '탑 정복 10회');
 add('win100', '진행', '끝없는 등반', '누적 전투 승리 100회');
 add('win500', '진행', '수백 번의 층', '누적 전투 승리 500회');
 // 2. 캐릭터
-for (const k in CHAR_CLEAR) add('char_' + k, '캐릭터', CHAR_CLEAR[k], '이 캐릭터로 탑 정복');
+const rosterMod = require('./roster');
+// '로/으로' 조사: 받침 없음·ㄹ 받침이면 '로'
+function ro(word) { const c = word.charCodeAt(word.length - 1) - 0xAC00; if (c < 0 || c > 11171) return '로'; const jong = c % 28; return (jong === 0 || jong === 8) ? '로' : '으로'; }
+for (const k in CHAR_CLEAR) { const t = rosterMod.template(k); const nm = t ? t.name : k; add('char_' + k, '캐릭터', CHAR_CLEAR[k], nm + ro(nm) + ' 탑 정복'); }
 add('unlock5', '캐릭터', '새로운 얼굴', '캐릭터 5명 해금');
 add('unlockAll', '캐릭터', '모두가 모인 자리', '모든 캐릭터 해금');
 add('multi5', '캐릭터', '여러 개의 정상', '서로 다른 캐릭터 5명으로 정복');
@@ -169,4 +172,30 @@ function onStats(stats, unlockedCount, total) {
   return g;
 }
 
-module.exports = { LIST, BY_ID, THEMES, CHAR_CLEAR, onBattle, onProgress, onClear, onStats };
+// 업적별 진행 상황 문자열 (없으면 null). ext: { unlocked, totalChars, monName(key) }
+function progress(id, st, ext) {
+  st = st || {}; ext = ext || {};
+  const frac = (n, t) => Math.min(n || 0, t) + ' / ' + t;
+  const killed = new Set(st.killed || []), cleared = new Set(st.clearedChars || []);
+  const name = (k) => (ext.monName && ext.monName(k)) || k;
+  const cyc = { cyc3: 3, cyc8: 8, cyc11: 11, cyc15: 15 };
+  if (cyc[id]) return '최고 도달 ' + (st.bestCycle || 0) + '사이클 / ' + cyc[id];
+  const cnt = { win100: ['wins', 100, '승리'], win500: ['wins', 500, '승리'], clear1: ['clears', 1, '정복'], clear3: ['clears', 3, '정복'], clear10: ['clears', 10, '정복'],
+    epic1: ['epics', 1, '에픽'], epic25: ['epics', 25, '에픽'], epic100: ['epics', 100, '에픽'], collector5: ['collectorBuys', 5, '구매'], devil3: ['devil', 3, '거래'] };
+  if (cnt[id]) return cnt[id][2] + ' ' + frac(st[cnt[id][0]], cnt[id][1]);
+  if (id === 'art10') return '아티팩트 ' + frac((st.artifacts || []).length, 10);
+  if (id === 'hunt20') return '격파한 몬스터 ' + frac(killed.size, 20);
+  if (id === 'unlock5') return '해금 ' + frac(ext.unlocked, 5);
+  if (id === 'unlockAll') return '해금 ' + frac(ext.unlocked, ext.totalChars || 19);
+  if (id === 'multi5') return '정복한 캐릭터 ' + frac(cleared.size, 5);
+  if (id === 'multiAll') { const miss = Object.keys(CHAR_CLEAR).filter(k => !cleared.has(k)); return '정복한 캐릭터 ' + frac(cleared.size, Object.keys(CHAR_CLEAR).length) + (miss.length && miss.length <= 6 ? ' — 남은: ' + miss.map(k => (rosterMod.template(k) || {}).name || k).join(', ') : ''); }
+  if (id.startsWith('char_')) { const k = id.slice(5); const b = (st.best || {})[k]; return b ? '이 캐릭터 최고 ' + b + '사이클 / 15' : '아직 이 캐릭터로 오른 적이 없다'; }
+  if (id.startsWith('theme_')) { const th = THEMES[id.slice(6)]; if (!th) return null; const got = th.keys.filter(k => killed.has(k)); const miss = th.keys.filter(k => !killed.has(k));
+    return '격파 ' + got.length + ' / ' + th.keys.length + (miss.length ? ' — 남은: ' + miss.map(name).join(', ') : ''); }
+  if (id === 'boss_both') return '데시메이트 ' + (killed.has('rsDeci') ? '✓' : '✗') + ' · 바이레스 ' + (killed.has('rsVyres') ? '✓' : '✗');
+  const setMax = { set_titan: ['titan', 4], set_god: ['god', 4], set_city: ['city', 15], set_sci: ['sci', 10], set_predator: ['predator', 10] };
+  if (setMax[id]) return '최고 ' + frac((st.maxStack || {})[setMax[id][0]], setMax[id][1]) + '중첩';
+  return null;
+}
+
+module.exports = { LIST, BY_ID, THEMES, CHAR_CLEAR, onBattle, onProgress, onClear, onStats, progress };

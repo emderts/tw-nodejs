@@ -3249,7 +3249,11 @@ async function procViewAchievement(req, res) {
     if (!sess.userUid) { res.redirect('/login'); return; }
     const acct = await loadAcct(sess.userUid);
     const done = Object.keys(acct.achievements).length;
-    res.render('pages/achievements', { list: achv.LIST, got: acct.achievements, stats: acct.stats, done, total: achv.LIST.length });
+    const unlocked = await getUnlocked(sess.userUid);
+    const monsterMod = require('./monster');
+    const ext = { unlocked: unlocked.length, totalChars: roster.KEYS.length, monName: (k) => (monsterMod[k] && monsterMod[k].name) || k };
+    const prog = {}; for (const a of achv.LIST) { const pgs = achv.progress(a.id, acct.stats, ext); if (pgs) prog[a.id] = pgs; }
+    res.render('pages/achievements', { list: achv.LIST, got: acct.achievements, stats: acct.stats, done, total: achv.LIST.length, prog });
   } catch (err) { console.error(err); res.redirect('/'); }
 }
 
@@ -3997,6 +4001,11 @@ async function checkAcctGeneral (userId, char) {
   try {
     const acct = await loadAcct(userId);
     if (char) tallyItems(char, acct.stats);
+    if (char && char.run) {   // 최고 도달 사이클 (전체 / 캐릭터별)
+      acct.stats.bestCycle = Math.max(acct.stats.bestCycle || 0, char.run.cycle);
+      acct.stats.best = acct.stats.best || {};
+      if (char.rosterKey) acct.stats.best[char.rosterKey] = Math.max(acct.stats.best[char.rosterKey] || 0, char.run.cycle);
+    }
     const unlocked = await getUnlocked(userId);
     const ids = achv.onStats(acct.stats, unlocked.length, roster.KEYS.length).concat(char && char.run ? achv.onProgress(char) : []);
     await grantAchv(userId, char, acct, ids);
@@ -4257,6 +4266,9 @@ async function procFloorResult (req, res) {
     try {
       const acct = await loadAcct(sess.userUid);
       if (re.winnerLeft) { acct.stats.wins = (acct.stats.wins || 0) + 1; if (enemy.monsterKey) { acct.stats.killed = acct.stats.killed || []; if (!acct.stats.killed.includes(enemy.monsterKey)) acct.stats.killed.push(enemy.monsterKey); } }
+      const stk = (id) => { const b = (t.leftChr.buffs || []).find(x => x.id === id); return b ? (b.stack || 1) : 0; };   // 세트 최고 중첩 기록
+      acct.stats.maxStack = acct.stats.maxStack || {};
+      for (const [k, id] of [['titan', 10685], ['god', 10695], ['city', 10630], ['sci', 10610], ['predator', 10626]]) acct.stats.maxStack[k] = Math.max(acct.stats.maxStack[k] || 0, stk(id));
       const ids = achv.onBattle({ char, enemy, L: t.leftChr, won: !!re.winnerLeft, log: re.result, stats: acct.stats, turns: (t.bmod && t.bmod.turnCount) || 0, hourglassKill: !!t.hourglassKill });
       if ((char.run.ach.taurus || 0) >= 3) ids.push('taurus3');
       await grantAchv(sess.userUid, char, acct, ids);
