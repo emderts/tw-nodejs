@@ -856,6 +856,7 @@ Battlemodule.prototype.calcDamage = function(winner, loser, skill) {
 }
 
 Battlemodule.prototype.dealDamage = function(src, dst, damage) {
+  if (damage && damage.regenPending && !damage.regenSplitDone) { damage.regenSplitDone = true; damage.value = Math.round(damage.value * (damage.regenRate || 0.5)); }   // 재생: 절반만 준다
   if (damage && damage.value > 0) dst.hitThisTurn = true;
   if (damage && dst.stat && dst.stat.hitCapPct && damage.value > dst.stat.maxHp * dst.stat.hitCapPct) {   // 정상화의 신: 과한 한 방의 초과분 절반
     const cap = dst.stat.maxHp * dst.stat.hitCapPct; const before = damage.value;
@@ -1032,6 +1033,9 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
       continue;
     }
     if (eff.chkOppHpOver && (loser.curHp / loser.stat.maxHp) <= eff.chkOppHpOver) {   // 상대 체력 비율이 N 초과일 때만
+      continue;
+    }
+    if (eff.chkRecvNot && damage && damage.id !== undefined && eff.chkRecvNot.includes(damage.id)) {   // 특정 버프를 받을 땐 미발동 (회복 → 회복 연쇄 방지)
       continue;
     }
     if (eff.chkNotFresh && eff.buff && eff.buff.gainTurn === this.turnCount) {   // 이번 턴에 얻은 버프면 발동하지 않음
@@ -1667,6 +1671,31 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
       calcStats(winner, loser);
       winner.curHp = 179;
       this.result += '<span class="skillDamage">[ ' + eff.name + ' ] 맹약이 발동한다 — ' + winner.name + '으로 변모했다! (179 / 1799)</span><br>';
+    } else if (eff.code === 'buffCountAdd') {   // 휘감는 뿌리: 자신의 버프 수 비례 계수
+      if (!damage) continue;
+      const n = (winner.buffs || []).filter(b => b.id > 0 && !b.isDebuff && !b.hidden).length;
+      const add = Math.min(eff.max || 99, n * eff.value);
+      if (add > 0) { damage.skillRat += add; this.result += '[ 휘감는 뿌리 ] 버프 ' + n + '개 — 계수 +' + add.toFixed(2) + '<br>'; }
+    } else if (eff.code === 'regenSplit') {   // 재생: 피해의 절반을 [재생] 스택으로 돌린다
+      if (!damage) continue;
+      damage.regenPending = true; damage.regenRate = eff.value;
+    } else if (eff.code === 'regenApply') {
+      if (!damage || !damage.regenPending || !damage.value) continue;
+      const st = Math.max(1, Math.round(damage.value));   // dealDamage 단계에서 이미 절반으로 줄어 있음
+      const bo = buffMdl.getBuffData({ buffCode : eff.buffCode }); bo.dur = eff.buffDur; bo.stack = st;
+      this.giveBuff(winner, winner, bo, false, eff.name);
+      this.result += '[ ' + eff.name + ' ] 피해의 절반이 뿌리로 돌아간다 — [ 재생 ] ' + st + '<br>';
+    } else if (eff.code === 'regenTick') {
+      const st = (eff.buff && eff.buff.stack) || 0; if (!st) continue;
+      const v = Math.max(1, Math.round(st * eff.value));
+      const dmgObj = { amount : v };
+      this.resolveEffects(winner, loser, getBuffEffects(winner, 31), dmgObj);   // 회복 배율 (생명의 나무 등)
+      dmgObj.amount = Math.round(dmgObj.amount);
+      winner.curHp = Math.min(winner.stat.maxHp, winner.curHp + dmgObj.amount);
+      this.result += winner.name + getUnnun(winner.nameType) + ' [ 재생 ] 효과로 HP를 ' + dmgObj.amount + ' 회복했다!<br>';
+    } else if (eff.code === 'extendBuffs') {   // 생명의 나무: 자신의 버프 지속 +1
+      let n = 0; for (const b of (winner.buffs || [])) if (b.id > 0 && !b.isDebuff && b.dur) { b.dur += eff.value || 1; n++; }
+      if (n) this.result += '[ ' + eff.name + ' ] 버프 ' + n + '개의 지속이 ' + (eff.value || 1) + '턴 늘어났다.<br>';
     } else if (eff.code === 'buildShield') {   // 네온: 최대 생명력 비례 보호막 버프를 세운다
       const bo = buffMdl.getBuffData({ buffCode : eff.buffCode }); bo.dur = eff.buffDur;
       for (const be of bo.effect) if (be.code === cons.EFFECT_TYPE_SHIELD) be.value = Math.round(winner.stat.maxHp * eff.value);
@@ -2549,6 +2578,11 @@ function calcStats(chara, opp) {
       continue;
     }
     
+    if (val.code === 'skillDamageAdd') {   // [생명의 나무]: 지정 슬롯 계수 가산
+      const sk = chara.skill && chara.skill.base && chara.skill.base[val.slot];
+      if (sk) sk.damage = Math.round((sk.damage + val.value) * 100) / 100;
+      continue;
+    }
     if (val.code === 'skillDamageSet') {   // [광란의 추적]: 지정 슬롯 계수 고정
       const sk = chara.skill && chara.skill.base && chara.skill.base[val.slot];
       const setv = (chara.skill && chara.skill.special && chara.skill.special.setChaseDamage) || val.value;
@@ -2761,6 +2795,7 @@ function printChar(chara, name, flag) {
   if (flag === 1) {
     resultStr += '<div class="charInfoBuffs">';
     for (val of chara.buffs) {
+      if (val.hidden) continue;
       resultStr += '<span class="has-tip buffTip">' + val.name;
       if (val.stack) {
         resultStr += ' (' + val.stack + ')';

@@ -7300,6 +7300,32 @@ module.exports.getBuffData = function(eff) {
       skill : { name : '갈의 일격', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 1.6, doubleIfOpp : 10700,
                 effect : [{ code : cons.EFFECT_TYPE_OPP_BUFF, chance : 1, buffCode : 10701, buffDur : 2 }] } });
     break;
+  case 10730 :   // 세날 룬토템 [재생]
+    retObj.name = '재생'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 3; retObj.isDebuff = false;
+    retObj.tooltip = '턴 종료 시 스택의 60%만큼 회복';
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_TURN_END, code : 'regenTick', value : 0.6 });
+    break;
+  case 10731 :   // [대드루이드] (상시)
+    retObj.name = '대드루이드'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 1; retObj.isDebuff = false; retObj.durOff = null; retObj.hidden = true;
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_DAMAGE, code : 'buffCountAdd', chkMySkillIdx : 0, value : 0.1, max : 0.5 });
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_DAMAGE, code : 'regenSplit', chkMySkillIdx : 1, value : 0.5 });
+    break;
+  case 10732 :   // [급속 성장]
+    retObj.name = '급속 성장'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 1; retObj.isDebuff = false;
+    retObj.tooltip = '턴 시작 시 SP재생 × 4 만큼 회복';
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_TURN_START, code : cons.EFFECT_TYPE_SELF_HP, isPercentStat : true, percentKey : 'spRegen', value : 4 });
+    break;
+  case 10733 :   // [회복]
+    retObj.name = '회복'; retObj.nameType = cons.NAME_KOR_END_CONS; retObj.stackType = 3; retObj.isDebuff = false;
+    retObj.tooltip = '턴 시작 시 생명력 회복 × 6 만큼 회복';
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_TURN_START, code : cons.EFFECT_TYPE_SELF_HP, isPercentStat : true, percentKey : 'hpRegen', value : 6 });
+    break;
+  case 10734 :   // [생명의 나무]
+    retObj.name = '생명의 나무'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 1; retObj.isDebuff = false;
+    retObj.tooltip = '받는 모든 회복 1.3배, 재생 계수 +0.2';
+    retObj.effect.push({ active : 31, code : cons.EFFECT_TYPE_MULTIPLY_HEAL, value : 1.3 });
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : 'skillDamageAdd', slot : 1, value : 0.2 });
+    break;
   case 10620 :
     retObj.name = '소형 동물'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 2; retObj.maxStack = 10; retObj.isDebuff = false; retObj.durOff = null;
     retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'maxHp', value : 10 });
