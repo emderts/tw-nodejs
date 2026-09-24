@@ -19,7 +19,7 @@
       <div class="charItem">
         <form action="/altar" method="post">
           <input type="hidden" name="action" value="take"><input type="hidden" name="k" value="<%= k %>">
-          <button type="button" onclick="invClick(this, event)"><span class="rarityUnique"><%= p.name %></span> <small style="color:var(--ash)"><%= p.rank %>급 → <%= offer.toRank %>급</small>
+          <button type="button" onclick="invClick(this, event)"><span class="<%= 'rarity' + ['Common','Uncommon','Rare','Premium','Unique','Epic'][p.rarity || 0] %>"><%= p.name %></span> <small style="color:var(--ash)"><%= p.rank %>급 → <%= offer.toRank %>급</small>
             <div class="itemTooltip"><%- makeTooltip(p) %></div></button>
         </form>
       </div>
@@ -34,7 +34,7 @@
       <div class="charItem">
         <form action="/altar" method="post">
           <input type="hidden" name="action" value="offer"><input type="hidden" name="idx" value="<%= i %>">
-          <button type="button" onclick="invClick(this, event)"><span class="<%= it.rarity === 5 ? 'rarityEpic' : 'rarityUnique' %>"><%= it.name %></span> <small style="color:var(--ash)"><%= it.rank %>급</small>
+          <button type="button" onclick="invClick(this, event)"><span class="<%= 'rarity' + ['Common','Uncommon','Rare','Premium','Unique','Epic'][it.rarity || 0] %>"><%= it.name %></span> <small style="color:var(--ash)"><%= it.rank %>급</small>
             <div class="itemTooltip"><%- makeTooltip(it) %></div></button>
         </form>
       </div>
