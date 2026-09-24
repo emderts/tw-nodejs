@@ -39,7 +39,7 @@ function runEffect(char, key) {
 function maxLives(char) { return 3 + (runEffect(char, 'luckyCoin') ? 1 : 0); }
 function initRun(char) {
   char.run = { cycle: 1, stageIdx: 0, floor: 1, lives: 1 };   // lives = 남은 재도전 횟수
-  char.gold = 80;
+  char.gold = 80;   // 승천 2는 selectChar에서 적용
   char.inventory = char.inventory || [];
   const starter = consumables.random(['flee']);   // 시작 소모품 1개 (첫 전투부터 연막은 제외)
   if (starter) char.inventory.push(starter);
@@ -164,14 +164,41 @@ function makeEnemy(char) {
   return makeRosterEnemy(char);
 }
 // 장비/스탯 포인트 공통 (플레이어와 같은 환산)
-function equipAndScale(e, cycle, boss) {
+// ===== 승천 =====
+const ASC_MAX = 10;
+const ASC_RULES = [
+  '',
+  '적 체력 +10%, 공격력 +5%',
+  '시작 골드 50, 상점 가격 +15%',
+  '보스 장비 등급 +1',
+  '적 AI가 카드를 센다 (남은 덱을 보고 대응)',
+  '모든 적 장비 등급 +1',
+  '적 체력 +20%, 공격력 +15%',
+  '보스가 에픽 장비로 무장하고 [사용] 장비를 쓴다',
+  '손패 교체·덱 리셋 기본 횟수 -1',
+  '적이 SP 40을 들고 시작, 적 드라이브 발동률 +25%',
+  '모든 적이 에픽 장비로 무장',
+];
+function ascOf(char) { return (char && char.run && char.run.asc) || 0; }
+const nextRarity = (r) => r === 1 ? 2 : (r === 2 ? 4 : 5);
+function equipAndScale(e, cycle, boss, asc) {
+  asc = asc || 0;
   let rarity = RARITY_BY_CYCLE[Math.min(cycle, 10) - 1];
-  if (boss && rarity < 5) rarity = rarity === 1 ? 2 : (rarity === 2 ? 4 : 5);
+  if (boss && rarity < 5) rarity = nextRarity(rarity);
+  if (asc >= 3 && boss && rarity < 5) rarity = nextRarity(rarity);   // 승천 3: 보스 장비 +1
+  if (asc >= 5 && rarity < 5) rarity = nextRarity(rarity);            // 승천 5: 모든 적 +1
+  if ((asc >= 7 && boss) || asc >= 10) rarity = 5;                    // 승천 7: 보스 풀 에픽 / 10: 전원 풀 에픽
   e.items = {};
   // 적에게는 플레이어 전용/기믹 아이템(runEffect·드라이브 교체·시간대·커스텀 코드 효과) 제외
-  const enemyOk = (it) => it && !it.runEffect && !it.driveOverride && !it.timeMult && !it.use && !(it.effect || []).some(ef => typeof ef.code === 'string');
+  const AI_USE_OK = ['freeStrike', 'spBurn', 'regenHeal', 'cthunBlast', 'capacitorBurst'];   // 승천 7 보스가 쓸 수 있는 [사용]
+  const useOk = (it) => !it.use || (asc >= 7 && boss && (it.use.effect || []).every(ef => typeof ef.code !== 'string' || AI_USE_OK.includes(ef.code)));
+  const enemyOk = (it) => it && !it.runEffect && !it.driveOverride && !it.timeMult && useOk(it) && !(it.effect || []).some(ef => typeof ef.code === 'string');
+  // 승천 7 보스: 쓸 수 있는 [사용] 장비가 있으면 슬롯마다 50% 확률로 우선 장착
+  const usePool = (asc >= 7 && boss) ? require('./items').list.filter(x => x && x.use && x.type <= 3 && Math.abs(x.rank - e.rank) <= 1 && enemyOk(x)) : [];
   for (let t = 0; t <= 3; t++) {
     let it = null;
+    const cand = usePool.filter(x => x.type === t);
+    if (cand.length && Math.random() < 0.5) it = JSON.parse(JSON.stringify(cand[Math.floor(Math.random() * cand.length)]));
     for (let tries = 0; tries < 12 && !enemyOk(it); tries++) it = getItemSafe(e.rank, rarity, t);
     if (enemyOk(it)) e.items[['weapon', 'armor', 'subarmor', 'trinket'][t]] = it;
   }
@@ -182,6 +209,11 @@ function equipAndScale(e, cycle, boss) {
   e.base.maxHp += 10 * hpPts;
   e.base[magical ? 'magAtk' : 'phyAtk'] += 1.5 * (pts - hpPts);
   if (boss) e.base.maxHp = Math.round(e.base.maxHp * 1.15);
+  const hpM = asc >= 6 ? 1.2 : (asc >= 1 ? 1.1 : 1), atM = asc >= 6 ? 1.15 : (asc >= 1 ? 1.05 : 1);   // 승천 1·6
+  e.base.maxHp = Math.round(e.base.maxHp * hpM); e.base.phyAtk *= atM; e.base.magAtk *= atM;
+  if (asc >= 1) e.ascAtkMul = atM;   // 무기 공격력에도 같은 배율 (calcStats 이후 적용)
+  if (asc >= 9 && e.skill && e.skill.drive && e.skill.drive.chance) e.skill.drive.chance = Math.min(1, e.skill.drive.chance * 1.25);   // 승천 9
+  e.asc = asc;
   deps.calcStats(e);
 }
 function makeMonster(char) {
@@ -220,7 +252,7 @@ function makeMonster(char) {
   }
   if (cfg.skill0) Object.assign(e.skill.base[0], cfg.skill0);
   if (cfg.tune) cfg.tune(e);   // base 조정은 여기서 (장비/스탯 포인트 반영 전)
-  equipAndScale(e, cycle, boss);
+  equipAndScale(e, cycle, boss, ascOf(char));
   if (e.pokemonForms) {   // 포켓몬 스킬 계수(1.4~2.3)·저비용 스페셜 보정
     if (!e.skillScale) e.skillScale = { damage: 0.7, specialCost: 2.5 };
     e.base.phyAtk = Math.round(e.base.phyAtk * 0.8); e.base.magAtk = Math.round(e.base.magAtk * 0.8); deps.calcStats(e);
@@ -250,7 +282,7 @@ function makeRosterEnemy(char) {
   e.title = boss ? '층의 지배자' : '떠도는 도전자';
   Object.assign(e.base, roster.baseByRank(e.rank));
 
-  equipAndScale(e, cycle, boss);
+  equipAndScale(e, cycle, boss, ascOf(char));
 
   // 덱: 2/2/2 + 성향 편중 (사이클이 오를수록 편중 카드 추가)
   const fav = Math.floor(Math.random() * 3);
@@ -345,7 +377,7 @@ function makeShop(char, typeIn, opts) {
   let label = SHOP_INFO[type].label;
   const rarityPool = cycle < 4 ? [2, 2, 2, 4] : (cycle < 7 ? [2, 2, 4, 4] : [2, 4, 4, 5]);
   const cc = runEffect(char, 'creditCard') || 0;   // 신용카드: 전 품목 할인
-  const gearDisc = (1 - (runEffect(char, 'gearDiscount') || 0)) * (1 - cc), potDisc = (1 - (runEffect(char, 'potionDiscount') || 0)) * (1 - cc), allDisc = 1 - cc;
+  const gearDisc = (1 - (runEffect(char, 'gearDiscount') || 0)) * (1 - cc) * (ascOf(char) >= 2 ? 1.15 : 1), potDisc = (1 - (runEffect(char, 'potionDiscount') || 0)) * (1 - cc) * (ascOf(char) >= 2 ? 1.15 : 1), allDisc = (1 - cc) * (ascOf(char) >= 2 ? 1.15 : 1);
   const gearPrice = (it) => Math.round((40 + [0, 15, 35, 0, 70, 120][it.rarity] + 5 * cycle) * gearDisc);
   if (type === 'gear' || type === 'gearSlot') {
     const fixed = type === 'gearSlot' ? (opts.slot !== undefined ? opts.slot : Math.floor(Math.random() * 4)) : -1;
@@ -905,7 +937,7 @@ function applyEvent(char, code, optIdx) {
   return r;
 }
 
-module.exports = { shuffleDeck, amplify, jumpFloor, pickArtifact,
+module.exports = { ASC_MAX, ASC_RULES, ascOf, shuffleDeck, amplify, jumpFloor, pickArtifact,
   configure, TOTAL_CYCLES, HAND_SIZE, RESETS_PER_BATTLE, resetDeck, redrawHand, drawExtra, runEffect, maxLives, initRun, stage, stageLabel, floorNo, isBossCycle, rankForCycle, advance,
   newDeckState, drawHand, playCard, handTypes, deckCounts, aiPick, makeEnemy, enemyFromFallen, snapshotForFallen,
   makeMonster, makeRosterEnemy, makeShop, makeShopOffers, makeEvent, makeEventByCode, applyEvent, applyBuffs, applyEnemyDebuffs, tickBuffs

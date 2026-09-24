@@ -268,6 +268,7 @@ io.on('connection', (socket) => {
       t.bmod = (new battlemodule.bmodule());
       delete t.leftChr.curHp; delete t.leftChr.curSp; delete t.rightChr.curHp; delete t.rightChr.curSp;
       t.startHtml = t.bmod.procBattleStart(t.leftChr, t.rightChr, 1);
+      if (run.ascOf(t.leftChr) >= 9) { t.rightChr.curSp = (t.rightChr.curSp || 0) + 40; t.startHtml += '<div class="note-box">승천 9 — 적이 SP 40을 모아 두었다.</div>'; }
       persistBattle(t);
     }
     const fresh = t.eplayed === undefined;
@@ -282,6 +283,8 @@ io.on('connection', (socket) => {
     if (t.redraws === undefined) t.redraws = (run.runEffect(t.leftChr, 'redrawHand') || 0) + oneMore;
     if (t.undos === undefined) t.undos = (run.runEffect(t.leftChr, 'undoTurn') || 0) + oneMore;
     if (t.resets === undefined) t.resets = run.RESETS_PER_BATTLE + ((t.leftChr.run && t.leftChr.run.extraResets) || 0) + (run.runEffect(t.leftChr, 'extraResets') || 0) + oneMore;
+    if (!t.ascApplied && run.ascOf(t.leftChr) >= 8) { t.resets = Math.max(0, t.resets - 1); t.redraws = Math.max(0, (t.redraws || 0) - 1); }
+    t.ascApplied = true;
     socket.emit('floorAck', t.restored ? (t.bmod.result || t.startHtml) : t.startHtml, floorNames(t.leftChr), floorNames(t.rightChr), floorState(t), run.deckCounts(t.rightChr.deck));
   }));
   socket.on('floorUse', guard('floorUse', function(room, uid, idx) {
@@ -402,6 +405,18 @@ io.on('connection', (socket) => {
     let eKey = (t.nextEKey !== undefined && run.handTypes(t.edeck).includes(t.nextEKey)) ? t.nextEKey : decideEnemyKey(t);
     const playedKey = key;
     t.rightChr.handTypes = run.handTypes(t.edeck);   // 마법 폭풍용
+    if (t.rightChr.isBoss && run.ascOf(t.leftChr) >= 7) {   // 승천 7: 보스의 [사용] 장비
+      t.euse = t.euse || {};
+      for (const k of ['weapon', 'armor', 'subarmor', 'trinket']) {
+        const it = t.rightChr.items && t.rightChr.items[k]; if (!it || !it.use) continue;
+        const st = t.euse[k] || (t.euse[k] = { uses: 0, cd: 0 });
+        if (st.cd > 0) { st.cd--; continue; }
+        if (it.use.maxUses && st.uses >= it.use.maxUses) continue;
+        t.bmod.result = (t.bmod.result || '') + '<div class="note-box" style="margin:6px 0">[적 사용] ' + it.name + ' — ' + it.use.label + '</div>';
+        t.bmod.resolveEffects(t.rightChr, t.leftChr, JSON.parse(JSON.stringify(it.use.effect)).map(e => Object.assign({ name: it.name }, e)), null, null);
+        st.uses++; st.cd = it.use.cooldown || 0;
+      }
+    }
     const result = t.bmod.procBattleTurn(key, eKey, 1);
     if (t.rightChr.pendingShuffle) { t.rightChr.pendingShuffle = false; run.shuffleDeck(t.edeck); t.eplayed = [0, 0, 0]; }   // 환기
     if (t.leftChr.pendingShuffle) { t.leftChr.pendingShuffle = false; run.shuffleDeck(t.pdeck); }
@@ -684,11 +699,13 @@ async function procIndex (req, res) {
     } else if (!charRow.char_data) {
       // 진행 중인 캐릭터가 없음 → 캐릭터 선택 화면
       const unlocked = await getUnlocked(sess.userUid);
+      let ascOpen = 0; try { const acct = await loadAcct(sess.userUid); ascOpen = Math.min(run.ASC_MAX, (acct.stats.ascension === undefined ? -1 : acct.stats.ascension) + 1); if (!(acct.stats.clears > 0)) ascOpen = 0; } catch (e) {}
       res.render('pages/selectChar', {
         user: {name: sess.userName, uid : sess.userUid},
         roster: roster.all(),
         unlocked: unlocked,
-        firstPick: unlocked.length === 0
+        firstPick: unlocked.length === 0,
+        ascOpen: ascOpen, ascRules: run.ASC_RULES
       });
     } else {
       const personalNews = await getPersonalNews(charRow.uid);
@@ -706,6 +723,7 @@ async function procIndex (req, res) {
         user: {name: sess.userName, uid : sess.userUid},
         char: charObj,
         rv: (charObj && charObj.run) ? runView(charObj) : null,
+        run_ASC: run.ASC_RULES,
         actionPoint : charRow.actionPoint,
         news : news,
         personalNews : personalNews
@@ -3774,6 +3792,11 @@ async function procSelectChar (req, res) {
     const inst = roster.create(key);
     inst.owner = await getOwnerName(sess.userUid);
     run.initRun(inst);
+    let asc = parseInt(req.body.asc, 10) || 0;
+    try { const acct = await loadAcct(sess.userUid); const open = (acct.stats.clears > 0) ? Math.min(run.ASC_MAX, (acct.stats.ascension === undefined ? -1 : acct.stats.ascension) + 1) : 0; asc = Math.max(0, Math.min(asc, open)); } catch (e) { asc = 0; }
+    inst.run.asc = asc;
+    if (asc >= 2) inst.gold = 50;   // 승천 2
+    if (asc > 0 && inst.run.nextMonster) inst.run.nextMonster = run.makeMonster(inst);   // 첫 몬스터도 승천 규칙으로 다시
     calcStats(inst);
     const uid = sess.userUid + '-' + Date.now().toString(36);
     await setCharacter(sess.userUid, uid, inst);
@@ -3806,6 +3829,17 @@ function floorState(t) {
 // 적 AI: 지난 턴 플레이어가 낸 수(lastKey)를 보고 다음 수를 정한다
 function decideEnemyKey(t) {
   if (run.runEffect(t.leftChr, 'hideSkills')) return run.aiPick(t.edeck, Math.floor(Math.random() * 3));   // 이름 없는 초식
+  if (run.ascOf(t.leftChr) >= 4 && t.pdeck) {   // 승천 4: 플레이어의 남은 덱(뽑을 패 + 손패)을 세서 가장 나올 법한 수를 이기는 쪽으로
+    const cnt = [0, 0, 0];
+    for (const c of (t.pdeck.draw || []).concat(t.pdeck.hand || [])) cnt[c.type]++;
+    const tot = cnt[0] + cnt[1] + cnt[2];
+    if (tot > 0) {
+      // 내 수 k가 이길 확률 = 상대가 (k+2)%3을 낼 확률 (가위0>보2, 바위1>가위0, 보2>바위1)
+      const win = [0, 1, 2].map(k => cnt[(k + 2) % 3] / tot - cnt[(k + 1) % 3] / tot);
+      const best = [0, 1, 2].filter(k => run.handTypes(t.edeck).includes(k)).sort((a, b) => win[b] - win[a])[0];
+      if (best !== undefined && Math.random() < 0.75) return run.aiPick(t.edeck, best);   // 75%는 계산대로, 25%는 기존 성향
+    }
+  }
   const want = monster.selectFunc[t.rightChr.skillSelect](t.rightChr, t.lastKey === undefined ? Math.floor(Math.random() * 3) : t.lastKey);
   return run.aiPick(t.edeck, want);
 }
@@ -3865,7 +3899,7 @@ async function saveChar (char, uid) {
   finally { client.release(); }
 }
 function runView (char) {
-  return { cycle: char.run.cycle, floor: run.floorNo(char), stageLabel: run.stageLabel(char), gold: char.gold, total: run.TOTAL_CYCLES, lives: (char.run.lives === undefined ? 1 : char.run.lives) };
+  return { cycle: char.run.cycle, floor: run.floorNo(char), stageLabel: run.stageLabel(char), gold: char.gold, total: run.TOTAL_CYCLES, lives: (char.run.lives === undefined ? 1 : char.run.lives), asc: run.ascOf(char) };
 }
 
 async function procNextFloor (req, res) {
@@ -4332,12 +4366,13 @@ async function procFloorResult (req, res) {
         try {
           const acct = await loadAcct(sess.userUid);
           acct.stats.clears = (acct.stats.clears || 0) + 1;
+          acct.stats.ascension = Math.max(acct.stats.ascension === undefined ? -1 : acct.stats.ascension, run.ascOf(char));   // 승천 N 정복 → N+1 개방
           acct.stats.clearedChars = acct.stats.clearedChars || [];
           if (char.rosterKey && !acct.stats.clearedChars.includes(char.rosterKey)) acct.stats.clearedChars.push(char.rosterKey);
           await grantAchv(sess.userUid, char, acct, achv.onClear(char, acct.stats).concat(['cyc15']));
           await saveAcct(sess.userUid, acct);
         } catch (e) { console.log('[achv clear]', e.message); }
-        try { await client.query('insert into news(content, date) values ($1, $2)', [newsName(char) + getIga(char.nameType) + ' ' + run.TOTAL_CYCLES + '사이클을 모두 돌파해 탑을 정복했다!', new Date()]); } catch (e) {}
+        try { await client.query('insert into news(content, date) values ($1, $2)', [newsName(char) + getIga(char.nameType) + ' ' + (run.ascOf(char) ? '승천 ' + run.ascOf(char) + ' ' : '') + run.TOTAL_CYCLES + '사이클을 모두 돌파해 탑을 정복했다!', new Date()]); } catch (e) {}
         try { await client.query('insert into hall(user_id, owner, char_name, char_data, date) values ($1, $2, $3, $4, $5)', [sess.userUid, char.owner || sess.userUid, char.name, JSON.stringify(char), new Date()]); } catch (e) { console.error('hall 저장 실패 (테이블 없음?)', e.message); }
         const key = char.run.unlockGiven ? null : await unlockRandomChar(sess.userUid);
         await client.query('delete from characters where uid = $1', [charRow.uid]);

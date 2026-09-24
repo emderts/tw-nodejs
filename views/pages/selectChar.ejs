@@ -48,6 +48,26 @@
   <% } else { %>
   <div class="note-box">해금된 캐릭터 <b><%= unlocked.length %></b> / <%= roster.length %>. 잠긴 캐릭터는 런을 클리어하면 무작위로 해금돼요.</div>
   <% } %>
+  <% if (typeof ascOpen !== 'undefined' && ascOpen > 0) { %>
+  <div class="note-box">
+    <label style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+      <b>승천</b>
+      <select id="ascSel" style="width:auto;min-height:0;padding:4px 8px">
+        <% for (let a = 0; a <= ascOpen; a++) { %><option value="<%= a %>" <%= a === ascOpen ? 'selected' : '' %>><%= a === 0 ? '승천 없음' : '승천 ' + a %></option><% } %>
+      </select>
+      <small style="color:var(--ash)">승천 N을 정복하면 N+1이 열립니다</small>
+    </label>
+    <div id="ascDesc" style="margin-top:8px;font-size:13px;color:var(--ash)"></div>
+  </div>
+  <script>
+    (function () {
+      var rules = <%- JSON.stringify(ascRules) %>;
+      var sel = document.getElementById('ascSel'), box = document.getElementById('ascDesc');
+      function draw() { var n = parseInt(sel.value, 10); var html = ''; for (var i = 1; i <= n; i++) html += '<div>' + i + '. ' + rules[i] + '</div>'; box.innerHTML = html || '일반 난이도'; document.querySelectorAll('input[name=asc]').forEach(function (x) { x.value = n; }); }
+      sel.addEventListener('change', draw); draw();
+    })();
+  </script>
+  <% } %>
 
   <div class="roster">
   <% const sorted = firstPick ? roster : roster.slice().sort(function (a, b) {
@@ -78,6 +98,7 @@
       <form action="/selectChar" method="post">
         <button type="submit" class="btn-primary"><%= firstPick ? '이 캐릭터로 시작' : '선택' %></button>
         <input type="hidden" name="charKey" value="<%= c.key %>">
+        <input type="hidden" name="asc" value="0">
       </form>
       <% } else { %>
       <div class="lock-tag">잠김</div>

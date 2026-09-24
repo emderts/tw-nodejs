@@ -2640,6 +2640,7 @@ function calcStats(chara, opp) {
     for (const sk of chara.skill.base) if (sk && sk.damage) sk.damage = Math.round(sk.damage * chara.skillScale.damage * 100) / 100;
     if (chara.skill.special && chara.skillScale.specialCost) chara.skill.special.cost = Math.round(chara.skill.special.cost * chara.skillScale.specialCost);
   }
+  if (chara.ascAtkMul && chara.ascAtkMul !== 1) for (const k of ['phyAtkMin', 'phyAtkMax', 'magAtkMin', 'magAtkMax']) chara.stat[k] = (chara.stat[k] || 0) * chara.ascAtkMul;   // 승천 공격 배율
   for (const k in (chara.items || {})) {   // 재창시의 룬: 두 갈래를 높은 쪽 하나로 합친다 (합산 × 보너스, 낮은 쪽은 0)
     const rune = chara.items[k]; if (!rune || !rune.unifyAtk) continue;
     const bonus = rune.unifyAtk === true ? 1.2 : rune.unifyAtk;
