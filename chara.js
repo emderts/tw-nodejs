@@ -1718,7 +1718,7 @@ const item = require('./items');
       tooltip : '자신의 버프 1개당 계수 +0.1 (최대 +0.5)',
       flavor : '땅속의 것은 위에서 자라는 것만큼 자란다.'});
   charSenal.skill.base.push({code : 90481, name : '재생', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 1.4,
-      effect : [{code : 'regenApply', buffCode : 10730, buffDur : 3}],
+      effect : [{code : 'regenApply', name : '재생', buffCode : 10730, buffDur : 3}],
       tooltip : '피해의 절반만 주고, 나머지 절반을 3턴 간 [재생] 스택으로 돌린다 (별도 중첩)<br><br>[재생] : 턴 종료 시 스택의 60%만큼 회복',
       flavor : '베어 낸 자리에서 새 잎이 난다.'});
   charSenal.skill.base.push({code : 90482, name : '급속 성장', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 1.0,
@@ -1731,7 +1731,7 @@ const item = require('./items');
       tooltip : '자신에게 버프가 붙을 때 40% 확률로 발동해 3턴 간 [회복] (중첩 가능). [회복]으로는 발동하지 않는다<br><br>[회복] : 턴 시작 시 생명력 회복 × 6 만큼 회복',
       flavor : '숲은 상처를 기억하지 않는다. 덮을 뿐이다.'};
   charSenal.skill.special = {code : 90484, name : '생명의 나무', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 100,
-      effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 10734, buffDur : 4}, {code : 'extendBuffs', value : 1}],
+      effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 10734, buffDur : 4}, {code : 'extendBuffs', name : '생명의 나무', value : 1}],
       tooltip : '자신에게 4턴 간 [생명의 나무] (받는 회복 1.3배, 재생 계수 +0.2). 자신의 모든 버프 지속 +1턴',
       flavor : '뿌리가 닿는 곳까지가 숲이다.'};
   charSenal.base = JSON.parse(JSON.stringify(charSenal.stat));

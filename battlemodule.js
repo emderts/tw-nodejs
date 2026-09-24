@@ -1684,7 +1684,7 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
       const st = Math.max(1, Math.round(damage.value));   // dealDamage 단계에서 이미 절반으로 줄어 있음
       const bo = buffMdl.getBuffData({ buffCode : eff.buffCode }); bo.dur = eff.buffDur; bo.stack = st;
       this.giveBuff(winner, winner, bo, false, eff.name);
-      this.result += '[ ' + eff.name + ' ] 피해의 절반이 뿌리로 돌아간다 — [ 재생 ] ' + st + '<br>';
+      this.result += '[ ' + (eff.name || '재생') + ' ] 피해의 절반이 뿌리로 돌아간다 — [ 재생 ] ' + st + '<br>';
     } else if (eff.code === 'regenTick') {
       const st = (eff.buff && eff.buff.stack) || 0; if (!st) continue;
       const v = Math.max(1, Math.round(st * eff.value));
@@ -1695,7 +1695,7 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
       this.result += winner.name + getUnnun(winner.nameType) + ' [ 재생 ] 효과로 HP를 ' + dmgObj.amount + ' 회복했다!<br>';
     } else if (eff.code === 'extendBuffs') {   // 생명의 나무: 자신의 버프 지속 +1
       let n = 0; for (const b of (winner.buffs || [])) if (b.id > 0 && !b.isDebuff && b.dur) { b.dur += eff.value || 1; n++; }
-      if (n) this.result += '[ ' + eff.name + ' ] 버프 ' + n + '개의 지속이 ' + (eff.value || 1) + '턴 늘어났다.<br>';
+      if (n) this.result += '[ ' + (eff.name || '생명의 나무') + ' ] 버프 ' + n + '개의 지속이 ' + (eff.value || 1) + '턴 늘어났다.<br>';
     } else if (eff.code === 'buildShield') {   // 네온: 최대 생명력 비례 보호막 버프를 세운다
       const bo = buffMdl.getBuffData({ buffCode : eff.buffCode }); bo.dur = eff.buffDur;
       for (const be of bo.effect) if (be.code === cons.EFFECT_TYPE_SHIELD) be.value = Math.round(winner.stat.maxHp * eff.value);
