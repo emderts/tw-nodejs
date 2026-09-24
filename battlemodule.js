@@ -864,7 +864,6 @@ Battlemodule.prototype.calcDamage = function(winner, loser, skill) {
 }
 
 Battlemodule.prototype.dealDamage = function(src, dst, damage) {
-  if (damage && damage.regenPending && !damage.regenSplitDone) { damage.regenSplitDone = true; damage.value = Math.round(damage.value * (damage.regenRate || 0.5)); }   // 재생: 절반만 준다
   if (damage && damage.value > 0) dst.hitThisTurn = true;
   if (damage && dst.stat && dst.stat.hitCapPct && damage.value > dst.stat.maxHp * dst.stat.hitCapPct) {   // 정상화의 신: 과한 한 방의 초과분 절반
     const cap = dst.stat.maxHp * dst.stat.hitCapPct; const before = damage.value;
@@ -1684,12 +1683,13 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
       const n = (winner.buffs || []).filter(b => b.id > 0 && !b.isDebuff && !b.hidden).length;
       const add = Math.min(eff.max || 99, n * eff.value);
       if (add > 0) { damage.skillRat += add; this.result += '[ 휘감는 뿌리 ] 버프 ' + n + '개 — 계수 +' + add.toFixed(2) + '<br>'; }
-    } else if (eff.code === 'regenSplit') {   // 재생: 피해의 절반을 [재생] 스택으로 돌린다
+    } else if (eff.code === 'regenSplit') {   // 재생: 피해의 절반만 주고, 같은 양을 [재생] 스택으로 돌린다
       if (!damage) continue;
-      damage.regenPending = true; damage.regenRate = eff.value;
+      damage.skillRat *= (1 - eff.value);
+      damage.regenPending = true;
     } else if (eff.code === 'regenApply') {
       if (!damage || !damage.regenPending || !damage.value) continue;
-      const st = Math.max(1, Math.round(damage.value));   // dealDamage 단계에서 이미 절반으로 줄어 있음
+      const st = Math.max(1, Math.round(damage.value));   // 계산 단계에서 이미 절반 — 준 피해와 같은 양
       const bo = buffMdl.getBuffData({ buffCode : eff.buffCode }); bo.dur = eff.buffDur; bo.stack = st;
       this.giveBuff(winner, winner, bo, false, eff.name);
       this.result += '[ ' + (eff.name || '재생') + ' ] 피해의 절반이 뿌리로 돌아간다 — [ 재생 ] ' + st + '<br>';
