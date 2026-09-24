@@ -7328,10 +7328,10 @@ module.exports.getBuffData = function(eff) {
     break;
   case 10740 :   // 엽운학 [영물]
     retObj.name = '영물'; retObj.nameType = cons.NAME_KOR_END_CONS; retObj.stackType = 3; retObj.isDebuff = false; retObj.summon = true;
-    retObj.tooltip = '엽운학 대신 피해를 나눠 받는 소환수. 다른 일반 스킬이 적중하면 마법 0.3, 이번 턴 적중이 없었으면 턴 종료 시 마법 0.15 피해';
+    retObj.tooltip = '엽운학 대신 피해를 나눠 받는 소환수. 다른 일반 스킬이 적중하면 마법 0.35, 이번 턴 적중이 없었으면 턴 종료 시 마법 0.2 피해';
     retObj.effect.push({ active : cons.ACTIVE_TYPE_DEAL_DAMAGE_RECEIVE, code : cons.EFFECT_TYPE_SHIELD, value : 1, summonHp : true });
-    retObj.effect.push({ active : cons.ACTIVE_TYPE_ATTACK, code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_MAGICAL, value : 0.3, chkSkillNotCode : 90490 });
-    retObj.effect.push({ active : cons.ACTIVE_TYPE_TURN_END, code : 'summonIdle', value : 0.15 });
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_ATTACK, code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_MAGICAL, value : 0.35, chkSkillNotCode : 90490 });
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_TURN_END, code : 'summonIdle', value : 0.2 });
     break;
   case 10741 :   // [신수]
     retObj.name = '신수'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 1; retObj.isDebuff = false; retObj.summon = true;

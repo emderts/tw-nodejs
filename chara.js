@@ -1745,13 +1745,13 @@ const item = require('./items');
   charYeop.skill.base = [];
   charYeop.skill.base.push({code : 90490, name : '수묵화 : 영물', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 0, noAttack : true,
       effect : [{code : 'summon', name : '수묵화 : 영물', buffCode : 10740, buffDur : 4, max : 2, hpBase : 20, hpPer : 22}],
-      tooltip : '자신에게 4턴 간 [영물] 부여 (최대 2). 이미 둘이면 남은 턴이 적은 쪽을 갱신<br><br>[영물] : 20+레벨×22의 체력을 가진 소환수. 엽운학과 피해를 나눠 받는다. 다른 일반 스킬이 적중하면 마법 0.3, 이번 턴 적중이 없었으면 턴 종료 시 마법 0.15 피해',
+      tooltip : '자신에게 4턴 간 [영물] 부여 (최대 2). 이미 둘이면 남은 턴이 적은 쪽을 갱신<br><br>[영물] : 20+레벨×22의 체력을 가진 소환수. 엽운학과 피해를 나눠 받는다. 다른 일반 스킬이 적중하면 마법 0.35, 이번 턴 적중이 없었으면 턴 종료 시 마법 0.2 피해',
       flavor : '먹이 마르기 전에 짐승이 먼저 걸어 나온다.'});
   charYeop.skill.base.push({code : 90493, name : '그려낸 불꽃', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 0, noAttack : true,
-      effect : [{code : 'brushFire', name : '그려낸 불꽃', skillName : '그려낸 불꽃', count : 3, hitMul : 0.65, value : 0.5, burnChance : 0.25, eyeConsume : false}],
-      tooltip : '명중률 65%의 마법 0.5 공격을 3회. 적중마다 25% 확률로 1턴 [화상], 이미 화상이면 지속 +1턴',
+      effect : [{code : 'brushFire', name : '그려낸 불꽃', skillName : '그려낸 불꽃', count : 3, hitMul : 0.65, value : 0.6, burnChance : 0.25, eyeConsume : false}],
+      tooltip : '명중률 65%의 마법 0.6 공격을 3회. 적중마다 25% 확률로 1턴 [화상], 이미 화상이면 지속 +1턴',
       flavor : '종이 위의 불이 종이 밖으로 옮겨붙는다.'});
-  charYeop.skill.base.push({code : 90494, name : '필법 : 발묵', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1.0,
+  charYeop.skill.base.push({code : 90494, name : '필법 : 발묵', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1.1,
       effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 10742, buffDur : 3}],
       tooltip : '자신에게 3턴 간 [발묵] (있으면 갱신)<br><br>[발묵] : 지속 중 적에게 준 마법 피해의 25%만큼 [묵운] 보호막. 끝나면 묵운도 사라진다',
       flavor : '먹을 쏟아 붓고, 번지는 대로 둔다.'});
