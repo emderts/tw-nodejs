@@ -3631,6 +3631,7 @@ async function addItemNews (client, chara, tgtObj, picked) {
 
 // 소식 분류: 아이템 획득(툴팁이 들어간 것)과 등반(층·사이클·보스·정복)을 나눠서 반환
 function newsKind (text) {
+  if (/업적을 달성/.test(text)) return 'climb';
   if (/itemTooltip/.test(text)) return 'item';
   if (/층|사이클|보스|정복|여정을 마쳤다|돌파|넘어섰다/.test(text)) return 'climb';
   return 'etc';
@@ -3975,13 +3976,15 @@ async function grantAchv (userId, char, acct, ids) {
   const fresh = [...new Set(ids)].filter(id => achv.BY_ID[id] && !acct.achievements[id]);
   if (!fresh.length) return [];
   const globals = await getGlobals();
+  // 업적 이름에 툴팁 (숨김 업적은 조건을 가린다)
+  const tipName = (a) => '<span class="has-tip achTip">[ ' + a.name + ' ]<div class="itemTooltip"><b>' + a.name + '</b><br>' + (a.hidden ? '숨겨진 업적 — 조건은 달성하면 밝혀진다' : a.desc) + '<br><span class="tooltipFlavor">' + a.cat + ' 업적</span></div></span>';
   for (const id of fresh) {
     acct.achievements[id] = new Date();
-    try { await pool.query('insert into personal(uid, content, date) values ($1, $2, $3)', [char && char.uid ? char.uid : userId, '[ ' + achv.BY_ID[id].name + ' ] 업적을 달성했습니다!', new Date()]); } catch (e) {}
+    try { await pool.query('insert into personal(uid, content, date) values ($1, $2, $3)', [char && char.uid ? char.uid : userId, tipName(achv.BY_ID[id]) + ' 업적을 달성했습니다!', new Date()]); } catch (e) {}
     const key = 'acct_' + id;
     if (!globals || !globals.achievement || !globals.achievement[key]) {
       try { await setGlobals({ achievement: { type: 'achievement', idx: key, holder: char ? char.name : userId } });
-            await pool.query('insert into news(content, date) values ($1, $2)', [(char ? newsName(char) + getIga(char.nameType) : userId + '이(가)') + ' 서버 최초로 [ ' + achv.BY_ID[id].name + ' ] 업적을 달성했습니다!', new Date()]); } catch (e) {}
+            await pool.query('insert into news(content, date) values ($1, $2)', [(char ? newsName(char) + getIga(char.nameType) : userId + '이(가)') + ' 서버 최초로 ' + tipName(achv.BY_ID[id]) + ' 업적을 달성했습니다!', new Date()]); } catch (e) {}
     }
   }
   return fresh;
