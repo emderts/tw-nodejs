@@ -157,6 +157,41 @@ const before = {
       { label: '코어 충전을 끊는다 (적 SP 충전 -50%)', effect: (ch, mon, h) => { mon.base.spCharge = Math.round((mon.base.spCharge || 0) * 0.5); h.calcStats(mon); return '코어가 반만 찼다.'; } },
       { label: '설계도를 훔친다 (스킬 아티팩트, 적 저항 +5%p)', effect: (ch, mon, h) => { const it = h.artifact(ch.rank); if (it) { if (!ch.items) ch.items = {}; ch.items.skillArtifact = it; h.calcStats(ch); } mon.base.phyReduce = (mon.base.phyReduce || 0) + 0.05; mon.base.magReduce = (mon.base.magReduce || 0) + 0.05; h.calcStats(mon); return (it ? it.name + ' 장착. ' : '') + '경보가 울렸다.'; } }
     ] },
+  mGatekeeper: { title: '달빛이 드는 문', desc: '문 위로 달빛이 쏟아진다. 수문장이 그 빛을 등지고 서 있다.',
+    options: [
+      { label: '달을 가린다 (적 스페셜 [광란의 추적] 무효)', effect: (ch, mon) => { delete mon.skill.special; return '달빛이 끊겼다. 추적은 시작되지 않는다.'; } },
+      { label: '표식을 긁어낸다 (적 덱에서 바위 2장 제거)', effect: (ch, mon, h) => { const n = h.removeCards(mon, 1, 2); return '징표가 흐려졌다. 바위 ' + n + '장 제거.'; } }
+    ] },
+  mLibei: { title: '그을린 소환진', desc: '바닥에 그려진 소환진이 아직 연기를 피운다.',
+    options: [
+      { label: '소환진을 훼손한다 (적 [어둠의 소환] 지속 2턴)', effect: (ch, mon) => { for (const sk of [...mon.skill.base, mon.skill.special].filter(Boolean)) for (const ef of (sk.effect || [])) if (ef.buffCode === 10718) ef.buffDur = 2; return '불러낸 것들이 오래 머물지 못한다.'; } },
+      { label: '화살통을 훔친다 (적 덱에서 보 2장 제거)', effect: (ch, mon, h) => { const n = h.removeCards(mon, 2, 2); return '암흑의 화살이 줄었다. 보 ' + n + '장 제거.'; } }
+    ] },
+  mFrena: { title: '원소의 결정', desc: '세 빛깔의 결정이 공중에 떠 있다. 대마법사의 힘이 여기서 나온다.',
+    options: [
+      { label: '결정을 깬다 (적 상태이상 확률 절반)', effect: (ch, mon) => { for (const sk of mon.skill.base) for (const ef of (sk.effect || [])) if (ef.chance) ef.chance = Math.round(ef.chance * 50) / 100; return '원소가 흩어졌다.'; } },
+      { label: '마법진을 흐트러뜨린다 (적 드라이브 [환기] 무효)', effect: (ch, mon) => { delete mon.skill.drive; return '패를 섞을 수 없게 되었다.'; } }
+    ] },
+  mCouncil: { title: '빈 의석', desc: '원탁에 의자가 하나 비어 있다. 의회는 아직 그걸 모른다.',
+    options: [
+      { label: '의석을 더 비운다 (적 덱에서 무작위 3장 제거)', effect: (ch, mon, h) => { const n = h.removeCards(mon, null, 3); return '판결을 내릴 목소리가 줄었다. ' + n + '장 제거.'; } },
+      { label: '판결문을 훔친다 (적 스페셜 [달의 의식] 무효)', effect: (ch, mon) => { delete mon.skill.special; return '의식은 열리지 않는다.'; } }
+    ] },
+  mNeon: { title: '공방의 배전반', desc: '굵은 전선이 공방 안쪽으로 이어진다. 스위치 하나면 된다.',
+    options: [
+      { label: '전원을 내린다 (적 드라이브 [보호 실드] 무효)', effect: (ch, mon) => { delete mon.skill.drive; return '실드 발생기가 꺼졌다.'; } },
+      { label: '폭탄 부품을 빼돌린다 (적 덱에서 가위 3장 제거)', effect: (ch, mon, h) => { const n = h.removeCards(mon, 0, 3); return '로봇을 조립할 수 없다. 가위 ' + n + '장 제거.'; } }
+    ] },
+  mIZ: { title: '물든 샘', desc: '맑던 샘이 탁하게 물들어 있다. 타락자가 지나간 자리다.',
+    options: [
+      { label: '정화의 향을 피운다 (적 스페셜 [완연한 타락] 무효)', effect: (ch, mon) => { delete mon.skill.special; return '타락이 번지지 않는다.'; } },
+      { label: '해독제를 챙긴다 (다음 전투 중독 저항 +60%)', effect: (ch, mon, h) => { h.addBuff(ch, { key: 'resist_2', add: 0.6, battles: 1, label: '중독 저항 +60%' }); return '독이 잘 스미지 않을 것이다.'; } }
+    ] },
+  rsVyres: { title: '멈춘 쌍검', desc: '두 자루의 검이 바닥에 꽂혀 있다. 주인은 곧 돌아온다.',
+    options: [
+      { label: '한 자루를 뽑아 던진다 (적 연계·반격 무효)', effect: (ch, mon) => { mon.startEffects = []; return '서리와 불꽃이 더는 맞물리지 않는다.'; } },
+      { label: '숨을 고른다 (재도전 ♥ +1)', effect: (ch, mon, h) => { const l = ch.run.lives === undefined ? 1 : ch.run.lives; if (l >= h.maxLives(ch)) return '더는 받을 수 없다.'; ch.run.lives = l + 1; return '한 번 더 설 수 있다. 재도전 +1.'; } }
+    ] },
   rsDeci: { title: '파멸의 문 앞', desc: '문 너머에서 모든 것이 부서지는 소리가 난다. 여기가 끝이다.',
     options: [
       { label: '문에 봉인을 새긴다 (적 드라이브 무효)', effect: (ch, mon) => { delete mon.skill.drive; return '파멸이 한 박자 늦어졌다.'; } },
@@ -257,6 +292,27 @@ const after = {
   rAeika: { title: '요새의 잔해', desc: '멈춘 기계 사이에서 에너지 코어가 아직 빛난다.',
     options: [ { label: '코어를 몸에 넣는다 (SP 충전 +3 영구)', effect: (ch) => { ch.base.spCharge = (ch.base.spCharge || 0) + 3; return 'SP 충전 +3.'; } },
                { label: '장갑판을 벗겨 판다 (에픽 방어구)', effect: (ch, i, h) => { const it = h.gear(ch.rank, 5, 1); if (it) { ch.inventory.push(it); return it.name + ' 획득.'; } return '녹아 버렸다.'; } } ] },
+  mGatekeeper: { title: '열린 문', desc: '수문장이 쓰러지자 문이 스스로 열렸다.',
+    options: [ { label: '방패를 챙긴다 (레어 보조방어구)', effect: (ch, i, h) => { const it = h.gear(ch.rank, 2, 2); if (it) { ch.inventory.push(it); return it.name + ' 획득.'; } return '쓸 만한 게 없다.'; } },
+               { label: '문지기의 열쇠를 판다 (골드 +50)', effect: (ch) => { ch.gold += 50; return '50골드.'; } } ] },
+  mLibei: { title: '흑마술사의 서가', desc: '리베이가 남긴 책들이 아직 따뜻하다.',
+    options: [ { label: '마술서를 연다 (스킬 아티팩트)', effect: (ch, i, h) => { const a = h.artifact(ch.rank); if (a) { ch.inventory.push(a); return a.name + ' 획득.'; } return '읽을 수 없는 글뿐이다.'; } },
+               { label: '촉매를 챙긴다 (소모품 2개)', effect: (ch, i, h) => { const a = h.consumable(), b = h.consumable(); ch.inventory.push(a, b); return a.name + ', ' + b.name + ' 획득.'; } } ] },
+  mFrena: { title: '대마법사의 탑', desc: '프레나의 연구실 문이 열려 있다.',
+    options: [ { label: '지팡이를 가져간다 (유니크 무기)', effect: (ch, i, h) => { const it = h.gear(ch.rank, 4, 0); if (it) { ch.inventory.push(it); return it.name + ' 획득.'; } return '쓸 만한 게 없다.'; } },
+               { label: '원소 정수를 마신다 (다음 2전투 명중 +10%p)', effect: (ch, i, h) => { h.addBuff(ch, { key: 'hit', add: 0.1, battles: 2, label: '명중 +10%p' }); return '눈이 맑아졌다.'; } } ] },
+  mCouncil: { title: '해산된 의회', desc: '원탁 위에 의회의 인장만 남았다.',
+    options: [ { label: '인장을 가져간다 (유니크 장신구)', effect: (ch, i, h) => { const it = h.gear(ch.rank, 4, 3); if (it) { ch.inventory.push(it); return it.name + ' 획득.'; } return '쓸 만한 게 없다.'; } },
+               { label: '빈 의석에 앉아 쉰다 (재도전 ♥ +1)', effect: (ch, mon, h) => { const l = ch.run.lives === undefined ? 1 : ch.run.lives; if (l >= h.maxLives(ch)) return '더는 받을 수 없다.'; ch.run.lives = l + 1; return '잠시 쉬었다. 재도전 +1.'; } } ] },
+  mNeon: { title: '멈춘 공방', desc: '네온의 공방에 부품이 산더미처럼 남았다.',
+    options: [ { label: '부품을 뒤진다 (레어 장비 2개)', effect: (ch, i, h) => { const a = h.gear(ch.rank, 2), b = h.gear(ch.rank, 2); if (a) ch.inventory.push(a); if (b) ch.inventory.push(b); return [a, b].filter(x => x).map(x => x.name).join(', ') + ' 획득.'; } },
+               { label: '설계도를 판다 (골드 +70)', effect: (ch) => { ch.gold += 70; return '70골드.'; } } ] },
+  mIZ: { title: '타락의 잔재', desc: 'iZ가 사라진 자리에 검게 물든 결정이 남았다.',
+    options: [ { label: '결정을 쥔다 (에픽 장비)', effect: (ch, i, h) => { const it = h.gear(ch.rank, 5); if (it) { ch.inventory.push(it); return it.name + ' 획득.'; } return '손에 닿자 부서졌다.'; } },
+               { label: '결정을 정화한다 (스탯 +4)', effect: (ch) => { ch.statPoint += 4; return '맑아진 힘이 스며든다. 스탯 +4.'; } } ] },
+  rsVyres: { title: '쌍검사의 유산', desc: '바이레스의 두 자루가 나란히 놓여 있다.',
+    options: [ { label: '두 자루를 모두 챙긴다 (에픽 장비 2개)', effect: (ch, i, h) => { const a = h.gear(ch.rank, 5), b = h.gear(ch.rank, 5); if (a) ch.inventory.push(a); if (b) ch.inventory.push(b); return [a, b].filter(x => x).map(x => x.name).join(', ') + ' 획득.'; } },
+               { label: '검을 거둔다 (스탯 +10)', effect: (ch) => { ch.statPoint += 10; return '스탯 +10.'; } } ] },
   rsDeci: { title: '파멸 이후', desc: '모든 것이 부서진 자리에 당신만 서 있다.',
     options: [ { label: '남은 것을 줍는다 (에픽 장비 2개)', effect: (ch, i, h) => { const a = h.gear(ch.rank, 5), b = h.gear(ch.rank, 5); if (a) ch.inventory.push(a); if (b) ch.inventory.push(b); return [a, b].filter(x => x).map(x => x.name).join(', ') + ' 획득.'; } },
                { label: '돌아본다 (스탯 +10)', effect: (ch) => { ch.statPoint += 10; return '스탯 +10.'; } } ] },
