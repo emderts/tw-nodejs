@@ -34,8 +34,8 @@
       <% rows.forEach(function (a) { const d = got[a.id]; const hide = a.hidden && !d; %>
         <div class="ach <%= d ? 'on' : 'off' %>" onclick="this.classList.toggle('open')">
           <div><div class="nm"><%= hide ? '???' : a.name %></div><div class="ds"><%= hide ? '숨겨진 업적' : a.desc %></div></div>
-          <div class="dt"><%= d ? new Date(d).toLocaleDateString('ko-KR') : '' %></div>
-          <div class="pg"><%= d ? ('달성 — ' + new Date(d).toLocaleString('ko-KR')) : (hide ? '조건은 달성하면 밝혀진다.' : (prog[a.id] || '아직 달성하지 못했다.')) %></div>
+          <div class="dt"><%= d ? new Date(d).toLocaleDateString('ko-KR', { timeZone: 'Asia/Seoul' }) : '' %></div>
+          <div class="pg"><%= d ? ('달성 — ' + new Date(d).toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' })) : (hide ? '조건은 달성하면 밝혀진다.' : (prog[a.id] || '아직 달성하지 못했다.')) %></div>
         </div>
       <% }); %>
       </div>
