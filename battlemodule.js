@@ -901,6 +901,7 @@ Battlemodule.prototype.dealDamage = function(src, dst, damage) {
   damageShield = Math.round(damageShield);
   
   for (val of getBuffEffects(dst, cons.ACTIVE_TYPE_DEAL_DAMAGE_RECEIVE)) {
+    if (val.code === cons.EFFECT_TYPE_SHIELD && val.summonHp) continue;   // 소환수 체력은 위 분담에서 이미 처리
     if (val.code === cons.EFFECT_TYPE_SHIELD) {
       if (val.value > damageShield) {
         val.value -= damageShield;
@@ -920,6 +921,13 @@ Battlemodule.prototype.dealDamage = function(src, dst, damage) {
   }
   var damageDealt = shielded ? damageShield : damage.value;
   dst.lastDamage = damageDealt;
+  if (src !== dst && damage.type === cons.DAMAGE_TYPE_MAGICAL && damageDealt > 0 && (src.buffs || []).some(b => b.id === 10742)) {   // 발묵 → 묵운
+    const add = Math.max(1, Math.round(damageDealt * 0.25));
+    const ex = (src.buffs || []).find(b => b.id === 10743);
+    if (ex) { for (const be of ex.effect) if (be.code === cons.EFFECT_TYPE_SHIELD) be.value += add; }
+    else { const bo = buffMdl.getBuffData({ buffCode : 10743 }); bo.dur = null; for (const be of bo.effect) if (be.code === cons.EFFECT_TYPE_SHIELD) be.value = add; this.giveBuff(src, src, bo, false, '발묵'); }
+    this.result += '[ 발묵 ] 먹이 번져 [ 묵운 ] +' + add + '<br>';
+  }
   src.maxDamageDone = src.maxDamageDone < damageDealt ? damageDealt : src.maxDamageDone;
   src.damageDone += damageDealt;
   dst.maxDamageTaken = dst.maxDamageTaken < damageDealt ? damageDealt : dst.maxDamageTaken;
@@ -1071,7 +1079,7 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
     if (eff.chkRealHit && damage && damage.noAttack) {   // 실제 공격 판정이 있을 때만
       continue;
     }
-    if (eff.chkSkillNotCode !== undefined && skill && skill.code === eff.chkSkillNotCode) {
+    if (eff.chkSkillNotCode !== undefined && skill && [].concat(eff.chkSkillNotCode).includes(skill.code)) {
       continue;
     }
     if (eff.chkDmgType !== undefined && !(damage && damage.type === eff.chkDmgType)) {   // 받은/준 피해의 타입
@@ -1730,6 +1738,13 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
         if (!rd.hit) { this.result += '[ ' + sk.name + ' ] 붓이 빗나갔다.<br>'; continue; }
         hits++; this.dealDamage(winner, loser, rd);
         this.result += '<span class="skillDamage">[ ' + sk.name + ' ] ' + rd.value + '대미지' + (rd.crit ? ' (치명타)' : '') + '</span><br>';
+        if (BRUSH_SUMMON_PER_HIT) {   // 적중한 타격마다 소환수가 따라 친다
+          for (const sb of (winner.buffs || []).filter(b => b.summon && b.id > 0)) {
+            const ah = sb.effect.find(e => e.active === cons.ACTIVE_TYPE_ATTACK && e.code === cons.EFFECT_TYPE_ADD_HIT); if (!ah) continue;
+            const sd = this.calcDamage(winner, loser, { name : sb.name, type : cons.DAMAGE_TYPE_MAGICAL, damage : ah.value * (BRUSH_SUMMON_SCALE || 1), nameType : sb.nameType, effect : [] }); sd.hit = true; sd.noProc = true;
+            this.dealDamage(winner, loser, sd); this.result += '[ ' + sb.name + ' ] 따라 쳐서 ' + sd.value + ' 피해<br>';
+          }
+        }
         if (Math.random() < eff.burnChance) {
           const burn = (loser.buffs || []).find(b => b.id === 1);
           if (burn) { burn.dur = (burn.dur || 0) + 1;
@@ -2767,6 +2782,9 @@ function calcStats(chara, opp) {
   }
 }
 
+// 엽운학: 그려낸 불꽃 다연타마다 소환수가 따라 치는지 (밸런스 스위치)
+let BRUSH_SUMMON_PER_HIT = true, BRUSH_SUMMON_SCALE = 1;
+module.exports.setBrushSummon = (on, scale) => { BRUSH_SUMMON_PER_HIT = on; BRUSH_SUMMON_SCALE = scale || 1; };
 // 드라이브 조건/확률 보정 함수 (인스턴스마다 동일, 직렬화 대상 아님)
 function makeModFuncs() {
   const f = [];

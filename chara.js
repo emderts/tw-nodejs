@@ -1756,9 +1756,9 @@ const item = require('./items');
       tooltip : '자신에게 3턴 간 [발묵] (있으면 갱신)<br><br>[발묵] : 지속 중 적에게 준 마법 피해의 25%만큼 [묵운] 보호막. 끝나면 묵운도 사라진다',
       flavor : '먹을 쏟아 붓고, 번지는 대로 둔다.'});
   charYeop.skill.drive = {code : 90495, name : '필치 봉쇄', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.SKILL_TYPE_DRIVE, active : cons.ACTIVE_TYPE_TIE,
-      cost : 5, chance : 1, setCooldown : 2,
+      cost : 5, chance : 1, setCooldown : 3,
       effect : [{code : 'sealCard', name : '필치 봉쇄'}],
-      tooltip : '가위바위보에서 비기면 발동. 상대는 다음 턴에 그 종류의 카드를 낼 수 없다. 낼 카드가 없으면 1턴 [기절] (쿨다운 2턴)',
+      tooltip : '가위바위보에서 비기면 발동. 상대는 다음 턴에 그 종류의 카드를 낼 수 없다. 낼 카드가 없으면 1턴 [기절] (쿨다운 3턴)',
       flavor : '한 획을 그어 상대의 붓길을 막는다.'};
   charYeop.skill.special = {code : 90496, name : '화룡점정', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 100,
       effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 10744, buffDur : null}],
