@@ -314,6 +314,13 @@ io.on('connection', (socket) => {
     socket.emit('floorSelectAck', t.bmod.result, floorState(t));
     persistBattle(t);
   }));
+  socket.on('floorSpecial', guard('floorSpecial', function(room, uid) {   // 수동의 미학: 이번 턴 스페셜 예약
+    const t = trades[room];
+    if (!t || !t.floor || t.leftUid != uid || t.result || t.busy) return;
+    const L = t.leftChr; if (!L.skill || !L.skill.special) return;
+    L.specialArmed = !L.specialArmed;
+    socket.emit('floorSelectAck', (t.bmod.result || '') + '<div class="note-box" style="margin:6px 0">' + (L.specialArmed ? '[스페셜] 이번 턴에 [ ' + L.skill.special.name + ' ] 을(를) 시전한다.' : '[스페셜] 예약을 취소했다.') + '</div>', floorState(t));
+  }));
   socket.on('floorItemUse', guard('floorItemUse', function(room, uid, slot) {   // [사용] 장비
     const t = trades[room];
     if (!t || !t.floor || t.leftUid != uid || t.result || t.busy) return;
@@ -895,6 +902,14 @@ async function procUseItem (req, res) {
           if (curItem) {
             chara.items[itemType] = undefined;
             chara.inventory.push(curItem);              
+          }
+          if (tgtObj.quantum && !tgtObj.observed) {   // 하이젠베르크의 검: 관측하는 순간 공격력이 정해진다
+            const lerp = (a, b, x) => Math.round(a + (b - a) * x);
+            const tp = Math.random(), tm = Math.random();
+            tgtObj.stat = Object.assign({}, tgtObj.stat, { phyAtkMin : lerp(12, 72, tp), phyAtkMax : lerp(15, 84, tp), magAtkMin : lerp(12, 72, tm), magAtkMax : lerp(15, 84, tm) });
+            tgtObj.observed = true;
+            tgtObj.effectDesc = '관측되었다 — 물리 ' + Math.round(tp * 100) + '% · 마법 ' + Math.round(tm * 100) + '% (9급 유니크 0% ~ 4급 유니크 100%)';
+            tgtObj.tooltip = makeTooltip(tgtObj);
           }
           chara.items[itemType] = tgtObj;
           calcStats(chara);
@@ -3828,6 +3843,7 @@ function floorState(t) {
     items: (L.inventory || []).map((it, i) => ({ i, code: it.code, name: it.name, tooltip: it.tooltip, card: it.card, temp: !!it.temp })).filter(x => x.code && consumables.DEFS[x.code]),
     ehint: enemyHint(t),
     predict: t.predict || null,
+    manualSp: Object.values(L.items || {}).some(it => it && it.manualSpecial) && L.skill && L.skill.special ? { cost: L.skill.special.cost, sp: Math.round(L.curSp || 0), armed: !!L.specialArmed, name: L.skill.special.name } : null,
     uses: ['weapon', 'armor', 'subarmor', 'trinket', 'skillArtifact'].filter(k => L.items && L.items[k] && L.items[k].use).map(k => {
       const it = L.items[k], st = (t.useState && t.useState[k]) || { uses: 0, cd: 0 };
       return { slot: k, name: it.name, label: it.use.label, cd: st.cd, left: it.use.maxUses ? it.use.maxUses - st.uses : null };
@@ -3981,7 +3997,7 @@ async function procNextFloor (req, res) {
         if (code) { leftCopy.startEffects = (leftCopy.startEffects || []).concat([{ code: cons.EFFECT_TYPE_SELF_BUFF, buffCode: code, buffDur: null }]); }
       }
       trades[roomNum] = { leftUid: charRow.uid, leftChr: leftCopy, rightChr: enemy, floor: true, battleKey: key, goldStart: leftCopy.gold,
-                          pdeck: run.newDeckState(char.deck, run.runEffect(char, 'shuffleEveryTurn') ? { shuffleEveryTurn: true } : null), edeck: run.newDeckState(enemy.deck, enemy.deckOpts) };
+                          pdeck: run.newDeckState(char.deck, { shuffleEveryTurn: !!run.runEffect(char, 'shuffleEveryTurn'), handSize: run.HAND_SIZE + (run.runEffect(char, 'handPlus') ? 1 : 0) }), edeck: run.newDeckState(enemy.deck, enemy.deckOpts) };
       sess.floorBattle = { key, room: roomNum };
       res.render('pages/floorBattle', { room: roomNum, uid: charRow.uid, rv: runView(char), char, enemy });
     }
@@ -4312,6 +4328,12 @@ async function procFloorResult (req, res) {
       } finally { client.release(); }
     } catch (e) { console.log('battle log save failed', e.message); }
     const rv = runView(char);
+    // 드라우프니르: 착용 중 승리마다 10 → 20 → … (최대 320), 패배·해제 시 초기화
+    let draupLine = null;
+    if (run.runEffect(char, 'draupnir')) {
+      if (re.winnerLeft) { const g = Math.min(320, char.run.draupnir ? char.run.draupnir * 2 : 10); char.run.draupnir = g; char.gold += g; draupLine = '<span class="colorGold">드라우프니르가 복제되었다 — ' + g + ' 골드</span>'; }
+      else char.run.draupnir = 0;
+    } else if (char.run.draupnir) char.run.draupnir = 0;
     // 계정 업적: 런 추적 플래그 + 전투 판정
     char.run.ach = char.run.ach || {};
     if ((t.used || []).length) char.run.ach.item = true;
@@ -4346,6 +4368,7 @@ async function procFloorResult (req, res) {
       addSpecialResultCard(char, 4);
       char.battleCnt = (char.battleCnt || 0) + 1; char.winCnt = (char.winCnt || 0) + 1;
       var rewardLines = ['<b>승리!</b> ' + gold + '골드, 스탯 포인트 4, ' + char.rank + '급 장비 리설트 카드 1장 획득.'];
+      if (draupLine) rewardLines.push(draupLine);
       if (Math.random() < (enemy.isBoss ? 0.15 : 0.06)) {   // 스킬 아티팩트: 일반 6%, 보스 15%
         const art = run.pickArtifact(char.rank);
         if (art) { art.tooltip = makeTooltip(art); char.inventory.push(art); rewardLines.push('<span class="colorGold">스킬 아티팩트를 발견했다: <b>' + art.name + '</b></span>'); }

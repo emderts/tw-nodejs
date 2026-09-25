@@ -98,6 +98,14 @@
       b.innerHTML = glyph[i] + ' <span class="colorGold">×' + oDeckCnt[i] + '</span>' + (s.eplayed[i] ? ' <span style="color:var(--ash)">낸 ' + s.eplayed[i] + '</span>' : '') + hint + '<br>' + oNames[i];
     }
     var ub0 = document.getElementById('useBtns'); ub0.innerHTML = '';
+    if (s.manualSp) {   // 수동의 미학
+      var spb = document.createElement('button'); spb.type = 'button';
+      spb.textContent = s.manualSp.armed ? '[스페셜] 예약됨 ✓' : '[스페셜] ' + s.manualSp.name;
+      if (s.manualSp.sp < s.manualSp.cost && !s.manualSp.armed) { spb.setAttribute('disabled', true); spb.textContent += ' (' + s.manualSp.sp + '/' + s.manualSp.cost + ')'; }
+      if (s.manualSp.armed) spb.style.borderColor = 'var(--brass)';
+      spb.addEventListener('click', function () { this.setAttribute('disabled', true); socket.emit('floorSpecial', '<%= room %>', '<%= uid %>'); });
+      ub0.appendChild(spb);
+    }
     (s.uses || []).forEach(function (u) {
       var b = document.createElement('button'); b.type = 'button';
       var off = u.cd > 0 || (u.left !== null && u.left <= 0);

@@ -101,14 +101,14 @@ function shuffle(arr) {
   return arr;
 }
 function newDeckState(deck, opts) {
-  return { draw: shuffle(deck.map(c => Object.assign({}, c))), hand: [], discard: [], everyTurn: !!(opts && opts.shuffleEveryTurn) };
+  return { draw: shuffle(deck.map(c => Object.assign({}, c))), hand: [], discard: [], everyTurn: !!(opts && opts.shuffleEveryTurn), handSize: (opts && opts.handSize) || HAND_SIZE };
 }
 // 손패를 3장까지 보충. 뽑을 카드가 없을 때는 손패가 비어 있어야만 버림 더미를 셔플
 // 덱을 다시 섞는다 (손패는 그대로 두고 버린 패까지 합쳐서)
 function shuffleDeck(st) { st.draw = shuffle(st.draw.concat(st.discard)); st.discard = []; st.shuffles = (st.shuffles || 0) + 1; }
 function drawHand(st) {
   if (st.everyTurn) { st.draw = shuffle(st.draw.concat(st.hand, st.discard)); st.hand = []; st.discard = []; }
-  while (st.hand.length < HAND_SIZE) {
+  while (st.hand.length < (st.handSize || HAND_SIZE)) {
     if (st.draw.length === 0) {
       if (st.hand.length > 0 || st.discard.length === 0) break;
       st.draw = shuffle(st.discard); st.discard = []; st.shuffles = (st.shuffles || 0) + 1;
@@ -192,7 +192,7 @@ function equipAndScale(e, cycle, boss, asc) {
   // 적에게는 플레이어 전용/기믹 아이템(runEffect·드라이브 교체·시간대·커스텀 코드 효과) 제외
   const AI_USE_OK = ['freeStrike', 'spBurn', 'regenHeal', 'cthunBlast', 'capacitorBurst'];   // 승천 7 보스가 쓸 수 있는 [사용]
   const useOk = (it) => !it.use || (asc >= 7 && boss && (it.use.effect || []).every(ef => typeof ef.code !== 'string' || AI_USE_OK.includes(ef.code)));
-  const enemyOk = (it) => it && !it.runEffect && !it.driveOverride && !it.timeMult && useOk(it) && !(it.effect || []).some(ef => typeof ef.code === 'string');
+  const enemyOk = (it) => it && !it.runEffect && !it.driveOverride && !it.timeMult && !it.quantum && !it.manualSpecial && useOk(it) && !(it.effect || []).some(ef => typeof ef.code === 'string');
   // 승천 7 보스: 쓸 수 있는 [사용] 장비가 있으면 슬롯마다 50% 확률로 우선 장착
   const usePool = (asc >= 7 && boss) ? require('./items').list.filter(x => x && x.use && x.type <= 3 && Math.abs(x.rank - e.rank) <= 1 && enemyOk(x)) : [];
   for (let t = 0; t <= 3; t++) {

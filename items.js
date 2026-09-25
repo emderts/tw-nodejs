@@ -2272,6 +2272,18 @@ itemList[1019] = { id : 1019, name : '살게라스의 저주받은 환영', name
     effectDesc : '전투 시작 시 자신에게 영구 [암흑] (명중·회피 절반). 치명 +95%p (맞으면 사실상 전부 치명), 치명 피해 +130%p', effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_BATTLE_START, buffCode : 8, buffDur : 999}] };
 itemList[1020] = { id : 1020, name : '아르거스의 사도', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_WEAPON, flavor : '드레나이식 멋진 디자인으로 아직까지도 사랑받는 지팡이.', rank : 1, rarity : cons.ITEM_RARITY_EPIC, stat : { phyAtkMin : 110, phyAtkMax : 124, magAtkMin : 170, magAtkMax : 190, crit : 0.06 }, 
     effectDesc : '공격 성공 시 20% 확률로 적에게 3턴 [지옥불정령] (턴 종료 시 내 마법 공격력 30% 절대 피해, 중첩 가능)', effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, active : cons.ACTIVE_TYPE_ATTACK, chance : 0.2, buffCode : 10699, buffDur : 3}] };
+// ---------- 신규 5종 (드라우프니르·모이라이·용무녀·하이젠베르크·수동의 미학) ----------
+itemList[1047] = { id : 1047, name : '드라우프니르', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '무한히 복제되는 마법의 금반지. 언젠가는 전 우주를 덮어버릴지도 모른다.', rank : 6, rarity : cons.ITEM_RARITY_EPIC, stat : {  }, 
+    effectDesc : '이 장비를 착용하고 승리하면 10골드. 그 다음 승리마다 두 배씩 늘어난다 (최대 320골드). 패배하거나 착용을 해제하면 10골드로 돌아간다.', effect : [], runEffect : { key : 'draupnir' } };
+itemList[1048] = { id : 1048, name : '모이라이의 손', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '다다익손', rank : 4, rarity : cons.ITEM_RARITY_EPIC, stat : { maxHp : 180, evasion : 0.06, hit : 0.06 }, 
+    effectDesc : '손패 +1', effect : [], runEffect : { key : 'handPlus', value : 1 } };
+itemList[1049] = { id : 1049, name : '용무녀의 도복', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_ARMOR, flavor : '고룡 셀레스티아를 모시는 무녀의 도복. 고룡이 부여한 기이한 마력이 느껴진다.', rank : 5, rarity : cons.ITEM_RARITY_EPIC, stat : { maxHp : 260, spCharge : 4 }, 
+    effectDesc : '드라이브 스킬이 두 배의 SP를 요구하는 대신, 발동하면 두 번 발동한다.', effect : [], driveDouble : true };
+itemList[1050] = { id : 1050, name : '하이젠베르크의 검', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_WEAPON, flavor : '관측하기 전에는 알 수 없다.', rank : 7, rarity : cons.ITEM_RARITY_UNIQUE, stat : {  }, 
+    effectDesc : '처음 장착하는 순간 물리·마법 공격력이 각각 9급 유니크 수준과 4급 유니크 수준 사이에서 정해진다.', effect : [], quantum : true };
+itemList[1051] = { id : 1051, name : '수동의 미학', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SKILL_ARTIFACT, flavor : '엑셀 팡션 같은 걸 너무 쓰면...', rank : 5, rarity : cons.ITEM_RARITY_EPIC, stat : {  }, 
+    effectDesc : '스페셜 스킬 SP 요구량 -25%. 스페셜 스킬이 자동으로 발동하지 않고, 전투 화면의 [스페셜] 버튼으로 직접 시전한다.', effect : [], skillMod : { specialCostMul : 0.75 }, manualSpecial : true };
+
 // 아이템 pctStat의 공격력 % → 주는 피해 % (기본 공격력에만 곱해지던 문제)
 itemList.forEach(function(it) {
   if (!it || !it.pctStat || (it.pctStat.phyAtk === undefined && it.pctStat.magAtk === undefined)) return;

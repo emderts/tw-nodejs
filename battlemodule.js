@@ -515,7 +515,7 @@ Battlemodule.prototype._doBattleTurnManual = function(left, right) {
     loser = confused;
   }
 
-  if (winner.skill.special && winner.skill.special.cost <= winner.curSp && findBuffByCode(winner, 10004).length == 0 && findBuffByCode(winner, 10005).length == 0) {
+  if (winner.skill.special && winner.skill.special.cost <= winner.curSp && findBuffByCode(winner, 10004).length == 0 && findBuffByCode(winner, 10005).length == 0 && specialAllowed(winner)) {
     this.resolveEffects(winner, loser, getBuffEffects(winner, cons.ACTIVE_TYPE_BEFORE_USE_SPECIAL), damage);
     this.resolveEffects(winner, loser, getItemEffects(winner, cons.ACTIVE_TYPE_BEFORE_USE_SPECIAL), damage);
     this.resolveEffects(loser, winner, getBuffEffects(loser, cons.ACTIVE_TYPE_BEFORE_OPP_USE_SPECIAL), damage);
@@ -530,7 +530,7 @@ Battlemodule.prototype._doBattleTurnManual = function(left, right) {
       this.resolveEffects(loser, winner, getItemEffects(loser, cons.ACTIVE_TYPE_OPP_USE_SPECIAL), damage);
     }
   }
-  if (loser.skill.special && loser.skill.special.cost <= loser.curSp && findBuffByCode(loser, 10004).length == 0 && findBuffByCode(loser, 10005).length == 0) {
+  if (loser.skill.special && loser.skill.special.cost <= loser.curSp && findBuffByCode(loser, 10004).length == 0 && findBuffByCode(loser, 10005).length == 0 && specialAllowed(loser)) {
     this.resolveEffects(loser, winner, getBuffEffects(loser, cons.ACTIVE_TYPE_BEFORE_USE_SPECIAL), damage);
     this.resolveEffects(loser, winner, getItemEffects(loser, cons.ACTIVE_TYPE_BEFORE_USE_SPECIAL), damage);
     this.resolveEffects(winner, loser, getBuffEffects(winner, cons.ACTIVE_TYPE_BEFORE_OPP_USE_SPECIAL), damage);
@@ -2459,14 +2459,26 @@ Battlemodule.prototype.checkDrive = function(chara, active, arg) {
   if (chara.skill.drive.chanceModFunc) {
     chanceUsed = this.modFunc[chara.skill.drive.chanceModFunc](chara, arg, chanceUsed);
   }
-  return getRandom(chanceUsed) && chara.curSp >= chara.skill.drive.cost && findBuffByCode(chara, 10010).length == 0;
+  const dMul = hasDriveDouble(chara) ? 2 : 1;   // 용무녀의 도복
+  return getRandom(chanceUsed) && chara.curSp >= chara.skill.drive.cost * dMul && findBuffByCode(chara, 10010).length == 0;
 }
 
+// 수동의 미학: 스페셜은 플레이어가 버튼으로 예약했을 때만. 발동하면 예약 해제
+function specialAllowed(c) {
+  const manual = Object.values(c.items || {}).some(it => it && it.manualSpecial);
+  if (!manual) return true;
+  if (c.specialArmed) { c.specialArmed = false; return true; }
+  return false;
+}
+function hasDriveDouble(c) { return Object.values(c.items || {}).some(it => it && it.driveDouble); }
 Battlemodule.prototype.resolveDrive = function(chara, opp, damage) {
   chara.skillOri.drive.cooldown = chara.skill.drive.setCooldown;
-  chara.curSp -= chara.skill.drive.cost;
-  this.result += '<div class="driveSkill">[ ' + chara.name + ' ] Drive Skill - [ ' + chara.skill.drive.name + ' ] 발동!</div>';
+  const dMul = hasDriveDouble(chara) ? 2 : 1;
+  chara.curSp -= chara.skill.drive.cost * dMul;
+  for (let rep = 0; rep < dMul; rep++) {
+  this.result += '<div class="driveSkill">[ ' + chara.name + ' ] Drive Skill - [ ' + chara.skill.drive.name + ' ] 발동!' + (rep ? ' (용무녀의 도복 — 한 번 더)' : '') + '</div>';
   this.resolveEffects(chara, opp, chara.skill.drive.effect, damage);
+  }
   this.resolveEffects(chara, opp, getBuffEffects(chara, cons.ACTIVE_TYPE_USE_DRIVE), damage, chara.skill.drive);
   this.resolveEffects(chara, opp, getItemEffects(chara, cons.ACTIVE_TYPE_USE_DRIVE), damage, chara.skill.drive);
   this.resolveEffects(opp, chara, getBuffEffects(opp, cons.ACTIVE_TYPE_OPP_USE_DRIVE), damage, chara.skill.drive);
