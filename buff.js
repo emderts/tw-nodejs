@@ -7254,7 +7254,6 @@ module.exports.getBuffData = function(eff) {
   case 10719 :   // 달빛 의회
     retObj.name = '달빛 의회'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 1; retObj.isDebuff = false; retObj.durOff = null;
     retObj.tooltip = '피격당한 기술에 따라 [필링]/[제논]/[데키]가 쌓이고, 한 쪽이 최대 생명력의 35%를 넘으면 자신의 덱에서 해당 카드가 모두 사라진다 (마지막 한 종류는 남는다)';
-    retObj.effect.push({ active : cons.ACTIVE_TYPE_TAKE_HIT, code : 'councilMark' });
     break;
   case 10720 :
     retObj.name = '필링'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 2; retObj.maxStack = 9999999; retObj.isDebuff = false; retObj.durOff = null;

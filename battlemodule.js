@@ -921,6 +921,7 @@ Battlemodule.prototype.dealDamage = function(src, dst, damage) {
   }
   var damageDealt = shielded ? damageShield : damage.value;
   dst.lastDamage = damageDealt;
+  if (src !== dst && damageDealt > 0 && (dst.buffs || []).some(b => b.id === 10719)) this.councilAccrue(dst, src, damageDealt);   // 달빛 의회
   if (src !== dst && damage.type === cons.DAMAGE_TYPE_MAGICAL && damageDealt > 0 && (src.buffs || []).some(b => b.id === 10742)) {   // 발묵 → 묵운
     const add = Math.max(1, Math.round(damageDealt * 0.25));
     const ex = (src.buffs || []).find(b => b.id === 10743);
@@ -1860,7 +1861,7 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
     } else if (eff.code === 'castSlot') {   // 누더기골렘: 지정 슬롯 스킬 즉시 시전
       const sk = winner.skill.base[eff.slot]; if (!sk) continue;
       const rd = this.calcDamage(winner, loser, sk);
-      if (rd.hit) { this.dealDamage(winner, loser, rd); this.result += '<span class="skillDamage">[ ' + eff.name + ' ] ' + winner.name + getIga(winner.nameType) + ' [ ' + sk.name + ' ] ' + getUro(sk.nameType) + ' 한 번 더! ' + rd.value + '대미지</span><br>'; }
+      if (rd.hit) { this.dealDamage(winner, loser, rd); this.result += '<span class="skillDamage">[ ' + (eff.name || (winner.skill.special && winner.skill.special.name) || sk.name) + ' ] ' + winner.name + getIga(winner.nameType) + ' [ ' + sk.name + ' ] ' + getUro(sk.nameType) + ' ' + (eff.name ? '한 번 더!' : '시전!') + ' ' + rd.value + '대미지</span><br>'; }
       if (eff.removeSelfBuff) for (const b of (winner.buffs || []).filter(x => eff.removeSelfBuff.includes(x.id))) removeBuff(b);
     } else if (eff.code === 'soulGain') {   // 어둠한: 준 피해만큼 영혼 조각
       if (!damage || !damage.value) continue;
@@ -2208,6 +2209,22 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
   }
 }
 
+Battlemodule.prototype.councilAccrue = function(council, attacker, amount) {
+  const idx = (attacker.skill && attacker.skill.base) ? attacker.skill.base.findIndex(sk => sk && sk.code === attacker.curSkillCode) : -1;
+  const ori = idx >= 0 ? idx : ((attacker.skillOri && attacker.skillOri.base) ? attacker.skillOri.base.findIndex(sk => sk && sk.code === attacker.curSkillCode) : -1);
+  if (ori < 0) return;
+  const MARK = [{ id : 10720, cut : 2 }, { id : 10721, cut : 0 }, { id : 10722, cut : 1 }][ori];
+  const bo = buffMdl.getBuffData({ buffCode : MARK.id }); bo.dur = null; bo.stack = Math.round(amount);
+  this.giveBuff(council, council, bo, false, '달빛 의회');
+  const cur = (council.buffs || []).find(x => x.id === MARK.id);
+  if (cur && cur.stack >= council.stat.maxHp * 0.35) {
+    const typesLeft = new Set((council.deck || []).map(c => c.type));
+    if (typesLeft.size <= 1 || !typesLeft.has(MARK.cut) || (council.pendingCardCut || []).includes(MARK.cut)) return;
+    removeBuff(cur);
+    council.pendingCardCut = (council.pendingCardCut || []).concat([MARK.cut]);
+    this.result += '<span class="skillDamage">[ 달빛 의회 ] 의석 하나가 무너진다 — ' + council.name + '의 [ ' + ['가위', '바위', '보'][MARK.cut] + ' ] 카드가 모두 사라진다!</span><br>';
+  }
+};
 Battlemodule.prototype.resolveTurnBegin = function(winner, loser) {
   if (this.turnCount >= COLLAPSE_TURN && this.collapseTurn !== this.turnCount) {   // 장기전 방지: 40턴부터 양쪽 최대 생명력 -4%씩 (복리)
     this.collapseTurn = this.turnCount;
