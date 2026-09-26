@@ -40,7 +40,7 @@ const TIERS = {
     { key: 'd7EliteKnight', deck: [2, 3, 3] },
     { key: 'd7Lohengrin',   deck: [3, 3, 3], tune: (e) => { for (const k of e.skill.base) k.damage = 1.2; } },
     { key: 'rInfernal',     deck: [4, 1, 2] },
-    { key: 'mFrena',        deck: [1, 1, 1], extraFav: 2, note: '대마법사 프레나 — 삼원소와 마법 폭풍', tune: (e) => {
+    { key: 'mFrena',        deck: [1, 1, 1], extraFav: 0, note: '대마법사 프레나 — 삼원소와 마법 폭풍', tune: (e) => {
       for (const sk of e.skill.base) { sk.damage = 1.15; for (const ef of (sk.effect || [])) if (ef.chance) ef.chance = 0.25; sk.tooltip = sk.tooltip.replace('33%', '25%'); }
       e.skill.special.cost = 115;
     } },
