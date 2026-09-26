@@ -4108,7 +4108,8 @@ async function procAltar (req, res) {
   try {
     const ctx = await loadRunChar(req, res); if (!ctx) return;
     const { char } = ctx; const sess = req.session;
-    res.render('pages/altar', { char, rv: runView(char), offer: sess.altar || null, used: char.run.altarUsed || 0, max: ALTAR_MAX, makeTooltip });
+    delete sess.altar;   // 이전 버전에서 세션에 남은 제시 목록 정리
+    res.render('pages/altar', { char, rv: runView(char), offer: char.run.altarOffer || null, used: char.run.altarUsed || 0, max: ALTAR_MAX, makeTooltip });
   } catch (e) { console.error(e); res.redirect('/'); }
 }
 async function procAltarPost (req, res) {
@@ -4127,15 +4128,15 @@ async function procAltarPost (req, res) {
       while (picks.length < 3 && pool2.length) { const c = pool2[Math.floor(Math.random() * pool2.length)]; if (!picks.some(y => y.name === c.name)) picks.push(JSON.parse(JSON.stringify(c))); }
       char.inventory.splice(idx, 1);
       char.run.altarUsed = used + 1;
-      sess.altar = { picks, name: it.name, toRank: it.rank || char.rank };
+      char.run.altarOffer = { picks, name: it.name, toRank: it.rank || char.rank };   // 런에 묶어 둔다 (세션에 두면 다음 런까지 남았다)
       await saveChar(char, charRow.uid);
       res.redirect('/altar'); return;
     }
-    if (req.body.action === 'take' && sess.altar) {   // 하나 선택 (증폭해서)
+    if (req.body.action === 'take' && char.run.altarOffer) {   // 하나 선택 (증폭해서)
       const k = parseInt(req.body.k, 10);
-      const pick = sess.altar.picks[k];
-      if (pick) { const it = run.amplify(JSON.parse(JSON.stringify(pick)), sess.altar.toRank || char.rank); it.tooltip = makeTooltip(it); char.inventory.push(it); }
-      delete sess.altar;
+      const pick = char.run.altarOffer.picks[k];
+      if (pick) { const it = run.amplify(JSON.parse(JSON.stringify(pick)), char.run.altarOffer.toRank || char.rank); it.tooltip = makeTooltip(it); char.inventory.push(it); }
+      delete char.run.altarOffer;
       await saveChar(char, charRow.uid);
       res.redirect('/altar'); return;
     }
