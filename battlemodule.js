@@ -2209,6 +2209,17 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
 }
 
 Battlemodule.prototype.resolveTurnBegin = function(winner, loser) {
+  if (this.turnCount >= COLLAPSE_TURN && this.collapseTurn !== this.turnCount) {   // 장기전 방지: 40턴부터 양쪽 최대 생명력 -4%씩 (복리)
+    this.collapseTurn = this.turnCount;
+    if (this.turnCount === COLLAPSE_TURN) this.result += '<div class="note-box">' + COLLAPSE_TURN + '턴이 지났다. 탑이 무너지기 시작한다 — 매 턴 양쪽의 최대 생명력이 4%씩 줄어든다.</div>';
+    for (const c of [winner, loser]) {
+      const bo = buffMdl.getBuffData({ buffCode : 10746 }); bo.dur = null; bo.stack = this.turnCount >= COLLAPSE_TURN + 20 ? 2 : 1;   // 60턴부터 두 배 속도
+      this.giveBuff(c, c, bo, false, '붕괴');
+      for (const sb of (c.buffs || [])) for (const e of (sb.effect || [])) if (e.code === cons.EFFECT_TYPE_SHIELD && e.value > 0) e.value = Math.floor(e.value * 0.85);   // 보호막·소환수도 함께 무너진다
+      calcStats(c, c === winner ? loser : winner);
+      if (c.curHp > c.stat.maxHp) c.curHp = c.stat.maxHp;
+    }
+  }
   winner.hitThisTurn = false; loser.hitThisTurn = false;   // 글로리 맥스·채찍-PT용
   winner.landedThisTurn = false; loser.landedThisTurn = false;
   this.resolveEffects(winner, loser, getItemEffects(winner, cons.ACTIVE_TYPE_TURN_START), null);
@@ -2794,6 +2805,7 @@ function calcStats(chara, opp) {
   }
 }
 
+const COLLAPSE_TURN = 40;   // 장기전 [붕괴] 시작 턴
 // 엽운학: 그려낸 불꽃 다연타마다 소환수가 따라 치는지 (밸런스 스위치)
 let BRUSH_SUMMON_PER_HIT = true, BRUSH_SUMMON_SCALE = 1;
 module.exports.setBrushSummon = (on, scale) => { BRUSH_SUMMON_PER_HIT = on; BRUSH_SUMMON_SCALE = scale || 1; };
