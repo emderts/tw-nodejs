@@ -2345,7 +2345,7 @@ itemList[1042] = { id : 1042, name : '만노로스의 엄니', nameType : cons.N
 itemList[1043] = { id : 1043, name : '청동의 모래시계 갑주', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_ARMOR, flavor : '노즈도르무의 갑옷. 어깨에서 모래시계의 모래가 흘러내린다.', rank : 1, rarity : cons.ITEM_RARITY_EPIC, stat : { maxHp : 996, phyReduce : 0.078, magReduce : 0.078 }, 
     effectDesc : '[사용] 3턴을 판정 없이 흘려보낸다 (지속 효과와 버프 턴은 그대로 흐른다) — 쿨 10턴', effect : [], use : { label : '모래시계', effect : [{code : 'timeSkip', value : 3}], cooldown : 10, maxUses : 0 } };
 itemList[1044] = { id : 1044, name : '텍터스의 조각', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '조각조각나도 다시 살아 움직인다.', rank : 1, rarity : cons.ITEM_RARITY_EPIC, stat : { maxHp : 0, phyReduce : 0.039, magReduce : 0.039 }, 
-    effectDesc : '쓰러질 때마다 최대 생명력이 60%로 줄어든 채 생명력을 모두 회복하며 부활한다 (60% → 36%, 전투당 2회)', effect : [], shardRevive : true };
+    effectDesc : '최대 생명력 -20%. 쓰러질 때마다 최대 생명력이 60%로 줄어든 채 생명력을 모두 회복하며 부활한다 (60% → 36%, 전투당 2회)', effect : [], shardRevive : true, pctStat : { maxHp : -0.2 } };
 itemList[1045] = { id : 1045, name : '보장된 결과', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '결과가 정해져 있다면, 과정은 다시 해도 된다.', rank : 1, rarity : cons.ITEM_RARITY_EPIC, stat : { maxHp : 250, spRegen : 2 }, 
     effectDesc : '[사용] 모든 [사용] 장비의 쿨다운과 사용 횟수를 초기화 — 전투당 1회', effect : [], use : { label : '다시 한 번', effect : [{code : 'resetUses'}], cooldown : 0, maxUses : 1 } };
 itemList[1046] = { id : 1046, name : '영혼 축전기', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '영혼이 모이는 자리. 가득 차면 새어 나온다.', rank : 1, rarity : cons.ITEM_RARITY_EPIC, stat : { maxHp : 240, spRegen : 1 }, 
