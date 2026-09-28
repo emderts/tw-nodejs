@@ -17,6 +17,7 @@
   <title>ThirdWorld - 전투</title>
   <script src="/socket.io/socket.io.js"></script>
   <style>
+    .enemySkill { cursor: pointer; opacity: .92; }
     /* 전투 연출 */
     .rb-status { position: relative; }
     .fx-float { position: absolute; right: 4px; top: -6px; font-weight: 700; font-size: 15px; pointer-events: none; animation: fxFloat .9s ease-out forwards; z-index: 5; text-shadow: 0 1px 2px #000; }
@@ -47,9 +48,9 @@
       <div class="bar hp"><i id="ehpBar"></i></div><span class="num" id="ehpNum"></span>
       <div class="bar sp" id="espWrap"><i id="espBar"></i></div><span class="num" id="espNum"></span>
     </div>
-    <div class="charItem"><button id="enemyBtn0" disabled type="button">[가위]<br></button></div>
-    <div class="charItem"><button id="enemyBtn1" disabled type="button">[바위]<br></button></div>
-    <div class="charItem"><button id="enemyBtn2" disabled type="button">[보]<br></button></div>
+    <div class="charItem"><button id="enemyBtn0" type="button" class="enemySkill">[가위]<br></button></div>
+    <div class="charItem"><button id="enemyBtn1" type="button" class="enemySkill">[바위]<br></button></div>
+    <div class="charItem"><button id="enemyBtn2" type="button" class="enemySkill">[보]<br></button></div>
   </div>
   <div id="result" class="rps-result battle-log"></div>
   <div class="rps-bar selectWrap">

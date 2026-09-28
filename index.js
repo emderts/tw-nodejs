@@ -3893,7 +3893,11 @@ function enemyHint(t) {
   return null;
 }
 function floorNames(chara) {
-  return chara.skill.base.map(sk => sk.name + '<div class="itemTooltip">' + sk.tooltip + (sk.flavor ? '<br><br><span class="tooltipFlavor">' + sk.flavor + '</span>' : '') + '</div>');
+  const TYPE = { [cons.DAMAGE_TYPE_PHYSICAL]: '물리', [cons.DAMAGE_TYPE_MAGICAL]: '마법', [cons.DAMAGE_TYPE_ABSOLUTE]: '절대' };
+  return chara.skill.base.map(sk => {
+    const head = sk.noAttack ? '<b>공격 없음</b>' : '<b>' + (TYPE[sk.type] || '') + ' ' + (sk.damage !== undefined ? sk.damage : '-') + '</b>' + (sk.hitMod ? ' · 명중 ×' + sk.hitMod : '');
+    return sk.name + '<div class="itemTooltip">' + head + '<br>' + (sk.tooltip || '') + (sk.flavor ? '<br><br><span class="tooltipFlavor">' + sk.flavor + '</span>' : '') + '</div>';
+  });
 }
 // ==================== 층 진행 ====================
 // 뉴스 표기: 계정명(캐릭터명)
