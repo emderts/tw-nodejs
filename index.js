@@ -339,7 +339,7 @@ io.on('connection', (socket) => {
     st.uses++; st.cd = it.use.cooldown || 0;
     if (t.rightChr.curHp <= 0 && effs.some(e => e.code === 'timeSkip')) t.hourglassKill = true;
     if (t.rightChr.curHp <= 0 || L.curHp <= 0) {   // 사용으로 전투가 끝난 경우
-      const res = t.bmod._doBattleEnd(1); t.result = res; socket.emit('floorSelectEnd', t.bmod.result); return;
+      const res = t.bmod._doBattleEnd(1); t.result = res; socket.emit('floorSelectEnd', t.bmod.result, floorState(t)); return;
     }
     socket.emit('floorSelectAck', t.bmod.result, floorState(t));
     persistBattle(t);
@@ -474,7 +474,7 @@ io.on('connection', (socket) => {
       persistBattle(t);
     } else {
       t.result = result;
-      socket.emit('floorSelectEnd', result.result);
+      socket.emit('floorSelectEnd', result.result, floorState(t));
     }
   }));
   socket.on('manualAdmin', function(room, luid, ruid, lc, rc) {

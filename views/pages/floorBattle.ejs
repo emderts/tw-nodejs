@@ -283,8 +283,11 @@
     var f = document.createElement('form'); f.method = 'post'; f.action = '/floorFlee'; document.body.appendChild(f);
     setTimeout(function () { f.submit(); }, 700);
   });
-  socket.on('floorSelectEnd', function (result) {
+  socket.on('floorSelectEnd', function (result, state) {
     document.getElementById('result').innerHTML = result + '<div class="backLink"><a href="/floorResult" class="btn-primary" style="padding:12px 24px">결과 보기</a></div>';
+    if (state) { pendingResult = result; try { renderState(state); } catch (e) {} }   // 마지막 턴도 체력 바·연출 반영
+    var won = !!(state && state.myName) && result.indexOf(state.myName + '의 승리입니다') >= 0;
+    setTimeout(function () { fxStamp(won ? '승리!' : '패배', won ? 'sp-me' : 'sp-enemy'); }, 450);
     lockHand(); document.getElementById('resetBtn').setAttribute('disabled', true); document.getElementById('redrawBtn').setAttribute('disabled', true); items = []; renderItems();
     window.scrollTo(0, document.body.scrollHeight);
   });
