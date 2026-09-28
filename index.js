@@ -3845,6 +3845,7 @@ function floorState(t) {
     ehint: enemyHint(t),
     predict: t.predict || null,
     lastEKey: (typeof t.ePlayedKey === 'number') ? t.ePlayedKey : null,
+    myName: L.name,
     manualSp: Object.values(L.items || {}).some(it => it && it.manualSpecial) && L.skill && L.skill.special ? { cost: L.skill.special.cost, sp: Math.round(L.curSp || 0), armed: !!L.specialArmed, name: L.skill.special.name } : null,
     uses: ['weapon', 'armor', 'subarmor', 'trinket', 'skillArtifact'].filter(k => L.items && L.items[k] && L.items[k].use).map(k => {
       const it = L.items[k], st = (t.useState && t.useState[k]) || { uses: 0, cd: 0 };

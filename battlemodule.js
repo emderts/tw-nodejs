@@ -905,10 +905,10 @@ Battlemodule.prototype.dealDamage = function(src, dst, damage) {
     if (val.code === cons.EFFECT_TYPE_SHIELD) {
       if (val.value > damageShield) {
         val.value -= damageShield;
-        if (damageShield > 0) this.result += '<span class="shieldLog">' + dst.name + getUiga(dst.nameType) + ' 보호막이 ' + damageShield + ' 막았다 (남은 ' + Math.round(val.value) + ')</span><br>';
+        if (damageShield > 0) this.result += '<span class="shieldLog" data-who="' + (dst === this.charLeft ? 'L' : 'R') + '" data-amt="' + damageShield + '">' + dst.name + getUiga(dst.nameType) + ' 보호막이 ' + damageShield + ' 막았다 (남은 ' + Math.round(val.value) + ')</span><br>';
         return;
       } else {
-        if (val.value > 0) this.result += '<span class="shieldLog">' + dst.name + getUiga(dst.nameType) + ' 보호막이 ' + Math.round(val.value) + ' 막고 깨졌다</span><br>';
+        if (val.value > 0) this.result += '<span class="shieldLog" data-who="' + (dst === this.charLeft ? 'L' : 'R') + '" data-amt="' + Math.round(val.value) + '">' + dst.name + getUiga(dst.nameType) + ' 보호막이 ' + Math.round(val.value) + ' 막고 깨졌다</span><br>';
         damageShield -= val.value;
         val.value = 0;
         removeBuff(val.buff);

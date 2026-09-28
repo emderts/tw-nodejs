@@ -137,16 +137,21 @@
     if (dEhp < 0) { fxFloat('enemy', '-' + Math.round(-dEhp), crit ? 'dmg crit' : 'dmg'); fxPanel('enemy', 'fx-hurt fx-flash' + (crit ? ' crit' : '')); }
     else if (dEhp > 0) { fxFloat('enemy', '+' + Math.round(dEhp), 'heal'); fxPanel('enemy', 'fx-heal'); }
     if (/비겼습니다/.test(tail) && !/공격해/.test(tail)) fxStamp('무승부!');
-    // 보호막 흡수: 대상별 합계
-    var shMe = 0, shEn = 0, shRe = /([^\s]+(?:\s[^\s]+)*?)의 보호막이 (\d+) 막/g, m2;
-    while ((m2 = shRe.exec(tail))) { if (m2[1].indexOf('<%= enemy.name %>') >= 0) shEn += +m2[2]; else shMe += +m2[2]; }
+    // 보호막 흡수: 서버가 표시한 대상(data-who)으로 집계
+    var lastHtml = lastTurn >= 0 ? resultHtml.slice(lastTurn) : resultHtml;
+    var shMe = 0, shEn = 0, shRe = /data-who="([LR])" data-amt="(\d+)"/g, m2;
+    while ((m2 = shRe.exec(lastHtml))) { if (m2[1] === 'L') shMe += +m2[2]; else shEn += +m2[2]; }
     if (shMe) fxFloat('me', '⛨ ' + shMe, 'shield', 1); if (shEn) fxFloat('enemy', '⛨ ' + shEn, 'shield', 1);
-    // 상태이상: 새로 받은 표준 상태이상 이름
+    // 상태이상: 이름이 정확히 붙은 문장만
     var STD = ['화상', '중독', '출혈', '기절', '수면', '마비', '침묵', '암흑', '봉인', '광란', '빙결'];
-    var stRe = /([^\s]+(?:\s[^\s]+)*?)(?:은|는) \[ ([^\]]+?) \] 효과를 받았습니다/g, m3, gotMe = [], gotEn = [];
-    while ((m3 = stRe.exec(tail))) { var nm = m3[2].trim(); if (STD.indexOf(nm) < 0) continue; (m3[1].indexOf('<%= enemy.name %>') >= 0 ? gotEn : gotMe).push(nm); }
-    if (gotMe.length) fxFloat('me', gotMe.filter(function (v, i, a) { return a.indexOf(v) === i; }).join(' · '), 'status', 2);
-    if (gotEn.length) fxFloat('enemy', gotEn.filter(function (v, i, a) { return a.indexOf(v) === i; }).join(' · '), 'status', 2);
+    var myName = s.myName || '', enName = '<%= enemy.name %>';
+    var gotMe = [], gotEn = [];
+    STD.forEach(function (nm) {
+      if (myName && (tail.indexOf(myName + '은 [ ' + nm + ' ] 효과를 받았습니다') >= 0 || tail.indexOf(myName + '는 [ ' + nm + ' ] 효과를 받았습니다') >= 0)) gotMe.push(nm);
+      if (tail.indexOf(enName + '은 [ ' + nm + ' ] 효과를 받았습니다') >= 0 || tail.indexOf(enName + '는 [ ' + nm + ' ] 효과를 받았습니다') >= 0) gotEn.push(nm);
+    });
+    if (gotMe.length) fxFloat('me', gotMe.join(' · '), 'status', 2);
+    if (gotEn.length) fxFloat('enemy', gotEn.join(' · '), 'status', 2);
     var spM = tail.match(/\[ ([^\]]+?) \] Special Skill - \[ ([^\]]+?) \]/);   // 스페셜 발동
     if (spM) { var mine = spM[1].trim() !== '<%= enemy.name %>'; fxStamp(spM[2].trim(), mine ? 'sp-me' : 'sp-enemy'); fxPanel(mine ? 'me' : 'enemy', 'fx-special'); }
     var eKey = s.lastEKey; if (typeof eKey === 'number' && lastPlayedIdx >= 0) {
