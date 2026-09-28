@@ -731,7 +731,7 @@ function eventPool(char) {
         const toMag = pick.sk.type === cons.DAMAGE_TYPE_PHYSICAL;
         pick.sk.type = toMag ? cons.DAMAGE_TYPE_MAGICAL : cons.DAMAGE_TYPE_PHYSICAL;
         pick.sk.flipped = !pick.sk.flipped;
-        pick.sk.tooltip = '[부적 — ' + (toMag ? '마법' : '물리') + '으로 뒤집힘]<br>' + (pick.sk.tooltip || '').replace(/^\[부적 — (마법|물리)으로 뒤집힘\]<br>/, '');
+        pick.sk.tooltip = '[부적 — ' + (toMag ? '마법으로' : '물리로') + ' 뒤집힘]<br>' + (pick.sk.tooltip || '').replace(/^\[부적 — (마법으로|물리로) 뒤집힘\]<br>/, '');
         return '[ ' + pick.sk.name + ' ] 의 결이 ' + (toMag ? '물리에서 마법' : '마법에서 물리') + '로 뒤집혔다.';
       } },
       { label: '지나간다', effect: () => '부적은 그대로 두었다.' }
