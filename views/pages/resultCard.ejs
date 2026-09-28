@@ -18,15 +18,15 @@
   <style>
       .card-stage { position: relative; width: 160px; height: 242px; margin: 40px auto 0; perspective: 800px; }
       .card-stage > div { position: absolute; inset: 0; width: 160px; height: 242px; border-radius: 10%; }
-      .cardBack { transition: transform .6s; z-index: 2; cursor: pointer; }
+      .cardBack { transition: transform .4s; z-index: 2; cursor: pointer; }
       .cardBack img { width: 100%; height: 100%; object-fit: cover; border-radius: 10%; }
-      .cardFront { z-index: 1; display: flex; align-items: center; justify-content: center; text-align: center; padding: 12px; background: var(--slate); border: 1px solid var(--brass-dim); transition: box-shadow 1s; }
+      .cardFront { z-index: 1; display: flex; align-items: center; justify-content: center; text-align: center; padding: 12px; background: var(--slate); border: 1px solid var(--brass-dim); transition: box-shadow .4s; }
       .actualContent { position: relative; font-size: 14px; line-height: 1.6; }
       .actualContent .itemTooltip { left: 50%; transform: translateX(-50%); top: calc(100% + 12px); width: 260px; }
       .glowRare { box-shadow: 0 0 60px var(--r-rare); animation: pulse 2s infinite; --glow: var(--r-rare); }
       .glowUnique { box-shadow: 0 0 60px var(--r-unique); animation: pulse 2s infinite; --glow: var(--r-unique); }
       .glowEpic { box-shadow: 0 0 60px var(--r-epic); animation: pulse 2s infinite; --glow: var(--r-epic); }
-      .shake { animation: shake 0.5s; animation-iteration-count: <%= item.rarity + 2 %>; }
+      .shake { animation: shake 0.35s; animation-iteration-count: <%= item.rarity >= 4 ? 3 : 2 %>; }
       @keyframes shake {
         0% { transform: translate(1px, 1px) rotate(0deg); } 10% { transform: translate(-1px, -2px) rotate(-1deg); }
         20% { transform: translate(-3px, 0px) rotate(1deg); } 30% { transform: translate(3px, 2px) rotate(0deg); }
@@ -165,15 +165,15 @@
       document.getElementById('cardBack').setAttribute('class', 'cardBack');
       document.getElementById('cardFront').setAttribute('class', 'cardFront <%= getGlowText(item.rarity) %> <%= item.rarity >= 2 ? 'shake' : '' %>');
       if (window.navigator.vibrate) {
-        window.navigator.vibrate(1000);
+        window.navigator.vibrate(<%= item.rarity >= 4 ? 300 : 120 %>);
       }
       setTimeout(function() {
         document.getElementById('cardBack').setAttribute('style', 'display: none');        
-      }, 620);
+      }, 420);
       setTimeout(function() {
         document.getElementById('actualContent').setAttribute('style', 'visibility: visible; opacity : 1; transition: visibility 0s, opacity 0.5s linear;');
       document.getElementById('cardFront').setAttribute('class', 'cardFront <%= getGlowText(item.rarity) %>');        
-      }, 420 + 200 * <%= item.rarity * item.rarity %>);
+      }, 350 + 150 * <%= item.rarity %>);   // 에픽 1.1초, 유니크 0.95초, 레어 0.65초 (이전: 에픽 5.4초)
       document.getElementById('audio').play();
     }
     
