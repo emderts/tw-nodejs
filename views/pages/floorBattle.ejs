@@ -31,7 +31,12 @@
     .charItem button.fx-lose { animation: fxLose .5s; } @keyframes fxLose { 0% { opacity: 1; } 40% { opacity: .35; } 100% { opacity: 1; } }
     .fx-stamp { position: fixed; left: 50%; top: 42%; transform: translate(-50%,-50%) scale(.6) rotate(-8deg); font-size: 40px; font-weight: 900; color: var(--brass); border: 3px solid var(--brass); padding: 6px 18px; border-radius: 8px; background: rgba(24,28,40,.85); pointer-events: none; z-index: 50; animation: fxStamp .7s ease-out forwards; letter-spacing: 4px; }
     @keyframes fxStamp { 0% { opacity: 0; transform: translate(-50%,-50%) scale(1.6) rotate(-8deg); } 25% { opacity: 1; transform: translate(-50%,-50%) scale(1) rotate(-8deg); } 75% { opacity: 1; } 100% { opacity: 0; transform: translate(-50%,-50%) scale(1) rotate(-8deg); } }
-    @media (prefers-reduced-motion: reduce) { .fx-float, .fx-hurt, .fx-flash, .fx-heal, .fx-stamp, .charItem button.fx-win, .charItem button.fx-lose { animation: none !important; } }
+    .fx-stamp.sp-me { color: #e9d7ff; border-color: #c98bff; box-shadow: 0 0 30px rgba(201,139,255,.6); font-size: 30px; letter-spacing: 2px; animation: fxSpecial 1.1s ease-out forwards; }
+    .fx-stamp.sp-enemy { color: #ffd0d0; border-color: #ff6b6b; box-shadow: 0 0 30px rgba(255,107,107,.55); font-size: 30px; letter-spacing: 2px; animation: fxSpecial 1.1s ease-out forwards; }
+    @keyframes fxSpecial { 0% { opacity: 0; transform: translate(-50%,-50%) scale(.4) rotate(0); filter: blur(4px); } 20% { opacity: 1; transform: translate(-50%,-50%) scale(1.08) rotate(0); filter: blur(0); } 30% { transform: translate(-50%,-50%) scale(1) rotate(0); } 80% { opacity: 1; } 100% { opacity: 0; transform: translate(-50%,-60%) scale(1) rotate(0); } }
+    .fx-special { animation: fxSpGlow 1.1s; } @keyframes fxSpGlow { 0% { box-shadow: 0 0 0 0 rgba(201,139,255,0); } 30% { box-shadow: 0 0 24px 4px rgba(201,139,255,.7); } 100% { box-shadow: none; } }
+    .enemyWrap.fx-special { animation: fxSpGlowE 1.1s; } @keyframes fxSpGlowE { 0% { box-shadow: none; } 30% { box-shadow: 0 0 24px 4px rgba(255,107,107,.7); } 100% { box-shadow: none; } }
+    @media (prefers-reduced-motion: reduce) { .fx-float, .fx-hurt, .fx-flash, .fx-heal, .fx-special, .fx-stamp, .charItem button.fx-win, .charItem button.fx-lose { animation: none !important; } }
   </style>
 </head>
 <body>
@@ -104,13 +109,13 @@
   }
   function fxPanel(which, cls) {
     var host = document.querySelector(which === 'me' ? '.selectWrap' : '.enemyWrap'); if (!host) return;
-    host.classList.remove('fx-hurt', 'fx-flash', 'fx-heal', 'crit'); void host.offsetWidth;
+    host.classList.remove('fx-hurt', 'fx-flash', 'fx-heal', 'fx-special', 'crit'); void host.offsetWidth;
     cls.split(' ').forEach(function (c) { host.classList.add(c); });
-    setTimeout(function () { host.classList.remove('fx-hurt', 'fx-flash', 'fx-heal', 'crit'); }, 600);
+    setTimeout(function () { host.classList.remove('fx-hurt', 'fx-flash', 'fx-heal', 'fx-special', 'crit'); }, 1100);
   }
-  function fxStamp(text) {
-    var el = document.createElement('div'); el.className = 'fx-stamp'; el.textContent = text; document.body.appendChild(el);
-    setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, 720);
+  function fxStamp(text, cls) {
+    var el = document.createElement('div'); el.className = 'fx-stamp' + (cls ? ' ' + cls : ''); el.textContent = text; document.body.appendChild(el);
+    setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, cls ? 1100 : 720);
   }
   function fxCards(myKey, eKey, outcome) {   // outcome: 1 내가 이김, -1 짐, 0 비김
     var mine = document.getElementById('handBtn' + lastPlayedIdx), his = document.getElementById('enemyBtn' + eKey);
@@ -131,7 +136,9 @@
     else if (dHp > 0) { fxFloat('me', '+' + Math.round(dHp), 'heal'); fxPanel('me', 'fx-heal'); }
     if (dEhp < 0) { fxFloat('enemy', '-' + Math.round(-dEhp), crit ? 'dmg crit' : 'dmg'); fxPanel('enemy', 'fx-hurt fx-flash' + (crit ? ' crit' : '')); }
     else if (dEhp > 0) { fxFloat('enemy', '+' + Math.round(dEhp), 'heal'); fxPanel('enemy', 'fx-heal'); }
-    if (/비겼습니다/.test(tail) && !/공격해/.test(tail)) fxStamp('비김!');
+    if (/비겼습니다/.test(tail) && !/공격해/.test(tail)) fxStamp('무승부!');
+    var spM = tail.match(/\[ ([^\]]+?) \] Special Skill - \[ ([^\]]+?) \]/);   // 스페셜 발동
+    if (spM) { var mine = spM[1].trim() !== '<%= enemy.name %>'; fxStamp(spM[2].trim(), mine ? 'sp-me' : 'sp-enemy'); fxPanel(mine ? 'me' : 'enemy', 'fx-special'); }
     var eKey = s.lastEKey; if (typeof eKey === 'number' && lastPlayedIdx >= 0) {
       var out = (lastPlayedKey - eKey + 3) % 3; fxCards(lastPlayedKey, eKey, out === 0 ? 0 : (out === 1 ? 1 : -1));   // 가위0>보2, 바위1>가위0, 보2>바위1 → (내-적+3)%3==1 이면 승
     }
