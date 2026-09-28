@@ -20,7 +20,7 @@
     /* 전투 연출 */
     .rb-status { position: relative; }
     .fx-float { position: absolute; right: 4px; top: -6px; font-weight: 700; font-size: 15px; pointer-events: none; animation: fxFloat .9s ease-out forwards; z-index: 5; text-shadow: 0 1px 2px #000; }
-    .fx-float.dmg { color: #ff6b6b; } .fx-float.crit { color: #ffa552; font-size: 19px; } .fx-float.heal { color: #5cd67a; } .fx-float.shield { color: #6bb7ff; }
+    .fx-float.dmg { color: #ff6b6b; } .fx-float.crit { color: #ffa552; font-size: 19px; } .fx-float.heal { color: #5cd67a; } .fx-float.shield { color: #6bb7ff; font-size: 13px; } .fx-float.status { color: #d9a3ff; font-size: 12px; animation-duration: 1.3s; }
     @keyframes fxFloat { 0% { opacity: 0; transform: translateY(6px); } 15% { opacity: 1; } 100% { opacity: 0; transform: translateY(-22px); } }
     .fx-hurt { animation: fxHurt .45s; } .fx-hurt.crit { animation: fxHurtBig .55s; }
     @keyframes fxHurt { 0%,100% { transform: translateX(0); } 20% { transform: translateX(-5px); } 40% { transform: translateX(5px); } 60% { transform: translateX(-3px); } 80% { transform: translateX(3px); } }
@@ -102,9 +102,9 @@
   document.getElementById('itemBtn').addEventListener('click', function () { itemsOpen = !itemsOpen; renderItems(); });
   var curState = null;
   var lastFxTurn = -1;
-  function fxFloat(which, text, cls) {   // which: 'me' | 'enemy'
+  function fxFloat(which, text, cls, row) {   // which: 'me' | 'enemy'; row: 겹치지 않게 줄 나누기
     var host = document.querySelector(which === 'me' ? '.selectWrap .rb-status' : '.enemyWrap .rb-status'); if (!host) return;
-    var el = document.createElement('span'); el.className = 'fx-float ' + cls; el.textContent = text; host.appendChild(el);
+    var el = document.createElement('span'); el.className = 'fx-float ' + cls; el.textContent = text; if (row) el.style.top = (-6 + row * 18) + 'px'; host.appendChild(el);
     setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, 950);
   }
   function fxPanel(which, cls) {
@@ -137,6 +137,16 @@
     if (dEhp < 0) { fxFloat('enemy', '-' + Math.round(-dEhp), crit ? 'dmg crit' : 'dmg'); fxPanel('enemy', 'fx-hurt fx-flash' + (crit ? ' crit' : '')); }
     else if (dEhp > 0) { fxFloat('enemy', '+' + Math.round(dEhp), 'heal'); fxPanel('enemy', 'fx-heal'); }
     if (/비겼습니다/.test(tail) && !/공격해/.test(tail)) fxStamp('무승부!');
+    // 보호막 흡수: 대상별 합계
+    var shMe = 0, shEn = 0, shRe = /([^\s]+(?:\s[^\s]+)*?)의 보호막이 (\d+) 막/g, m2;
+    while ((m2 = shRe.exec(tail))) { if (m2[1].indexOf('<%= enemy.name %>') >= 0) shEn += +m2[2]; else shMe += +m2[2]; }
+    if (shMe) fxFloat('me', '⛨ ' + shMe, 'shield', 1); if (shEn) fxFloat('enemy', '⛨ ' + shEn, 'shield', 1);
+    // 상태이상: 새로 받은 표준 상태이상 이름
+    var STD = ['화상', '중독', '출혈', '기절', '수면', '마비', '침묵', '암흑', '봉인', '광란', '빙결'];
+    var stRe = /([^\s]+(?:\s[^\s]+)*?)(?:은|는) \[ ([^\]]+?) \] 효과를 받았습니다/g, m3, gotMe = [], gotEn = [];
+    while ((m3 = stRe.exec(tail))) { var nm = m3[2].trim(); if (STD.indexOf(nm) < 0) continue; (m3[1].indexOf('<%= enemy.name %>') >= 0 ? gotEn : gotMe).push(nm); }
+    if (gotMe.length) fxFloat('me', gotMe.filter(function (v, i, a) { return a.indexOf(v) === i; }).join(' · '), 'status', 2);
+    if (gotEn.length) fxFloat('enemy', gotEn.filter(function (v, i, a) { return a.indexOf(v) === i; }).join(' · '), 'status', 2);
     var spM = tail.match(/\[ ([^\]]+?) \] Special Skill - \[ ([^\]]+?) \]/);   // 스페셜 발동
     if (spM) { var mine = spM[1].trim() !== '<%= enemy.name %>'; fxStamp(spM[2].trim(), mine ? 'sp-me' : 'sp-enemy'); fxPanel(mine ? 'me' : 'enemy', 'fx-special'); }
     var eKey = s.lastEKey; if (typeof eKey === 'number' && lastPlayedIdx >= 0) {

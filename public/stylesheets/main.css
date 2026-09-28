@@ -457,3 +457,4 @@ details.fold > table.kv tr:first-child td { border-top: 1px solid var(--line); }
 .rps-bar button:disabled:empty { visibility: hidden; }
 .rps-result { padding: 120px 12px 130px; }
 .runbar .rb-lives { color: var(--side-mine); margin-left: 6px; }
+.shieldLog { color: #6bb7ff; font-size: 12.5px; }

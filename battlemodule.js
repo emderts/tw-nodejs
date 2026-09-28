@@ -905,8 +905,10 @@ Battlemodule.prototype.dealDamage = function(src, dst, damage) {
     if (val.code === cons.EFFECT_TYPE_SHIELD) {
       if (val.value > damageShield) {
         val.value -= damageShield;
+        if (damageShield > 0) this.result += '<span class="shieldLog">' + dst.name + getUiga(dst.nameType) + ' 보호막이 ' + damageShield + ' 막았다 (남은 ' + Math.round(val.value) + ')</span><br>';
         return;
       } else {
+        if (val.value > 0) this.result += '<span class="shieldLog">' + dst.name + getUiga(dst.nameType) + ' 보호막이 ' + Math.round(val.value) + ' 막고 깨졌다</span><br>';
         damageShield -= val.value;
         val.value = 0;
         removeBuff(val.buff);
@@ -2846,6 +2848,7 @@ function getIga(type) {
   return (type === cons.NAME_KOR_NO_END_CONS) ? '가' : '이';
 }
 
+function getUiga(type) { return type === cons.NAME_KOR_END_CONS ? '의' : '의'; }
 function getUro(type) {
   return (type === cons.NAME_KOR_NO_END_CONS) ? '로' : '으로';
 }
