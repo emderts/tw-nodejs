@@ -14,6 +14,7 @@ const battlemodule = require('./battlemodule');
 const battlemodule2 = require('./battlemodule2');
 const ach = require('./achievement');
 const achv = require('./achv');
+const patchnotes = require('./patchnotes');
 const chara = require('./chara');
 const roster = require('./roster');
 const run = require('./run');
@@ -57,6 +58,7 @@ const app = express()
 .post('/floorFlee', procFloorFlee)
 .post('/focusSkill', procFocusSkill)
 .get('/hall', procHall)
+.get('/patchnotes', (req, res) => res.render('pages/patchnotes', { notes: patchnotes }))
 .post('/abandonRun', procAbandonRun)
 .get('/altar', procAltar)
 .post('/altar', procAltarPost)
@@ -738,6 +740,7 @@ async function procIndex (req, res) {
         char: charObj,
         rv: (charObj && charObj.run) ? runView(charObj) : null,
         run_ASC: run.ASC_RULES,
+        patch: patchnotes[0] || null,
         actionPoint : charRow.actionPoint,
         news : news,
         personalNews : personalNews

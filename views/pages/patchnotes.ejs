@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>패치노트</title>
+  <link rel="stylesheet" href="/stylesheets/main.css">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#181c28">
+</head>
+<body>
+<div class="wrap">
+  <div class="page-title"><h1>패치노트</h1></div>
+  <% notes.forEach(function (n) { %>
+    <section class="panel" style="margin-top:14px">
+      <h2><%= n.date %></h2>
+      <ul class="news"><% n.lines.forEach(function (l) { %><li><%= l %></li><% }); %></ul>
+    </section>
+  <% }); %>
+  <div class="backLink"><a href="/">돌아가기</a></div>
+</div>
+</body>
+</html>

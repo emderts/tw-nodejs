@@ -433,6 +433,12 @@
 
   <div class="grid grid-main" style="margin-top:16px">
     <div class="grid">
+      <% if (typeof patch !== 'undefined' && patch) { %>
+      <section class="panel">
+        <h2>패치노트 <small style="color:var(--ash);font-weight:400"><%= patch.date %></small> <a href="/patchnotes" style="float:right;font-size:12px;font-weight:400">전체 보기</a></h2>
+        <ul class="news"><% for (const l of patch.lines) { %><li><%= l %></li><% } %></ul>
+      </section>
+      <% } %>
       <section class="panel">
         <h2>등반 소식</h2>
         <ul class="news"><% for (const val of news) { %><li><%- val %></li><% } %></ul>
@@ -462,10 +468,17 @@
           <a href="/hall">명예의 전당</a>
           <a href="/viewAch">업적</a>
           <% if (char && char.run) { %>
-          <form action="/abandonRun" method="post" onsubmit="return confirm('모험을 포기하고 이 캐릭터를 버립니다. 되돌릴 수 없습니다. 계속할까요?')" style="margin:0">
+          <form action="/abandonRun" method="post" style="margin:8px 0 0">
             <input type="hidden" name="confirm" value="ok">
-            <button type="submit" class="quiet" style="width:100%;background:none;border:0;color:var(--ash);padding:8px 14px;text-align:left">모험 포기</button>
+            <button type="button" id="abandonBtn" style="width:100%" onclick="abandonClick(this)">모험 포기</button>
           </form>
+          <script>
+            function abandonClick(b) {
+              if (b.dataset.armed) { b.setAttribute('disabled', true); b.textContent = '포기하는 중...'; b.form.submit(); return; }
+              b.dataset.armed = '1'; b.textContent = '정말 포기할까요? 다시 누르면 캐릭터가 사라집니다'; b.style.borderColor = 'var(--side-mine)'; b.style.color = 'var(--side-mine)';
+              setTimeout(function () { if (b.dataset.armed) { delete b.dataset.armed; b.textContent = '모험 포기'; b.style.borderColor = ''; b.style.color = ''; } }, 4000);
+            }
+          </script>
           <% } %>
           <a href="/logout" class="quiet">로그아웃</a>
         </nav>
