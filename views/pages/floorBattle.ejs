@@ -16,6 +16,23 @@
 
   <title>ThirdWorld - 전투</title>
   <script src="/socket.io/socket.io.js"></script>
+  <style>
+    /* 전투 연출 */
+    .rb-status { position: relative; }
+    .fx-float { position: absolute; right: 4px; top: -6px; font-weight: 700; font-size: 15px; pointer-events: none; animation: fxFloat .9s ease-out forwards; z-index: 5; text-shadow: 0 1px 2px #000; }
+    .fx-float.dmg { color: #ff6b6b; } .fx-float.crit { color: #ffa552; font-size: 19px; } .fx-float.heal { color: #5cd67a; } .fx-float.shield { color: #6bb7ff; }
+    @keyframes fxFloat { 0% { opacity: 0; transform: translateY(6px); } 15% { opacity: 1; } 100% { opacity: 0; transform: translateY(-22px); } }
+    .fx-hurt { animation: fxHurt .45s; } .fx-hurt.crit { animation: fxHurtBig .55s; }
+    @keyframes fxHurt { 0%,100% { transform: translateX(0); } 20% { transform: translateX(-5px); } 40% { transform: translateX(5px); } 60% { transform: translateX(-3px); } 80% { transform: translateX(3px); } }
+    @keyframes fxHurtBig { 0%,100% { transform: translate(0,0); } 15% { transform: translate(-8px,2px); } 30% { transform: translate(8px,-2px); } 45% { transform: translate(-6px,1px); } 60% { transform: translate(6px,-1px); } 80% { transform: translate(-3px,0); } }
+    .fx-flash { animation: fxFlash .4s; } @keyframes fxFlash { 0% { box-shadow: inset 0 0 0 100px rgba(255,80,80,.35); } 100% { box-shadow: none; } }
+    .fx-heal { animation: fxHealFlash .5s; } @keyframes fxHealFlash { 0% { box-shadow: inset 0 0 0 100px rgba(80,220,120,.3); } 100% { box-shadow: none; } }
+    .charItem button.fx-win { animation: fxWin .5s; } @keyframes fxWin { 0% { box-shadow: 0 0 0 0 var(--brass); } 40% { box-shadow: 0 0 14px 3px var(--brass); } 100% { box-shadow: none; } }
+    .charItem button.fx-lose { animation: fxLose .5s; } @keyframes fxLose { 0% { opacity: 1; } 40% { opacity: .35; } 100% { opacity: 1; } }
+    .fx-stamp { position: fixed; left: 50%; top: 42%; transform: translate(-50%,-50%) scale(.6) rotate(-8deg); font-size: 40px; font-weight: 900; color: var(--brass); border: 3px solid var(--brass); padding: 6px 18px; border-radius: 8px; background: rgba(24,28,40,.85); pointer-events: none; z-index: 50; animation: fxStamp .7s ease-out forwards; letter-spacing: 4px; }
+    @keyframes fxStamp { 0% { opacity: 0; transform: translate(-50%,-50%) scale(1.6) rotate(-8deg); } 25% { opacity: 1; transform: translate(-50%,-50%) scale(1) rotate(-8deg); } 75% { opacity: 1; } 100% { opacity: 0; transform: translate(-50%,-50%) scale(1) rotate(-8deg); } }
+    @media (prefers-reduced-motion: reduce) { .fx-float, .fx-hurt, .fx-flash, .fx-heal, .fx-stamp, .charItem button.fx-win, .charItem button.fx-lose { animation: none !important; } }
+  </style>
 </head>
 <body>
   <div class="rps-bar enemyWrap">
@@ -79,8 +96,52 @@
   }
   document.getElementById('itemBtn').addEventListener('click', function () { itemsOpen = !itemsOpen; renderItems(); });
   var curState = null;
+  var lastFxTurn = -1;
+  function fxFloat(which, text, cls) {   // which: 'me' | 'enemy'
+    var host = document.querySelector(which === 'me' ? '.selectWrap .rb-status' : '.enemyWrap .rb-status'); if (!host) return;
+    var el = document.createElement('span'); el.className = 'fx-float ' + cls; el.textContent = text; host.appendChild(el);
+    setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, 950);
+  }
+  function fxPanel(which, cls) {
+    var host = document.querySelector(which === 'me' ? '.selectWrap' : '.enemyWrap'); if (!host) return;
+    host.classList.remove('fx-hurt', 'fx-flash', 'fx-heal', 'crit'); void host.offsetWidth;
+    cls.split(' ').forEach(function (c) { host.classList.add(c); });
+    setTimeout(function () { host.classList.remove('fx-hurt', 'fx-flash', 'fx-heal', 'crit'); }, 600);
+  }
+  function fxStamp(text) {
+    var el = document.createElement('div'); el.className = 'fx-stamp'; el.textContent = text; document.body.appendChild(el);
+    setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, 720);
+  }
+  function fxCards(myKey, eKey, outcome) {   // outcome: 1 내가 이김, -1 짐, 0 비김
+    var mine = document.getElementById('handBtn' + lastPlayedIdx), his = document.getElementById('enemyBtn' + eKey);
+    [mine, his].forEach(function (b) { if (b) { b.classList.remove('fx-win', 'fx-lose'); void b.offsetWidth; } });
+    if (outcome === 1) { if (mine) mine.classList.add('fx-win'); if (his) his.classList.add('fx-lose'); }
+    else if (outcome === -1) { if (his) his.classList.add('fx-win'); if (mine) mine.classList.add('fx-lose'); }
+    setTimeout(function () { [mine, his].forEach(function (b) { if (b) b.classList.remove('fx-win', 'fx-lose'); }); }, 600);
+  }
+  function playFx(prev, s, resultHtml) {
+    if (!prev || !s || !resultHtml || skipFx) return;
+    var txt = resultHtml.replace(/<[^>]+>/g, ' ');
+    var turnM = txt.match(/(\d+)턴\s*$/) || null;   // (참고용)
+    var lastTurn = resultHtml.lastIndexOf('turnWrap');
+    var tail = lastTurn >= 0 ? resultHtml.slice(lastTurn).replace(/<[^>]+>/g, ' ') : txt;
+    var crit = /\(치명타\)/.test(tail);
+    var dHp = s.hp[0] - prev.hp[0], dEhp = s.ehp[0] - prev.ehp[0];
+    if (dHp < 0) { fxFloat('me', '-' + Math.round(-dHp), crit && /공격해[^]*?치명타/.test(tail) ? 'dmg crit' : 'dmg'); fxPanel('me', 'fx-hurt fx-flash' + (crit ? ' crit' : '')); }
+    else if (dHp > 0) { fxFloat('me', '+' + Math.round(dHp), 'heal'); fxPanel('me', 'fx-heal'); }
+    if (dEhp < 0) { fxFloat('enemy', '-' + Math.round(-dEhp), crit ? 'dmg crit' : 'dmg'); fxPanel('enemy', 'fx-hurt fx-flash' + (crit ? ' crit' : '')); }
+    else if (dEhp > 0) { fxFloat('enemy', '+' + Math.round(dEhp), 'heal'); fxPanel('enemy', 'fx-heal'); }
+    if (/비겼습니다/.test(tail) && !/공격해/.test(tail)) fxStamp('비김!');
+    var eKey = s.lastEKey; if (typeof eKey === 'number' && lastPlayedIdx >= 0) {
+      var out = (lastPlayedKey - eKey + 3) % 3; fxCards(lastPlayedKey, eKey, out === 0 ? 0 : (out === 1 ? 1 : -1));   // 가위0>보2, 바위1>가위0, 보2>바위1 → (내-적+3)%3==1 이면 승
+    }
+  }
+  var skipFx = false, lastPlayedIdx = -1, lastPlayedKey = -1;
   function renderState(s) {
+    var prev = curState;
     curState = s;
+    try { playFx(prev, s, pendingResult); } catch (e) {}
+    pendingResult = null;
     if (s.names) names = s.names;                 // 전투 중 스킬 교체 반영
     if (s.enemyNames) oNames = s.enemyNames;
     items = s.items || []; renderItems();
@@ -157,6 +218,7 @@
     document.getElementById('handBtn' + i).addEventListener('click', function () {
       if (i >= hand.length) return;
       lockHand();
+      lastPlayedIdx = i; lastPlayedKey = hand[i];
       socket.emit('floorSelect', '<%= room %>', '<%= uid %>', hand[i]);
     });
   })(i);
@@ -167,6 +229,7 @@
     socket.emit('floorSwap', '<%= room %>', '<%= uid %>', parseInt(m[1]) - 1, parseInt(m[2]) - 1);
   });
   document.getElementById('undoBtn').addEventListener('click', function () {
+    skipFx = true; setTimeout(function () { skipFx = false; }, 1500);
     this.setAttribute('disabled', true);
     socket.emit('floorUndo', '<%= room %>', '<%= uid %>');
   });
@@ -184,8 +247,10 @@
     names = myNames; oNames = enemyNames; oDeckCnt = oDeck;
     renderState(state);
   });
+  var pendingResult = null;
   socket.on('floorSelectAck', function (result, state, newNames) {
     if (newNames) names = newNames;
+    pendingResult = result;
     if (result !== null) document.getElementById('result').innerHTML = result;
     if (state) renderState(state); else { for (var i = 0; i < 4; i++) document.getElementById('handBtn' + i).removeAttribute('disabled'); }
     if (result !== null) window.scrollTo(0, document.body.scrollHeight);
