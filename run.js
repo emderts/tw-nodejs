@@ -719,23 +719,27 @@ function eventPool(char) {
     })).concat([{ label: '지나간다', effect: () => '진열대를 지나쳤다.' }]) : [{ label: '지나간다', effect: () => '아무것도 없었다.' }]
   });
 
-  // --- 거꾸로 걸린 부적: 무작위 스킬 하나의 물리↔마법 전환 ---
+  // --- 거꾸로 걸린 부적: 미리 정해진 스킬 하나의 물리↔마법 전환 (할지 말지 선택) ---
   pool.push({
     code: 'flipType', weight: 2, title: '거꾸로 걸린 부적',
-    desc: '문틀에 부적이 거꾸로 붙어 있다. 떼어 내면 손에 쥔 기술 하나의 결이 뒤집힌다고 한다. 어느 것이 뒤집힐지는 떼어 봐야 안다.',
-    options: [
-      { label: '부적을 뗀다 (무작위 기본 스킬 하나의 물리 ↔ 마법 전환)', effect: (ch) => {
-        const cand = (ch.skill.base || []).map((sk, i) => ({ sk, i })).filter(x => x.sk && !x.sk.noAttack && (x.sk.type === cons.DAMAGE_TYPE_PHYSICAL || x.sk.type === cons.DAMAGE_TYPE_MAGICAL));
-        if (!cand.length) return '뒤집을 기술이 없다.';
-        const pick = cand[Math.floor(Math.random() * cand.length)];
-        const toMag = pick.sk.type === cons.DAMAGE_TYPE_PHYSICAL;
-        pick.sk.type = toMag ? cons.DAMAGE_TYPE_MAGICAL : cons.DAMAGE_TYPE_PHYSICAL;
-        pick.sk.flipped = !pick.sk.flipped;
-        pick.sk.tooltip = '[부적 — ' + (toMag ? '마법으로' : '물리로') + ' 뒤집힘]<br>' + (pick.sk.tooltip || '').replace(/^\[부적 — (마법으로|물리로) 뒤집힘\]<br>/, '');
-        return '[ ' + pick.sk.name + ' ] 의 결이 ' + (toMag ? '물리에서 마법' : '마법에서 물리') + '로 뒤집혔다.';
+    prepare: (ch) => {
+      const cand = (ch.skill.base || []).map((sk, i) => ({ sk, i })).filter(x => x.sk && !x.sk.noAttack && (x.sk.type === cons.DAMAGE_TYPE_PHYSICAL || x.sk.type === cons.DAMAGE_TYPE_MAGICAL));
+      if (!cand.length) return { idx: -1 };
+      const pick = cand[Math.floor(Math.random() * cand.length)];
+      return { idx: pick.i, name: pick.sk.name, toMag: pick.sk.type === cons.DAMAGE_TYPE_PHYSICAL };
+    },
+    desc: has('flipType') && d.idx >= 0 ? '문틀에 부적이 거꾸로 붙어 있다. 떼어 내면 [ ' + d.name + ' ] 의 결이 ' + (d.toMag ? '물리에서 마법' : '마법에서 물리') + '로 뒤집힌다.' : '문틀에 부적이 거꾸로 붙어 있다. 뒤집을 만한 기술이 없다.',
+    options: has('flipType') && d.idx >= 0 ? [
+      { label: '[ ' + d.name + ' ] 을(를) ' + (d.toMag ? '마법' : '물리') + '로 뒤집는다', effect: (ch) => {
+        const sk = ch.skill.base[d.idx]; if (!sk) return '뒤집을 기술이 없다.';
+        const toMag = sk.type === cons.DAMAGE_TYPE_PHYSICAL;
+        sk.type = toMag ? cons.DAMAGE_TYPE_MAGICAL : cons.DAMAGE_TYPE_PHYSICAL;
+        sk.flipped = !sk.flipped;
+        sk.tooltip = '[부적 — ' + (toMag ? '마법으로' : '물리로') + ' 뒤집힘]<br>' + (sk.tooltip || '').replace(/^\[부적 — (마법으로|물리로) 뒤집힘\]<br>/, '');
+        return '[ ' + sk.name + ' ] 의 결이 ' + (toMag ? '물리에서 마법' : '마법에서 물리') + '로 뒤집혔다.';
       } },
       { label: '지나간다', effect: () => '부적은 그대로 두었다.' }
-    ]
+    ] : [{ label: '지나간다', effect: () => '부적은 그대로 두었다.' }]
   });
 
   // --- 장비 변환 (결과는 비공개) ---
