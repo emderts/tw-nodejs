@@ -2033,6 +2033,13 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
       if (Math.random() < 0.5) { cur.stack = Math.max(0, (cur.stack || 1) - 2); this.result += '[ ' + eff.name + ' ] 내려간다! (' + cur.stack + ')<br>'; if (cur.stack <= 0) removeBuff(cur); }
       else { cur.stack = Math.min(cur.maxStack || 20, (cur.stack || 1) + 1); this.result += '[ ' + eff.name + ' ] 반등! (' + cur.stack + ')<br>'; }
     } else if (eff.code === 'borrowGear') {   // AI 센트럴 접근장치: 무작위 장비 능력치 덧입기
+      if (eff.capByStack) {   // AI 센트럴: 덧입은 장비 수가 [과학 태그] 중첩 수를 넘지 않게
+        const tagB = (winner.buffs || []).find(x => x.id === eff.capByStack); const cap = tagB ? (tagB.stack || 1) : 0;
+        winner.borrowedBy = winner.borrowedBy || {};
+        const used = winner.borrowedBy[eff.name] || 0;
+        if (used >= cap) continue;
+        winner.borrowedBy[eff.name] = used + 1;
+      }
       this._borrowGear(winner, loser, eff.gearRank || 4, eff.name);
     } else if (eff.code === 'tagGive') {   // 범용 태그 부여: eff.tag = 버프 코드, 아이템의 onTag 훅 실행, tagMul로 증폭
       if (eff.spCost && (winner.curSp || 0) < eff.spCost) continue;
