@@ -20,7 +20,7 @@
 <div class="wrap">
   <% const pc = (v) => v === null || v === undefined ? '-' : (100 * v).toFixed(1) + '%';
      const cls = (v) => v === null || v === undefined ? '' : (v < 0.45 ? 'lo' : (v > 0.6 ? 'hi' : '')); %>
-  <div class="page-title"><h1>전투 통계</h1><span class="meta">실제 플레이 기록 · 승률은 플레이어 기준</span></div>
+  <div class="page-title"><h1>전투 통계</h1><span class="meta">실제 플레이 기록 · 승률은 플레이어 기준 · <a href="/stats/backfill">과거 전투 로그에서 복원</a></span></div>
   <form class="flt note-box" method="get" action="/stats">
     사이클 <input name="cmin" value="<%= q.cmin || '' %>" placeholder="부터"> ~ <input name="cmax" value="<%= q.cmax || '' %>" placeholder="까지">
     승천 <input name="asc" value="<%= q.asc || '' %>" placeholder="전체">

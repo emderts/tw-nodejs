@@ -59,6 +59,7 @@ const app = express()
 .post('/focusSkill', procFocusSkill)
 .get('/hall', procHall)
 .get('/stats', procStats)
+.get('/stats/backfill', procStatsBackfill)
 .get('/patchnotes', (req, res) => res.render('pages/patchnotes', { notes: patchnotes }))
 .post('/abandonRun', procAbandonRun)
 .get('/altar', procAltar)
@@ -4040,7 +4041,57 @@ async function ensureStatsTable () {
     id serial primary key, date timestamp, user_id varchar(100), char_key varchar(40), cycle int, asc_lv int,
     enemy_kind varchar(12), enemy_key varchar(60), enemy_name varchar(120), is_boss boolean, won boolean, turns int,
     hp_pct real, enemy_hp_pct real, items text, deck text, rps_w int, rps_l int, rps_d int)`);
+  await pool.query('alter table battle_stats add column if not exists src_id int');
+  await pool.query('alter table battle_stats add column if not exists source varchar(8)');
   statsReady = true;
+}
+// 과거 전투 로그(results)에서 통계 복원 — 장비·덱은 로그에 없어 비워 둔다
+function parseBattleLog (title, html) {
+  const m = title.match(/^\[(\d+)층 · (\d+)사이클( 보스)?\] (.+?) vs (.+?) - (.+) 승리$/);
+  if (!m) return null;
+  const cycle = +m[2], isBoss = !!m[3], who = m[4], enemyName = m[5], winnerName = m[6];
+  let owner = null, charName = who, asc = 0;
+  const w = who.match(/^(.+?)\((.+?)(?:·승천 (\d+))?\)$/);
+  if (w) { owner = w[1]; charName = w[2]; asc = w[3] ? +w[3] : 0; }
+  const txt = String(html || '').replace(/<br\s*\/?>/g, '\n').replace(/<[^>]+>/g, ' ').replace(/[ \t]+/g, ' ');   // 태그 제거 후 공백 정리
+  const won = /note-box">승리</.test(html) ? true : (/note-box">패배</.test(html) ? false : winnerName === who);
+  const turns = Math.max(0, ...[...txt.matchAll(/(\d+)턴/g)].map(x => +x[1]));
+  const esc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const cnt = (re) => (txt.match(re) || []).length;
+  // 교환(가위바위보 한 번)마다 판정: "나의 [ a ] vs 적의 [ b ]" 뒤 첫 결과로 승/패/무를 가른다 (스페셜·추가타 문구는 세지 않음)
+  const segs = txt.split(new RegExp(esc(charName) + '의 \\[ [^\\]]+ \\] vs ' + esc(enemyName) + '의 \\[ [^\\]]+ \\]')).slice(1);
+  let d = 0, w1 = 0, l1 = 0;
+  const pAtk = new RegExp(esc(charName) + '(?:이|가) \\[ [^\\]]+ \\] (?:로|으로) |' + esc(enemyName) + '(?:은|는) 공격을 회피');
+  const eAtk = new RegExp(esc(enemyName) + '(?:이|가) \\[ [^\\]]+ \\] (?:로|으로) |' + esc(charName) + '(?:은|는) 공격을 회피');
+  for (const sg of segs) {
+    const head = sg.slice(0, 400);
+    if (/^\s*비겼습니다/.test(head)) { d++; continue; }
+    const a = head.search(pAtk), b = head.search(eAtk);
+    if (a >= 0 && (b < 0 || a < b)) w1++; else if (b >= 0) l1++;
+  }
+  const lastHp = (name) => { const all = [...txt.matchAll(new RegExp(esc(name) + '\\s*(-?\\d+) / (\\d+)', 'g'))]; if (!all.length) return null; const z = all[all.length - 1]; return Math.max(0, Math.round(100 * (+z[1]) / Math.max(1, +z[2]))); };
+  const charKey = (roster.KEYS.find(k => (roster.template(k) || {}).name === charName)) || '';
+  const monKey = Object.keys(monster).find(k => monster[k] && monster[k].name === enemyName);
+  const rosKey = roster.KEYS.find(k => (roster.template(k) || {}).name === enemyName);
+  return { owner, charKey, cycle, asc, isBoss, won, turns, d, w: w1, l: l1, hp: lastHp(charName), ehp: lastHp(enemyName),
+           kind: monKey ? 'monster' : 'roster', key: monKey || rosKey || '', enemyName };
+}
+async function procStatsBackfill (req, res) {
+  const sess = req.session;
+  if (!sess.userUid || !ADMIN_IDS.includes(String(sess.userUid))) { res.status(403).send('관리자 전용'); return; }
+  try {
+    await ensureStatsTable();
+    const rows = (await pool.query("select id, title, result, date from results where title like '[%층 · %사이클%' and id not in (select src_id from battle_stats where src_id is not null) order by id limit 3000")).rows;
+    let ok = 0, skip = 0;
+    for (const r of rows) {
+      const p = parseBattleLog(r.title, r.result);
+      if (!p || !p.charKey) { skip++; continue; }
+      await pool.query('insert into battle_stats(date, user_id, char_key, cycle, asc_lv, enemy_kind, enemy_key, enemy_name, is_boss, won, turns, hp_pct, enemy_hp_pct, items, deck, rps_w, rps_l, rps_d, src_id, source) values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20)',
+        [r.date, p.owner ? 'name:' + p.owner : null, p.charKey, p.cycle, p.asc, p.kind, p.key, p.enemyName, p.isBoss, p.won, p.turns, p.hp, p.ehp, '', '', p.w, p.l, p.d, r.id, 'log']);
+      ok++;
+    }
+    res.send('로그에서 ' + ok + '건 복원, ' + skip + '건 건너뜀' + (rows.length === 3000 ? ' — 남은 로그가 더 있어요. 다시 누르면 이어서 복원합니다.' : ' — 완료') + ' <a href="/stats">통계 보기</a>');
+  } catch (e) { console.error(e); res.status(500).send('backfill error: ' + e.message); }
 }
 async function recordBattleStat (userId, char, t, re) {
   try {
