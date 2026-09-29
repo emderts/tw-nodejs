@@ -1149,9 +1149,8 @@ const item = require('./items');
   charDekais.skill.base.push(skillObj);
 
   skillObj = {code : 201737, name : '판타스마 윈드밀', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 1, 
-      effect : [{code : 'stackHit', name : '판타스마 윈드밀', buffCode : 201746, type : cons.DAMAGE_TYPE_PHYSICAL, value : 0.12}, {code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_ABSOLUTE, value : 0.02, isPercentStat : true, percentKey : 'maxHp'},
-                {code : cons.EFFECT_TYPE_SELF_HP, value : -0.02, isPercentStat : true, percentKey : 'maxHp'}],
-      tooltip : '[메탈 스크럽] 중첩당 물리 0.12 추가 피해. 100\% 확률로 자신의 최대 생명력의 2\%를 소모하여 그만큼 적에게 절대 피해',
+      effect : [{code : 'stackHit', name : '판타스마 윈드밀', buffCode : 201746, type : cons.DAMAGE_TYPE_PHYSICAL, value : 0.12}],
+      tooltip : '[메탈 스크럽] 중첩당 물리 0.12 추가 피해.',
       flavor : '갑주 상태라고는 믿을 수 없는 속도로 주변을 몰아내는 풍차 공격을 가한다.'};  
   charDekais.skill.base.push(skillObj);
 
