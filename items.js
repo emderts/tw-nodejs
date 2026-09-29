@@ -2043,8 +2043,8 @@ itemList[911] = { id : 911, name : '세컨드 로직의 전개도', nameType : c
     effectDesc : '전투 시작 시 적 손패 전체 공개. 매 턴 갱신', effect : [], runEffect : { key : 'revealEnemyAll', value : true } };
 itemList[912] = { id : 912, name : '루니샤의 큰 손수건', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '루니샤는 큰 손수건을 하나 더 갖고 있었다. 그쪽에서는 아무것도 줄지 않았다.', rank : 1, rarity : cons.ITEM_RARITY_UNIQUE, stat : { maxHp : 280, hpRegen : 3, spCharge : 3 }, 
     effectDesc : '소모품 사용 시 60% 확률로 소모되지 않음', effect : [], runEffect : { key : 'potionSave', value : 0.6 } };
-itemList[913] = { id : 913, name : '줄리어스의 중단점', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '줄리어스는 돌아갈 자리를 먼저 찍어 두고 움직였다. 잘못되면 거기서 다시 시작했다. 몇 번을 다시 했는지는 본인도 세지 않았다.', rank : 1, rarity : cons.ITEM_RARITY_EPIC, stat : { maxHp : 280, spRegen : 2, crit : 0.04 }, 
-    effectDesc : '런당 1회, 이번 사이클이 시작된 시점으로 되돌아간다 (층·골드·덱·장비·소모품 전부). 캐릭터 화면에서 사용', effect : [], runEffect : { key : 'breakpoint', value : 1 } };
+itemList[913] = { id : 913, name : '줄리어스의 중단점', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '줄리어스는 돌아갈 자리를 먼저 찍어 두고 움직였다. 잘못되면 거기서 다시 시작했다. 몇 번을 다시 했는지는 본인도 세지 않았다.', rank : 3, rarity : cons.ITEM_RARITY_EPIC, stat : { maxHp : 280, spRegen : 2, crit : 0.04 }, 
+    effectDesc : '런당 1회, 이번 사이클이 시작된 시점으로 되돌아간다 (층·골드·덱·장비·소모품 전부). 캐릭터 화면의 [중단점] 버튼으로 사용 (장착한 채로 사이클을 시작해야 저장된다)', effect : [], runEffect : { key : 'breakpoint', value : 1 } };
 // ---------- 스킬 아티팩트 5~1급 (23종) ----------
 itemList[914] = { id : 914, name : '되감은 태엽', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SKILL_ARTIFACT, flavor : '한 번 더 감아 둔 태엽. 첫 수가 조금 더 빠르다.', rank : 5, rarity : cons.ITEM_RARITY_RARE, stat : {  }, 
     effectDesc : '가위 스킬 계수 +0.15', effect : [], skillMod : { add : [0.15, 0, 0] } };
