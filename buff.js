@@ -3363,7 +3363,7 @@ module.exports.getBuffData = function(eff) {
     effectObj = {};
     effectObj.code = 10006;
     retObj.effect.push(effectObj);
-    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_DAMAGE_RECEIVE, code : cons.EFFECT_TYPE_MULTIPLY_DAMAGE, anySkill : true, value : 1.2 });
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_DAMAGE_RECEIVE, code : cons.EFFECT_TYPE_MULTIPLY_DAMAGE, anySkill : true, value : 1.1 });
     effectObj = {};
     effectObj.active = cons.ACTIVE_TYPE_SKILL_LOSE;
     effectObj.code = cons.EFFECT_TYPE_OPP_BUFF;
