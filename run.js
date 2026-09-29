@@ -719,6 +719,32 @@ function eventPool(char) {
     })).concat([{ label: '지나간다', effect: () => '진열대를 지나쳤다.' }]) : [{ label: '지나간다', effect: () => '아무것도 없었다.' }]
   });
 
+  // --- 쓰러진 도전자 후일담 (직전 전투에서 쓰러진 도전자를 이겼을 때) ---
+  if (char.run.lastFallen) {
+    const lf = char.run.lastFallen;
+    pool.push({
+      code: 'fallen_after', weight: 40, title: '남겨진 짐',
+      desc: lf.name + '의 짐이 길가에 흩어져 있다. 한때 이 탑을 오르던 사람의 것이다.',
+      options: [
+        { label: '유품 하나를 챙기고 안식을 빌어 준다 (장비 1개, 이 도전자는 다시 나타나지 않는다)', effect: (ch) => {
+          const pickFrom = (lf.items || []).filter(Boolean);
+          if (!pickFrom.length) { ch.run.lastFallen = null; return '가져갈 만한 것이 없었다.'; }
+          const it = JSON.parse(JSON.stringify(pickFrom[Math.floor(Math.random() * pickFrom.length)]));
+          if (deps.makeTooltip) it.tooltip = deps.makeTooltip(it);
+          ch.inventory.push(it);
+          ch.run.pendingFallenRest = lf.id;   // DB 삭제는 index에서
+          ch.run.lastFallen = null;
+          return '[ ' + it.name + ' ] 을(를) 챙겼다. ' + lf.name + '은(는) 이제 편히 쉰다.';
+        } },
+        { label: '짐을 뒤져 쓸 만한 것을 모은다 (리설트 카드 2장)', effect: (ch) => {
+          for (let k = 0; k < 2; k++) deps.addResultCard(ch, 4);
+          ch.run.lastFallen = null;
+          return '리설트 카드 2장을 얻었다.';
+        } }
+      ]
+    });
+  }
+
   // --- 거꾸로 걸린 부적: 미리 정해진 스킬 하나의 물리↔마법 전환 (할지 말지 선택) ---
   pool.push({
     code: 'flipType', weight: 2, title: '거꾸로 걸린 부적',

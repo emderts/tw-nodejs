@@ -7,6 +7,7 @@ const CHAR_CLEAR = {
   dekaitz: '버스트 캐논, 최대 출력', bks: '드디어 취업', lunisha: '진형은 무너지지 않는다', illun: '끝까지 증폭',
   nux: '해킹 완료', lozic: '논리적 결론', kasien: '보따리 속의 정상', marang: '마지막 한 방울',
   gabi: '달을 삼킨 아이', jay: '앙코르는 정상에서', senal: '숲이 닿은 정상',
+  yeop: '마지막 한 점', tirion: '정상도 경매에 부친다',
 };
 
 // 몬스터 테마 (현재 풀 기준)
@@ -95,6 +96,10 @@ add('last_seat', '재미', '마지막 의석', '달빛 의회를 한 종류 카�
 add('pierrot', '재미', '맛있게먹어', '삐에로의 맛있게먹어를 마심', true);
 add('abandon', '재미', '스스로 접은 날개', '모험을 포기함', true);
 add('devil3', '재미', '불공평한 거래', '악마의 거래 3번', true);
+add('yeop_full', '재미', '화폭이 가득 찼다', '영물 둘과 신수를 동시에 세움', true);
+add('tirion_epic', '재미', '고물상의 걸작', '파편 재조립으로 에픽 장비를 맞춤', true);
+add('tirion_bid3', '재미', '큰손', '한 전투에서 입찰 3번 낙찰', true);
+add('fallen_rest', '재미', '안식', '쓰러진 도전자를 안식에 들게 함', true);
 
 const BY_ID = {}; for (const a of LIST) BY_ID[a.id] = a;
 
@@ -136,6 +141,9 @@ function onBattle(ctx) {
   if (/낙인이 겹쳐 두 배/.test(txt)) g.push('chogall');
   const ruby = [...txt.matchAll(/생명은 공평하다\. (\d+) → (\d+)/g)]; if (ruby.some(m => +m[2] < +m[1])) g.push('ruby_down');
   if (/남은 것을 한 번에 들이켰다/.test(txt)) g.push('pierrot');
+  if ((L.buffs || []).filter(b => b.id === 10740).length >= 2 && (L.buffs || []).some(b => b.id === 10741)) g.push('yeop_full');
+  if (Object.values(L.items || {}).some(it => it && it.virtual && /^shard/.test(Object.keys(L.items).find(k => L.items[k] === it) || '') && it.rarity === 5)) g.push('tirion_epic');
+  if ((L.bidCount || 0) >= 3) g.push('tirion_bid3');
   if ((char.gold || 0) >= 1000) g.push('rich');
   return g;
 }

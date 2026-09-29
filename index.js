@@ -4305,6 +4305,11 @@ async function procFloorEvent (req, res) {
     const evDef = run.makeEventByCode(char, evCode);
     const evLast = evDef && evDef.options ? evDef.options.length - 1 : -1;
     const text = run.applyEvent(char, evCode, evOpt);
+    if (char.run.pendingFallenRest) {   // 쓰러진 도전자 안식: 기록 삭제
+      try { await pool.query('delete from fallen where id = $1', [char.run.pendingFallenRest]); } catch (e) { console.log('[fallen rest]', e.message); }
+      char.run.pendingFallenRest = null;
+      try { const acct = await loadAcct(sess.userUid); await grantAchv(sess.userUid, char, acct, ['fallen_rest']); await saveAcct(sess.userUid, acct); } catch (e) {}
+    }
     char.run.ach = char.run.ach || {};
     if (!/^mon_/.test(evCode) && evOpt !== evLast) char.run.ach.chose = true;   // 순수한 선택 판정
     if (evCode === 'devil' && evOpt !== evLast) { try { const acct = await loadAcct(sess.userUid); acct.stats.devil = (acct.stats.devil || 0) + 1; await saveAcct(sess.userUid, acct); } catch (e) {} }
@@ -4405,6 +4410,10 @@ async function procFloorResult (req, res) {
       if (enemy.fallenId && enemy.deck && enemy.deck.length) {
         const cd = enemy.deck[Math.floor(Math.random() * enemy.deck.length)];
         pendingCard = { type: cd.type, from: enemy.fallenName };
+      }
+      if (enemy.fallenId) {   // 다음 이벤트 층에서 후일담 (가상 장비는 제외한 실제 장비만)
+        const its = ['weapon', 'armor', 'subarmor', 'trinket'].map(k => enemy.items && enemy.items[k]).filter(x => x && !x.virtual);
+        char.run.lastFallen = { id: enemy.fallenId, name: enemy.fallenName || enemy.name, items: its };
       }
       const cleared = run.advance(char);
       if (!cleared && char.run.cycle >= 11 && !char.run.unlockGiven) {   // 10사이클을 넘기면 캐릭터 해금
