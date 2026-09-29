@@ -2691,12 +2691,8 @@ module.exports.getBuffData = function(eff) {
     effectObj.value = 1.5;
     effectObj.key = 'magReduce';
     retObj.effect.push(effectObj);
-    effectObj = {};
-    effectObj.active = cons.ACTIVE_TYPE_DURATION_END;
-    effectObj.code = cons.EFFECT_TYPE_SELF_BUFF;
-    effectObj.buffCode = 201706;
-    effectObj.buffDur = 2;
-    retObj.effect.push(effectObj);
+    // (종료 시 기절 삭제)
+
     break;
   case 201706 : 
     retObj.name = '기절';
@@ -3367,6 +3363,7 @@ module.exports.getBuffData = function(eff) {
     effectObj = {};
     effectObj.code = 10006;
     retObj.effect.push(effectObj);
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_DAMAGE_RECEIVE, code : cons.EFFECT_TYPE_MULTIPLY_DAMAGE, anySkill : true, value : 1.2 });
     effectObj = {};
     effectObj.active = cons.ACTIVE_TYPE_SKILL_LOSE;
     effectObj.code = cons.EFFECT_TYPE_OPP_BUFF;
@@ -3603,7 +3600,7 @@ module.exports.getBuffData = function(eff) {
     effectObj.active = cons.ACTIVE_TYPE_CALC_DAMAGE;
     effectObj.code = cons.EFFECT_TYPE_ADD_DAMAGE;
     effectObj.anySkill = true;
-    effectObj.value = 0.1;
+    effectObj.value = 0.25;
     retObj.effect.push(effectObj);
     effectObj = {};
     effectObj.active = cons.ACTIVE_TYPE_ATTACK;

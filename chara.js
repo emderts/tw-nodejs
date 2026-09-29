@@ -208,7 +208,7 @@ const item = require('./items');
   skillObj.name = '광차원 스파크스터';
   skillObj.nameType = cons.NAME_KOR_NO_END_CONS;
   skillObj.type = cons.SKILL_TYPE_SPECIAL;
-  skillObj.cost = 150;
+  skillObj.cost = 110;
   skillObj.effect = [];
   effectObj = {};
   effectObj.code = cons.EFFECT_TYPE_SELF_BUFF;
@@ -234,7 +234,7 @@ const item = require('./items');
   effectObj.buffCode = 8;
   effectObj.buffDur = 3;
   skillObj.effect.push(effectObj);
-  skillObj.tooltip = '적에게 3턴간 [기절], [침묵], [실명] 상태이상 부여, 자신에게 3턴간 [스파크스터] 버프 부여<br><br>[스파크스터] : HP 재생, SP 재생, SP 충전 0으로 고정, 물리/마법 저항 +50\%, 해로운 버프 무시, 종료 시 자신에게 1턴간 [기절] 상태이상 부여';
+  skillObj.tooltip = '적에게 3턴간 [기절], [침묵], [실명] 상태이상 부여, 자신에게 3턴간 [스파크스터] 버프 부여<br><br>[스파크스터] : HP 재생, SP 재생, SP 충전 0으로 고정, 물리/마법 저항 +50\%, 해로운 버프 무시, ';
   skillObj.flavor = '세계로부터 유리된 절대 공간을 만든다. 현상을 이해할 수 없는 상대는 수많은 세계가 얽힌 이 공간을 빛에 둘러싸인 것처럼 여긴다. 이 공간에서 세리어스는 절대적인 힘을 발휘하지만 부작용이 있다.';
   charSeriers.skill.special = skillObj;
 
@@ -335,7 +335,7 @@ const item = require('./items');
   skillObj.name = '대통합';
   skillObj.nameType = cons.NAME_KOR_END_CONS;
   skillObj.type = cons.SKILL_TYPE_SPECIAL;
-  skillObj.cost = 130;
+  skillObj.cost = 100;
   skillObj.effect = [];
   effectObj = {};
   effectObj.code = cons.EFFECT_TYPE_SELF_BUFF;
@@ -776,7 +776,7 @@ const item = require('./items');
   skillObj.name = '환영 습격';
   skillObj.nameType = cons.NAME_KOR_END_CONS;
   skillObj.type = cons.SKILL_TYPE_SPECIAL;
-  skillObj.cost = 125;
+  skillObj.cost = 110;
   skillObj.effect = [];
   effectObj = {};
   effectObj.code = cons.EFFECT_TYPE_SELF_BUFF;
@@ -1109,7 +1109,7 @@ const item = require('./items');
   skillObj.name = '귀찮아서 대충 만든 프로그램 – Last Embryo';
   skillObj.nameType = cons.NAME_KOR_END_CONS;
   skillObj.type = cons.SKILL_TYPE_SPECIAL;
-  skillObj.cost = 170;
+  skillObj.cost = 120;
   skillObj.effect = [];
   effectObj = {};
   effectObj.code = cons.EFFECT_TYPE_SET_ALL_BUFF_DURATION;
@@ -1127,7 +1127,7 @@ const item = require('./items');
   effectObj.buffCode = 201742;
   effectObj.buffDur = 3;
   skillObj.effect.push(effectObj);
-  skillObj.tooltip = '자신의 모든 지속형 나쁜 상태이상의 지속 턴 1턴 감소, 상대의 모든 지속형 나쁜 상태이상의 지속 턴 1턴 증가, 그 다음 적에게 3턴 간 [종말] 디버프 부여<br><br>[종말] : [탈진], 상성 패배 시 적 공격 계수 +30%';
+  skillObj.tooltip = '자신의 모든 지속형 나쁜 상태이상의 지속 턴 1턴 감소, 상대의 모든 지속형 나쁜 상태이상의 지속 턴 1턴 증가, 그 다음 적에게 3턴 간 [종말] 디버프 부여<br><br>[종말] : [탈진], 받는 피해 +20%, 상성 패배 시 적 공격 계수 +30%';
   skillObj.flavor = '뒷세계에 연이 된 몇 명과 함께 만든 최악의 해킹시스템. 원래 만들 의향은 아니었지만 꽤 큰 돈을 받아서 조금 의욕은 있었지만 귀찮아서 대충 70% 정도 되는 양을 담당해서 만들었다. 30%는 아직 이해하는 중이라서 자신도 걸리면 조금 골치 아프다. 물론 못 풀지는 않기에 뒷세계 참여한 사람들은 눅스에게 이것을 잘 사용하지 않는다.';
   charNux.skill.special = skillObj;
 
@@ -1169,20 +1169,20 @@ const item = require('./items');
       flavor : '강철 조각을 흩뿌려 적의 공격을 경감하고, 회심의 공격 기회를 부여한다.'};
   charDekais.skill.drive = skillObj;
 
-  skillObj = {code : 201740, name : '하이퍼 헤비 머신건', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 165, 
-      effect : [{code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL, value : 0.3, hitMod : 0.5},
-                {code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL, value : 0.3, hitMod : 0.5},
-                {code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL, value : 0.3, hitMod : 0.5},
-                {code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL, value : 0.3, hitMod : 0.5},
-                {code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL, value : 0.3, hitMod : 0.5},
-                {code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL, value : 0.3, hitMod : 0.5},
-                {code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL, value : 0.3, hitMod : 0.5},
-                {code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL, value : 0.3, hitMod : 0.5},
-                {code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL, value : 0.3, hitMod : 0.5},
-                {code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL, value : 0.3, hitMod : 0.5},
-                {code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL, chance : 0.4, value : 0.3, hitMod : 0.5},
-                {code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL, chance : 0.4, value : 0.3, hitMod : 0.5}],
-      tooltip : '적에게 10-12회의 물리 0.3 피해 (명중 보정 50\%), 자신에게 1턴 간 [과열] 디버프 부여<br><br>[과열] : 저항 -30\%',
+  skillObj = {code : 201740, name : '하이퍼 헤비 머신건', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 120, 
+      effect : [{code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL, value : 0.3, hitMod : 0.7},
+                {code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL, value : 0.3, hitMod : 0.7},
+                {code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL, value : 0.3, hitMod : 0.7},
+                {code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL, value : 0.3, hitMod : 0.7},
+                {code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL, value : 0.3, hitMod : 0.7},
+                {code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL, value : 0.3, hitMod : 0.7},
+                {code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL, value : 0.3, hitMod : 0.7},
+                {code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL, value : 0.3, hitMod : 0.7},
+                {code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL, value : 0.3, hitMod : 0.7},
+                {code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL, value : 0.3, hitMod : 0.7},
+                {code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL, chance : 0.4, value : 0.3, hitMod : 0.7},
+                {code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL, chance : 0.4, value : 0.3, hitMod : 0.7}],
+      tooltip : '적에게 10-12회의 물리 0.3 피해 (명중 보정 70\%), 자신에게 1턴 간 [과열] 디버프 부여<br><br>[과열] : 저항 -30\%',
       flavor : '갑주를 최대 전개하여 무한의 탄환으로 적을 공격한다.'};
   charDekais.skill.special = skillObj;
 
@@ -1226,10 +1226,10 @@ const item = require('./items');
       flavor : '수호자의 힘은 시간이 지날 수록 더욱 견고해진다.'};
   charLozic.skill.drive = skillObj;
 
-  skillObj = {code : 201745, name : '두 번의 의지', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 130, 
+  skillObj = {code : 201745, name : '두 번의 의지', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 100, 
       effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201754, buffDur : null, stack : 2},
                 {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201757, buffDur : null}],
-      tooltip : '가장 최근에 받은 피해 수치만큼 보호막 생성, 자신에게 [두 번의 의지] 버프 2중첩 부여<br><br>[두 번의 의지] : 스킬 공격 계수 +0.1, 공격 성공 시 자신의 잃은 생명력의 8%를 회복하고 1중첩 소거',
+      tooltip : '최근 3턴 동안 받은 피해 합만큼 보호막 생성, 자신에게 [두 번의 의지] 버프 2중첩 부여<br><br>[두 번의 의지] : 스킬 공격 계수 +0.25, 공격 성공 시 자신의 잃은 생명력의 8%를 회복하고 1중첩 소거',
       flavor : '수호자의 불굴의 의지.'};
   charLozic.skill.special = skillObj;
 
@@ -1320,7 +1320,7 @@ const item = require('./items');
       flavor : ''};
   charGaius.skill.drive = skillObj;
 
-  skillObj = {code : 201755, name : '천공의 정렬', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 130, 
+  skillObj = {code : 201755, name : '천공의 정렬', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 100, 
       effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201761, buffDur : 3}],
       tooltip : '다음 3턴간 승패 무관하게 별빛쇄도를 추가로 시전한다. 그 동안 접촉이 소거될 시 적 생명력 3%만큼 절대 피해. 회피가 0으로 고정된다.',
       flavor : ''};
@@ -1364,7 +1364,7 @@ const item = require('./items');
       flavor : '상황에 따라 전투 자세를 변경합니다.'};
   charLunisha.skill.drive = skillObj;
 
-  skillObj = {code : 201760, name : '오가스 프로토콜', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 115, 
+  skillObj = {code : 201760, name : '오가스 프로토콜', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 100, 
       effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201766, buffDur : 2},
                 {code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 201767, buffDur : 1}],
       tooltip : '잃은 체력의 [오버 클락]% 만큼의 체력을 즉시 회복한다. 다음 턴 공격 스킬의 계수가 ([오버 클락]*0.1)만큼 증가하고, 다음 턴 상성에서 무조건 승리하며, 1.6배의 피해를 입힌다. 그 후 소지한 [오버 클락] 스택의 절반을 잃는다. 만약 루니샤가 수비진 상태라면 [오버 클락] 스택을 잃지 않는다. 루니샤는 그 다음 턴부터 2턴 간 [혼란] 상태이상에 빠진다.',
@@ -1414,7 +1414,7 @@ const item = require('./items');
       flavor : '어렸을 때부터 해 오던 불법 아르바이트 경험의 산실. 반복할수록, 숙달된다.'};
   charGabi.skill.drive = skillObj;
 
-  skillObj = {code : 201770, name : '비급 - 급여 통장', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 135, 
+  skillObj = {code : 201770, name : '비급 - 급여 통장', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 120, 
       effect : [{code : cons.EFFECT_TYPE_SELF_HP, value : 0.02, isPercentStat : true, percentKey : 'maxHp', addAttackCount : true},
                 {code : cons.EFFECT_TYPE_REMOVE_BUFF, anyDebuff : true, limit : 2},
                 {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 2017107, buffDur : null, stack : 3}],

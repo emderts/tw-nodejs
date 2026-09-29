@@ -923,6 +923,7 @@ Battlemodule.prototype.dealDamage = function(src, dst, damage) {
   }
   var damageDealt = shielded ? damageShield : damage.value;
   dst.lastDamage = damageDealt;
+  dst.dmgLog = (dst.dmgLog || []).concat([{ t : this.turnCount, v : damageDealt }]).filter(x => x.t > this.turnCount - 3);   // 최근 3턴 받은 피해 (두 번의 의지)
   if (src !== dst && damageDealt > 0 && (dst.buffs || []).some(b => b.id === 10719)) this.councilAccrue(dst, src, damageDealt);   // 달빛 의회
   if (src !== dst && damage.type === cons.DAMAGE_TYPE_MAGICAL && damageDealt > 0 && (src.buffs || []).some(b => b.id === 10742)) {   // 발묵 → 묵운
     const add = Math.max(1, Math.round(damageDealt * 0.25));
@@ -1222,7 +1223,7 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
       } else if (buffObj.id === 201727) {
         buffObj.effect[0].value *= findBuffByIds(winner, eff.buffTarget).length;
       } else if (buffObj.id === 201757) {
-        buffObj.effect[0].value *= winner.lastDamage;
+        buffObj.effect[0].value *= (winner.dmgLog || []).filter(x => x.t > this.turnCount - 3).reduce((a, x) => a + x.v, 0) || winner.lastDamage;
       } else if (buffObj.id === 201781) {
         buffObj.effect[0].value = Math.round(buffObj.effect[0].value * winner.stat.maxHp * stackMpl);
         this.result += winner.name + getUnnun(winner.nameType) + ' 보호막을 ' + buffObj.effect[0].value + ' 획득했다!<br>';
