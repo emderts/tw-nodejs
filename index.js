@@ -58,6 +58,7 @@ const app = express()
 .post('/floorFlee', procFloorFlee)
 .post('/focusSkill', procFocusSkill)
 .get('/hall', procHall)
+.get('/stats', procStats)
 .get('/patchnotes', (req, res) => res.render('pages/patchnotes', { notes: patchnotes }))
 .post('/abandonRun', procAbandonRun)
 .get('/altar', procAltar)
@@ -433,6 +434,8 @@ io.on('connection', (socket) => {
     }
     const result = t.bmod.procBattleTurn(key, eKey, 1);
     t.ePlayedKey = eKey;   // 연출용: 이번 턴 적이 낸 수
+    t.rps = t.rps || { w: 0, l: 0, d: 0 };   // 실데이터 통계: 실제 상성 결과
+    { const o = (key - eKey + 3) % 3; if (o === 0) t.rps.d++; else if (o === 1) t.rps.w++; else t.rps.l++; }
     if (!result.redecide) { t.leftChr.bannedCardType = null; t.rightChr.bannedCardType = null; }   // 봉쇄는 한 턴
     if (t.rightChr.pendingShuffle) { t.rightChr.pendingShuffle = false; run.shuffleDeck(t.edeck); t.eplayed = [0, 0, 0]; }   // 환기
     if (t.leftChr.pendingShuffle) { t.leftChr.pendingShuffle = false; run.shuffleDeck(t.pdeck); }
@@ -4029,6 +4032,52 @@ async function pickEnemy (char, userId) {
 }
 
 // 전투 후 얻은 카드 수락/거부
+// ===== 실데이터 전투 통계 =====
+let statsReady = false;
+async function ensureStatsTable () {
+  if (statsReady) return;
+  await pool.query(`create table if not exists battle_stats (
+    id serial primary key, date timestamp, user_id varchar(100), char_key varchar(40), cycle int, asc_lv int,
+    enemy_kind varchar(12), enemy_key varchar(60), enemy_name varchar(120), is_boss boolean, won boolean, turns int,
+    hp_pct real, enemy_hp_pct real, items text, deck text, rps_w int, rps_l int, rps_d int)`);
+  statsReady = true;
+}
+async function recordBattleStat (userId, char, t, re) {
+  try {
+    await ensureStatsTable();
+    const E = t.rightChr, L = t.leftChr;
+    const kind = E.fallenId ? 'fallen' : (E.monsterKey ? 'monster' : 'roster');
+    const key = E.fallenId ? String(E.rosterKey || '') : (E.monsterKey || E.rosterKey || '');
+    const items = ['weapon', 'armor', 'subarmor', 'trinket', 'skillArtifact'].map(k => char.items && char.items[k] && char.items[k].id).filter(x => x !== undefined && x !== null).join(',');
+    const dk = [0, 0, 0]; for (const c of (char.deck || [])) dk[c.type]++;
+    const pct = (c) => c && c.stat && c.stat.maxHp ? Math.max(0, Math.round(100 * c.curHp / c.stat.maxHp)) : null;
+    await pool.query('insert into battle_stats(date, user_id, char_key, cycle, asc_lv, enemy_kind, enemy_key, enemy_name, is_boss, won, turns, hp_pct, enemy_hp_pct, items, deck, rps_w, rps_l, rps_d) values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18)',
+      [new Date(), userId, char.rosterKey || '', char.run.cycle, run.ascOf(char), kind, key, E.name, !!E.isBoss, !!re.winnerLeft, (t.bmod && t.bmod.turnCount) || 0, pct(L), pct(E), items, dk.join('/'), (t.rps || {}).w || 0, (t.rps || {}).l || 0, (t.rps || {}).d || 0]);
+  } catch (e) { console.log('[battle_stats]', e.message); }
+}
+const ADMIN_IDS = (process.env.ADMIN_IDS || '').split(',').map(x => x.trim()).filter(Boolean);
+async function procStats (req, res) {
+  const sess = req.session;
+  if (!sess.userUid || !ADMIN_IDS.includes(String(sess.userUid))) { res.status(403).send('관리자 전용'); return; }
+  try {
+    await ensureStatsTable();
+    const q = req.query || {}; const where = []; const args = [];
+    if (q.cmin) { args.push(+q.cmin); where.push('cycle >= $' + args.length); }
+    if (q.cmax) { args.push(+q.cmax); where.push('cycle <= $' + args.length); }
+    if (q.asc !== undefined && q.asc !== '') { args.push(+q.asc); where.push('asc_lv = $' + args.length); }
+    if (q.days) { args.push(+q.days); where.push("date >= now() - ($" + args.length + " || ' days')::interval"); }
+    const W = where.length ? 'where ' + where.join(' and ') : '';
+    const total = (await pool.query('select count(*)::int n, avg(won::int)::float wr, avg(turns)::float t, sum(rps_w)::int w, sum(rps_l)::int l, sum(rps_d)::int d from battle_stats ' + W, args)).rows[0];
+    const byEnemy = (await pool.query('select enemy_kind, enemy_key, max(enemy_name) nm, bool_or(is_boss) boss, min(cycle) c0, max(cycle) c1, count(*)::int n, avg(won::int)::float wr, avg(turns)::float t from battle_stats ' + W + ' group by enemy_kind, enemy_key order by n desc limit 200', args)).rows;
+    const byChar = (await pool.query('select char_key, count(*)::int n, avg(won::int)::float wr, avg(turns)::float t, sum(rps_w)::int w, sum(rps_l)::int l from battle_stats ' + W + ' group by char_key order by n desc', args)).rows;
+    const byCycle = (await pool.query('select cycle, count(*)::int n, avg(won::int)::float wr, avg(turns)::float t from battle_stats ' + W + ' group by cycle order by cycle', args)).rows;
+    const rows = (await pool.query('select items, won from battle_stats ' + W + ' order by id desc limit 20000', args)).rows;
+    const it = {}; for (const r of rows) for (const id of (r.items || '').split(',').filter(Boolean)) { const o = it[id] || (it[id] = { n: 0, w: 0 }); o.n++; if (r.won) o.w++; }
+    const byItem = Object.entries(it).filter(([, o]) => o.n >= 20).map(([id, o]) => ({ id, name: (item.list[+id] || {}).name || id, rank: (item.list[+id] || {}).rank, n: o.n, wr: o.w / o.n })).sort((a, b) => b.wr - a.wr);
+    const cname = (k) => (roster.template(k) || {}).name || k;
+    res.render('pages/stats', { q, total, byEnemy, byChar: byChar.map(r => Object.assign(r, { name: cname(r.char_key) })), byCycle, byItem });
+  } catch (e) { console.error(e); res.status(500).send('stats error: ' + e.message); }
+}
 // ===== 계정 업적 =====
 let acctColsReady = false;
 async function ensureAcctCols () {
@@ -4344,6 +4393,7 @@ async function procFloorResult (req, res) {
       } finally { client.release(); }
     } catch (e) { console.log('battle log save failed', e.message); }
     const rv = runView(char);
+    await recordBattleStat(sess.userUid, char, t, re);   // 실데이터 통계
     // 드라우프니르: 착용 중 승리마다 10 → 20 → … (최대 320), 패배·해제 시 초기화
     let draupLine = null;
     if (run.runEffect(char, 'draupnir')) {
@@ -4412,7 +4462,8 @@ async function procFloorResult (req, res) {
         pendingCard = { type: cd.type, from: enemy.fallenName };
       }
       if (enemy.fallenId) {   // 다음 이벤트 층에서 후일담 (가상 장비는 제외한 실제 장비만)
-        const its = ['weapon', 'armor', 'subarmor', 'trinket'].map(k => enemy.items && enemy.items[k]).filter(x => x && !x.virtual);
+        const its = ['weapon', 'armor', 'subarmor', 'trinket'].map(k => enemy.items && enemy.items[k]).filter(x => x && !x.virtual)
+          .map(x => JSON.parse(JSON.stringify(x, (k, v) => (k === 'item' || k === 'buff') ? undefined : v)));   // 전투 중 붙은 역참조(순환) 제거
         char.run.lastFallen = { id: enemy.fallenId, name: enemy.fallenName || enemy.name, items: its };
       }
       const cleared = run.advance(char);

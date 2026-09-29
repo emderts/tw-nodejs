@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>전투 통계</title>
+  <link rel="stylesheet" href="/stylesheets/main.css">
+  <style>
+    table.st { width: 100%; border-collapse: collapse; font-size: 13px; }
+    table.st th, table.st td { padding: 5px 6px; border-top: 1px solid var(--line); text-align: right; white-space: nowrap; }
+    table.st th:first-child, table.st td:first-child { text-align: left; white-space: normal; }
+    table.st th { color: var(--ash); font-weight: 500; }
+    .scroll { overflow-x: auto; }
+    .lo { color: #ff8a8a; } .hi { color: #7ddf97; }
+    form.flt { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; font-size: 13px; }
+    form.flt input { width: 70px; min-height: 0; padding: 4px 6px; }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <% const pc = (v) => v === null || v === undefined ? '-' : (100 * v).toFixed(1) + '%';
+     const cls = (v) => v === null || v === undefined ? '' : (v < 0.45 ? 'lo' : (v > 0.6 ? 'hi' : '')); %>
+  <div class="page-title"><h1>전투 통계</h1><span class="meta">실제 플레이 기록 · 승률은 플레이어 기준</span></div>
+  <form class="flt note-box" method="get" action="/stats">
+    사이클 <input name="cmin" value="<%= q.cmin || '' %>" placeholder="부터"> ~ <input name="cmax" value="<%= q.cmax || '' %>" placeholder="까지">
+    승천 <input name="asc" value="<%= q.asc || '' %>" placeholder="전체">
+    최근 <input name="days" value="<%= q.days || '' %>" placeholder="전체">일
+    <button type="submit" style="width:auto;min-height:0;padding:4px 12px">보기</button>
+  </form>
+
+  <section class="panel" style="margin-top:12px"><h2>전체</h2>
+    <div class="note-box">전투 <b><%= total.n %></b>판 · 플레이어 승률 <b><%= pc(total.wr) %></b> · 평균 <%= (total.t || 0).toFixed(1) %>턴<br>
+    실제 상성 결과 — 이김 <b><%= pc(total.w / Math.max(1, total.w + total.l + total.d)) %></b> · 짐 <%= pc(total.l / Math.max(1, total.w + total.l + total.d)) %> · 비김 <%= pc(total.d / Math.max(1, total.w + total.l + total.d)) %></div>
+  </section>
+
+  <section class="panel" style="margin-top:12px"><h2>사이클별</h2><div class="scroll">
+    <table class="st"><tr><th>사이클</th><th>판</th><th>승률</th><th>평균 턴</th></tr>
+    <% byCycle.forEach(function (r) { %><tr><td><%= r.cycle %></td><td><%= r.n %></td><td class="<%= cls(r.wr) %>"><%= pc(r.wr) %></td><td><%= (r.t || 0).toFixed(1) %></td></tr><% }); %></table></div>
+  </section>
+
+  <section class="panel" style="margin-top:12px"><h2>상대별</h2><div class="scroll">
+    <table class="st"><tr><th>상대</th><th>종류</th><th>사이클</th><th>판</th><th>승률</th><th>평균 턴</th></tr>
+    <% byEnemy.forEach(function (r) { %><tr><td><%= r.nm %><%= r.boss ? ' ★' : '' %></td><td><%= { monster: '몬스터', roster: '캐릭터', fallen: '도전자' }[r.enemy_kind] || r.enemy_kind %></td><td><%= r.c0 === r.c1 ? r.c0 : r.c0 + '~' + r.c1 %></td><td><%= r.n %></td><td class="<%= cls(r.wr) %>"><%= pc(r.wr) %></td><td><%= (r.t || 0).toFixed(1) %></td></tr><% }); %></table></div>
+  </section>
+
+  <section class="panel" style="margin-top:12px"><h2>캐릭터별 (플레이어가 고른 캐릭터)</h2><div class="scroll">
+    <table class="st"><tr><th>캐릭터</th><th>판</th><th>승률</th><th>평균 턴</th><th>상성 이김</th></tr>
+    <% byChar.forEach(function (r) { %><tr><td><%= r.name %></td><td><%= r.n %></td><td class="<%= cls(r.wr) %>"><%= pc(r.wr) %></td><td><%= (r.t || 0).toFixed(1) %></td><td><%= pc(r.w / Math.max(1, r.w + r.l)) %></td></tr><% }); %></table></div>
+  </section>
+
+  <section class="panel" style="margin-top:12px"><h2>아이템별 (착용 시 승률, 20판 이상)</h2><div class="scroll">
+    <table class="st"><tr><th>아이템</th><th>급</th><th>판</th><th>승률</th></tr>
+    <% byItem.forEach(function (r) { %><tr><td><%= r.name %></td><td><%= r.rank || '' %></td><td><%= r.n %></td><td class="<%= cls(r.wr) %>"><%= pc(r.wr) %></td></tr><% }); %>
+    <% if (!byItem.length) { %><tr><td colspan="4" style="color:var(--ash)">아직 20판 이상 쌓인 아이템이 없다.</td></tr><% } %></table></div>
+  </section>
+  <div class="backLink"><a href="/">돌아가기</a></div>
+</div>
+</body>
+</html>
