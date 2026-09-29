@@ -7351,6 +7351,21 @@ module.exports.getBuffData = function(eff) {
     retObj.tooltip = '40턴이 지나 탑이 무너지고 있다. 중첩당 최대 생명력 ×0.96, 매 턴 보호막 -15%. 60턴부터는 두 배 속도 (정화 불가)';
     retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_MULTIPLY, key : 'maxHp', value : 0.96 });
     break;
+  case 10750 :   // 티리온 [무기 파편]
+    retObj.name = '무기 파편'; retObj.nameType = cons.NAME_KOR_END_CONS; retObj.stackType = 2; retObj.maxStack = 9; retObj.isDebuff = false; retObj.durOff = null;
+    retObj.tooltip = '모인 조각. 재조립하면 1중첩 언커먼 / 2 레어 / 3 유니크 / 4 이상 에픽 무기의 능력과 효과를 얻는다';
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'hit', value : 0 });
+    break;
+  case 10751 :   // 티리온 [방어구 파편]
+    retObj.name = '방어구 파편'; retObj.nameType = cons.NAME_KOR_END_CONS; retObj.stackType = 2; retObj.maxStack = 9; retObj.isDebuff = false; retObj.durOff = null;
+    retObj.tooltip = '모인 조각. 재조립하면 1중첩 언커먼 / 2 레어 / 3 유니크 / 4 이상 에픽 방어구의 능력과 효과를 얻는다';
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'hit', value : 0 });
+    break;
+  case 10752 :   // 티리온 [장신구 파편]
+    retObj.name = '장신구 파편'; retObj.nameType = cons.NAME_KOR_END_CONS; retObj.stackType = 2; retObj.maxStack = 9; retObj.isDebuff = false; retObj.durOff = null;
+    retObj.tooltip = '모인 조각. 재조립하면 1중첩 언커먼 / 2 레어 / 3 유니크 / 4 이상 에픽 장신구의 능력과 효과를 얻는다';
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'hit', value : 0 });
+    break;
   case 10620 :
     retObj.name = '소형 동물'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 2; retObj.maxStack = 10; retObj.isDebuff = false; retObj.durOff = null;
     retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'maxHp', value : 10 });

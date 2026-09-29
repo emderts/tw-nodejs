@@ -1765,6 +1765,35 @@ const item = require('./items');
       flavor : '마지막 한 점이 그림을 살린다.'};
   charYeop.base = JSON.parse(JSON.stringify(charYeop.stat));
   module.exports.yeop = charYeop;
+
+  // ---- 티리온 젠킨스 ----
+  var charTirion = {};
+  _initChar(charTirion);
+  charTirion.name = '티리온 젠킨스';
+  charTirion.nameType = cons.NAME_KOR_NO_END_CONS;
+  charTirion.title = '켈투앞 무득기사';
+  charTirion.skill = {};
+  charTirion.skill.base = [];
+  charTirion.skill.base.push({code : 90500, name : '무기 수집', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 0.8,
+      effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 10750, buffDur : null, stack : 1}],
+      tooltip : '자신에게 [무기 파편] 1중첩', flavor : '떨어진 칼날 조각도 누군가에겐 전 재산이다.'});
+  charTirion.skill.base.push({code : 90501, name : '방어구 수집', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 0.8,
+      effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 10751, buffDur : null, stack : 1}],
+      tooltip : '자신에게 [방어구 파편] 1중첩', flavor : '찢어진 사슬 갑옷을 한 고리씩 줍는다.'});
+  charTirion.skill.base.push({code : 90502, name : '장신구 수집', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 0.8,
+      effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 10752, buffDur : null, stack : 1}],
+      tooltip : '자신에게 [장신구 파편] 1중첩', flavor : '빠진 보석 자리만 남은 반지도 버리지 않는다.'});
+  charTirion.skill.drive = {code : 90503, name : '파편 재조립', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_DRIVE, active : cons.ACTIVE_TYPE_SKILL_WIN,
+      cost : 15, chance : 1, needShards : 5,
+      effect : [{code : 'reassemble'}],
+      tooltip : '상성 승리 시, 파편이 모두 합쳐 5개 이상이면 발동. 파편 종류마다 1중첩 언커먼 / 2 레어 / 3 유니크 / 4 이상 에픽 등급의 동급 무작위 장비 능력과 효과를 얻고 파편을 소거한다. 종류당 한 개만 (더 높은 등급만 교체). 25% 확률로 보조방어구를 하나 더 얻는다',
+      flavor : '쓸 만한 조각끼리 맞추면, 어쨌든 무언가는 된다.'};
+  charTirion.skill.special = {code : 90504, name : '입찰', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 75,
+      effect : [{code : 'bid'}],
+      tooltip : '동급 레어 이상 무작위 장비가 경매에 오른다. 레어 50% / 유니크 33% / 에픽 20% 확률로 낙찰되어 추가로 착용한다. 낙찰되면 다음 입찰 SP +25, 유찰되면 -25',
+      flavor : '켈투자드 앞에서도 입찰가는 내린 적이 없다.'};
+  charTirion.base = JSON.parse(JSON.stringify(charTirion.stat));
+  module.exports.tirion = charTirion;
   module.exports.senal = charSenal;
   module.exports.gabi = charGabi;
   module.exports.illun = charIllun;

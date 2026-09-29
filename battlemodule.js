@@ -1810,6 +1810,40 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
     } else if (eff.code === 'extendBuffs') {   // 생명의 나무: 자신의 버프 지속 +1
       let n = 0; for (const b of (winner.buffs || [])) if (b.id > 0 && !b.isDebuff && b.dur) { b.dur += eff.value || 1; n++; }
       if (n) this.result += '[ ' + (eff.name || '생명의 나무') + ' ] 버프 ' + n + '개의 지속이 ' + (eff.value || 1) + '턴 늘어났다.<br>';
+    } else if (eff.code === 'reassemble') {   // 티리온 [파편 재조립]: 파편 종류마다 등급을 정해 가상 장비로 착용 (슬롯당 1개, 더 높은 등급만 교체)
+      const SH = [[10750, 0, 'shardWeapon', '무기'], [10751, 1, 'shardArmor', '방어구'], [10752, 3, 'shardTrinket', '장신구']];
+      const RAR = [null, cons.ITEM_RARITY_UNCOMMON, cons.ITEM_RARITY_RARE, cons.ITEM_RARITY_UNIQUE, cons.ITEM_RARITY_EPIC];
+      let best = 0; const got = [];
+      for (const [bid, type, slot, label] of SH) {
+        const b = (winner.buffs || []).find(x => x.id === bid); if (!b) continue;
+        const st = Math.min(4, b.stack || 1); removeBuff(b);
+        const rar = RAR[st]; best = Math.max(best, rar);
+        const it = pickBattleItem(winner.rank, rar, type); if (!it) continue;
+        const cur = winner.items[slot];
+        if (cur && (cur.rarity || 0) > rar) { got.push(label + ' — 더 좋은 것이 이미 있다'); continue; }
+        equipVirtual(winner, slot, it); got.push(label + ' [ ' + it.name + ' ]');
+      }
+      if (best && Math.random() < 0.25) {   // 25% 보너스: 보조방어구
+        const it = pickBattleItem(winner.rank, best, 2); const cur = winner.items.shardSub;
+        if (it && !(cur && (cur.rarity || 0) > best)) { equipVirtual(winner, 'shardSub', it); got.push('보너스 보조방어구 [ ' + it.name + ' ]'); }
+      }
+      calcStats(winner, loser);
+      this.result += '<span class="skillDamage">[ 파편 재조립 ] ' + (got.length ? got.join(', ') : '아무것도 맞춰지지 않았다') + '</span><br>';
+    } else if (eff.code === 'bid') {   // 티리온 [입찰]: 동급 레어 이상 무작위 장비, 등급별 확률로 추가 착용
+      const pool = [cons.ITEM_RARITY_RARE, cons.ITEM_RARITY_UNIQUE, cons.ITEM_RARITY_EPIC];
+      const rar = pool[Math.floor(Math.random() * pool.length)];
+      const it = pickBattleItem(winner.rank, rar, Math.floor(Math.random() * 4));
+      const rate = { [cons.ITEM_RARITY_RARE] : 0.5, [cons.ITEM_RARITY_UNIQUE] : 0.33, [cons.ITEM_RARITY_EPIC] : 0.2 }[rar];
+      const sp = winner.skillOri && winner.skillOri.special;
+      if (it && Math.random() < rate) {
+        winner.bidCount = (winner.bidCount || 0) + 1;
+        equipVirtual(winner, 'bid' + winner.bidCount, it); calcStats(winner, loser);
+        if (sp) sp.cost = Math.min(200, sp.cost + 25);
+        this.result += '<span class="skillDamage">[ 입찰 ] 낙찰! [ ' + it.name + ' ] 을(를) 추가로 착용했다. (다음 입찰 SP ' + (sp ? sp.cost : '-') + ')</span><br>';
+      } else {
+        if (sp) sp.cost = Math.max(25, sp.cost - 25);
+        this.result += '[ 입찰 ] 유찰… ' + (it ? '[ ' + it.name + ' ] 은(는) 다른 사람에게 넘어갔다.' : '') + ' (다음 입찰 SP ' + (sp ? sp.cost : '-') + ')<br>';
+      }
     } else if (eff.code === 'stackHit') {   // 버프 중첩 비례 추가 피해 (판타스마 윈드밀)
       const b = (winner.buffs || []).find(x => x.id === eff.buffCode); const st = b ? (b.stack || 1) : 0; if (!st) continue;
       const rd = this.calcDamage(winner, loser, { name : eff.name, type : eff.type, damage : eff.value * st, nameType : cons.NAME_KOR_END_CONS, effect : [] }); rd.hit = true; rd.noProc = true;
@@ -2504,10 +2538,24 @@ Battlemodule.prototype.checkDrive = function(chara, active, arg) {
   if (chara.skill.drive.chanceModFunc) {
     chanceUsed = this.modFunc[chara.skill.drive.chanceModFunc](chara, arg, chanceUsed);
   }
+  if (chara.skill.drive.needShards) {   // 파편 재조립: 파편 합계가 기준 이상일 때만
+    const tot = (chara.buffs || []).filter(b => [10750, 10751, 10752].includes(b.id)).reduce((a, b) => a + (b.stack || 1), 0);
+    if (tot < chara.skill.drive.needShards) return false;
+  }
   const dMul = hasDriveDouble(chara) ? 2 : 1;   // 용무녀의 도복
   return getRandom(chanceUsed) && chara.curSp >= chara.skill.drive.cost * dMul && findBuffByCode(chara, 10010).length == 0;
 }
 
+// 전투 중 가상 장비 (티리온): 전투에서 바로 작동하는 것만
+function pickBattleItem(rank, rarity, type) {
+  const l = item.list.filter(x => x && x.rank === rank && x.rarity === rarity && x.type === type && !x.use && !x.quantum && !x.manualSpecial && !x.runEffect && !x.driveOverride && !x.timeMult && !x.unifyAtk);
+  return l.length ? JSON.parse(JSON.stringify(l[Math.floor(Math.random() * l.length)])) : null;
+}
+function equipVirtual(chara, slot, it) {
+  it.virtual = true;
+  for (const e of (it.effect || [])) e.item = it;
+  chara.items[slot] = it;
+}
 // 수동의 미학: 스페셜은 플레이어가 버튼으로 예약했을 때만. 발동하면 예약 해제
 function specialAllowed(c) {
   const manual = Object.values(c.items || {}).some(it => it && it.manualSpecial);
