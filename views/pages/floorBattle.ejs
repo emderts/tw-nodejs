@@ -226,9 +226,10 @@
       var b = document.getElementById('handBtn' + i);
       if (i < types.length) {
         b.innerHTML = glyph[types[i]] + '<br>' + names[types[i]];
-        if (curState && curState.banned !== null && curState.banned !== undefined && curState.banned === types[i]) { b.setAttribute('disabled', true); b.style.opacity = '.4'; b.title = '필치 봉쇄 — 이번 턴에는 낼 수 없다'; }
         b.className = 'card-t' + types[i];
         b.removeAttribute('disabled');
+        b.style.opacity = ''; b.title = '';   // 이전 턴의 봉쇄 표시 초기화
+        if (curState && curState.banned !== null && curState.banned !== undefined && curState.banned === types[i]) { b.setAttribute('disabled', true); b.style.opacity = '.4'; b.title = '필치 봉쇄 — 이번 턴에는 낼 수 없다'; }
       } else {
         b.innerHTML = '';
         b.className = '';

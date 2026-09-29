@@ -3425,24 +3425,13 @@ module.exports.getBuffData = function(eff) {
     effectObj.chkNotFresh = true;   // 이번 턴에 장전한 것은 발사하지 않음 (장전 → 다음 사용 때 발사)
     retObj.effect.push(effectObj);
     break;
-  case 201746 : 
-    retObj.name = '메탈 스크럽';
-    retObj.nameType = cons.NAME_KOR_END_CONS;
-    retObj.stackType = 1;
-    retObj.isDebuff = false;
-    retObj.durOff = cons.DURATION_TYPE_TURN_END;
-    effectObj = {};
-    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
-    effectObj.code = cons.EFFECT_TYPE_STAT_ADD;
-    effectObj.key = 'phyReduce';
-    effectObj.value = 0.3;
-    retObj.effect.push(effectObj);
-    effectObj = {};
-    effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
-    effectObj.code = cons.EFFECT_TYPE_STAT_ADD;
-    effectObj.key = 'magReduce';
-    effectObj.value = 0.3;
-    retObj.effect.push(effectObj);
+  case 201746 :   // 데 카이츠 [메탈 스크럽] — 무한 지속, 중첩
+    retObj.name = '메탈 스크럽'; retObj.nameType = cons.NAME_KOR_END_CONS; retObj.stackType = 2; retObj.maxStack = 8; retObj.isDebuff = false; retObj.durOff = null;
+    retObj.tooltip = '중첩당 물리·마법저항 +4%p, 치명·명중 +1.5%p (최대 8). 판타스마 윈드밀이 중첩만큼 강해지고, 하이퍼 헤비 머신건이 중첩만큼 더 쏘고 전부 소모한다';
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'phyReduce', value : 0.04 });
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'magReduce', value : 0.04 });
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'crit', value : 0.015 });
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'hit', value : 0.015 });
     break;
   case 201747 : 
     retObj.name = '메탈 스크럽';

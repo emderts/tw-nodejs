@@ -1149,9 +1149,9 @@ const item = require('./items');
   charDekais.skill.base.push(skillObj);
 
   skillObj = {code : 201737, name : '판타스마 윈드밀', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 1, 
-      effect : [{code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_ABSOLUTE, value : 0.02, isPercentStat : true, percentKey : 'maxHp'},
+      effect : [{code : 'stackHit', name : '판타스마 윈드밀', buffCode : 201746, type : cons.DAMAGE_TYPE_PHYSICAL, value : 0.12}, {code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_ABSOLUTE, value : 0.02, isPercentStat : true, percentKey : 'maxHp'},
                 {code : cons.EFFECT_TYPE_SELF_HP, value : -0.02, isPercentStat : true, percentKey : 'maxHp'}],
-      tooltip : '100\% 확률로 자신의 최대 생명력의 2\%를 소모하여 그만큼 적에게 절대 피해',
+      tooltip : '[메탈 스크럽] 중첩당 물리 0.12 추가 피해. 100\% 확률로 자신의 최대 생명력의 2\%를 소모하여 그만큼 적에게 절대 피해',
       flavor : '갑주 상태라고는 믿을 수 없는 속도로 주변을 몰아내는 풍차 공격을 가한다.'};  
   charDekais.skill.base.push(skillObj);
 
@@ -1162,15 +1162,14 @@ const item = require('./items');
   charDekais.skill.base.push(skillObj);
 
   skillObj = {code : 201739, name : '메탈 스크럽', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_DRIVE, 
-      active : cons.ACTIVE_TYPE_SKILL_LOSE, cost : 10, chance : 0.3, cooldown : 0,
-      effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201746, buffDur : 1},
-                {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201747, buffDur : 2}],
-      tooltip : '상성 패배 시 30\% 확률로 자신에게 1턴 간 [메탈 스크럽] 버프 부여<br><br>[메탈 스크럽] : 저항 +30\%, 치명/명중 +10\%',
+      active : cons.ACTIVE_TYPE_SKILL_LOSE, cost : 10, chance : 0.45, cooldown : 0,
+      effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201746, buffDur : null, stack : 1}],
+      tooltip : '상성 패배 시 45\% 확률로 자신에게 [메탈 스크럽] 1중첩 (지속 시간 없음, 최대 8)<br><br>[메탈 스크럽] : 중첩당 물리·마법저항 +4\%p, 치명·명중 +1.5\%p',
       flavor : '강철 조각을 흩뿌려 적의 공격을 경감하고, 회심의 공격 기회를 부여한다.'};
   charDekais.skill.drive = skillObj;
 
   skillObj = {code : 201740, name : '하이퍼 헤비 머신건', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 120, 
-      effect : [{code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL, value : 0.3, hitMod : 0.7},
+      effect : [{code : 'stackBarrage', name : '하이퍼 헤비 머신건', buffCode : 201746, type : cons.DAMAGE_TYPE_PHYSICAL, value : 0.3, hitMod : 0.7}, {code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL, value : 0.3, hitMod : 0.7},
                 {code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL, value : 0.3, hitMod : 0.7},
                 {code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL, value : 0.3, hitMod : 0.7},
                 {code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL, value : 0.3, hitMod : 0.7},
@@ -1182,7 +1181,7 @@ const item = require('./items');
                 {code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL, value : 0.3, hitMod : 0.7},
                 {code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL, chance : 0.4, value : 0.3, hitMod : 0.7},
                 {code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_PHYSICAL, chance : 0.4, value : 0.3, hitMod : 0.7}],
-      tooltip : '적에게 10-12회의 물리 0.3 피해 (명중 보정 70\%), 자신에게 1턴 간 [과열] 디버프 부여<br><br>[과열] : 저항 -30\%',
+      tooltip : '적에게 10-12회의 물리 0.3 피해 (명중 보정 70\%), [메탈 스크럽] 중첩만큼 추가 사격 후 모두 소모, 자신에게 1턴 간 [과열] 디버프 부여<br><br>[과열] : 저항 -30\%',
       flavor : '갑주를 최대 전개하여 무한의 탄환으로 적을 공격한다.'};
   charDekais.skill.special = skillObj;
 

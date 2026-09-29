@@ -1810,6 +1810,20 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
     } else if (eff.code === 'extendBuffs') {   // 생명의 나무: 자신의 버프 지속 +1
       let n = 0; for (const b of (winner.buffs || [])) if (b.id > 0 && !b.isDebuff && b.dur) { b.dur += eff.value || 1; n++; }
       if (n) this.result += '[ ' + (eff.name || '생명의 나무') + ' ] 버프 ' + n + '개의 지속이 ' + (eff.value || 1) + '턴 늘어났다.<br>';
+    } else if (eff.code === 'stackHit') {   // 버프 중첩 비례 추가 피해 (판타스마 윈드밀)
+      const b = (winner.buffs || []).find(x => x.id === eff.buffCode); const st = b ? (b.stack || 1) : 0; if (!st) continue;
+      const rd = this.calcDamage(winner, loser, { name : eff.name, type : eff.type, damage : eff.value * st, nameType : cons.NAME_KOR_END_CONS, effect : [] }); rd.hit = true; rd.noProc = true;
+      this.dealDamage(winner, loser, rd);
+      this.result += '<span class="skillDamage">[ ' + eff.name + ' ] 강철 조각이 따라붙는다 (' + st + '중첩) — ' + rd.value + '대미지</span><br>';
+    } else if (eff.code === 'stackBarrage') {   // 버프 중첩만큼 추가 사격 후 소모 (하이퍼 헤비 머신건)
+      const b = (winner.buffs || []).find(x => x.id === eff.buffCode); const st = b ? (b.stack || 1) : 0; if (!st) continue;
+      let hits = 0, sum = 0;
+      for (let k = 0; k < st; k++) {
+        const rd = this.calcDamage(winner, loser, { name : eff.name, type : eff.type, damage : eff.value, nameType : cons.NAME_KOR_END_CONS, effect : [], hitMod : eff.hitMod }); rd.noProc = true;
+        if (rd.hit) { hits++; sum += rd.value; this.dealDamage(winner, loser, rd); }
+      }
+      removeBuff(b);
+      this.result += '<span class="skillDamage">[ ' + eff.name + ' ] 강철 조각까지 쏟아붓는다 — ' + st + '발 중 ' + hits + '발 명중, ' + sum + '대미지</span><br>';
     } else if (eff.code === 'buildShield') {   // 네온: 최대 생명력 비례 보호막 버프를 세운다
       const bo = buffMdl.getBuffData({ buffCode : eff.buffCode }); bo.dur = eff.buffDur;
       for (const be of bo.effect) if (be.code === cons.EFFECT_TYPE_SHIELD) be.value = Math.round(winner.stat.maxHp * eff.value);
