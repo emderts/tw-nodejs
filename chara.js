@@ -436,7 +436,7 @@ const item = require('./items');
   effectObj.code = cons.EFFECT_TYPE_SKILL_RESELECT;
   effectObj.chance = 0.35;
   skillObj.effect.push(effectObj);
-  skillObj.tooltip = '상성 패배 시 25\% 확률로 스킬 재선택';
+  skillObj.tooltip = '상성 패배 시 35\% 확률로 스킬 재선택';
   skillObj.flavor = '다중우주로 흐르는 시간들 중 선택해 시간을 진행시킨다.';
   charJulius.skill.base.push(skillObj);
 
@@ -944,7 +944,7 @@ const item = require('./items');
   optObj.value = -0.03;
   effectObj.options.push(optObj);
   skillObj.effect.push(effectObj);
-  skillObj.tooltip = '물리 피격 시 3\% 확률로 받은 피해의 30%만큼을 즉시 회복하거나 3\% 확률로 자신에게 [거북이] 버프 부여 (최대 5중첩)<br>마법 피격 시 12\% 확률로 자신에게 [꼬장부리기] 버프 부여 혹은 12\% 확률로 자신에게 [팩트폭격] 버프 부여 (최대 5중첩)<br><br>[거북이] : 물리방어 +3\%p<br>[꼬장부리기] : 다음 스킬 피해에 15\% 절대 피해 추가<br>[팩트폭격] : 물리/마법방어 -3\%p<br>[백수의 마음가짐] : 드라이브 발동 확률 +9%, HP재생 +1, 드라이브 발동 시 1중첩 소거';
+  skillObj.tooltip = '물리 피격 시 12\% 확률로 받은 피해의 30%만큼을 즉시 회복하거나 12\% 확률로 자신에게 [거북이] 버프 부여 (최대 5중첩)<br>마법 피격 시 12\% 확률로 자신에게 [꼬장부리기] 버프 부여 혹은 12\% 확률로 자신에게 [팩트폭격] 버프 부여 (최대 5중첩)<br><br>[거북이] : 물리방어 +3\%p<br>[꼬장부리기] : 다음 스킬 피해에 15\% 절대 피해 추가<br>[팩트폭격] : 물리/마법방어 -3\%p<br>[백수의 마음가짐] : 드라이브 발동 확률 +9%, HP재생 +1, 드라이브 발동 시 1중첩 소거';
   skillObj.flavor = '';
   charBks.skill.drive = skillObj;
 
@@ -1080,7 +1080,7 @@ const item = require('./items');
                      {code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.35, chanceAddKey : 'hit', chanceAddKeyFactor : 0.6, buffCode : 9, buffDur : 2, onCrit : true},
                      {code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.35, chanceAddKey : 'hit', chanceAddKeyFactor : 0.6, buffCode : 10, buffDur : 2, onCrit : true},
                      {code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.35, chanceAddKey : 'hit', chanceAddKeyFactor : 0.6, buffCode : 11, buffDur : 2, onCrit : true}];
-  skillObj.tooltip = '(각각 20\ + (추가 명중 * 0.6))% (치명타 시 기본 30%) 확률로 적에게 2턴 간 [탈진], [침묵], [실명], [마비], [봉인], [혼란] 상태이상 부여';
+  skillObj.tooltip = '(각각 25\ + (추가 명중 * 0.6))% (치명타 시 기본 35%) 확률로 적에게 2턴 간 [탈진], [침묵], [실명], [마비], [봉인], [혼란] 상태이상 부여';
   skillObj.flavor = '뒷세계에서 받은 기이한 물체, 테이저 건 같이 날아가서 붙이는데 이 때 감각 자체가 해킹이 돼서 오감의 활동을 불가능하게 만들어 버린다.';
   charNux.skill.base.push(skillObj);
 
@@ -1247,7 +1247,7 @@ const item = require('./items');
       effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201755, buffDur : 4},
                 {code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.25, buffCode : 1, buffDur : 1}],
       loseEffect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201755, chance : 0.2, buffDur : 4}],
-      tooltip : '100\% 확률로 자신에게 4턴 간 [설화의 계절] 부여, 25\% 확률로 적에게 1턴 간 [화상] 상태이상 부여, 상성 패배 시 10\% 확률로 자신에게 4턴 간 [설화의 계절] 부여<br><br>[설화의 계절] : 명중 +5\%, 물리저항 +15\%',
+      tooltip : '100\% 확률로 자신에게 4턴 간 [설화의 계절] 부여, 25\% 확률로 적에게 1턴 간 [화상] 상태이상 부여, 상성 패배 시 20\% 확률로 자신에게 4턴 간 [설화의 계절] 부여<br><br>[설화의 계절] : 명중 +5\%, 물리저항 +15\%',
       flavor : '주변의 기온을 비정상적으로 조작하여 비좁은 공간에 냉기와 열기를 생성한다.'};  
   charMarang.skill.base.push(skillObj);
 
@@ -1263,7 +1263,7 @@ const item = require('./items');
       effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201756, buffDur : 4},
                 {code : cons.EFFECT_TYPE_OPP_BUFF, chance : 0.25, buffCode : 12, buffDur : 1}],
       loseEffect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201756, chance : 0.2, buffDur : 4}],
-      tooltip : '100\% 확률로 자신에게 4턴 간 [서리 날개] 부여, 25\% 확률로 적에게 1턴 간 [빙결] 상태이상 부여, 상성 패배 시 10\% 확률로 자신에게 4턴 간 [서리 날개] 부여<br><br>[서리 날개] : 명중 +5\%, 마법저항 +15\%',
+      tooltip : '100\% 확률로 자신에게 4턴 간 [서리 날개] 부여, 25\% 확률로 적에게 1턴 간 [빙결] 상태이상 부여, 상성 패배 시 20\% 확률로 자신에게 4턴 간 [서리 날개] 부여<br><br>[서리 날개] : 명중 +5\%, 마법저항 +15\%',
       flavor : '주변을 급냉각하여 날개 형태의 서리로 형상화한다.'};  
   charMarang.skill.base.push(skillObj);
 
