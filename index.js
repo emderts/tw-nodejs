@@ -4055,7 +4055,7 @@ function parseBattleLog (title, html) {
   if (w) { owner = w[1]; charName = w[2]; asc = w[3] ? +w[3] : 0; }
   const txt = String(html || '').replace(/<br\s*\/?>/g, '\n').replace(/<[^>]+>/g, ' ').replace(/[ \t]+/g, ' ');   // 태그 제거 후 공백 정리
   const won = /note-box">승리</.test(html) ? true : (/note-box">패배</.test(html) ? false : winnerName === who);
-  const turns = Math.max(0, ...[...txt.matchAll(/(\d+)턴/g)].map(x => +x[1]));
+  const turns = Math.max(0, ...[...String(html || '').matchAll(/class="turnCount">(\d+)턴/g)].map(x => +x[1]));   // 턴 표시 칸만 (버프 남은 턴 '998턴' 등은 제외)
   const esc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   const cnt = (re) => (txt.match(re) || []).length;
   // 교환(가위바위보 한 번)마다 판정: "나의 [ a ] vs 적의 [ b ]" 뒤 첫 결과로 승/패/무를 가른다 (스페셜·추가타 문구는 세지 않음)
@@ -4081,6 +4081,7 @@ async function procStatsBackfill (req, res) {
   if (!sess.userUid || !ADMIN_IDS.includes(String(sess.userUid))) { res.status(403).send('관리자 전용'); return; }
   try {
     await ensureStatsTable();
+    if (req.query && req.query.reset) await pool.query("delete from battle_stats where source = 'log'");   // 로그 복원분만 지우고 다시
     const rows = (await pool.query("select id, title, result, date from results where title like '[%층 · %사이클%' and id not in (select src_id from battle_stats where src_id is not null) order by id limit 3000")).rows;
     let ok = 0, skip = 0;
     for (const r of rows) {
