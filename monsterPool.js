@@ -75,17 +75,17 @@ const TIERS = {
   15: [   // 최종 보스
     { key: 'rsDeci', deck: [3, 3, 3], extraFav: 2, note: '파멸자 데시메이트 — 기절 연타, 안 걸리면 파멸', tune: (e) => {
       delete e.startEffects; delete e.skill.special;
-      for (const k of e.skill.base) for (const ef of (k.effect || [])) if (ef.buffCode === 4) ef.chance = 0.35;
+      for (const k of e.skill.base) for (const ef of (k.effect || [])) if (ef.buffCode === 4) ef.chance = 0.30;   // 실데이터 기준 하향 (35 → 30)
       e.skill.drive.chance = 0.3;
       e.skill.drive.effect = [{ code: cons.EFFECT_TYPE_ADD_HIT, type: cons.DAMAGE_TYPE_ABSOLUTE, isPercentOppStat: true, percentKey: 'maxHp', value: 0.1 }];
       e.skill.drive.tooltip = '턴 종료 시 상대가 [기절]이 아니면 30% 확률로 상대 최대 생명력의 10% 절대 피해';
     } },
     { key: 'rsVyres', deck: [4, 4, 3], extraFav: 2, note: '엘바스의 쌍검사 바이레스 — 서리와 불꽃 연계', tune: (e) => {
       e.skill.drive.effect[0].value = 0.1;
-      e.skill.drive.chance = 0.6;
-      e.skill.drive.tooltip = '가위바위보에서 비기면 60% 확률로 발동해 물리 0.1 피해';
+      e.skill.drive.chance = 0.8;   // 실데이터 기준 상향 (60 → 80)
+      e.skill.drive.tooltip = '가위바위보에서 비기면 80% 확률로 발동해 물리 0.1 피해';
       for (const sk of e.skill.base) if (sk.damage === 1.4) sk.damage = 1.15;
-      for (const sk of e.skill.base) for (const ef of (sk.effect || [])) if (ef.chance === 0.5) ef.chance = 0.4;
+      // 상태이상 확률은 원안 50% 유지 (실데이터 기준 — 이전 40% 하향 취소)
       e.skill.special.cost = 155;
       e.comboMul = 1.7;   // 연계 배수 2 → 1.7
     } },
