@@ -955,10 +955,12 @@ function pickWeighted(pool, excludeCode) {
   for (const e of cands) { r -= (e.weight || 1); if (r <= 0) return e; }
   return cands[cands.length - 1];
 }
+const FALLEN_EVENT_CHANCE = 0.5;   // 도전자 후일담 등장 확률
 function makeEvent(char) {
-  if (char.run.lastFallen && !char.run.lastFallen.taken) {   // 도전자 후일담은 다음 이벤트 층에 확정 (다른 이벤트 대신)
-    char.run.lastEvent = 'fallen_after'; char.run.evData = null;
-    return makeEventByCode(char, 'fallen_after');
+  if (char.run.lastFallen && !char.run.lastFallen.taken && !char.run.lastFallen.rolled) {   // 도전자 후일담: 다음 이벤트 층에서 한 번만 굴린다
+    char.run.lastFallen.rolled = true;
+    if (Math.random() < FALLEN_EVENT_CHANCE) { char.run.lastEvent = 'fallen_after'; char.run.evData = null; return makeEventByCode(char, 'fallen_after'); }
+    char.run.lastFallen = null;   // 안 뜨면 그대로 끝
   }
   const ev = pickWeighted(eventPool(char), char.run.lastEvent);
   char.run.lastEvent = ev.code;
