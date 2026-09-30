@@ -2284,6 +2284,32 @@ itemList[1050] = { id : 1050, name : '하이젠베르크의 검', nameType : con
 itemList[1051] = { id : 1051, name : '수동의 미학', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SKILL_ARTIFACT, flavor : '엑셀 팡션 같은 걸 너무 쓰면...', rank : 5, rarity : cons.ITEM_RARITY_EPIC, stat : {  }, 
     effectDesc : '스페셜 스킬 SP 요구량 -25%. 스페셜 스킬이 자동으로 발동하지 않고, 전투 화면의 [스페셜] 버튼으로 직접 시전한다.', effect : [], skillMod : { specialCostMul : 0.75 }, manualSpecial : true };
 
+// ---------- 신규 12종 (영체화 장비 ~ 백수의 무거운 이불) ----------
+itemList[1052] = { id : 1052, name : '영체화 장비', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '몸의 절반을 다른 층위에 걸쳐 둔다. 맞은 자리는 조금 늦게 아프다.', rank : 2, rarity : cons.ITEM_RARITY_EPIC, stat : { maxHp : 300, magReduce : 0.05 }, 
+    effectDesc : '받은 피해를 3턴에 걸쳐 나눠 입는다. 일반 스킬 공격에 성공하면 아직 입지 않은 지연 피해가 절반으로 줄어든다', effect : [{code : 'spectralTick', active : cons.ACTIVE_TYPE_TURN_END}, {code : 'spectralClear', active : cons.ACTIVE_TYPE_ATTACK, value : 0.5, chkRealHit : true}], spectral : true };
+itemList[1053] = { id : 1053, name : '플라스마 소총', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_WEAPON, flavor : '쏠수록 총열이 달아오른다. 달아오를수록 더 깊이 뚫는다.', rank : 7, rarity : cons.ITEM_RARITY_RARE, stat : { phyAtkMin : 23, phyAtkMax : 28, magAtkMin : 23, magAtkMax : 28, crit : 0.03 }, 
+    effectDesc : '적에게 피해를 입히면 3턴 간 [플라스마 충전] 1중첩 (중첩당 주는 피해 +2%, 최대 4. 4중첩이면 관통 +5%p)', effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_DEAL_DAMAGE, buffCode : 10760, buffDur : 3, stack : 1}] };
+itemList[1054] = { id : 1054, name : '위상 붕괴 장치', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '공간에 금을 긋는 장치. 금은 한동안 아물지 않는다.', rank : 3, rarity : cons.ITEM_RARITY_EPIC, stat : { maxHp : 190, spCharge : 2 }, 
+    effectDesc : '스페셜 스킬로 피해를 입히면 적에게 [차원 균열] 3중첩<br><br>[차원 균열] : 중첩당 받는 피해 +7%. 턴 종료 시 시전자 마법 공격력 20%만큼 절대 피해. 피격될 때마다 1중첩 소멸', effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, active : 'specialHit', buffCode : 10761, buffDur : null, stack : 3}] };
+itemList[1055] = { id : 1055, name : '정밀 조준 바이저', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '숨을 멈추면 과녁만 남는다. 숨을 쉬면 다시 세상이 보인다.', rank : 4, rarity : cons.ITEM_RARITY_UNIQUE, stat : { maxHp : 190, hit : 0.06 }, 
+    effectDesc : '일반 스킬로 공격에 성공하면 [초집중] 1중첩 (주는 피해 +4%, 최대 5). 상성에서 지거나 공격이 빗나가면 사라진다', effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_ATTACK, buffCode : 10762, buffDur : null, stack : 1, chkRealHit : true}, {code : cons.EFFECT_TYPE_REMOVE_BUFF, active : cons.ACTIVE_TYPE_SKILL_LOSE, buffTarget : [10762]}, {code : cons.EFFECT_TYPE_REMOVE_BUFF, active : cons.ACTIVE_TYPE_MISS, buffTarget : [10762]}] };
+itemList[1056] = { id : 1056, name : '제세동기', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '멈춘 심장에게 한 번 더 기회를. 두 번은 없다.', rank : 2, rarity : cons.ITEM_RARITY_EPIC, stat : { maxHp : 240 }, 
+    effectDesc : '쓰러질 피해를 받으면 무효로 하고, 장비로 늘어난 생명력의 50%만큼 5턴 간 보호막. 대신 1턴 기절 (전투당 1회)', effect : [], defib : true };
+itemList[1057] = { id : 1057, name : '실드 리액터 슈트', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_ARMOR, flavor : '가슴의 반응로가 불꽃이 튀는 순간을 기다린다.', rank : 8, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 90, phyReduce : 0.03, magReduce : 0.02 }, 
+    effectDesc : '가위바위보에서 비기면 최대 생명력의 5% 보호막 (깨질 때까지)', effect : [{code : 'shieldPct', active : cons.ACTIVE_TYPE_TIE, buffCode : 10763, value : 0.05}] };
+itemList[1058] = { id : 1058, name : '여명의 로브', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_ARMOR, flavor : '새벽빛을 짜 넣은 로브. 해가 기울면 빛도 옅어진다.', rank : 6, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 200, magReduce : 0.04 }, 
+    effectDesc : '전투 시작 시 [광휘] (치명 +5%p, 회피 +10%p). 생명력이 50% 아래로 떨어지면 사라진다', effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_BATTLE_START, buffCode : 10764, buffDur : null}, {code : 'removeIfLowHp', active : cons.ACTIVE_TYPE_TAKE_HIT, buffCode : 10764}, {code : 'removeIfLowHp', active : cons.ACTIVE_TYPE_TURN_START, buffCode : 10764}] };
+itemList[1059] = { id : 1059, name : '보호막 방출기', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '막아 낸 힘을 모아 두었다가 한꺼번에 밀어낸다.', rank : 4, rarity : cons.ITEM_RARITY_UNIQUE, stat : { maxHp : 190, phyReduce : 0.03 }, 
+    effectDesc : '보호막을 얻은 다음 턴에 일반 스킬 공격에 성공하면, 얻었던 보호막의 절반만큼 절대 피해', effect : [{code : 'shieldBurst', active : cons.ACTIVE_TYPE_ATTACK, chkRealHit : true}] };
+itemList[1060] = { id : 1060, name : '운명의 주사위', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '굴린 적 없는 주사위. 그래도 결과는 늘 나온다.', rank : 4, rarity : cons.ITEM_RARITY_UNIQUE, stat : { maxHp : 120, crit : 0.04 }, 
+    effectDesc : '상성에서 2번 연속 지면 자신에게, 3번 연속 이기면 적에게 [인과율]<br><br>[인과율] : 다음에 상성에서 지더라도 낸 기술이 상대에게 그대로 들어간다 (1회)', effect : [{code : 'fateWin', active : cons.ACTIVE_TYPE_SKILL_WIN}, {code : 'fateLose', active : cons.ACTIVE_TYPE_SKILL_LOSE}] };
+itemList[1061] = { id : 1061, name : '진심 좌우 반복 뛰기', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '왼쪽, 오른쪽, 왼쪽, 오른쪽. 진심이다.', rank : 7, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 45, evasion : 0.03 }, 
+    effectDesc : '같은 일반 스킬을 연속으로 내면 (이기든 지든 비기든) [반복 기동] 1중첩 (주는 피해 +5%, 최대 3). 다른 기술을 내면 사라진다', effect : [], repeatRun : true };
+itemList[1062] = { id : 1062, name : '복수의 거울', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '비친 것은 반드시 돌아간다. 조금 늦을 뿐이다.', rank : 3, rarity : cons.ITEM_RARITY_UNIQUE, stat : { maxHp : 180 }, 
+    effectDesc : '피해를 받기 시작하면 3턴 동안 받은 피해를 모두 모아, 그 절반을 마법 고정 피해로 되돌려준다 (쿨다운 5턴)', effect : [{code : 'revengeRelease', active : cons.ACTIVE_TYPE_TURN_END}], revenge : true };
+itemList[1063] = { id : 1063, name : '백수의 무거운 이불', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '한 번 덮으면 시간이 알아서 흘러간다. 일어날 필요가 없다.', rank : 3, rarity : cons.ITEM_RARITY_EPIC, stat : { maxHp : 270, hpRegen : 3, spRegen : 2 }, 
+    effectDesc : '가위바위보에서 비겨도 턴이 지나간다 (지속 효과·버프 지속 시간·턴 수가 모두 흐른다. 적의 것도)', effect : [], tieTurn : true };
+
 // 아이템 pctStat의 공격력 % → 주는 피해 % (기본 공격력에만 곱해지던 문제)
 itemList.forEach(function(it) {
   if (!it || !it.pctStat || (it.pctStat.phyAtk === undefined && it.pctStat.magAtk === undefined)) return;

@@ -186,6 +186,17 @@ Battlemodule.prototype._borrowGear = function(winner, loser, rank, name) {
 Battlemodule.prototype._checkRevive = function() {
   for (const [me, opp] of [[this.charLeft, this.charRight], [this.charRight, this.charLeft]]) {
     if (me.curHp > 0) continue;
+    if (itemFlag(me, 'defib') && !me.defibUsed) {   // 제세동기: 치명상 무효 + 장비 체력 50% 보호막 5턴 + 1턴 기절 (전투당 1회)
+      me.defibUsed = true;
+      me.curHp = Math.max(1, Math.round(isFinite(me.hpBeforeTurn) && me.hpBeforeTurn > 0 ? me.hpBeforeTurn : me.stat.maxHp * 0.1));
+      const gearHp = Object.values(me.items || {}).reduce((a, it) => a + ((it && it.stat && it.stat.maxHp) || 0), 0);
+      const bo = buffMdl.getBuffData({ buffCode : 10767 }); bo.dur = 5;
+      for (const e of bo.effect) if (e.code === cons.EFFECT_TYPE_SHIELD) e.value = Math.max(1, Math.round(gearHp * 0.5));
+      this.giveBuff(me, me, bo, false, '제세동기');
+      const st = buffMdl.getBuffData({ buffCode : 4 }); st.dur = 1; this.giveBuff(me, me, st, false, '제세동기');
+      this.result += '<span class="skillDamage">[ 제세동기 ] 심장이 다시 뛴다! 치명상을 무효로 하고 보호막 ' + bo.effect.find(e => e.code === cons.EFFECT_TYPE_SHIELD).value + ' (5턴). 대신 1턴 기절</span><br>';
+      continue;
+    }
     const hasShard = (me.items || {}) && Object.values(me.items || {}).some(it => it && it.shardRevive);   // 텍터스의 조각
     if (hasShard) {
       const cur = (me.buffs || []).find(x => x.id === 10713);
@@ -297,7 +308,15 @@ Battlemodule.prototype._doBattleEnd = function(flag) {
   
 }
 
+Battlemodule.prototype.trackRepeat = function(c, idx) {   // 진심 좌우 반복 뛰기: 같은 기술을 연달아 내면 [반복 기동]
+  if (!itemFlag(c, 'repeatRun')) { c.lastPlayedIdx = idx; return; }
+  const bb = (c.buffs || []).find(x => x.id === 10766);
+  if (c.lastPlayedIdx === idx) { const bo = buffMdl.getBuffData({ buffCode : 10766 }); bo.dur = null; bo.stack = 1; this.giveBuff(c, c, bo, false, '진심 좌우 반복 뛰기'); }
+  else if (bb) removeBuff(bb);
+  c.lastPlayedIdx = idx;
+};
 Battlemodule.prototype._doBattleTurnManual = function(left, right) {
+  if (left !== right) { this.trackRepeat(this.charLeft, left); this.trackRepeat(this.charRight, right); }
   if (!this.redecide) {
     this.turnCount++;
     this.result += '<br><div class="turnWrap"><span class="turnCount">' + this.turnCount + '턴</span><br>';
@@ -312,6 +331,11 @@ Battlemodule.prototype._doBattleTurnManual = function(left, right) {
       this.resolveEffects(this.charLeft, this.charRight, getItemEffects(this.charLeft, cons.ACTIVE_TYPE_TIE), null, this.charLeft.skill.base[left]);
       this.resolveEffects(this.charRight, this.charLeft, getItemEffects(this.charRight, cons.ACTIVE_TYPE_TIE), null, this.charRight.skill.base[right]);
       this.lastTieType = left;   // 비긴 카드 종류 (필치 봉쇄용)
+      this.trackRepeat(this.charLeft, left); this.trackRepeat(this.charRight, right);
+      if (itemFlag(this.charLeft, 'tieTurn') || itemFlag(this.charRight, 'tieTurn')) {   // 백수의 무거운 이불: 비겨도 턴이 흐른다
+        this.result += '<div class="note-box">이불 속에서 시간이 흐른다 — 비겼지만 턴이 지나간다.</div>';
+        this.resolveTurnEnd(this.charLeft, this.charRight); this.turnCount++; this.resolveTurnBegin(this.charLeft, this.charRight);
+      }
       if (this.checkDrive(this.charLeft, cons.ACTIVE_TYPE_TIE)) this.resolveDrive(this.charLeft, this.charRight, null);   // 무승부 드라이브 (한 몸이 된 쌍검)
       if (this.checkDrive(this.charRight, cons.ACTIVE_TYPE_TIE)) this.resolveDrive(this.charRight, this.charLeft, null);
       this.charLeft.lastSkillCode = this.charLeft.skill.base[left].code;
@@ -522,7 +546,9 @@ Battlemodule.prototype._doBattleTurnManual = function(left, right) {
     this.resolveEffects(loser, winner, getItemEffects(loser, cons.ACTIVE_TYPE_BEFORE_OPP_USE_SPECIAL), damage);
     if (winner.skill.special.cost <= winner.curSp && findBuffByCode(winner, 10004).length == 0 && findBuffByCode(winner, 10005).length == 0) {
       this.result += '<div class="specialSkill">[ ' + winner.name + ' ] Special Skill - [ ' + winner.skill.special.name + ' ] 발동!</div>';
+      const hpB1 = loser.curHp;
       this.resolveEffects(winner, loser, winner.skill.special.effect);
+      if (loser.curHp < hpB1) this.resolveEffects(winner, loser, getItemEffects(winner, 'specialHit'), damage);   // 스페셜로 피해를 입혔을 때
       winner.curSp = 0;
       this.resolveEffects(winner, loser, getBuffEffects(winner, cons.ACTIVE_TYPE_USE_SPECIAL), damage);
       this.resolveEffects(winner, loser, getItemEffects(winner, cons.ACTIVE_TYPE_USE_SPECIAL), damage);
@@ -537,7 +563,9 @@ Battlemodule.prototype._doBattleTurnManual = function(left, right) {
     this.resolveEffects(winner, loser, getItemEffects(winner, cons.ACTIVE_TYPE_BEFORE_OPP_USE_SPECIAL), damage);
     if (loser.skill.special.cost <= loser.curSp && findBuffByCode(loser, 10004).length == 0 && findBuffByCode(loser, 10005).length == 0) {
       this.result += '<div class="specialSkill">[ ' + loser.name + ' ] Special Skill - [ ' + loser.skill.special.name + ' ] 발동!</div>';
+      const hpB2 = winner.curHp;
       this.resolveEffects(loser, winner, loser.skill.special.effect);
+      if (winner.curHp < hpB2) this.resolveEffects(loser, winner, getItemEffects(loser, 'specialHit'), damage);
       loser.curSp = 0;
       this.resolveEffects(loser, winner, getBuffEffects(loser, cons.ACTIVE_TYPE_USE_SPECIAL), damage);
       this.resolveEffects(loser, winner, getItemEffects(loser, cons.ACTIVE_TYPE_USE_SPECIAL), damage);
@@ -878,6 +906,17 @@ Battlemodule.prototype.dealDamage = function(src, dst, damage) {
     this.result += '[ 정상화의 신 ] 불합리한 피해를 정상화했다! (' + before + ' → ' + damage.value + ')<br>';
   }
   if (!isFinite(damage.value)) { console.log('[NaN damage]', JSON.stringify({ src: src && src.name, dst: dst && dst.name, type: damage.type, atkRat: damage.atkRat, reduce: damage.reduce, skillRat: damage.skillRat })); damage.value = 0; }
+  if (damage.value > 0 && src !== dst && !damage.spectralTick && itemFlag(dst, 'spectral')) {   // 영체화 장비: 받은 피해를 3턴에 나눠 입는다
+    const per = damage.value / 3;
+    dst.spectralQ = (dst.spectralQ || []).concat([{ v : per, n : 3 }]);
+    this.result += '<span class="shieldLog">' + dst.name + getUnnun(dst.nameType) + ' 영체가 되어 ' + Math.round(damage.value) + ' 피해를 흘려보낸다 (3턴에 걸쳐 입음)</span><br>';
+    dst.lastDamage = damage.value;
+    damage.value = 0;
+  }
+  if (damage.value > 0 && src !== dst && itemFlag(dst, 'revenge')) {   // 복수의 거울: 3턴간 받은 피해 누적
+    if (!dst.revenge && !(dst.revengeCd > this.turnCount)) dst.revenge = { start : this.turnCount, acc : 0 };
+    if (dst.revenge) dst.revenge.acc += damage.value;
+  }
   if (damage.value > 0 && src !== dst) {   // 소환수(영물·신수)가 있으면 피해를 균등 분담
     const summons = (dst.buffs || []).filter(b => b.summon && b.id > 0);
     if (summons.length) {
@@ -1844,6 +1883,47 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
         if (sp) sp.cost = Math.max(25, sp.cost - 25);
         this.result += '[ 입찰 ] 유찰… ' + (it ? '[ ' + it.name + ' ] 은(는) 다른 사람에게 넘어갔다.' : '') + ' (다음 입찰 SP ' + (sp ? sp.cost : '-') + ')<br>';
       }
+    } else if (eff.code === 'spectralTick') {   // 영체화: 턴 종료마다 지연 피해 1/3씩
+      const q = winner.spectralQ || []; if (!q.length) continue;
+      let sum = 0; for (const e of q) { sum += e.v; e.n--; }
+      winner.spectralQ = q.filter(e => e.n > 0);
+      const v = Math.round(sum); if (v <= 0) continue;
+      winner.curHp -= v;
+      this.result += '[ 영체화 장비 ] 흘려보낸 피해가 돌아온다 — ' + v + '<br>';
+    } else if (eff.code === 'spectralClear') {   // 영체화: 공격에 성공하면 남은 지연 피해 절반 소멸
+      const q = winner.spectralQ || []; if (!q.length) continue;
+      const before = Math.round(q.reduce((a, e) => a + e.v * e.n, 0));
+      for (const e of q) e.v *= (1 - eff.value);
+      this.result += '[ 영체화 장비 ] 되돌아올 피해가 절반으로 흩어졌다 (' + before + ' → ' + Math.round(before * (1 - eff.value)) + ')<br>';
+    } else if (eff.code === 'stackDown') {   // 차원 균열: 피격 시 1중첩 소멸
+      const bb = eff.buff; if (!bb) continue;
+      bb.stack = (bb.stack || 1) - 1; if (bb.stack <= 0) removeBuff(bb);
+    } else if (eff.code === 'shieldBurst') {   // 보호막 방출기: 직전 턴에 얻은 보호막의 절반만큼 절대 피해
+      const g = winner.shieldGain; if (!g || g.t !== this.turnCount - 1) continue;
+      const v = Math.max(1, Math.round(g.v * 0.5)); loser.curHp -= v; winner.shieldGain = null;
+      this.result += '<span class="skillDamage">[ 보호막 방출기 ] 모아 둔 보호막을 터뜨린다 — ' + v + ' 절대 피해</span><br>';
+    } else if (eff.code === 'fateWin' || eff.code === 'fateLose') {   // 운명의 주사위
+      if (eff.code === 'fateWin') { winner.fateW = (winner.fateW || 0) + 1; winner.fateL = 0; }
+      else { winner.fateL = (winner.fateL || 0) + 1; winner.fateW = 0; }
+      if (winner.fateL >= 2) { winner.fateL = 0; const bo = buffMdl.getBuffData({ buffCode : 10765 }); bo.dur = null; this.giveBuff(winner, winner, bo, false, '운명의 주사위'); this.result += '[ 운명의 주사위 ] 두 번 연속으로 졌다 — 운명이 편을 들어 준다.<br>'; }
+      if (winner.fateW >= 3) { winner.fateW = 0; const bo = buffMdl.getBuffData({ buffCode : 10765 }); bo.dur = null; this.giveBuff(winner, loser, bo, true, '운명의 주사위'); this.result += '[ 운명의 주사위 ] 세 번 연속으로 이겼다 — 운명이 균형을 맞춘다.<br>'; }
+    } else if (eff.code === 'causalStrike') {   // 인과율: 져도 낸 기술이 들어간다 (1회)
+      const idx = winner.skill && winner.skill.base ? winner.skill.base.findIndex(k => k && k.code === winner.curSkillCode) : -1;
+      const sk = idx >= 0 ? winner.skill.base[idx] : null;
+      if (eff.buff) removeBuff(eff.buff);
+      if (!sk || sk.noAttack) continue;
+      const rd = this.calcDamage(winner, loser, sk); rd.noProc = true;
+      if (rd.hit) { this.dealDamage(winner, loser, rd); this.result += '<span class="skillDamage">[ 인과율 ] 졌지만 ' + winner.name + getUi(winner.nameType) + ' [ ' + sk.name + ' ] 도 들어갔다 — ' + rd.value + '대미지</span><br>'; }
+    } else if (eff.code === 'removeIfLowHp') {   // 여명의 로브: 생명력 50% 미만이면 광휘 제거
+      if (winner.curHp >= winner.stat.maxHp * 0.5) continue;
+      const bb = (winner.buffs || []).find(x => x.id === eff.buffCode); if (bb) { removeBuff(bb); this.result += '[ 여명의 로브 ] 광휘가 꺼졌다.<br>'; }
+    } else if (eff.code === 'revengeRelease') {   // 복수의 거울: 3턴 누적 후 절반 반사 (쿨 5)
+      const rv = winner.revenge; if (!rv || this.turnCount < rv.start + 2) continue;
+      winner.revenge = null; winner.revengeCd = this.turnCount + 5;
+      if (rv.acc <= 0) continue;
+      const rd = this.calcDamage(winner, loser, { name : '복수의 거울', type : cons.DAMAGE_TYPE_MAGICAL_FIXED, damage : Math.round(rv.acc * 0.5), nameType : cons.NAME_KOR_END_CONS, effect : [] }); rd.hit = true; rd.noProc = true;
+      this.dealDamage(winner, loser, rd);
+      this.result += '<span class="skillDamage">[ 복수의 거울 ] 3턴간 받은 ' + Math.round(rv.acc) + ' 피해를 되비춘다 — ' + rd.value + '대미지</span><br>';
     } else if (eff.code === 'healDecay') {   // [붕괴]: 중첩당 받는 회복 감소
       if (!damage || !(damage.amount > 0)) continue;
       const st = (eff.buff && eff.buff.stack) || 1;
@@ -2493,6 +2573,7 @@ Battlemodule.prototype.giveBuff = function(src, recv, buffObj, printFlag, name) 
   } else {
     if (buffObj.stackType === 2 && !buffObj.stack) buffObj.stack = 1;   // 스택형은 첫 부여도 1중첩으로 표기
     buffObj.gainTurn = this.turnCount;
+    { const sh = (buffObj.effect || []).find(e => e.code === cons.EFFECT_TYPE_SHIELD && e.value > 1); if (sh) recv.shieldGain = { t : this.turnCount, v : sh.value }; }
     if (buffObj.maxStack && buffObj.stack > buffObj.maxStack) buffObj.stack = buffObj.maxStack;
     recv.buffs.push(buffObj);
   }       
@@ -2557,6 +2638,7 @@ Battlemodule.prototype.checkDrive = function(chara, active, arg) {
   return getRandom(chanceUsed) && chara.curSp >= chara.skill.drive.cost * dMul && findBuffByCode(chara, 10010).length == 0;
 }
 
+function itemFlag(c, k) { return Object.values(c.items || {}).some(it => it && it[k]); }
 // 전투 중 가상 장비 (티리온): 전투에서 바로 작동하는 것만
 function pickBattleItem(rank, rarity, type) {
   const l = item.list.filter(x => x && x.rank === rank && x.rarity === rarity && x.type === type && !x.use && !x.quantum && !x.manualSpecial && !x.runEffect && !x.driveOverride && !x.timeMult && !x.unifyAtk);
@@ -2812,6 +2894,7 @@ function calcStats(chara, opp) {
       continue;
     }
     
+    if (val.minStack && val.buff && (val.buff.stack || 1) < val.minStack) continue;   // 일정 중첩 이상일 때만 (플라스마 충전)
     if (val.code === 'skillDamageAdd') {   // [생명의 나무]: 지정 슬롯 계수 가산
       const sk = chara.skill && chara.skill.base && chara.skill.base[val.slot];
       if (sk) sk.damage = Math.round((sk.damage + val.value) * 100) / 100;
@@ -2927,6 +3010,7 @@ function getIga(type) {
 }
 
 function getUiga(type) { return type === cons.NAME_KOR_END_CONS ? '의' : '의'; }
+function getUi(type) { return '의'; }
 function getUro(type) {
   return (type === cons.NAME_KOR_NO_END_CONS) ? '로' : '으로';
 }

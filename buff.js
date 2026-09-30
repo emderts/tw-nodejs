@@ -7367,6 +7367,48 @@ module.exports.getBuffData = function(eff) {
     retObj.tooltip = '모인 조각. 재조립하면 1중첩 언커먼 / 2 레어 / 3 유니크 / 4 이상 에픽 장신구의 능력과 효과를 얻는다';
     retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'hit', value : 0 });
     break;
+  case 10760 :   // 플라스마 소총 [플라스마 충전]
+    retObj.name = '플라스마 충전'; retObj.nameType = cons.NAME_KOR_END_CONS; retObj.stackType = 2; retObj.maxStack = 4; retObj.isDebuff = false;
+    retObj.tooltip = '중첩당 주는 피해 +2%. 4중첩이면 관통 +5%p';
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_DAMAGE, code : cons.EFFECT_TYPE_MULTIPLY_DAMAGE, anySkill : true, stackable : true, value : 0.02 });
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'pierce', value : 0.05, minStack : 4 });
+    break;
+  case 10761 :   // 위상 붕괴 장치 [차원 균열]
+    retObj.name = '차원 균열'; retObj.nameType = cons.NAME_KOR_END_CONS; retObj.stackType = 2; retObj.maxStack = 9; retObj.isDebuff = true; retObj.durOff = null;
+    retObj.tooltip = '중첩당 받는 피해 +7%. 턴 종료 시 시전자 마법 공격력 20%만큼 절대 피해. 피격될 때마다 1중첩 소멸';
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_DAMAGE_RECEIVE, code : cons.EFFECT_TYPE_MULTIPLY_DAMAGE, anySkill : true, stackable : true, value : 0.07 });
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_TURN_END, code : cons.EFFECT_TYPE_SELF_HIT, type : cons.DAMAGE_TYPE_ABSOLUTE, isPercentOppStat : true, percentKey : 'magAtk', value : 0.2 });
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_TAKE_HIT, code : 'stackDown' });
+    break;
+  case 10762 :   // 정밀 조준 바이저 [초집중]
+    retObj.name = '초집중'; retObj.nameType = cons.NAME_KOR_END_CONS; retObj.stackType = 2; retObj.maxStack = 5; retObj.isDebuff = false; retObj.durOff = null;
+    retObj.tooltip = '중첩당 주는 피해 +4% (최대 5). 상성에서 지거나 공격이 빗나가면 사라진다';
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_DAMAGE, code : cons.EFFECT_TYPE_MULTIPLY_DAMAGE, anySkill : true, stackable : true, value : 0.04 });
+    break;
+  case 10763 :   // 실드 리액터 슈트 [리액터 실드]
+    retObj.name = '리액터 실드'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 1; retObj.isDebuff = false; retObj.durOff = null;
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_DEAL_DAMAGE_RECEIVE, code : cons.EFFECT_TYPE_SHIELD, value : 1 });
+    break;
+  case 10764 :   // 여명의 로브 [광휘]
+    retObj.name = '광휘'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 1; retObj.isDebuff = false; retObj.durOff = null;
+    retObj.tooltip = '치명 +5%p, 회피 +10%p. 생명력이 50% 아래로 떨어지면 사라진다';
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'crit', value : 0.05 });
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'evasion', value : 0.1 });
+    break;
+  case 10765 :   // 운명의 주사위 [인과율]
+    retObj.name = '인과율'; retObj.nameType = cons.NAME_KOR_END_CONS; retObj.stackType = 1; retObj.isDebuff = false; retObj.durOff = null;
+    retObj.tooltip = '다음에 상성에서 지더라도, 낸 기술이 상대에게 그대로 들어간다 (1회)';
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_SKILL_LOSE, code : 'causalStrike' });
+    break;
+  case 10766 :   // 진심 좌우 반복 뛰기 [반복 기동]
+    retObj.name = '반복 기동'; retObj.nameType = cons.NAME_KOR_END_CONS; retObj.stackType = 2; retObj.maxStack = 3; retObj.isDebuff = false; retObj.durOff = null;
+    retObj.tooltip = '중첩당 주는 피해 +5% (최대 3). 다른 기술을 내면 사라진다';
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_DAMAGE, code : cons.EFFECT_TYPE_MULTIPLY_DAMAGE, anySkill : true, stackable : true, value : 0.05 });
+    break;
+  case 10767 :   // 제세동기 [전기 충격 보호]
+    retObj.name = '전기 충격 보호'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 1; retObj.isDebuff = false;
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_DEAL_DAMAGE_RECEIVE, code : cons.EFFECT_TYPE_SHIELD, value : 1 });
+    break;
   case 10620 :
     retObj.name = '소형 동물'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 2; retObj.maxStack = 10; retObj.isDebuff = false; retObj.durOff = null;
     retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'maxHp', value : 10 });
