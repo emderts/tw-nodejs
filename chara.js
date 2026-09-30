@@ -1358,7 +1358,7 @@ const item = require('./items');
   skillObj = {code : 201759, name : '수비진', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_DRIVE, 
       active : cons.ACTIVE_TYPE_TURN_START, cost : 0, chance : 1,
       effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201764, buffDur : null}],
-      tooltip : '전투 시작 시 수비진으로 시작, 각 진형에 따라 공격 스킬이 변경된다. 참격진으로 토글 시 4턴 간 [가시의 상] 버프 부여. 수비진으로 토글 시 4턴 간 [강철의 상] 버프 부여. 토글할 때마다 [오버 클락] 스택 2개 생성<br><br>[가시의 상] : 루니샤의 현재 (물리저항+마법저항)*0.7 만큼 치명 증가<br>[강철의 상] : 루니샤의 현재 (물리저항+마법저항)*1.5 만큼 피해감소 증가',
+      tooltip : '전투 시작 시 수비진으로 시작. 수비진에서 공격에 성공하면 참격진으로, 참격진에서 피격되면 수비진으로 전환된다 (각 100%, SP 소모 없음). 진형에 따라 공격 스킬이 바뀐다 (참격진: 연 / 살 / 과부하).<br>참격진으로 전환 시 1턴 간 [가시의 상], 수비진으로 전환 시 1턴 간 [강철의 상]. 전환할 때마다 [오버 클락] 1중첩<br><br>[가시의 상] : 치명 +(물리저항+마법저항)×0.7<br>[강철의 상] : 피해감소 +(물리저항+마법저항)×1.5',
       flavor : '상황에 따라 전투 자세를 변경합니다.'};
   charLunisha.skill.drive = skillObj;
 

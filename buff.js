@@ -3827,6 +3827,7 @@ module.exports.getBuffData = function(eff) {
     retObj.effect.push(effectObj);
     break;
   case 201764 : 
+    retObj.tooltip = '수비진 — 공격에 성공하면 참격진으로 전환한다';
     retObj.name = '수비진';
     retObj.nameType = cons.NAME_KOR_END_CONS;
     retObj.stackType = 1;
@@ -3837,11 +3838,10 @@ module.exports.getBuffData = function(eff) {
     effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
     effectObj.code = cons.EFFECT_TYPE_SET_SKILL;
     effectObj.key = 'drive';
-    effectObj.target = {code : 201765, name : '참격진', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_DRIVE, 
-        active : cons.ACTIVE_TYPE_ATTACK, cost : -8, chance : 0.22,
+    effectObj.target = {code : 201765, tooltip : '공격에 성공하면 참격진으로 전환 (100%). 전환 시 [오버 클락] 1중첩, 1턴 간 [가시의 상]<br><br>[가시의 상] : 치명 +(물리저항+마법저항)×0.7', name : '참격진', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_DRIVE, 
+        active : cons.ACTIVE_TYPE_ATTACK, cost : 0, chance : 1,
         effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201762, buffDur : null, stack : 1},
-                  {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201762, buffDur : null, stack : 1},
-                  {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201769, buffDur : 4}]};
+                  {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201769, buffDur : 1}]};
     retObj.effect.push(effectObj);
     effectObj = {};
     effectObj.active = cons.ACTIVE_TYPE_USE_DRIVE;
@@ -3853,6 +3853,7 @@ module.exports.getBuffData = function(eff) {
     retObj.effect.push(effectObj);
     break;
   case 201765 : 
+    retObj.tooltip = '참격진 — 스킬이 연 / 살 / 과부하로 바뀐다. 피격되면 수비진으로 전환한다';
     retObj.name = '참격진';
     retObj.nameType = cons.NAME_KOR_END_CONS;
     retObj.stackType = 1;
@@ -3865,7 +3866,7 @@ module.exports.getBuffData = function(eff) {
     effectObj.key = 'base';
     effectObj.value = 0;
     effectObj.chkNot = [201771];
-    effectObj.target = {code : 201761, name : '연', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 0.8, 
+    effectObj.target = {code : 201761, tooltip : '38% 확률로 한 번 더 벤다 (두 번째는 피해 62.5%)', name : '연', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 0.8, 
         effect : [{code : cons.EFFECT_TYPE_MULTIPLE, chance : 0.38,  
           target : [{code : cons.EFFECT_TYPE_RESOLVE_SKILL, value : 0, noEffect : true, reduceDmg : 0.625},
                     {code : cons.EFFECT_TYPE_RESOLVE_SKILL, value : 0, noEffect : true}]}]};
@@ -3875,15 +3876,15 @@ module.exports.getBuffData = function(eff) {
     effectObj.code = cons.EFFECT_TYPE_SET_SKILL;
     effectObj.key = 'base';
     effectObj.value = 1;
-    effectObj.target = {code : 201762, name : '살', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1.2, 
-        effect : [{code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_ABSOLUTE, value : 0.04, isPercentOppStat : true, percentKey : 'maxHp', chkLoseLast : true}]};
+    effectObj.target = {code : 201762, tooltip : '전 턴에 상성 승리했다면 적 최대 생명력의 4% 절대 추가 피해', name : '살', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1.2, 
+        effect : [{code : cons.EFFECT_TYPE_ADD_HIT, type : cons.DAMAGE_TYPE_ABSOLUTE, value : 0.04, isPercentOppStat : true, percentKey : 'maxHp', chkWinLast : true}]};
     retObj.effect.push(effectObj);
     effectObj = {};
     effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
     effectObj.code = cons.EFFECT_TYPE_SET_SKILL;
     effectObj.key = 'base';
     effectObj.value = 2;
-    effectObj.target = {code : 201763, name : '과부하', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 1, 
+    effectObj.target = {code : 201763, tooltip : '[오버 클락] 1중첩, 40% 확률로 자신에게 3턴 간 [오버 드라이브]<br><br>[오버 드라이브] : 관통 +100%p', name : '과부하', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 1, 
         effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201762, buffDur : null, stack : 1},
                   {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201768, chance : 0.4, buffDur : 3}]};
     retObj.effect.push(effectObj);
@@ -3891,11 +3892,10 @@ module.exports.getBuffData = function(eff) {
     effectObj.active = cons.ACTIVE_TYPE_CALC_STATS;
     effectObj.code = cons.EFFECT_TYPE_SET_SKILL;
     effectObj.key = 'drive';
-    effectObj.target = {code : 201764, name : '수비진', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_DRIVE, 
-        active : cons.ACTIVE_TYPE_TAKE_HIT, cost : 8, chance : 0.22,
+    effectObj.target = {code : 201764, tooltip : '피격되면 수비진으로 전환 (100%). 전환 시 [오버 클락] 1중첩, 1턴 간 [강철의 상]<br><br>[강철의 상] : 피해감소 +(물리저항+마법저항)×1.5', name : '수비진', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_DRIVE, 
+        active : cons.ACTIVE_TYPE_TAKE_HIT, cost : 0, chance : 1,
         effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201762, buffDur : null, stack : 1},
-                  {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201762, buffDur : null, stack : 1},
-                  {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201770, buffDur : 4}]};
+                  {code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 201770, buffDur : 1}]};
     retObj.effect.push(effectObj);
     effectObj = {};
     effectObj.active = cons.ACTIVE_TYPE_USE_DRIVE;
