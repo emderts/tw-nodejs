@@ -712,7 +712,10 @@ function eventPool(char) {
       return { picks };
     },
     desc: has('pick3') && d.picks ? '먼지 쌓인 진열대에 유물 셋이 놓여 있다. 하나만 가져갈 수 있고, 손에 쥐면 지금 급에 맞게 깨어난다.' : '무언가 놓여 있던 진열대다.',
-    html: has('pick3') && d.picks ? d.picks.map(x => '<b>' + x.name + '</b> <small>' + x.rank + '급 유니크</small><br>' + (x.effectDesc || '')).join('<hr style="border:0;border-top:1px solid var(--line);margin:8px 0">') : '',
+    html: has('pick3') && d.picks ? d.picks.map(x => {   // 증폭된 모습 그대로 미리 보여준다 (능력치 포함)
+      const pv = amplify(JSON.parse(JSON.stringify(x)), char.rank);
+      return '<small style="color:var(--ash)">' + x.rank + '급 → ' + char.rank + '급</small><br>' + (deps.makeTooltip ? deps.makeTooltip(pv) : '<b>' + pv.name + '</b><br>' + (pv.effectDesc || ''));
+    }).join('<hr style="border:0;border-top:1px solid var(--line);margin:8px 0">') : '',
     options: has('pick3') && d.picks ? d.picks.map(x => ({
       label: x.name + ' 을(를) 가져간다',
       effect: (ch) => { const it = amplify(JSON.parse(JSON.stringify(x)), ch.rank); ch.inventory.push(it); return it.name + ' 을(를) 얻었다.'; }
