@@ -2782,10 +2782,14 @@ function calcStats(chara, opp) {
     }
     
     if (val.code === cons.EFFECT_TYPE_SET_SKILL) {
+      // [전수]로 받은 스킬은 캐릭터 고유의 스킬 교체(진형·단계 등)에 덮어쓰이지 않는다
+      const isTransplant = (sk) => sk && typeof sk.name === 'string' && sk.name.indexOf('[전수]') === 0;
       if (val.key === 'base') {
         var valueSel = val.randomValue ? Math.floor(Math.random() * 3) : val.value;
+        if (isTransplant(chara.skillOri && chara.skillOri.base && chara.skillOri.base[valueSel])) continue;
         chara.skill.base[valueSel] = JSON.parse(JSON.stringify(val.target));
       } else if (val.key) {
+        if (isTransplant(chara.skillOri && chara.skillOri[val.key])) continue;
         chara.skill[val.key] = JSON.parse(JSON.stringify(val.target));
       }
     } else if (val.code === cons.EFFECT_TYPE_ADD_SKILL_VALUE) {
