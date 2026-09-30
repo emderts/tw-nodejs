@@ -2286,7 +2286,7 @@ itemList[1051] = { id : 1051, name : '수동의 미학', nameType : cons.NAME_KO
 
 // ---------- 신규 12종 (영체화 장비 ~ 백수의 무거운 이불) ----------
 itemList[1052] = { id : 1052, name : '영체화 장비', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '몸의 절반을 다른 층위에 걸쳐 둔다. 맞은 자리는 조금 늦게 아프다.', rank : 2, rarity : cons.ITEM_RARITY_EPIC, stat : { maxHp : 300, magReduce : 0.05 }, 
-    effectDesc : '받은 피해를 3턴에 걸쳐 나눠 입는다. 일반 스킬 공격에 성공하면 아직 입지 않은 지연 피해가 절반으로 줄어든다', effect : [{code : 'spectralTick', active : cons.ACTIVE_TYPE_TURN_END}, {code : 'spectralClear', active : cons.ACTIVE_TYPE_ATTACK, value : 0.5, chkRealHit : true}], spectral : true };
+    effectDesc : '받은 피해를 3턴에 걸쳐 나눠 입는다. 일반 스킬 공격에 성공하면 아직 입지 않은 지연 피해의 75%가 사라진다', effect : [{code : 'spectralTick', active : cons.ACTIVE_TYPE_TURN_END}, {code : 'spectralClear', active : cons.ACTIVE_TYPE_ATTACK, value : 0.75, chkRealHit : true}], spectral : true };
 itemList[1053] = { id : 1053, name : '플라스마 소총', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_WEAPON, flavor : '쏠수록 총열이 달아오른다. 달아오를수록 더 깊이 뚫는다.', rank : 7, rarity : cons.ITEM_RARITY_RARE, stat : { phyAtkMin : 23, phyAtkMax : 28, magAtkMin : 23, magAtkMax : 28, crit : 0.03 }, 
     effectDesc : '적에게 피해를 입히면 3턴 간 [플라스마 충전] 1중첩 (중첩당 주는 피해 +2%, 최대 4. 4중첩이면 관통 +5%p)', effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_DEAL_DAMAGE, buffCode : 10760, buffDur : 3, stack : 1}] };
 itemList[1054] = { id : 1054, name : '위상 붕괴 장치', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '공간에 금을 긋는 장치. 금은 한동안 아물지 않는다.', rank : 3, rarity : cons.ITEM_RARITY_EPIC, stat : { maxHp : 190, spCharge : 2 }, 

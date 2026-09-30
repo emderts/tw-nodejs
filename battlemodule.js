@@ -1894,7 +1894,7 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
       const q = winner.spectralQ || []; if (!q.length) continue;
       const before = Math.round(q.reduce((a, e) => a + e.v * e.n, 0));
       for (const e of q) e.v *= (1 - eff.value);
-      this.result += '[ 영체화 장비 ] 되돌아올 피해가 절반으로 흩어졌다 (' + before + ' → ' + Math.round(before * (1 - eff.value)) + ')<br>';
+      this.result += '[ 영체화 장비 ] 되돌아올 피해가 ' + Math.round(eff.value * 100) + '% 흩어졌다 (' + before + ' → ' + Math.round(before * (1 - eff.value)) + ')<br>';
     } else if (eff.code === 'stackDown') {   // 차원 균열: 피격 시 1중첩 소멸
       const bb = eff.buff; if (!bb) continue;
       bb.stack = (bb.stack || 1) - 1; if (bb.stack <= 0) removeBuff(bb);
