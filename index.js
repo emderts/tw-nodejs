@@ -4341,7 +4341,6 @@ async function procFloorCard (req, res) {
     if (pc && req.body.action === 'accept') char.deck.push({ type: pc.type });
     char.run.pendingCard = null;
     await saveChar(char, charRow.uid);
-    if (char.run.lastFallen) { res.redirect('/fallenLoot'); return; }   // 도전자 유품 선택이 남아 있으면
     res.redirect(req.body.next === 'home' ? '/' : '/nextFloor');
   } catch (err) { console.error(err); res.send('내부 오류'); }
 }
@@ -4432,6 +4431,11 @@ async function procFloorEvent (req, res) {
     const evDef = run.makeEventByCode(char, evCode);
     const evLast = evDef && evDef.options ? evDef.options.length - 1 : -1;
     const text = run.applyEvent(char, evCode, evOpt);
+    if (char.run.pendingFallenRest) {   // 쓰러진 도전자 안식: 기록 삭제
+      try { await pool.query('delete from fallen where id = $1', [char.run.pendingFallenRest]); } catch (e) { console.log('[fallen rest]', e.message); }
+      char.run.pendingFallenRest = null;
+      try { const acct = await loadAcct(sess.userUid); await grantAchv(sess.userUid, char, acct, ['fallen_rest']); await saveAcct(sess.userUid, acct); } catch (e) {}
+    }
     char.run.ach = char.run.ach || {};
     if (!/^mon_/.test(evCode) && evOpt !== evLast) char.run.ach.chose = true;   // 순수한 선택 판정
     if (evCode === 'devil' && evOpt !== evLast) { try { const acct = await loadAcct(sess.userUid); acct.stats.devil = (acct.stats.devil || 0) + 1; await saveAcct(sess.userUid, acct); } catch (e) {} }
@@ -4568,7 +4572,7 @@ async function procFloorResult (req, res) {
       char.run.pendingCard = pendingCard;
       await checkAcctGeneral(sess.userUid, char);   // 사이클 도달·수집 업적
       await saveChar(char, charRow.uid);
-      res.render('pages/floorEnd', { title: (enemy.isBoss ? '보스 격파' : '전투 승리'), lines: rewardLines, result: re.result, dead: false, rv: runView(char), pendingCard: pendingCard, fallen: char.run.lastFallen || null });
+      res.render('pages/floorEnd', { title: (enemy.isBoss ? '보스 격파' : '전투 승리'), lines: rewardLines, result: re.result, dead: false, rv: runView(char), pendingCard: pendingCard });
     } else if ((char.run.lives === undefined ? 1 : char.run.lives) > 0) {
       // 패배했지만 재도전 가능: 같은 층, 적은 다시 생성됨
       char.run.lives = (char.run.lives === undefined ? 1 : char.run.lives) - 1;

@@ -80,7 +80,7 @@ function jumpFloor(char, range) {
   return target;
 }
 function advance(char) {
-  char.run.lastFallen = null;   // 결과 화면에서 고르지 않고 넘어가면 사라진다
+  if (char.run.lastFallen && STAGES[char.run.stageIdx] === 'event') char.run.lastFallen = null;   // 후일담 이벤트 층을 떠나면 정리
   const fg = runEffect(char, 'skipShop'); if (typeof fg === 'number' && fg > 0) char.gold = (char.gold || 0) + fg;   // 나백수의 취업준비카드: 층마다 골드
   char.run.stageIdx++;
   if (char.run.stageIdx >= STAGES.length) {
@@ -723,6 +723,19 @@ function eventPool(char) {
     })).concat([{ label: '지나간다', effect: () => '진열대를 지나쳤다.' }]) : [{ label: '지나간다', effect: () => '아무것도 없었다.' }]
   });
 
+  // --- 쓰러진 도전자 후일담: 도전자를 이긴 다음 이벤트 층에 확정으로 대신 뜬다 ---
+  if (char.run.lastFallen) {
+    const lf = char.run.lastFallen;
+    pool.push({
+      code: 'fallen_after', weight: 0, title: '남겨진 짐',
+      desc: lf.name + '의 짐이 길가에 흩어져 있다. 한때 이 탑을 오르던 사람의 것이다.',
+      options: lf.taken ? [{ label: '떠난다', effect: () => '짐은 이미 정리했다.' }] : [
+        { label: '유품 하나를 챙기고 안식을 빌어 준다 (장비 1개, 이 도전자는 다시 나타나지 않는다)', effect: (ch) => applyFallenLoot(ch, 0) },
+        { label: '짐을 뒤져 쓸 만한 것을 모은다 (리설트 카드 2장)', effect: (ch) => applyFallenLoot(ch, 1) }
+      ]
+    });
+  }
+
   // --- 거꾸로 걸린 부적: 미리 정해진 스킬 하나의 물리↔마법 전환 (할지 말지 선택) ---
   pool.push({
     code: 'flipType', weight: 2, title: '거꾸로 걸린 부적',
@@ -943,6 +956,10 @@ function pickWeighted(pool, excludeCode) {
   return cands[cands.length - 1];
 }
 function makeEvent(char) {
+  if (char.run.lastFallen && !char.run.lastFallen.taken) {   // 도전자 후일담은 다음 이벤트 층에 확정 (다른 이벤트 대신)
+    char.run.lastEvent = 'fallen_after'; char.run.evData = null;
+    return makeEventByCode(char, 'fallen_after');
+  }
   const ev = pickWeighted(eventPool(char), char.run.lastEvent);
   char.run.lastEvent = ev.code;
   // 무작위 요소가 미리 보여야 하는 이벤트는 prepare로 데이터를 고정해 char.run.evData에 저장
@@ -966,8 +983,8 @@ function applyEvent(char, code, optIdx) {
 
 // 쓰러진 도전자 유품 (전투 결과 화면에서 선택): opt 0 = 유품 하나 + 안식, 1 = 리설트 카드 2장
 function applyFallenLoot(ch, opt) {
-  const lf = ch.run.lastFallen; if (!lf) return null;
-  ch.run.lastFallen = null;
+  const lf = ch.run.lastFallen; if (!lf || lf.taken) return null;
+  lf.taken = true;   // 이 층을 떠날 때 정리된다
   if (opt === 0) {
     const pickFrom = (lf.items || []).filter(Boolean);
     if (!pickFrom.length) return '가져갈 만한 것이 없었다.';
