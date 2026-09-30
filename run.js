@@ -955,7 +955,7 @@ function pickWeighted(pool, excludeCode) {
   for (const e of cands) { r -= (e.weight || 1); if (r <= 0) return e; }
   return cands[cands.length - 1];
 }
-const FALLEN_EVENT_CHANCE = 0.5;   // 도전자 후일담 등장 확률
+const FALLEN_EVENT_CHANCE = 0.3;   // 도전자 후일담 등장 확률
 function makeEvent(char) {
   if (char.run.lastFallen && !char.run.lastFallen.taken && !char.run.lastFallen.rolled) {   // 도전자 후일담: 다음 이벤트 층에서 한 번만 굴린다
     char.run.lastFallen.rolled = true;
