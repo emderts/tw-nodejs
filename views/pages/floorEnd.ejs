@@ -31,6 +31,14 @@
       <form action="/floorCard" method="post" style="flex:1"><button type="submit" style="width:100%">버린다</button><input type="hidden" name="action" value="decline"></form>
     </div>
   </div>
+  <% } else if (typeof fallen !== 'undefined' && fallen) { %>
+  <div class="note-box" style="border-color:var(--brass-dim)">
+    <b><%= fallen.name %></b>의 짐이 흩어져 있다. 한때 이 탑을 오르던 사람의 것이다.
+    <div style="display:grid;gap:8px;margin-top:10px">
+      <form action="/fallenLoot" method="post"><input type="hidden" name="opt" value="0"><button type="submit" class="btn-primary" style="width:100%">유품 하나를 챙기고 안식을 빌어 준다<br><small>장비 1개 · 이 도전자는 다시 나타나지 않는다</small></button></form>
+      <form action="/fallenLoot" method="post"><input type="hidden" name="opt" value="1"><button type="submit" style="width:100%">짐을 뒤져 쓸 만한 것을 모은다<br><small>리설트 카드 2장</small></button></form>
+    </div>
+  </div>
   <% } else if (dead || !rv) { %>
   <div class="backLink"><a href="/" class="btn-primary" style="padding:12px 24px"><%= dead ? '새 캐릭터 선택' : '캐릭터 화면으로' %></a></div>
   <% } else { %>

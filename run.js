@@ -80,6 +80,7 @@ function jumpFloor(char, range) {
   return target;
 }
 function advance(char) {
+  char.run.lastFallen = null;   // 결과 화면에서 고르지 않고 넘어가면 사라진다
   const fg = runEffect(char, 'skipShop'); if (typeof fg === 'number' && fg > 0) char.gold = (char.gold || 0) + fg;   // 나백수의 취업준비카드: 층마다 골드
   char.run.stageIdx++;
   if (char.run.stageIdx >= STAGES.length) {
@@ -722,32 +723,6 @@ function eventPool(char) {
     })).concat([{ label: '지나간다', effect: () => '진열대를 지나쳤다.' }]) : [{ label: '지나간다', effect: () => '아무것도 없었다.' }]
   });
 
-  // --- 쓰러진 도전자 후일담 (직전 전투에서 쓰러진 도전자를 이겼을 때) ---
-  if (char.run.lastFallen) {
-    const lf = char.run.lastFallen;
-    pool.push({
-      code: 'fallen_after', weight: 40, title: '남겨진 짐',
-      desc: lf.name + '의 짐이 길가에 흩어져 있다. 한때 이 탑을 오르던 사람의 것이다.',
-      options: [
-        { label: '유품 하나를 챙기고 안식을 빌어 준다 (장비 1개, 이 도전자는 다시 나타나지 않는다)', effect: (ch) => {
-          const pickFrom = (lf.items || []).filter(Boolean);
-          if (!pickFrom.length) { ch.run.lastFallen = null; return '가져갈 만한 것이 없었다.'; }
-          const it = JSON.parse(JSON.stringify(pickFrom[Math.floor(Math.random() * pickFrom.length)]));
-          if (deps.makeTooltip) it.tooltip = deps.makeTooltip(it);
-          ch.inventory.push(it);
-          ch.run.pendingFallenRest = lf.id;   // DB 삭제는 index에서
-          ch.run.lastFallen = null;
-          return '[ ' + it.name + ' ] 을(를) 챙겼다. ' + lf.name + '은(는) 이제 편히 쉰다.';
-        } },
-        { label: '짐을 뒤져 쓸 만한 것을 모은다 (리설트 카드 2장)', effect: (ch) => {
-          for (let k = 0; k < 2; k++) deps.addResultCard(ch, 4);
-          ch.run.lastFallen = null;
-          return '리설트 카드 2장을 얻었다.';
-        } }
-      ]
-    });
-  }
-
   // --- 거꾸로 걸린 부적: 미리 정해진 스킬 하나의 물리↔마법 전환 (할지 말지 선택) ---
   pool.push({
     code: 'flipType', weight: 2, title: '거꾸로 걸린 부적',
@@ -989,7 +964,23 @@ function applyEvent(char, code, optIdx) {
   return r;
 }
 
-module.exports = { ASC_MAX, ASC_RULES, ascOf, shuffleDeck, amplify, jumpFloor, pickArtifact,
+// 쓰러진 도전자 유품 (전투 결과 화면에서 선택): opt 0 = 유품 하나 + 안식, 1 = 리설트 카드 2장
+function applyFallenLoot(ch, opt) {
+  const lf = ch.run.lastFallen; if (!lf) return null;
+  ch.run.lastFallen = null;
+  if (opt === 0) {
+    const pickFrom = (lf.items || []).filter(Boolean);
+    if (!pickFrom.length) return '가져갈 만한 것이 없었다.';
+    const it = JSON.parse(JSON.stringify(pickFrom[Math.floor(Math.random() * pickFrom.length)]));
+    if (deps.makeTooltip) it.tooltip = deps.makeTooltip(it);
+    ch.inventory.push(it);
+    ch.run.pendingFallenRest = lf.id;
+    return '[ ' + it.name + ' ] 을(를) 챙겼다. ' + lf.name + '은(는) 이제 편히 쉰다.';
+  }
+  for (let k = 0; k < 2; k++) deps.addResultCard(ch, 4);
+  return '짐을 뒤져 리설트 카드 2장을 얻었다.';
+}
+module.exports = { applyFallenLoot, ASC_MAX, ASC_RULES, ascOf, shuffleDeck, amplify, jumpFloor, pickArtifact,
   configure, TOTAL_CYCLES, HAND_SIZE, RESETS_PER_BATTLE, resetDeck, redrawHand, drawExtra, runEffect, maxLives, initRun, stage, stageLabel, floorNo, isBossCycle, rankForCycle, advance,
   newDeckState, drawHand, playCard, handTypes, deckCounts, aiPick, makeEnemy, enemyFromFallen, snapshotForFallen,
   makeMonster, makeRosterEnemy, makeShop, makeShopOffers, makeEvent, makeEventByCode, applyEvent, applyBuffs, applyEnemyDebuffs, tickBuffs
