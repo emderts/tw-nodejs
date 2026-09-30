@@ -1844,6 +1844,10 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
         if (sp) sp.cost = Math.max(25, sp.cost - 25);
         this.result += '[ 입찰 ] 유찰… ' + (it ? '[ ' + it.name + ' ] 은(는) 다른 사람에게 넘어갔다.' : '') + ' (다음 입찰 SP ' + (sp ? sp.cost : '-') + ')<br>';
       }
+    } else if (eff.code === 'healDecay') {   // [붕괴]: 중첩당 받는 회복 감소
+      if (!damage || !(damage.amount > 0)) continue;
+      const st = (eff.buff && eff.buff.stack) || 1;
+      damage.amount *= Math.max(0, 1 - eff.value * st);
     } else if (eff.code === 'stackHit') {   // 버프 중첩 비례 추가 피해 (판타스마 윈드밀)
       const b = (winner.buffs || []).find(x => x.id === eff.buffCode); const st = b ? (b.stack || 1) : 0; if (!st) continue;
       const rd = this.calcDamage(winner, loser, { name : eff.name, type : eff.type, damage : eff.value * st, nameType : cons.NAME_KOR_END_CONS, effect : [] }); rd.hit = true; rd.noProc = true;

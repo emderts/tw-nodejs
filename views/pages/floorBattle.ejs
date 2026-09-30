@@ -42,6 +42,7 @@
   </style>
 </head>
 <body>
+  <% if (typeof rv !== 'undefined' && rv) { %><div style="text-align:center;font-size:12px;color:var(--ash);padding:6px 0 0"><%= rv.floor %>층 · <%= rv.cycle %>/<%= rv.total %>사이클<%= enemy.isBoss ? ' · 보스' : '' %><%= rv.asc ? ' · 승천 ' + rv.asc : '' %></div><% } %>
   <div class="rps-bar enemyWrap">
     <div class="rb-enemy"><b class="<%= enemy.isBoss ? 'colorGold' : '' %>"><%= enemy.name %></b> <span style="color:var(--ash);font-size:12px"><%= enemy.title %><% if (enemy.deck) { %> · 덱 <%= enemy.deck.length %>장<% } %></span></div>
     <div class="rb-status">

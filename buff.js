@@ -7348,8 +7348,9 @@ module.exports.getBuffData = function(eff) {
   case 10746 :   // 장기전 [붕괴]
     retObj.name = '붕괴'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 2; retObj.maxStack = 999; retObj.isDebuff = true; retObj.durOff = null;
     retObj.dispellable = false; retObj.unresistable = true;
-    retObj.tooltip = '40턴이 지나 탑이 무너지고 있다. 중첩당 최대 생명력 ×0.96, 매 턴 보호막 -15%. 60턴부터는 두 배 속도 (정화 불가)';
+    retObj.tooltip = '40턴이 지나 탑이 무너지고 있다. 중첩당 최대 생명력 ×0.96, 받는 회복 -5%, 매 턴 보호막 -15%. 60턴부터는 두 배 속도 (정화 불가)';
     retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_MULTIPLY, key : 'maxHp', value : 0.96 });
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_DO_HEAL, code : 'healDecay', value : 0.05 });
     break;
   case 10750 :   // 티리온 [무기 파편]
     retObj.name = '무기 파편'; retObj.nameType = cons.NAME_KOR_END_CONS; retObj.stackType = 2; retObj.maxStack = 9; retObj.isDebuff = false; retObj.durOff = null;
