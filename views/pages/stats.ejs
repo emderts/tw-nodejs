@@ -53,6 +53,23 @@
     <% byItem.forEach(function (r) { %><tr><td><%= r.name %></td><td><%= r.rank || '' %></td><td><%= r.n %></td><td class="<%= cls(r.wr) %>"><%= pc(r.wr) %></td></tr><% }); %>
     <% if (!byItem.length) { %><tr><td colspan="4" style="color:var(--ash)">아직 20판 이상 쌓인 아이템이 없다.</td></tr><% } %></table></div>
   </section>
+  <section class="panel" style="margin-top:12px"><h2>이벤트 선택</h2>
+    <% if (!evGroups.length) { %><div class="note-box" style="color:var(--ash)">아직 기록이 없다.</div><% } %>
+    <% evGroups.forEach(function (g) { %>
+      <div style="margin:10px 0 4px"><b><%= g.title || g.code %></b> <small style="color:var(--ash)"><%= g.total %>회</small></div>
+      <div class="scroll"><table class="st">
+      <% g.opts.forEach(function (o) { %><tr><td><%= o.label || ('선택지 ' + (o.opt + 1)) %></td><td><%= o.n %></td><td><%= pc(o.n / g.total) %></td></tr><% }); %>
+      </table></div>
+    <% }); %>
+  </section>
+
+  <section class="panel" style="margin-top:12px"><h2>상점</h2>
+    <% if (shopPick.length) { %><div class="note-box">고른 상점 — <% shopPick.forEach(function (r, i) { %><%= i ? ' · ' : '' %><%= r.code %> <%= r.n %><% }); %></div><% } %>
+    <div class="scroll"><table class="st"><tr><th>구매</th><th>급</th><th>횟수</th><th>골드</th></tr>
+    <% shopRows.forEach(function (r) { %><tr><td><%= r.label %></td><td><%= r.rank || '' %></td><td><%= r.n %></td><td><%= r.gold || 0 %></td></tr><% }); %>
+    <% if (!shopRows.length) { %><tr><td colspan="4" style="color:var(--ash)">아직 기록이 없다.</td></tr><% } %></table></div>
+  </section>
+
   <div class="backLink"><a href="/">돌아가기</a></div>
 </div>
 </body>

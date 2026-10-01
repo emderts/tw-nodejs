@@ -4109,6 +4109,19 @@ async function recordBattleStat (userId, char, t, re) {
       [new Date(), userId, char.rosterKey || '', char.run.cycle, run.ascOf(char), kind, key, E.name, !!E.isBoss, !!re.winnerLeft, (t.bmod && t.bmod.turnCount) || 0, pct(L), pct(E), items, dk.join('/'), (t.rps || {}).w || 0, (t.rps || {}).l || 0, (t.rps || {}).d || 0]);
   } catch (e) { console.log('[battle_stats]', e.message); }
 }
+let choiceReady = false;
+async function recordChoice (userId, char, kind, code, idx, label, meta) {
+  try {
+    if (!choiceReady) {
+      await pool.query(`create table if not exists choice_stats (id serial primary key, date timestamp, user_id varchar(100), char_key varchar(40), cycle int, asc_lv int,
+        kind varchar(16), code varchar(60), opt int, label text, price int, rarity int, rank int)`);
+      choiceReady = true;
+    }
+    meta = meta || {};
+    await pool.query('insert into choice_stats(date, user_id, char_key, cycle, asc_lv, kind, code, opt, label, price, rarity, rank) values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)',
+      [new Date(), userId, char.rosterKey || '', char.run ? char.run.cycle : null, run.ascOf(char), kind, String(code || '').slice(0, 60), idx, String(label || '').replace(/<[^>]+>/g, '').slice(0, 300), meta.price || null, meta.rarity || null, meta.rank || null]);
+  } catch (e) { console.log('[choice_stats]', e.message); }
+}
 const ADMIN_IDS = (process.env.ADMIN_IDS || '').split(',').map(x => x.trim()).filter(Boolean);
 async function procStats (req, res) {
   const sess = req.session;
@@ -4128,8 +4141,16 @@ async function procStats (req, res) {
     const rows = (await pool.query('select items, won from battle_stats ' + W + ' order by id desc limit 20000', args)).rows;
     const it = {}; for (const r of rows) for (const id of (r.items || '').split(',').filter(Boolean)) { const o = it[id] || (it[id] = { n: 0, w: 0 }); o.n++; if (r.won) o.w++; }
     const byItem = Object.entries(it).filter(([, o]) => o.n >= 20).map(([id, o]) => ({ id, name: (item.list[+id] || {}).name || id, rank: (item.list[+id] || {}).rank, n: o.n, wr: o.w / o.n })).sort((a, b) => b.wr - a.wr);
+    let evRows = [], shopRows = [], shopPick = [];
+    try {
+      const W2 = W.replace(/asc_lv/g, 'asc_lv');   // 같은 필터 컬럼명 사용
+      evRows = (await pool.query("select code, opt, max(label) label, count(*)::int n from choice_stats " + (W2 ? W2 + " and" : "where") + " kind = 'event' group by code, opt order by code, opt", args)).rows;
+      shopRows = (await pool.query("select label, max(rarity) rarity, max(rank) rank, count(*)::int n, sum(price)::int gold from choice_stats " + (W2 ? W2 + " and" : "where") + " kind = 'shop_buy' group by label order by n desc limit 60", args)).rows;
+      shopPick = (await pool.query("select code, count(*)::int n from choice_stats " + (W2 ? W2 + " and" : "where") + " kind = 'shop_pick' group by code order by n desc", args)).rows;
+    } catch (e) { /* 아직 테이블 없음 */ }
+    const evGroups = {}; for (const r of evRows) { const g = evGroups[r.code] || (evGroups[r.code] = { code: r.code, title: (r.label || '').split(' | ')[0], total: 0, opts: [] }); g.total += r.n; g.opts.push({ opt: r.opt, label: (r.label || '').split(' | ').slice(1).join(' | '), n: r.n }); }
     const cname = (k) => (roster.template(k) || {}).name || k;
-    res.render('pages/stats', { q, total, byEnemy, byChar: byChar.map(r => Object.assign(r, { name: cname(r.char_key) })), byCycle, byItem });
+    res.render('pages/stats', { evGroups: Object.values(evGroups).sort((a, b) => b.total - a.total), shopRows, shopPick, q, total, byEnemy, byChar: byChar.map(r => Object.assign(r, { name: cname(r.char_key) })), byCycle, byItem });
   } catch (e) { console.error(e); res.status(500).send('stats error: ' + e.message); }
 }
 // ===== 계정 업적 =====
@@ -4376,11 +4397,15 @@ async function procFloorShop (req, res) {
     if (run.stage(char) !== 'shop' || !sess.floorShop) { res.redirect('/nextFloor'); return; }
     if (req.body.action === 'choose') {
       const oi = parseInt(req.body.idx, 10);
-      if (!sess.floorShop.shop && sess.floorShop.offers && sess.floorShop.offers[oi]) sess.floorShop.shop = run.makeShop(char, sess.floorShop.offers[oi].type, { slot: sess.floorShop.offers[oi].slot });
+      if (!sess.floorShop.shop && sess.floorShop.offers && sess.floorShop.offers[oi]) {
+        sess.floorShop.shop = run.makeShop(char, sess.floorShop.offers[oi].type, { slot: sess.floorShop.offers[oi].slot });
+        recordChoice(sess.userUid, char, 'shop_pick', sess.floorShop.offers[oi].type, oi, sess.floorShop.shop.label || sess.floorShop.offers[oi].type);
+      }
       res.redirect('/nextFloor'); return;
     }
     const shop = sess.floorShop.shop;
     if (req.body.action === 'leave') {
+      if (shop) recordChoice(sess.userUid, char, 'shop_leave', shop.type, (shop.bought || []).length, '구매 ' + (shop.bought || []).length + '개, 남은 골드 ' + char.gold);
       run.advance(char);
       delete sess.floorShop;
       await saveChar(char, charRow.uid);
@@ -4392,9 +4417,11 @@ async function procFloorShop (req, res) {
     if (!g || shop.bought.includes(idx)) { res.redirect('/nextFloor'); return; }
     if (char.gold < g.price) { sess.floorShop.msg = '골드가 부족합니다.'; res.redirect('/nextFloor'); return; }
     char.gold -= g.price;
+    { const nm = g.item ? g.item.name : (g.card ? ['가위', '바위', '보'][g.card.type] + ' 카드' : (g.name || g.kind));
+      recordChoice(sess.userUid, char, 'shop_buy', shop.type, idx, nm, { price: g.price, rarity: g.item && g.item.rarity, rank: (g.item && g.item.rank) || g.rank }); }
     if (g.kind === 'resultStock') { char.inventory.push(roster.makeResultCard(g.rank, Math.floor(Math.random() * 4))); await saveChar(char, charRow.uid); res.redirect('/nextFloor'); return; }   // 무제한 판매
-    if (g.kind === 'item') char.inventory.push(g.item);
     if (sess.floorShop.shop && sess.floorShop.shop.type === 'collector') { try { const acct = await loadAcct(sess.userUid); acct.stats.collectorBuys = (acct.stats.collectorBuys || 0) + 1; await saveAcct(sess.userUid, acct); } catch (e) {} }
+    if (g.kind === 'item') char.inventory.push(g.item);
     else if (g.kind === 'card') char.deck.push(g.card);
     else if (g.kind === 'stat') char.statPoint = (char.statPoint || 0) + g.value;
     else if (g.kind === 'life') { const l = char.run.lives === undefined ? 1 : char.run.lives; if (l >= run.maxLives(char)) { char.gold += g.price; res.redirect('/nextFloor'); return; } char.run.lives = l + 1; }
@@ -4430,7 +4457,9 @@ async function procFloorEvent (req, res) {
     const evCode = sess.floorEvent.code, evOpt = parseInt(req.body.opt, 10);
     const evDef = run.makeEventByCode(char, evCode);
     const evLast = evDef && evDef.options ? evDef.options.length - 1 : -1;
+    const evLabel = evDef && evDef.options && evDef.options[evOpt] ? evDef.options[evOpt].label : '';
     const text = run.applyEvent(char, evCode, evOpt);
+    recordChoice(sess.userUid, char, 'event', evCode, evOpt, (evDef && evDef.title ? evDef.title + ' | ' : '') + evLabel);
     if (char.run.pendingFallenRest) {   // 쓰러진 도전자 안식: 기록 삭제
       try { await pool.query('delete from fallen where id = $1', [char.run.pendingFallenRest]); } catch (e) { console.log('[fallen rest]', e.message); }
       char.run.pendingFallenRest = null;
