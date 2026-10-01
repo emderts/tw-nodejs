@@ -7,10 +7,10 @@ const DEFS = {
   hp_s:    { name: '치유 물약',       tooltip: '전투 중 사용: 최대 생명력의 25% 회복', w: 4 },
   hp_l:    { name: '고급 치유 물약',  tooltip: '전투 중 사용: 최대 생명력의 50% 회복', w: 1 },
   sp:      { name: '기력 물약',       tooltip: '전투 중 사용: SP +40', w: 2 },
-  atk:     { name: '맹공의 물약',     tooltip: '전투 중 사용: 이번 전투 물리·마법 공격력 +20%', w: 3 },
-  crit:    { name: '예리함의 물약',   tooltip: '전투 중 사용: 이번 전투 치명타 +15%p', w: 2 },
-  evade:   { name: '안개의 물약',     tooltip: '전투 중 사용: 이번 전투 회피 +15%p', w: 2 },
-  guard:   { name: '철벽의 물약',     tooltip: '전투 중 사용: 이번 전투 물리·마법 저항 +15%p', w: 2 },
+  atk:     { name: '맹공의 물약',     tooltip: '전투 중 사용: 이번 전투 주는 피해 +20% (여러 개 쓰면 중첩)', w: 3 },
+  crit:    { name: '예리함의 물약',   tooltip: '전투 중 사용: 이번 전투 치명타 +15%p (여러 개 쓰면 중첩)', w: 2 },
+  evade:   { name: '안개의 물약',     tooltip: '전투 중 사용: 이번 전투 회피 +15%p (여러 개 쓰면 중첩)', w: 2 },
+  guard:   { name: '철벽의 물약',     tooltip: '전투 중 사용: 이번 전투 물리·마법 저항 +15%p (여러 개 쓰면 중첩)', w: 2 },
   cleanse: { name: '정화수',          tooltip: '전투 중 사용: 자신의 해제 가능한 디버프 제거', w: 2 },
   bomb:    { name: '폭탄',            tooltip: '전투 중 사용: 적에게 적 최대 생명력의 12% 절대 피해 (1은 남김)', w: 2 },
   poison:  { name: '독약',            tooltip: '전투 중 사용: 적에게 3턴 간 [중독]', w: 2 },
@@ -58,10 +58,13 @@ function apply(code, bm, L, R, buffMdl, mods) {
     case 'hp_s': return heal(0.25);
     case 'hp_l': return heal(0.5);
     case 'sp': L.curSp = (L.curSp || 0) + 40; return log('SP +40');
-    case 'atk': L.stat.phyAtk = Math.round(L.stat.phyAtk * 1.2 * 100) / 100; L.stat.magAtk = Math.round(L.stat.magAtk * 1.2 * 100) / 100; return log('공격력 +20%');
-    case 'crit': L.stat.crit = (L.stat.crit || 0) + 0.15; return log('치명타 +15%p');
-    case 'evade': L.stat.evasion = (L.stat.evasion || 0) + 0.15; return log('회피 +15%p');
-    case 'guard': L.stat.phyReduce = (L.stat.phyReduce || 0) + 0.15; L.stat.magReduce = (L.stat.magReduce || 0) + 0.15; return log('저항 +15%p');
+    case 'atk': case 'crit': case 'evade': case 'guard': {   // 이번 전투 내내 유지되는 버프로 (예전엔 스탯을 직접 바꿔 한 턴 만에 사라졌다). 여러 개 쓰면 중첩
+      const code2 = { atk: 10770, crit: 10771, evade: 10772, guard: 10773 }[code];
+      const bo = buffMdl.getBuffData({ buffCode: code2 }); bo.dur = null; bo.stack = 1;
+      bm.giveBuff(L, L, bo, false, d.name);
+      const cur = (L.buffs || []).find(x => x.id === code2);
+      return log({ atk: '주는 피해 +20%', crit: '치명타 +15%p', evade: '회피 +15%p', guard: '저항 +15%p' }[code] + (cur && cur.stack > 1 ? ' (' + cur.stack + '중첩)' : '') + ', 이번 전투 동안');
+    }
     case 'cleanse': { const before = (L.buffs || []).length; L.buffs = (L.buffs || []).filter(b => !(b.isDebuff && b.dispellable && b.durOff)); return log('디버프 ' + (before - L.buffs.length) + '개 제거'); }
     case 'bomb': { const v = Math.max(1, Math.round(R.stat.maxHp * 0.12)); R.curHp = Math.max(1, R.curHp - v); return log(R.name + '에게 ' + v + ' 절대 피해'); }
     default: {

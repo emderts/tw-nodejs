@@ -7409,6 +7409,27 @@ module.exports.getBuffData = function(eff) {
     retObj.name = '전기 충격 보호'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 1; retObj.isDebuff = false;
     retObj.effect.push({ active : cons.ACTIVE_TYPE_DEAL_DAMAGE_RECEIVE, code : cons.EFFECT_TYPE_SHIELD, value : 1 });
     break;
+  case 10770 :   // 소모품 [맹공]
+    retObj.name = '맹공'; retObj.nameType = cons.NAME_KOR_END_CONS; retObj.stackType = 2; retObj.maxStack = 9; retObj.isDebuff = false; retObj.durOff = null;
+    retObj.tooltip = '중첩당 주는 피해 +20% (이번 전투)';
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_DAMAGE, code : cons.EFFECT_TYPE_MULTIPLY_DAMAGE, anySkill : true, stackable : true, value : 0.2 });
+    break;
+  case 10771 :   // 소모품 [예리함]
+    retObj.name = '예리함'; retObj.nameType = cons.NAME_KOR_END_CONS; retObj.stackType = 2; retObj.maxStack = 9; retObj.isDebuff = false; retObj.durOff = null;
+    retObj.tooltip = '중첩당 치명 +15%p (이번 전투)';
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'crit', value : 0.15 });
+    break;
+  case 10772 :   // 소모품 [안개]
+    retObj.name = '안개'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 2; retObj.maxStack = 9; retObj.isDebuff = false; retObj.durOff = null;
+    retObj.tooltip = '중첩당 회피 +15%p (이번 전투)';
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'evasion', value : 0.15 });
+    break;
+  case 10773 :   // 소모품 [철벽]
+    retObj.name = '철벽'; retObj.nameType = cons.NAME_KOR_END_CONS; retObj.stackType = 2; retObj.maxStack = 9; retObj.isDebuff = false; retObj.durOff = null;
+    retObj.tooltip = '중첩당 물리·마법저항 +15%p (이번 전투)';
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'phyReduce', value : 0.15 });
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'magReduce', value : 0.15 });
+    break;
   case 10620 :
     retObj.name = '소형 동물'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 2; retObj.maxStack = 10; retObj.isDebuff = false; retObj.durOff = null;
     retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'maxHp', value : 10 });
