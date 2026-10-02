@@ -550,6 +550,7 @@ Battlemodule.prototype._doBattleTurnManual = function(left, right) {
       this.resolveEffects(winner, loser, winner.skill.special.effect);
       if (loser.curHp < hpB1) this.resolveEffects(winner, loser, getItemEffects(winner, 'specialHit'), damage);   // 스페셜로 피해를 입혔을 때
       winner.curSp = 0;
+      if (winner.spRefund) { winner.curSp += winner.spRefund; winner.spRefund = 0; }
       this.resolveEffects(winner, loser, getBuffEffects(winner, cons.ACTIVE_TYPE_USE_SPECIAL), damage);
       this.resolveEffects(winner, loser, getItemEffects(winner, cons.ACTIVE_TYPE_USE_SPECIAL), damage);
       this.resolveEffects(loser, winner, getBuffEffects(loser, cons.ACTIVE_TYPE_OPP_USE_SPECIAL), damage);
@@ -567,6 +568,7 @@ Battlemodule.prototype._doBattleTurnManual = function(left, right) {
       this.resolveEffects(loser, winner, loser.skill.special.effect);
       if (winner.curHp < hpB2) this.resolveEffects(loser, winner, getItemEffects(loser, 'specialHit'), damage);
       loser.curSp = 0;
+      if (loser.spRefund) { loser.curSp += loser.spRefund; loser.spRefund = 0; }
       this.resolveEffects(loser, winner, getBuffEffects(loser, cons.ACTIVE_TYPE_USE_SPECIAL), damage);
       this.resolveEffects(loser, winner, getItemEffects(loser, cons.ACTIVE_TYPE_USE_SPECIAL), damage);
       this.resolveEffects(winner, loser, getBuffEffects(winner, cons.ACTIVE_TYPE_OPP_USE_SPECIAL), damage);
@@ -1924,6 +1926,16 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
       const rd = this.calcDamage(winner, loser, { name : '복수의 거울', type : cons.DAMAGE_TYPE_MAGICAL_FIXED, damage : Math.round(rv.acc * 0.5), nameType : cons.NAME_KOR_END_CONS, effect : [] }); rd.hit = true; rd.noProc = true;
       this.dealDamage(winner, loser, rd);
       this.result += '<span class="skillDamage">[ 복수의 거울 ] 3턴간 받은 ' + Math.round(rv.acc) + ' 피해를 되비춘다 — ' + rd.value + '대미지</span><br>';
+    } else if (eff.code === 'critBonusIfOpp') {   // 삼월참: 적 상태이상마다 치명 확률 가산 (이미 굴린 치명에 추가로)
+      if (!damage || damage.crit) continue;
+      let add = 0; for (const k in eff.bonus) if ((loser.buffs || []).some(b => b.id === +k)) add += eff.bonus[k];
+      if (add <= 0) continue;
+      const base = Math.max(0, Math.min(0.999, winner.stat.crit || 0));
+      if (getRandom(Math.min(1, add / (1 - base)))) damage.crit = true;   // 결과적으로 치명 확률이 base + add 가 되도록
+    } else if (eff.code === 'spRefundUnless') {   // 마랑 스페셜: 삼월참 설화가 못 나가면 SP 반환
+      if (eff.need.every(id => (winner.buffs || []).some(b => b.id === id))) continue;
+      winner.spRefund = (winner.spRefund || 0) + eff.value;
+      this.result += '[ ' + (winner.skill.special ? winner.skill.special.name : '') + ' ] 삼월참 설화를 펼치지 못했다 — SP ' + eff.value + ' 반환<br>';
     } else if (eff.code === 'healDecay') {   // [붕괴]: 중첩당 받는 회복 감소
       if (!damage || !(damage.amount > 0)) continue;
       const st = (eff.buff && eff.buff.stack) || 1;

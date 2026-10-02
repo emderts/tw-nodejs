@@ -1251,10 +1251,10 @@ const item = require('./items');
   charMarang.skill.base.push(skillObj);
 
   skillObj = {code : 201746, name : '삼월참', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1.4, 
-      calcEffect : [{name : '삼월참', code : cons.EFFECT_TYPE_FORCE_CRIT, chkOpp : [12], skillCode : 201746}],
+      calcEffect : [{name : '삼월참', code : 'critBonusIfOpp', bonus : { 12 : 0.5, 1 : 0.5 }}],
       effect : [{code : cons.EFFECT_TYPE_SELF_SP, value : 1, isPercentStat : true, percentKey : 'spCharge', chkNot : [201755]},
                 {code : cons.EFFECT_TYPE_SELF_SP, value : 1, isPercentStat : true, percentKey : 'spCharge', chkNot : [201756]}],
-      tooltip : '자신에게 [설화의 계절], [서리 날개] 버프가 있다면 각각 치명 피해 1.2배, 없다면 각각 SP충전만큼 SP 회복, 적에게 [빙결] 상태이상이 있다면 확정 치명 타격',
+      tooltip : '자신에게 [설화의 계절], [서리 날개] 버프가 있다면 각각 치명 피해 1.2배, 없다면 각각 SP충전만큼 SP 회복, 적이 [빙결]이면 치명 +50%p, [화상]이면 치명 +50%p (둘 다면 +100%p)',
       flavor : '서늘한 달빛을 머금고 베어내는 발검술.'};  
   charMarang.skill.base.push(skillObj);
 
@@ -1276,8 +1276,8 @@ const item = require('./items');
   charMarang.skill.drive = skillObj;
 
   skillObj = {code : 201750, name : '얼음, 그리고 불꽃', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 100, 
-      effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 12, buffDur : 2}],
-      tooltip : '적에게 2턴 간 [빙결] 상태이상 부여, 자신에게 [설화의 계절]과 [서리 날개] 버프가 모두 있다면 [삼월참 설화] 발동<br><br>[삼월참 설화] : 물리 1.3, 확정 치명, 필중, 치명 피해 1.44배',
+      effect : [{code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 1, buffDur : 1}, {code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 12, buffDur : 1}, {code : 'spRefundUnless', need : [201755, 201756], value : 30}],
+      tooltip : '적에게 1턴 간 [화상]과 1턴 간 [빙결] 상태이상 부여, 자신에게 [설화의 계절]과 [서리 날개] 버프가 모두 있다면 [삼월참 설화] 발동, 발동하지 못했다면 SP 30 반환<br><br>[삼월참 설화] : 물리 1.3, 확정 치명, 필중, 치명 피해 1.44배',
       flavor : '서리를 결정화하여 상대를 얼려버리고, 냉혹한 불길로 적을 베어낸다.'};
   charMarang.skill.special = skillObj;
 
