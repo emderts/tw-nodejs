@@ -1927,9 +1927,12 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
       this.dealDamage(winner, loser, rd);
       this.result += '<span class="skillDamage">[ 복수의 거울 ] 3턴간 받은 ' + Math.round(rv.acc) + ' 피해를 되비춘다 — ' + rd.value + '대미지</span><br>';
     } else if (eff.code === 'critBonusIfOpp') {   // 삼월참: 적 상태이상마다 치명 확률 가산 (이미 굴린 치명에 추가로)
-      if (!damage || damage.crit) continue;
-      let add = 0; for (const k in eff.bonus) if ((loser.buffs || []).some(b => b.id === +k)) add += eff.bonus[k];
+      if (!damage) continue;
+      let add = 0; const hits = [];
+      for (const k in eff.bonus) { const b = (loser.buffs || []).find(x => x.id === +k); if (b) { add += eff.bonus[k]; hits.push(b.name); } }
       if (add <= 0) continue;
+      this.result += '[ ' + (eff.name || '삼월참') + ' ] ' + hits.map(n => '[' + n + ']').join('·') + ' — 치명 +' + Math.round(add * 100) + '%p<br>';
+      if (damage.crit) continue;
       const base = Math.max(0, Math.min(0.999, winner.stat.crit || 0));
       if (getRandom(Math.min(1, add / (1 - base)))) damage.crit = true;   // 결과적으로 치명 확률이 base + add 가 되도록
     } else if (eff.code === 'spRefundUnless') {   // 마랑 스페셜: 삼월참 설화가 못 나가면 SP 반환
