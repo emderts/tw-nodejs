@@ -2578,7 +2578,7 @@ Battlemodule.prototype.giveBuff = function(src, recv, buffObj, printFlag, name) 
     recv.buffs.push(buffObj);
   }       
   
-  if (this.checkDrive(recv, cons.ACTIVE_TYPE_RECEIVE_BUFF)) {
+  if (!(recv.skill && recv.skill.drive && (recv.skill.drive.recvNot || []).includes(buffObj.id)) && this.checkDrive(recv, cons.ACTIVE_TYPE_RECEIVE_BUFF)) {   // 드라이브가 스스로 거는 버프로는 다시 판정하지 않는다
     this.resolveDrive(recv, src, buffObj);
   }
 }
