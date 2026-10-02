@@ -1038,7 +1038,7 @@ itemList[462] = { id : 462, name : '검정색 타이즈', nameType : cons.NAME_K
               {code : cons.EFFECT_TYPE_RESOLVE_DRIVE, active : cons.ACTIVE_TYPE_EVADE}] };
 itemList[463] = { id : 463, name : '만크릭의 의지', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_ARMOR, flavor : '황무지에서 죽은 아내의 복수를 실현하고 있는 복수귀의 의지가 담긴 갑옷.', rank : 6, rarity : cons.ITEM_RARITY_UNIQUE, stat : { phyReduce : 0.065, magReduce : 0.065, maxHp : 286, critDmg : 0.1 }, 
     effectDesc : '공격 시 자신에게 1턴 간 [복수의 의지] 버프 부여<br><br>[복수의 의지] : 스킬 피해 +10%', 
-    effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_ATTACK, buffCode : 10500, buffDur : 2}] };
+    effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_ATTACK, buffCode : 10090, buffDur : 2}] };
 itemList[464] = { id : 464, name : '불타는 과수원 경갑', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_ARMOR, flavor : '다양한 영석들로 장식되어 있는 갑옷이다. 강렬한 온기가 느껴진다.', rank : 6, rarity : cons.ITEM_RARITY_UNIQUE, stat : { phyReduce : 0.065, magReduce : 0.065, maxHp : 286, critDmg : 0.1 }, 
     effectDesc : '피격 시 10% 확률로 자신에게 [타오르는 영석-악], [타오르는 영석-수호], [타오르는 영석-충전] 중 하나 부여, [불타는 과수원 방패] 착용 시 피격 시 10% 확률로 자신에게 [에너지 파동] 버프 부여<br><br>[타오르는 영석-*] : 턴 종료 시 10% 확률로 적 1턴 [화상] 부여, 드라이브 스킬 사용 시 1중첩 소거되며 자신에게 [에너지 파동] 버프 부여<br>[-악] : 마법 0.3 피해<br>[-수호] : 피해감소 3<br>[-충전] : SP충전 +4<br>[에너지 파동] : 공격 시 20% 확률로 소거되며 마법 1.1 피해', 
     effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_TAKE_HIT, chance : 0.1, buffCode : [90006, 90007, 90008], buffDur : null, multiple : true},
@@ -1054,7 +1054,7 @@ itemList[467] = { id : 467, name : '에스페란자의 흰 가운', nameType : c
               {code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_USE_SPECIAL, buffCode : 10091, buffDur : null}] };
 itemList[468] = { id : 468, name : '라이포트 - 고대 왕의 비보', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_ARMOR, flavor : '동부 대륙의 고대 왕이 사용했다고 알려진 갑옷. 이 왕은 전투에 매우 능했다고 하며 그가 전장에 뛰어들면 그를 손댈 수도 없었다고 전해진다.', rank : 6, rarity : cons.ITEM_RARITY_EPIC, stat : { phyReduce : 0.08, magReduce : 0.06, maxHp : 308, critDmg : 0.1, spRegen : 1 }, 
     effectDesc : '자신의 첫 스페셜 스킬을 \'[왕의 비보] : SP80, 3턴 간 무적 및 매 턴 종료 시 상대에게 0.8 물리 피해\' 로 변경', 
-    effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_BATTLE_START, buffCode : 10502, buffDur : null}] };
+    effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_BATTLE_START, buffCode : 10092, buffDur : null}] };
 itemList[469] = { id : 469, name : '군주의 검은 갑주', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_ARMOR, flavor : '피와 살점이 묻은 대검을 휘두르는 흑기사들과 그들을 이끄는 검은 군주는 전장의 재앙이다.', rank : 6, rarity : cons.ITEM_RARITY_EPIC, stat : { phyReduce : 0.077, magReduce : 0.065, maxHp : 400, evasion : -0.03 }, 
     effectDesc : '피격 시 자신에게 [격노의 메가데우스] 버프 부여 (중첩 가능, 공격 시 전체 소거)<br><br>[격노의 메가데우스] : 물리/마법공격력 +17, 회피-7%', 
     effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_TAKE_HIT, buffCode : 10094, buffDur : null}] };

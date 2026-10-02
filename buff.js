@@ -1913,7 +1913,7 @@ module.exports.getBuffData = function(eff) {
     effectObj = {};
     effectObj.active = cons.ACTIVE_TYPE_CALC_DAMAGE;
     effectObj.code = cons.EFFECT_TYPE_MULTIPLY_DAMAGE;
-    effectObj.value = 1.14;
+    effectObj.value = 1.1;   // 설명(스킬 피해 +10%)에 맞춤
     effectObj.anySkill = true;
     retObj.effect.push(effectObj);
     break;
