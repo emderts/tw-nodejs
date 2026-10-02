@@ -7094,8 +7094,8 @@ module.exports.getBuffData = function(eff) {
     break;
   case 10687 :
     retObj.name = '자폭 절차'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 1; retObj.isDebuff = false; retObj.durOff = null;
-    retObj.effect.push({ active : cons.ACTIVE_TYPE_TURN_END, code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 1, buffDur : 1 });
-    retObj.effect.push({ active : cons.ACTIVE_TYPE_TURN_END, code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 1, buffDur : 1 });
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_TURN_START, code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 1, buffDur : 1 });
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_TURN_START, code : cons.EFFECT_TYPE_OPP_BUFF, buffCode : 1, buffDur : 1 });
     break;
   case 10688 :
     retObj.name = '착취의 무리'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 1; retObj.isDebuff = true;
