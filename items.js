@@ -2310,6 +2310,16 @@ itemList[1062] = { id : 1062, name : '복수의 거울', nameType : cons.NAME_KO
 itemList[1063] = { id : 1063, name : '백수의 무거운 이불', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '한 번 덮으면 시간이 알아서 흘러간다. 일어날 필요가 없다.', rank : 3, rarity : cons.ITEM_RARITY_EPIC, stat : { maxHp : 270, hpRegen : 3, spRegen : 2 }, 
     effectDesc : '가위바위보에서 비겨도 턴이 지나간다 (지속 효과·버프 지속 시간·턴 수가 모두 흐른다. 적의 것도)', effect : [], tieTurn : true };
 
+// ---------- 샤에 물듦 시리즈 4~1급 ----------
+itemList[1064] = { id : 1064, name : '진야 - 물예언자의 보주', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_WEAPON, flavor : '검은색의 기운이 물결처럼 보주 안을 맴돈다. 들여다보면 아직 오지 않은 일이 비친다. 강력한 힘을 내지만 그 사용자는 대가를 감내해야 할 것이다.', rank : 4, rarity : cons.ITEM_RARITY_UNIQUE, stat : { phyAtkMin : 50, phyAtkMax : 58, magAtkMin : 105, magAtkMax : 120, crit : 0.03 }, 
+    effectDesc : '전투 시작 시 자신에게 [샤에 물듦] (준 피해의 10%만큼 자신도 절대 피해)', effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_BATTLE_START, chance : 1, buffCode : 10004, buffDur : null}] };
+itemList[1065] = { id : 1065, name : '셰크시르 - 셰크지르의 갈퀴발톱', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_WEAPON, flavor : '검은색의 기운이 엉겨 붙은 거대한 갈퀴발톱. 한 번 긁힌 자리에서는 소리가 나지 않는다. 강력한 힘을 내지만 그 사용자는 대가를 감내해야 할 것이다.', rank : 3, rarity : cons.ITEM_RARITY_UNIQUE, stat : { phyAtkMin : 160, phyAtkMax : 180, magAtkMin : 70, magAtkMax : 80, crit : 0.04 }, 
+    effectDesc : '전투 시작 시 자신에게 [샤에 물듦] (준 피해의 10%만큼 자신도 절대 피해)', effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_BATTLE_START, chance : 1, buffCode : 10004, buffDur : null}] };
+itemList[1066] = { id : 1066, name : '크르시 - 영혼절단기', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_WEAPON, flavor : '검은색의 기운이 칼날을 따라 흐르는 대검. 베인 것은 몸보다 먼저 영혼이 갈라진다. 강력한 힘을 내지만 그 사용자는 대가를 감내해야 할 것이다.', rank : 2, rarity : cons.ITEM_RARITY_UNIQUE, stat : { phyAtkMin : 165, phyAtkMax : 185, magAtkMin : 100, magAtkMax : 112, crit : 0.04 }, 
+    effectDesc : '전투 시작 시 자신에게 [샤에 물듦] (준 피해의 10%만큼 자신도 절대 피해)', effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_BATTLE_START, chance : 1, buffCode : 10004, buffDur : null}] };
+itemList[1067] = { id : 1067, name : '로샨 - 공포의 현신', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_WEAPON, flavor : '검은색의 기운 그 자체가 형체를 갖춘 지팡이. 쥐는 순간 두려움이 손끝에서 심장으로 번진다. 강력한 힘을 내지만 그 사용자는 대가를 감내해야 할 것이다.', rank : 1, rarity : cons.ITEM_RARITY_UNIQUE, stat : { phyAtkMin : 130, phyAtkMax : 145, magAtkMin : 200, magAtkMax : 225, crit : 0.04 }, 
+    effectDesc : '전투 시작 시 자신에게 [샤에 물듦] (준 피해의 10%만큼 자신도 절대 피해)', effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_BATTLE_START, chance : 1, buffCode : 10004, buffDur : null}] };
+
 // 아이템 pctStat의 공격력 % → 주는 피해 % (기본 공격력에만 곱해지던 문제)
 itemList.forEach(function(it) {
   if (!it || !it.pctStat || (it.pctStat.phyAtk === undefined && it.pctStat.magAtk === undefined)) return;
