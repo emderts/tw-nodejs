@@ -482,7 +482,7 @@ io.on('connection', (socket) => {
       persistBattle(t);
     } else {
       t.result = result;
-      try { pool.query("update characters set char_data = jsonb_set(char_data::jsonb, '{run,battle,ended}', 'true'::jsonb)::text where uid = $1 and char_data::jsonb #> '{run,battle}' is not null", [t.leftUid]); } catch (e) {}   // 끝난 전투는 다시 복원하지 않는다
+      try { pool.query("update characters set char_data = jsonb_set(char_data::jsonb, '{run,battle,ended}', to_jsonb($2::text))::text where uid = $1 and char_data::jsonb #> '{run,battle}' is not null", [t.leftUid, result.winnerLeft ? 'won' : 'lost']); } catch (e) {}   // 끝난 전투 표시
       socket.emit('floorSelectEnd', result.result, floorState(t));
     }
   }));
@@ -3983,7 +3983,7 @@ async function procNextFloor (req, res) {
       // 메모리에 방이 없지만 DB에 진행 중인 전투가 있으면 그 턴 그대로 복원 (서버 재시작·다른 기기 접속)
       const existing = Object.keys(trades).find(r => trades[r] && trades[r].floor && trades[r].leftUid == charRow.uid && trades[r].battleKey === key && !trades[r].result);
       if (existing) { sess.floorBattle = { key, room: parseInt(existing, 10) }; res.render('pages/floorBattle', { room: parseInt(existing, 10), uid: charRow.uid, rv: runView(char), char, enemy: trades[existing].rightChr }); return; }
-      if (char.run.battle && char.run.battle.ended) {   // 끝났는데 결과 처리 전 서버가 재시작된 경우: 패배로 처리 (재시도 악용 방지)
+      if (char.run.battle && char.run.battle.ended === 'lost') {   // 패배로 끝났는데 결과 처리 전 서버가 재시작된 경우: 패배 처리 (재시도 악용 방지). 승리였다면 마지막 턴부터 다시 진행
         delete char.run.battle;
         const lives = char.run.lives === undefined ? 1 : char.run.lives;
         if (lives > 0) { char.run.lives = lives - 1; await saveChar(char, charRow.uid); res.render('pages/floorEnd', { pendingCard: null, title: '패배', lines: ['전투가 끝난 뒤 연결이 끊겨 결과를 확인하지 못했다. 패배로 처리한다. 남은 재도전 <b>' + char.run.lives + '</b>회.'], result: '', dead: false, rv: runView(char), retry: true }); return; }
