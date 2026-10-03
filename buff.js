@@ -7481,6 +7481,10 @@ module.exports.getBuffData = function(eff) {
     retObj.effect.push({ active : cons.ACTIVE_TYPE_TURN_END_LOSE, code : 'strangelove' });
     retObj.effect.push({ active : cons.ACTIVE_TYPE_DURATION_END, code : 'strangeloveRefund', value : 90 });
     break;
+  case 10795 :   // 표시용: 매 턴 덱을 섞는 적
+    retObj.name = '흐트러진 시간'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 1; retObj.isDebuff = false; retObj.durOff = null; retObj.dispellable = false;
+    retObj.tooltip = '이 적의 덱은 매 턴 섞인다 (낸 카드도 바로 다시 덱으로 돌아간다)';
+    break;
   case 10620 :
     retObj.name = '소형 동물'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 2; retObj.maxStack = 10; retObj.isDebuff = false; retObj.durOff = null;
     retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'maxHp', value : 10 });

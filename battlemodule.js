@@ -102,6 +102,10 @@ Battlemodule.prototype.procBattleStart = function (left, right, flag) {
   this.charRight = right;
   this._doBattleStart(flag);
   for (const c of [left, right]) if (c && c.jackSlots) { c.buffs = c.buffs || []; jackInit(c); this.result += '<div class="note-box">[ 슬롯머신 ] ' + c.name + '의 릴 — ' + c.jack.q.map(x => SYM[x]).join('') + '</div>'; }
+  for (const c of [left, right]) if (c && c.deckOpts && c.deckOpts.shuffleEveryTurn) {   // 매 턴 덱을 섞는 적 표시 (시간의 폭풍 등)
+    const sb = buffMdl.getBuffData({ buffCode : 10795 }); sb.dur = null; c.buffs = c.buffs || []; c.buffs.push(sb);
+    this.result += '<div class="note-box">' + c.name + '의 덱은 매 턴 섞인다.</div>';
+  }
   for (const c of [left, right]) if (c && c.zenisha) { const pb = buffMdl.getBuffData({ buffCode : 10792 }); pb.dur = null; c.buffs.push(pb); for (const e of pb.effect) e.buff = pb; const bo = buffMdl.getBuffData({ buffCode : 10790 }); bo.dur = null; bo.stack = 1; c.buffs.push(bo); for (const e of bo.effect) e.buff = bo; }
 
   return this.result;
