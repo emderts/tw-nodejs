@@ -1953,7 +1953,7 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
       winner.jack.used[sym] += dbl ? 2 : 1;
       winner.jackSym = { sym, dbl, turn : this.turnCount };
       this.result += '[ 슬롯머신 ] ' + SYM[sym] + (dbl ? SYM[sym] + ' — 강화!' : '') + ' 사용<br>';
-      if (!q.length) { const cnt = winner.jack.lastCounts || null; const single = cnt ? Object.keys(cnt).find(k => cnt[k] === 1) : null; winner.jack.q = jackMakeQueue(single); this.result += '[ 슬롯머신 ] 릴이 다시 돈다 — ' + winner.jack.q.map(x => SYM[x]).join('') + '<br>'; }
+      if (!q.length) { const single = winner.jack.single || null; winner.jack.q = jackMakeQueue(single); winner.jack.single = jackSingle(winner.jack.q); this.result += '[ 슬롯머신 ] 릴이 다시 돈다 — ' + winner.jack.q.map(x => SYM[x]).join('') + '<br>'; }
       jackShow(winner);
     } else if (eff.code === 'chipToss') {   // 칩 던지기: 물리 0.25 × 4 (타격마다 판정)
       const js = winner.jackSym && winner.jackSym.turn === this.turnCount ? winner.jackSym : null;
@@ -2797,17 +2797,28 @@ Battlemodule.prototype.retConsume = function(c, opp, n, src) {   // 소모할 �
 };
 // ===== 블러프 잭: 심볼 큐 =====
 const SYM = { c : '🍒', d : '💎', b : '🔔' };
-function jackMakeQueue(prevSingle) {   // 5개, 종류당 최대 2개, 연속 없음. 이전 큐에서 하나뿐이던 심볼이 맨 앞
+function jackMakeQueue(prevSingle) {   // 5개 = 두 종류 2개 + 한 종류 1개 (어느 쪽이 1개인지는 무작위), 연속 배치 없음. 이전 큐에서 하나뿐이던 심볼이 맨 앞
   const types = ['c', 'd', 'b'];
-  for (let tries = 0; tries < 200; tries++) {
-    const single = prevSingle && types.includes(prevSingle) ? prevSingle : types[Math.floor(Math.random() * 3)];
-    const rest = []; for (const t of types) for (let k = 0; k < (t === single ? 0 : 2); k++) rest.push(t);
-    const q = [single]; let ok = true;
-    while (rest.length) { const cand = rest.filter(x => x !== q[q.length - 1]); if (!cand.length) { ok = false; break; } const pick = cand[Math.floor(Math.random() * cand.length)]; rest.splice(rest.indexOf(pick), 1); q.push(pick); }
+  for (let tries = 0; tries < 500; tries++) {
+    const one = types[Math.floor(Math.random() * 3)];
+    const cnt = { c : 2, d : 2, b : 2 }; cnt[one] = 1;
+    const q = [];
+    const first = prevSingle && types.includes(prevSingle) ? prevSingle : types[Math.floor(Math.random() * 3)];
+    q.push(first); cnt[first]--;
+    let ok = true;
+    while (q.length < 5) {
+      const cand = types.filter(t => cnt[t] > 0 && t !== q[q.length - 1]);
+      if (!cand.length) { ok = false; break; }
+      // 남은 수가 많은 쪽을 조금 더 자주 (막다른 길 줄이기)
+      const pool = []; for (const t of cand) for (let k = 0; k < cnt[t]; k++) pool.push(t);
+      const pick = pool[Math.floor(Math.random() * pool.length)];
+      q.push(pick); cnt[pick]--;
+    }
     if (ok) return q;
   }
   return ['c', 'd', 'b', 'c', 'd'];
 }
+function jackSingle(q) { const n = { c : 0, d : 0, b : 0 }; for (const x of q) n[x]++; return Object.keys(n).find(k => n[k] === 1) || null; }
 function jackShow(c) {
   if (!c.jack) return;
   let bb = (c.buffs || []).find(x => x.id === 10780);
@@ -2816,7 +2827,8 @@ function jackShow(c) {
 }
 function jackInit(c) {
   if (c.jack) return;
-  c.jack = { q : jackMakeQueue(null), used : { c : 0, d : 0, b : 0 }, swapCd : 0 };
+  const q0 = jackMakeQueue(null);
+  c.jack = { q : q0, single : jackSingle(q0), used : { c : 0, d : 0, b : 0 }, swapCd : 0 };
   jackShow(c);
 }
 // 수동의 미학: 스페셜은 플레이어가 버튼으로 예약했을 때만. 발동하면 예약 해제
