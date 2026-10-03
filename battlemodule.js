@@ -2012,8 +2012,9 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
       if (winner.curSp < 10 || !getRandom(0.5)) continue;
       winner.curSp -= 10;
       const bo = buffMdl.getBuffData({ buffCode : 10791 }); bo.dur = 2; this.giveBuff(winner, winner, bo, false, '비폭력');
-    } else if (eff.code === 'echoTie') {   // 평화의 메아리: 무승부에도 응보
-      if (winner.curSkillCode !== 90521) continue;
+    } else if (eff.code === 'echoTie') {   // 평화의 메아리: 무승부에도 응보 (비긴 카드가 가위 = 평화의 메아리)
+      const tieSk = skill || (winner.skill && winner.skill.base && winner.skill.base[this.lastTieType]);   // TIE 훅은 비긴 스킬을 넘겨준다
+      if (!tieSk || tieSk.code !== 90521) continue;
       this.retGain(winner, 1, '평화의 메아리');
     } else if (eff.code === 'minRollIfSkill') {   // 평화의 메아리로 졌을 때: 적 공격력 최솟값
       if (!damage || winner.curSkillCode !== eff.skillCode) continue;

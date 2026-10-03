@@ -451,7 +451,6 @@ io.on('connection', (socket) => {
     t.rps = t.rps || { w: 0, l: 0, d: 0 };   // 실데이터 통계: 실제 상성 결과
     { const o = (key - eKey + 3) % 3; if (o === 0) t.rps.d++; else if (o === 1) t.rps.w++; else t.rps.l++; }
     if (!result.redecide) { t.leftChr.bannedCardType = null; t.rightChr.bannedCardType = null; }   // 봉쇄는 한 턴
-    if (t.leftChr.pendingDraw) { run.drawExtra(t.pdeck, t.leftChr.pendingDraw); t.leftChr.pendingDraw = 0; }   // 영리한 평화: 손패 +1
     if (t.rightChr.pendingShuffle) { t.rightChr.pendingShuffle = false; run.shuffleDeck(t.edeck); t.eplayed = [0, 0, 0]; }   // 환기
     if (t.leftChr.pendingShuffle) { t.leftChr.pendingShuffle = false; run.shuffleDeck(t.pdeck); }
     for (const [chr, st] of [[t.leftChr, t.pdeck], [t.rightChr, t.edeck]]) {   // 달빛 의회: 해당 종류 카드를 전부 제거 (마지막 한 종류는 남긴다)
@@ -478,6 +477,7 @@ io.on('connection', (socket) => {
       run.drawHand(t.pdeck);
       const eShuf = t.edeck.shuffles || 0;
       run.drawHand(t.edeck);
+      for (const [chr, st] of [[t.leftChr, t.pdeck], [t.rightChr, t.edeck]]) if (chr.pendingDraw) { run.drawExtra(st, chr.pendingDraw); chr.pendingDraw = 0; }   // 영리한 평화: 손패를 채운 뒤 한 장 더
       if ((t.edeck.shuffles || 0) !== eShuf) t.eplayed = [0, 0, 0];   // 적 덱이 다시 섞이면 낸 카드 집계 초기화
       t.lastKey = playedKey;
       if (t.useState) for (const k in t.useState) if (t.useState[k].cd > 0 && !result.redecide) t.useState[k].cd--;   // [사용] 쿨다운 (무승부는 턴이 아님)
