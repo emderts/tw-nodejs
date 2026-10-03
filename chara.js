@@ -1793,6 +1793,42 @@ const item = require('./items');
       flavor : '켈투자드 앞에서도 입찰가는 내린 적이 없다.'};
   charTirion.base = JSON.parse(JSON.stringify(charTirion.stat));
   module.exports.tirion = charTirion;
+
+  // ---- 블러프 잭 ----
+  var charJack = {};
+  _initChar(charJack);
+  charJack.name = '블러프 잭';
+  charJack.nameType = cons.NAME_KOR_END_CONS;
+  charJack.title = '운명을 속이는 도박사';
+  charJack.jackSlots = true;
+  charJack.skill = {};
+  charJack.skill.base = [];
+  charJack.skill.base.push({code : 90510, name : '칩 던지기', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 0, noAttack : true,
+      effect : [{code : 'chipToss'}],
+      tooltip : '물리 0.25 피해를 4회 (타격마다 명중 판정)<br>🍒 1회 추가 / 💎 적에게 1턴 [출혈] / 🔔 준 피해의 25% 회복 / 🍒🍒 0.25 대신 0.4을 4회',
+      flavor : '판돈이 아니라 칩을 던진다. 맞으면 판돈이다.'});
+  charJack.skill.base.push({code : 90511, name : '사기 주사위', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1.0,
+      calcEffect : [{code : 'rollFix', mode : 'max', name : '사기 주사위'}, {code : 'diceSym', name : '사기 주사위'}],
+      effect : [{code : 'diceSymAfter', name : '사기 주사위'}],
+      tooltip : '피해 계산 시 공격력이 최댓값으로 적용된다<br>🍒 피해 +20% / 💎 2턴 간 적의 공격력이 최솟값으로 / 🔔 2턴 간 주는 피해 +10% / 💎💎 3턴 간 적 공격력 최솟값 + 저항 -5%p',
+      flavor : '납을 넣은 주사위는 늘 같은 면을 보여 준다.'});
+  charJack.skill.base.push({code : 90512, name : '카드 월', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 1.0,
+      calcEffect : [{code : 'wallSym', name : '카드 월'}],
+      effect : [{code : 'cardWall', name : '카드 월'}],
+      loseEffect : [{code : 'cardWall', name : '카드 월'}],
+      tooltip : '승패와 상관없이 물리 공격력만큼의 보호막 1턴<br>🍒 계수에 물리 공격력 적용 / 💎 다음 턴 적의 손패 공개 / 🔔 보호막 +1턴 / 🔔🔔 보호막 +2턴',
+      flavor : '카드로 쌓은 벽은 바람에 약하지만, 한 턴은 버틴다.'});
+  charJack.skill.drive = {code : 90513, name : '슬롯머신', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.SKILL_TYPE_DRIVE, active : cons.ACTIVE_TYPE_SKILL_WIN,
+      cost : 5, chance : 1,
+      effect : [{code : 'jackSpin'}],
+      tooltip : '기본 스킬로 상성 승리 시 맨 앞 심볼을 쓴다. 앞의 두 심볼이 같으면 둘 다 써서 강화. 처음이거나 다 쓰면 🍒💎🔔 중 5개를 새로 받는다 (같은 심볼 최대 2개, 연속 배치 없음)<br>[사용] 첫 번째와 마지막 심볼의 자리를 바꾼다 (쿨타임 2턴)',
+      flavor : '릴은 늘 돈다. 멈추는 건 내가 정한다.'};
+  charJack.skill.special = {code : 90514, name : '잭팟', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 100,
+      effect : [{code : 'jackpot'}],
+      tooltip : '적에게 물리 1.0 피해. 지금까지 쓴 심볼 수만큼 효과를 얹고 초기화한다<br>🍒 1개당 계수 +0.15 / 💎 1개당 적 SP -10 / 🔔 1개당 최대 생명력 2% 회복<br>🍒 4개: 추가 계수가 절대 피해로 / 💎 4개: 3턴 간 적 저항 -6%p (피해 전 적용) / 🔔 4개: 다음에 받는 피해 반감',
+      flavor : '세 개가 나란히 서는 순간, 모두가 숨을 멈춘다.'};
+  charJack.base = JSON.parse(JSON.stringify(charJack.stat));
+  module.exports.jack = charJack;
   module.exports.senal = charSenal;
   module.exports.gabi = charGabi;
   module.exports.illun = charIllun;

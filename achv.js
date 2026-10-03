@@ -7,7 +7,7 @@ const CHAR_CLEAR = {
   dekaitz: '버스트 캐논, 최대 출력', bks: '드디어 취업', lunisha: '진형은 무너지지 않는다', illun: '끝까지 증폭',
   nux: '해킹 완료', lozic: '논리적 결론', kasien: '보따리 속의 정상', marang: '마지막 한 방울',
   gabi: '달을 삼킨 아이', jay: '앙코르는 정상에서', senal: '숲이 닿은 정상',
-  yeop: '마지막 한 점', tirion: '정상도 경매에 부친다',
+  yeop: '마지막 한 점', tirion: '정상도 경매에 부친다', jack: '하우스가 이겼다',
 };
 
 // 몬스터 테마 (현재 풀 기준)
@@ -100,6 +100,7 @@ add('yeop_full', '재미', '화폭이 가득 찼다', '영물 둘과 신수를 �
 add('tirion_epic', '재미', '고물상의 걸작', '파편 재조립으로 에픽 장비를 맞춤', true);
 add('tirion_bid3', '재미', '큰손', '한 전투에서 입찰 3번 낙찰', true);
 add('fallen_rest', '재미', '안식', '쓰러진 도전자를 안식에 들게 함', true);
+add('jack_four', '재미', '쓰리 세븐', '잭팟을 한 심볼 4개 이상으로 터뜨림', true);
 
 const BY_ID = {}; for (const a of LIST) BY_ID[a.id] = a;
 
@@ -144,6 +145,7 @@ function onBattle(ctx) {
   if ((L.buffs || []).filter(b => b.id === 10740).length >= 2 && (L.buffs || []).some(b => b.id === 10741)) g.push('yeop_full');
   if (Object.values(L.items || {}).some(it => it && it.virtual && /^shard/.test(Object.keys(L.items).find(k => L.items[k] === it) || '') && it.rarity === 5)) g.push('tirion_epic');
   if ((L.bidCount || 0) >= 3) g.push('tirion_bid3');
+  if (/[🍒💎🔔]×[4-9]/.test(txt)) g.push('jack_four');
   if ((char.gold || 0) >= 1000) g.push('rich');
   return g;
 }

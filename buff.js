@@ -7430,6 +7430,35 @@ module.exports.getBuffData = function(eff) {
     retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'phyReduce', value : 0.15 });
     retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'magReduce', value : 0.15 });
     break;
+  case 10780 :   // 블러프 잭 [심볼] (이름은 전투 중 큐에 따라 바뀜)
+    retObj.name = '심볼'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 1; retObj.isDebuff = false; retObj.durOff = null; retObj.dispellable = false;
+    retObj.tooltip = '기본 스킬로 상성 승리 시 맨 앞 심볼을 쓴다. 앞의 둘이 같으면 둘 다 써서 강화. 다 쓰면 🍒💎🔔 5개를 새로 받는다 (같은 심볼 최대 2개, 연속 배치 없음)';
+    break;
+  case 10781 :   // [눈속임 주사위] 상대 공격력 최솟값
+    retObj.name = '눈속임 주사위'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 1; retObj.isDebuff = true;
+    retObj.tooltip = '피해 계산 시 공격력이 최솟값으로 고정된다';
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_DAMAGE, code : 'rollFix', mode : 'min' });
+    break;
+  case 10782 :   // [가중 주사위] 최대 공격력 +10%
+    retObj.name = '가중 주사위'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 1; retObj.isDebuff = false;
+    retObj.tooltip = '주는 피해 +10%';
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_DAMAGE, code : cons.EFFECT_TYPE_MULTIPLY_DAMAGE, anySkill : true, value : 1.1 });
+    break;
+  case 10783 :   // [카드 월] 보호막
+    retObj.name = '카드 월'; retObj.nameType = cons.NAME_KOR_END_CONS; retObj.stackType = 1; retObj.isDebuff = false; retObj.durOff = cons.DURATION_TYPE_TURN_END;
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_DEAL_DAMAGE_RECEIVE, code : cons.EFFECT_TYPE_SHIELD, value : 1 });
+    break;
+  case 10784 :   // [금 간 갑옷] 저항 감소 (잭팟 💎, 💎💎 주사위)
+    retObj.name = '금 간 갑옷'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 1; retObj.isDebuff = true;
+    retObj.tooltip = '물리·마법저항 감소';
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'phyReduce', value : -0.06 });
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'magReduce', value : -0.06 });
+    break;
+  case 10785 :   // [잭팟 보험] 다음 피해 반감
+    retObj.name = '잭팟 보험'; retObj.nameType = cons.NAME_KOR_END_CONS; retObj.stackType = 1; retObj.isDebuff = false; retObj.durOff = null;
+    retObj.tooltip = '다음에 받는 피해가 절반이 된다 (1회)';
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_DAMAGE_RECEIVE, code : cons.EFFECT_TYPE_MULTIPLY_DAMAGE, anySkill : true, value : 0.5, removeBuff : true });
+    break;
   case 10620 :
     retObj.name = '소형 동물'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 2; retObj.maxStack = 10; retObj.isDebuff = false; retObj.durOff = null;
     retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'maxHp', value : 10 });

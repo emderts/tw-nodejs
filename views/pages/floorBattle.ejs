@@ -184,6 +184,13 @@
       b.innerHTML = glyph[i] + ' <span class="colorGold">×' + oDeckCnt[i] + '</span>' + (s.eplayed[i] ? ' <span style="color:var(--ash)">낸 ' + s.eplayed[i] + '</span>' : '') + hint + '<br>' + oNames[i];
     }
     var ub0 = document.getElementById('useBtns'); ub0.innerHTML = '';
+    if (s.charUse) {   // 캐릭터 고유 [사용]
+      var cub = document.createElement('button'); cub.type = 'button';
+      cub.textContent = '[사용] ' + s.charUse.label + (s.charUse.ready ? '' : ' (쿨 ' + s.charUse.cdLeft + '턴)');
+      if (!s.charUse.ready) cub.setAttribute('disabled', true);
+      cub.addEventListener('click', function () { this.setAttribute('disabled', true); socket.emit('floorCharUse', '<%= room %>', '<%= uid %>'); });
+      ub0.appendChild(cub);
+    }
     if (s.manualSp) {   // 수동의 미학
       var spb = document.createElement('button'); spb.type = 'button';
       spb.textContent = s.manualSp.armed ? '[스페셜] 예약됨 ✓' : '[스페셜] ' + s.manualSp.name;

@@ -327,6 +327,17 @@ io.on('connection', (socket) => {
     L.specialArmed = !L.specialArmed;
     socket.emit('floorSelectAck', (t.bmod.result || '') + '<div class="note-box" style="margin:6px 0">' + (L.specialArmed ? '[스페셜] 이번 턴에 [ ' + L.skill.special.name + ' ] 을(를) 시전한다.' : '[스페셜] 예약을 취소했다.') + '</div>', floorState(t));
   }));
+  socket.on('floorCharUse', guard('floorCharUse', function(room, uid) {   // 캐릭터 고유 [사용] (블러프 잭 릴 비틀기)
+    const t = trades[room];
+    if (!t || !t.floor || t.leftUid != uid || t.result || t.busy) return;
+    const L = t.leftChr; if (!L.jackSlots) return;
+    t.bmod.result = t.bmod.result || '';
+    const before = t.bmod.result.length;
+    const ok = t.bmod.jackSwap(L);
+    const msg = ok ? t.bmod.result.slice(before) : '<div class="note-box">아직 릴을 비틀 수 없다.</div>';
+    persistBattle(t);
+    socket.emit('floorSelectAck', t.bmod.result + (ok ? '' : msg), floorState(t));
+  }));
   socket.on('floorItemUse', guard('floorItemUse', function(room, uid, slot) {   // [사용] 장비
     const t = trades[room];
     if (!t || !t.floor || t.leftUid != uid || t.result || t.busy) return;
@@ -3857,6 +3868,7 @@ function floorState(t) {
     lastEKey: (typeof t.ePlayedKey === 'number') ? t.ePlayedKey : null,
     myName: L.name,
     manualSp: Object.values(L.items || {}).some(it => it && it.manualSpecial) && L.skill && L.skill.special ? { cost: L.skill.special.cost, sp: Math.round(L.curSp || 0), armed: !!L.specialArmed, name: L.skill.special.name } : null,
+    charUse: L.jackSlots ? { label: '릴 비틀기 (첫 심볼 ↔ 마지막 심볼)', ready: !(L.jack && L.jack.swapCd > ((t.bmod && t.bmod.turnCount) || 0)), cdLeft: L.jack ? Math.max(0, L.jack.swapCd - ((t.bmod && t.bmod.turnCount) || 0)) : 0 } : null,
     uses: ['weapon', 'armor', 'subarmor', 'trinket', 'skillArtifact'].filter(k => L.items && L.items[k] && L.items[k].use).map(k => {
       const it = L.items[k], st = (t.useState && t.useState[k]) || { uses: 0, cd: 0 };
       return { slot: k, name: it.name, label: it.use.label, cd: st.cd, left: it.use.maxUses ? it.use.maxUses - st.uses : null };
@@ -3895,6 +3907,7 @@ function predictAcc(L) {
 function enemyHint(t) {
   const L = t.leftChr, hand = t.edeck.hand.map(c => c.type);
   if (run.runEffect(L, 'revealEnemyAll') && hand.length) return { type: 'all', cards: hand };
+  if (t.rightChr.revealHandUntil > ((t.bmod && t.bmod.turnCount) || 0) && hand.length) return { type: 'all', cards: hand };   // 블러프 잭 카드 월 💎
   if (run.runEffect(L, 'revealEnemyOne') && hand.length) return { type: 'one', card: hand[0] };
   if (run.runEffect(L, 'revealEnemyMajor') && hand.length) { const cnt = [0, 1, 2].map(x => hand.filter(y => y === x).length); const m = Math.max(...cnt); const tops = [0, 1, 2].filter(x => cnt[x] === m); return { type: 'major', cards: tops }; }
   return null;

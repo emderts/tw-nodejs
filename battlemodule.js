@@ -101,6 +101,7 @@ Battlemodule.prototype.procBattleStart = function (left, right, flag) {
   this.charLeft = left;
   this.charRight = right;
   this._doBattleStart(flag);
+  for (const c of [left, right]) if (c && c.jackSlots) { c.buffs = c.buffs || []; jackInit(c); }
 
   return this.result;
 }
@@ -1939,6 +1940,65 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
       if (eff.need.every(id => (winner.buffs || []).some(b => b.id === id))) continue;
       winner.spRefund = (winner.spRefund || 0) + eff.value;
       this.result += '[ ' + (winner.skill.special ? winner.skill.special.name : '') + ' ] 삼월참 설화를 펼치지 못했다 — SP ' + eff.value + ' 반환<br>';
+    } else if (eff.code === 'jackSpin') {   // 슬롯머신 드라이브: 맨 앞 심볼 사용 (앞의 둘이 같으면 둘 다 → 강화)
+      jackInit(winner);
+      const q = winner.jack.q;
+      const sym = q[0]; const dbl = q.length > 1 && q[1] === sym;
+      q.splice(0, dbl ? 2 : 1);
+      winner.jack.used[sym] += dbl ? 2 : 1;
+      winner.jackSym = { sym, dbl, turn : this.turnCount };
+      this.result += '[ 슬롯머신 ] ' + SYM[sym] + (dbl ? SYM[sym] + ' — 강화!' : '') + ' 사용<br>';
+      if (!q.length) { const cnt = winner.jack.lastCounts || null; const single = cnt ? Object.keys(cnt).find(k => cnt[k] === 1) : null; winner.jack.q = jackMakeQueue(single); this.result += '[ 슬롯머신 ] 릴이 다시 돈다 — ' + winner.jack.q.map(x => SYM[x]).join('') + '<br>'; }
+      jackShow(winner);
+    } else if (eff.code === 'chipToss') {   // 칩 던지기: 물리 0.25 × 4 (타격마다 판정)
+      const js = winner.jackSym && winner.jackSym.turn === this.turnCount ? winner.jackSym : null;
+      let coef = 0.25, hits = 4;
+      if (js && js.sym === 'c') { if (js.dbl) coef = 0.4; else hits = 5; }
+      let dealt = 0, landed = 0;
+      for (let k = 0; k < hits; k++) {
+        const rd = this.calcDamage(winner, loser, { name : '칩 던지기', type : cons.DAMAGE_TYPE_PHYSICAL, damage : coef, nameType : cons.NAME_KOR_NO_END_CONS, effect : [] }); rd.noProc = true;
+        if (!rd.hit) { this.result += '[ 칩 던지기 ] 칩이 빗나갔다.<br>'; continue; }
+        landed++; dealt += rd.value; this.dealDamage(winner, loser, rd);
+        this.result += '<span class="skillDamage">[ 칩 던지기 ] ' + rd.value + '대미지' + (rd.crit ? ' (치명타)' : '') + '</span><br>';
+      }
+      if (landed) winner.landedThisTurn = true;
+      if (js && js.sym === 'd') { const bd = buffMdl.getBuffData({ buffCode : 3 }); bd.dur = 1; this.giveBuff(winner, loser, bd, true, '칩 던지기'); }
+      if (js && js.sym === 'b' && dealt > 0) { const v = Math.max(1, Math.round(dealt * 0.25)); this.doHeal(winner, loser, v); this.result += '[ 칩 던지기 ] 🔔 — ' + v + ' 회복<br>'; }
+    } else if (eff.code === 'rollFix') {   // 공격력 굴림 고정 (max/min)
+      if (!damage) continue;
+      damage.diffDmg = eff.mode === 'max' ? damage.atkMax : damage.atkMin;
+    } else if (eff.code === 'diceSym') {   // 사기 주사위 심볼 (계산 단계)
+      const js = winner.jackSym && winner.jackSym.turn === this.turnCount ? winner.jackSym : null; if (!js || !damage) continue;
+      if (js.sym === 'c') damage.skillRat *= 1.2;
+    } else if (eff.code === 'diceSymAfter') {   // 사기 주사위 심볼 (적중 후)
+      const js = winner.jackSym && winner.jackSym.turn === this.turnCount ? winner.jackSym : null; if (!js) continue;
+      if (js.sym === 'd') { const bd = buffMdl.getBuffData({ buffCode : 10781 }); bd.dur = js.dbl ? 3 : 2; this.giveBuff(winner, loser, bd, true, '사기 주사위');
+        if (js.dbl) { const b2 = buffMdl.getBuffData({ buffCode : 10784 }); b2.dur = 3; for (const e of b2.effect) e.value = -0.05; this.giveBuff(winner, loser, b2, true, '사기 주사위'); } }
+      if (js.sym === 'b') { const bs = buffMdl.getBuffData({ buffCode : 10782 }); bs.dur = 2; this.giveBuff(winner, winner, bs, false, '사기 주사위'); }
+    } else if (eff.code === 'wallSym') {   // 카드 월 심볼 (계산 단계: 🍒 물리 공격력 적용)
+      const js = winner.jackSym && winner.jackSym.turn === this.turnCount ? winner.jackSym : null; if (!js || !damage) continue;
+      if (js.sym === 'c') { damage.atkRat = winner.stat.phyAtk; damage.atkMin = winner.stat.phyAtkMin; damage.atkMax = winner.stat.phyAtkMax; damage.diffDmg = Math.floor(Math.random() * (damage.atkMax - damage.atkMin)) + damage.atkMin; }
+    } else if (eff.code === 'cardWall') {   // 카드 월: 결과와 무관하게 물리 공격력만큼 1턴 보호막 (+🔔 1턴, 🔔🔔 2턴)
+      const js = winner.jackSym && winner.jackSym.turn === this.turnCount ? winner.jackSym : null;
+      const amt = Math.max(1, Math.round((winner.stat.phyAtk || 0) + ((winner.stat.phyAtkMin || 0) + (winner.stat.phyAtkMax || 0)) / 2));
+      let dur = 2; if (js && js.sym === 'b') dur += js.dbl ? 2 : 1;
+      const bo = buffMdl.getBuffData({ buffCode : 10783 }); bo.dur = dur; for (const e of bo.effect) if (e.code === cons.EFFECT_TYPE_SHIELD) e.value = amt;
+      this.giveBuff(winner, winner, bo, false, '카드 월');
+      this.result += '[ 카드 월 ] 카드로 벽을 세운다 — 보호막 ' + amt + ' (' + (dur - 1) + '턴)<br>';
+      if (js && js.sym === 'd') { loser.revealHandUntil = this.turnCount + 1; this.result += '[ 카드 월 ] 💎 — 다음 턴 상대의 손패가 보인다<br>'; }
+    } else if (eff.code === 'jackpot') {   // 잭팟
+      jackInit(winner);
+      const u = winner.jack.used; const uc = u.c, ud = u.d, ub = u.b;
+      if (ud >= 4) { const b2 = buffMdl.getBuffData({ buffCode : 10784 }); b2.dur = 3; this.giveBuff(winner, loser, b2, true, '잭팟'); this.result += '[ 잭팟 ] 💎×' + ud + ' — 적 저항 -6%p (3턴)<br>'; }
+      const extra = uc * 0.15;
+      const rd = this.calcDamage(winner, loser, { name : '잭팟', type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1.0 + (uc >= 4 ? 0 : extra), nameType : cons.NAME_KOR_END_CONS, effect : [] }); rd.noProc = true;
+      if (rd.hit) { this.dealDamage(winner, loser, rd); this.result += '<span class="skillDamage">[ 잭팟 ] ' + rd.value + '대미지' + (rd.crit ? ' (치명타)' : '') + (uc && uc < 4 ? ' (🍒×' + uc + ' 계수 +' + extra.toFixed(2) + ')' : '') + '</span><br>';
+        if (uc >= 4) { const ab = Math.round(winner.stat.phyAtk * extra); loser.curHp -= ab; this.result += '<span class="skillDamage">[ 잭팟 ] 🍒×' + uc + ' — 추가 계수 ' + extra.toFixed(2) + '이 절대 피해로: ' + ab + '</span><br>'; } }
+      else this.result += '[ 잭팟 ] 빗나갔다.<br>';
+      if (ud) { loser.curSp = Math.max(0, (loser.curSp || 0) - 10 * ud); this.result += '[ 잭팟 ] 💎×' + ud + ' — 적 SP -' + (10 * ud) + '<br>'; }
+      if (ub) { const v = Math.round(winner.stat.maxHp * 0.02 * ub); this.doHeal(winner, loser, v); this.result += '[ 잭팟 ] 🔔×' + ub + ' — ' + v + ' 회복<br>'; }
+      if (ub >= 4) { const bb = buffMdl.getBuffData({ buffCode : 10785 }); bb.dur = null; this.giveBuff(winner, winner, bb, false, '잭팟'); }
+      winner.jack.used = { c : 0, d : 0, b : 0 };
     } else if (eff.code === 'healDecay') {   // [붕괴]: 중첩당 받는 회복 감소
       if (!damage || !(damage.amount > 0)) continue;
       const st = (eff.buff && eff.buff.stack) || 1;
@@ -2366,6 +2426,16 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
   }
 }
 
+Battlemodule.prototype.jackSwap = function(c) {   // 슬롯머신 [사용]: 첫 번째와 마지막 심볼 교환 (쿨 2턴)
+  jackInit(c);
+  if (c.jack.swapCd > this.turnCount) return false;
+  const q = c.jack.q; if (q.length < 2) return false;
+  [q[0], q[q.length - 1]] = [q[q.length - 1], q[0]];
+  c.jack.swapCd = this.turnCount + 2;
+  jackShow(c);
+  this.result += '[ 슬롯머신 ] 릴을 비틀었다 — ' + q.map(x => SYM[x]).join('') + '<br>';
+  return true;
+};
 Battlemodule.prototype.councilAccrue = function(council, attacker, amount) {
   const idx = (attacker.skill && attacker.skill.base) ? attacker.skill.base.findIndex(sk => sk && sk.code === attacker.curSkillCode) : -1;
   const ori = idx >= 0 ? idx : ((attacker.skillOri && attacker.skillOri.base) ? attacker.skillOri.base.findIndex(sk => sk && sk.code === attacker.curSkillCode) : -1);
@@ -2663,6 +2733,30 @@ function equipVirtual(chara, slot, it) {
   it.virtual = true;
   for (const e of (it.effect || [])) e.item = it;
   chara.items[slot] = it;
+}
+// ===== 블러프 잭: 심볼 큐 =====
+const SYM = { c : '🍒', d : '💎', b : '🔔' };
+function jackMakeQueue(prevSingle) {   // 5개, 종류당 최대 2개, 연속 없음. 이전 큐에서 하나뿐이던 심볼이 맨 앞
+  const types = ['c', 'd', 'b'];
+  for (let tries = 0; tries < 200; tries++) {
+    const single = prevSingle && types.includes(prevSingle) ? prevSingle : types[Math.floor(Math.random() * 3)];
+    const rest = []; for (const t of types) for (let k = 0; k < (t === single ? 0 : 2); k++) rest.push(t);
+    const q = [single]; let ok = true;
+    while (rest.length) { const cand = rest.filter(x => x !== q[q.length - 1]); if (!cand.length) { ok = false; break; } const pick = cand[Math.floor(Math.random() * cand.length)]; rest.splice(rest.indexOf(pick), 1); q.push(pick); }
+    if (ok) return q;
+  }
+  return ['c', 'd', 'b', 'c', 'd'];
+}
+function jackShow(c) {
+  if (!c.jack) return;
+  let bb = (c.buffs || []).find(x => x.id === 10780);
+  if (!bb) { bb = buffMdl.getBuffData({ buffCode : 10780 }); bb.dur = null; c.buffs.push(bb); for (const e of bb.effect) e.buff = bb; }
+  bb.name = '심볼 (' + c.jack.q.map(x => SYM[x]).join('') + ')';
+}
+function jackInit(c) {
+  if (c.jack) return;
+  c.jack = { q : jackMakeQueue(null), used : { c : 0, d : 0, b : 0 }, swapCd : 0 };
+  jackShow(c);
 }
 // 수동의 미학: 스페셜은 플레이어가 버튼으로 예약했을 때만. 발동하면 예약 해제
 function specialAllowed(c) {
