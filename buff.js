@@ -7459,6 +7459,28 @@ module.exports.getBuffData = function(eff) {
     retObj.tooltip = '다음에 받는 피해가 절반이 된다 (1회)';
     retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_DAMAGE_RECEIVE, code : cons.EFFECT_TYPE_MULTIPLY_DAMAGE, anySkill : true, value : 0.5, removeBuff : true });
     break;
+  case 10790 :   // 제니샤 [응보]
+    retObj.name = '응보'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 2; retObj.maxStack = 99; retObj.isDebuff = false; retObj.durOff = null; retObj.dispellable = false;
+    retObj.tooltip = '상성 패배 시 쌓인다. 평화의 메아리·영리한 평화는 응보가 있어야 공격하고, 소모될 때마다 잃은 생명력의 8%를 회복한다';
+    break;
+  case 10791 :   // [피스키퍼]
+    retObj.name = '피스키퍼'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 1; retObj.isDebuff = false;
+    retObj.tooltip = '응보를 얻을 때 하나 더 얻는다. 생명력 50% 미만이면 물리·마법저항 +20%p';
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'phyReduce', value : 0.2, chkHpUnder : 0.5 });
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'magReduce', value : 0.2, chkHpUnder : 0.5 });
+    break;
+  case 10792 :   // [비폭력] 제니샤 고유 (숨김 패시브)
+    retObj.name = '비폭력'; retObj.nameType = cons.NAME_KOR_END_CONS; retObj.stackType = 1; retObj.isDebuff = false; retObj.durOff = null; retObj.dispellable = false; retObj.hidden = true;
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_SKILL_WIN, code : 'peacekeeperRoll' });
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_TIE, code : 'echoTie' });
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_DAMAGE_RECEIVE, code : 'minRollIfSkill', skillCode : 90521 });
+    break;
+  case 10793 :   // [스트레인지러브 프로토콜]
+    retObj.name = '스트레인지러브 프로토콜'; retObj.nameType = cons.NAME_KOR_END_CONS; retObj.stackType = 1; retObj.isDebuff = false; retObj.durOff = cons.DURATION_TYPE_TURN_END;
+    retObj.tooltip = '상성 패배 시 턴 종료에, 응보 스택을 하나씩 소모하며 이번 턴에 입은 피해를 마법 피해로 반사한다 (스택이 다할 때까지 반복). 발동 없이 끝나면 SP 90 반환';
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_TURN_END_LOSE, code : 'strangelove' });
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_DURATION_END, code : 'strangeloveRefund', value : 90 });
+    break;
   case 10620 :
     retObj.name = '소형 동물'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 2; retObj.maxStack = 10; retObj.isDebuff = false; retObj.durOff = null;
     retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'maxHp', value : 10 });

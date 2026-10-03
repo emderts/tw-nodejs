@@ -102,6 +102,7 @@ Battlemodule.prototype.procBattleStart = function (left, right, flag) {
   this.charRight = right;
   this._doBattleStart(flag);
   for (const c of [left, right]) if (c && c.jackSlots) { c.buffs = c.buffs || []; jackInit(c); }
+  for (const c of [left, right]) if (c && c.zenisha) { const pb = buffMdl.getBuffData({ buffCode : 10792 }); pb.dur = null; c.buffs.push(pb); for (const e of pb.effect) e.buff = pb; const bo = buffMdl.getBuffData({ buffCode : 10790 }); bo.dur = null; bo.stack = 1; c.buffs.push(bo); for (const e of bo.effect) e.buff = bo; }
 
   return this.result;
 }
@@ -496,6 +497,7 @@ Battlemodule.prototype._doBattleTurnManual = function(left, right) {
   }
   
   if (damage.hit) {
+    if (damage.retCancel) damage.noAttack = true;
     if (!damage.noAttack) {
     this.result += '<span class="skillDamage">' + winner.name + getIga(winner.nameType) + ' [ ' + skillUsed.name + ' ] ' + getUro(skillUsed.nameType) + ' ';
     this.result += loser.name + getUlrul(loser.nameType) + ' 공격해 ' + damage.value + '대미지를 입혔습니다!';
@@ -725,6 +727,7 @@ Battlemodule.prototype._doBattleTurn = function() {
   }
   
   if (damage.hit) {
+    if (damage.retCancel) damage.noAttack = true;
     if (!damage.noAttack) {
     this.result += '<span class="skillDamage">' + winner.name + getIga(winner.nameType) + ' [ ' + skillUsed.name + ' ] ' + getUro(skillUsed.nameType) + ' ';
     this.result += loser.name + getUlrul(loser.nameType) + ' 공격해 ' + damage.value + '대미지를 입혔습니다!';
@@ -902,7 +905,7 @@ Battlemodule.prototype.calcDamage = function(winner, loser, skill) {
 }
 
 Battlemodule.prototype.dealDamage = function(src, dst, damage) {
-  if (damage && damage.value > 0) { dst.hitThisTurn = true; src.landedThisTurn = true; }
+  if (damage && damage.value > 0) { dst.hitThisTurn = true; src.landedThisTurn = true; if (src !== dst) { dst.hitsTaken = (dst.hitsTaken || 0) + 1; dst.dmgThisTurn = (dst.dmgThisTurn || 0) + damage.value; } }
   if (damage && dst.stat && dst.stat.hitCapPct && damage.value > dst.stat.maxHp * dst.stat.hitCapPct) {   // 정상화의 신: 과한 한 방의 초과분 절반
     const cap = dst.stat.maxHp * dst.stat.hitCapPct; const before = damage.value;
     damage.value = Math.round(cap + (damage.value - cap) / 2);
@@ -1999,6 +2002,45 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
       if (ub) { const v = Math.round(winner.stat.maxHp * 0.02 * ub); this.doHeal(winner, loser, v); this.result += '[ 잭팟 ] 🔔×' + ub + ' — ' + v + ' 회복<br>'; }
       if (ub >= 4) { const bb = buffMdl.getBuffData({ buffCode : 10785 }); bb.dur = null; this.giveBuff(winner, winner, bb, false, '잭팟'); }
       winner.jack.used = { c : 0, d : 0, b : 0 };
+    } else if (eff.code === 'retGainLose') {   // 비폭력 드라이브: 상성 패배 시 응보 +1
+      this.retGain(winner, 1, '비폭력');
+    } else if (eff.code === 'peacekeeperRoll') {   // 비폭력: 상성 승리 시 50%, SP 10으로 2턴 [피스키퍼] (피스키퍼 중엔 발동 안 함)
+      if ((winner.buffs || []).some(x => x.id === 10791)) continue;
+      if (winner.curSp < 10 || !getRandom(0.5)) continue;
+      winner.curSp -= 10;
+      const bo = buffMdl.getBuffData({ buffCode : 10791 }); bo.dur = 2; this.giveBuff(winner, winner, bo, false, '비폭력');
+    } else if (eff.code === 'echoTie') {   // 평화의 메아리: 무승부에도 응보
+      if (winner.curSkillCode !== 90521) continue;
+      this.retGain(winner, 1, '평화의 메아리');
+    } else if (eff.code === 'minRollIfSkill') {   // 평화의 메아리로 졌을 때: 적 공격력 최솟값
+      if (!damage || winner.curSkillCode !== eff.skillCode) continue;
+      damage.diffDmg = damage.atkMin;
+      this.result += '[ 평화의 메아리 ] 노래가 적의 공격 의지를 꺾는다 — 최소 피해<br>';
+    } else if (eff.code === 'needRet') {   // 응보가 있어야 공격: 없으면 공격 취소
+      if (!damage) continue;
+      if (retStacks(winner) <= 0) { damage.skillRat = 0; damage.retCancel = true; this.result += '[ ' + eff.name + ' ] 응보가 없어 공격하지 않는다.<br>'; continue; }
+      this.retConsume(winner, loser, 1, eff.name);
+    } else if (eff.code === 'drawOne') {   // 영리한 평화: 패배 시 손패 +1 (index에서 처리)
+      winner.pendingDraw = (winner.pendingDraw || 0) + 1; this.result += '[ 영리한 평화 ] 카드 한 장을 더 뽑는다.<br>';
+    } else if (eff.code === 'peaceBonus') {   // 피스메이커: 응보가 있으면 소모하고 피격 횟수 × 0.2 추가 계수
+      if (!damage || retStacks(winner) <= 0) continue;
+      this.retConsume(winner, loser, 1, '피스메이커');
+      const add = (winner.hitsTaken || 0) * 0.2; damage.skillRat += add;
+      this.result += '[ 피스메이커 ] 피격 ' + (winner.hitsTaken || 0) + '회 — 계수 +' + add.toFixed(1) + '<br>';
+    } else if (eff.code === 'peaceCounter') {   // 피스메이커: 패배 시 응보 3 이상이면 1 소모해 물리 1.2 반격
+      if (retStacks(winner) < 3) continue;
+      this.retConsume(winner, loser, 1, '피스메이커');
+      const rd = this.calcDamage(winner, loser, { name : '피스메이커', type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1.2, nameType : cons.NAME_KOR_NO_END_CONS, effect : [] }); rd.noProc = true;
+      if (rd.hit) { this.dealDamage(winner, loser, rd); this.result += '<span class="skillDamage">[ 피스메이커 ] 콜트가 불을 뿜는다 — 반격 ' + rd.value + '대미지</span><br>'; } else this.result += '[ 피스메이커 ] 반격이 빗나갔다.<br>';
+    } else if (eff.code === 'strangelove') {   // 스트레인지러브: 패배 턴 종료에 응보를 전부 소모하며 받은 피해를 마법 반사
+      const taken = Math.round(winner.dmgThisTurn || 0); if (taken <= 0 || retStacks(winner) <= 0) continue;
+      const bb = eff.buff; if (bb) removeBuff(bb); winner.strangeFired = true;
+      let n = 0, total = 0;
+      while (retStacks(winner) > 0) { this.retConsume(winner, loser, 1, '스트레인지러브'); const rd = this.calcDamage(winner, loser, { name : '스트레인지러브 프로토콜', type : cons.DAMAGE_TYPE_MAGICAL_FIXED, damage : taken, nameType : cons.NAME_KOR_END_CONS, effect : [] }); rd.hit = true; rd.noProc = true; this.dealDamage(winner, loser, rd); total += rd.value; n++; }
+      this.result += '<span class="skillDamage">[ 스트레인지러브 프로토콜 ] 미사일 ' + n + '발 — 받은 ' + taken + ' 피해를 ' + n + '번 반사, 총 ' + total + '대미지</span><br>';
+    } else if (eff.code === 'strangeloveRefund') {
+      if (winner.strangeFired) { winner.strangeFired = false; continue; }
+      winner.curSp += eff.value; this.result += '[ 스트레인지러브 프로토콜 ] 발사 코드가 쓰이지 않았다 — SP ' + eff.value + ' 반환<br>';
     } else if (eff.code === 'healDecay') {   // [붕괴]: 중첩당 받는 회복 감소
       if (!damage || !(damage.amount > 0)) continue;
       const st = (eff.buff && eff.buff.stack) || 1;
@@ -2466,6 +2508,7 @@ Battlemodule.prototype.resolveTurnBegin = function(winner, loser) {
   }
   winner.hitThisTurn = false; loser.hitThisTurn = false;   // 글로리 맥스·채찍-PT용
   winner.landedThisTurn = false; loser.landedThisTurn = false;
+  winner.dmgThisTurn = 0; loser.dmgThisTurn = 0;
   this.resolveEffects(winner, loser, getItemEffects(winner, cons.ACTIVE_TYPE_TURN_START), null);
   this.resolveEffects(loser, winner, getItemEffects(loser, cons.ACTIVE_TYPE_TURN_START), null);
   if (this.checkDrive(winner, cons.ACTIVE_TYPE_TURN_START, loser)) {
@@ -2734,6 +2777,21 @@ function equipVirtual(chara, slot, it) {
   for (const e of (it.effect || [])) e.item = it;
   chara.items[slot] = it;
 }
+// ===== 제니샤: 응보 =====
+function retStacks(c) { const b = (c.buffs || []).find(x => x.id === 10790); return b ? (b.stack || 1) : 0; }
+Battlemodule.prototype.retGain = function(c, n, src) {
+  const extra = (c.buffs || []).some(x => x.id === 10791) ? n : 0;   // 피스키퍼: 하나 더
+  const bo = buffMdl.getBuffData({ buffCode : 10790 }); bo.dur = null; bo.stack = n + extra;
+  this.giveBuff(c, c, bo, false, src || '비폭력');
+};
+Battlemodule.prototype.retConsume = function(c, opp, n, src) {   // 소모할 때마다 잃은 생명력의 8% 회복
+  const b = (c.buffs || []).find(x => x.id === 10790); if (!b) return 0;
+  const use = Math.min(n, b.stack || 1);
+  b.stack = (b.stack || 1) - use; if (b.stack <= 0) removeBuff(b);
+  for (let k = 0; k < use; k++) { const lost = Math.max(0, c.stat.maxHp - c.curHp); const v = Math.round(lost * 0.08); if (v > 0) this.doHeal(c, opp, v); }
+  this.result += '[ ' + (src || '응보') + ' ] 응보 ' + use + ' 소모 (남은 ' + Math.max(0, b.stack || 0) + ')<br>';
+  return use;
+};
 // ===== 블러프 잭: 심볼 큐 =====
 const SYM = { c : '🍒', d : '💎', b : '🔔' };
 function jackMakeQueue(prevSingle) {   // 5개, 종류당 최대 2개, 연속 없음. 이전 큐에서 하나뿐이던 심볼이 맨 앞
@@ -3004,6 +3062,7 @@ function calcStats(chara, opp) {
     }
     
     if (val.minStack && val.buff && (val.buff.stack || 1) < val.minStack) continue;   // 일정 중첩 이상일 때만 (플라스마 충전)
+    if (val.chkHpUnder !== undefined && !(chara.curHp < (chara.stat.maxHp || chara.base.maxHp) * val.chkHpUnder)) continue;   // 생명력 비율 미만일 때만 (피스키퍼)
     if (val.code === 'skillDamageAdd') {   // [생명의 나무]: 지정 슬롯 계수 가산
       const sk = chara.skill && chara.skill.base && chara.skill.base[val.slot];
       if (sk) sk.damage = Math.round((sk.damage + val.value) * 100) / 100;

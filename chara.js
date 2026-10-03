@@ -1829,6 +1829,44 @@ const item = require('./items');
       flavor : '세 개가 나란히 서는 순간, 모두가 숨을 멈춘다.'};
   charJack.base = JSON.parse(JSON.stringify(charJack.stat));
   module.exports.jack = charJack;
+
+  // ---- 제니샤 ----
+  var charZen = {};
+  _initChar(charZen);
+  charZen.name = '제니샤';
+  charZen.nameType = cons.NAME_KOR_NO_END_CONS;
+  charZen.title = '평화주의자';
+  charZen.zenisha = true;
+  charZen.skill = {};
+  charZen.skill.base = [];
+  charZen.skill.base.push({code : 90521, name : '평화의 메아리', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 0.8,
+      calcEffect : [{code : 'needRet', name : '평화의 메아리'}],
+      effect : [],
+      tooltip : '[응보]가 있을 때만 하나를 소모해 공격한다. 이 스킬로 상성 패배 시 적의 공격력이 최솟값으로 계산된다. 무승부에도 [응보] 1',
+      flavor : '평화를 노래합니다! 적의 공격 의지가 꺾입니다.'});
+  charZen.skill.base.push({code : 90522, name : '영리한 평화', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 0.8,
+      calcEffect : [{code : 'needRet', name : '영리한 평화'}],
+      effect : [],
+      loseEffect : [{code : 'drawOne'}],
+      tooltip : '[응보]가 있을 때만 하나를 소모해 공격한다. 이 스킬로 상성 패배 시 손패에 카드 한 장을 더 뽑는다 (덱이 비면 버린 카드를 섞어 뽑는다)',
+      flavor : '평화는 아둔한 희생이 아닌 전략적 선택입니다.'});
+  charZen.skill.base.push({code : 90523, name : '피스메이커', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 1.2,
+      calcEffect : [{code : 'peaceBonus', name : '피스메이커'}],
+      effect : [],
+      loseEffect : [{code : 'peaceCounter'}],
+      tooltip : '공격 성공 시 [응보]가 있으면 하나를 소모해 계수 +(이번 전투 피격 횟수 × 0.2). 상성 패배 시 [응보]가 3 이상이면 하나를 소모해 물리 1.2로 반격 (피격 보너스 없음)',
+      flavor : '창조주가 그에게 선물한 콜트 M1873을, 평화를 알아먹지 못하는 적에게 선사합니다.'});
+  charZen.skill.drive = {code : 90524, name : '비폭력', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_DRIVE, active : cons.ACTIVE_TYPE_SKILL_LOSE,
+      cost : 0, chance : 1,
+      effect : [{code : 'retGainLose'}],
+      tooltip : '상성 패배 시 [응보] 1. 상성 승리 시 50% 확률로 SP 10을 써서 2턴 간 [피스키퍼] ([피스키퍼] 중에는 다시 발동하지 않음). 전투 시작 시 [응보] 1<br><br>[응보] : 소모될 때 잃은 생명력의 8% 회복<br>[피스키퍼] : 응보를 얻을 때 하나 더. 생명력 50% 미만이면 물리·마법저항 +20%p',
+      flavor : '때리지 않는다. 기억할 뿐이다.'};
+  charZen.skill.special = {code : 90525, name : '스트레인지러브 프로토콜', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 180,
+      effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 10793, buffDur : 3}],
+      tooltip : '3턴 간 [스트레인지러브 프로토콜]<br><br>[스트레인지러브 프로토콜] : 상성 패배 시 턴 종료에 피해 처리를 마친 뒤, 이 상태를 소거하고 [응보]를 하나씩 소모하며 이번 턴 입은 모든 피해를 마법 피해로 반사한다 (응보가 다할 때까지 반복). 3턴 동안 발동하지 않으면 SP 90 반환',
+      flavor : '보복용 미사일 발사 코드를 가동합니다. 때로는 평화를 위해 힘이 필요한 법.'};
+  charZen.base = JSON.parse(JSON.stringify(charZen.stat));
+  module.exports.zenisha = charZen;
   module.exports.senal = charSenal;
   module.exports.gabi = charGabi;
   module.exports.illun = charIllun;

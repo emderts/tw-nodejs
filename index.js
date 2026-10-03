@@ -451,6 +451,7 @@ io.on('connection', (socket) => {
     t.rps = t.rps || { w: 0, l: 0, d: 0 };   // 실데이터 통계: 실제 상성 결과
     { const o = (key - eKey + 3) % 3; if (o === 0) t.rps.d++; else if (o === 1) t.rps.w++; else t.rps.l++; }
     if (!result.redecide) { t.leftChr.bannedCardType = null; t.rightChr.bannedCardType = null; }   // 봉쇄는 한 턴
+    if (t.leftChr.pendingDraw) { run.drawExtra(t.pdeck, t.leftChr.pendingDraw); t.leftChr.pendingDraw = 0; }   // 영리한 평화: 손패 +1
     if (t.rightChr.pendingShuffle) { t.rightChr.pendingShuffle = false; run.shuffleDeck(t.edeck); t.eplayed = [0, 0, 0]; }   // 환기
     if (t.leftChr.pendingShuffle) { t.leftChr.pendingShuffle = false; run.shuffleDeck(t.pdeck); }
     for (const [chr, st] of [[t.leftChr, t.pdeck], [t.rightChr, t.edeck]]) {   // 달빛 의회: 해당 종류 카드를 전부 제거 (마지막 한 종류는 남긴다)
