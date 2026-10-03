@@ -1859,7 +1859,7 @@ const item = require('./items');
   charZen.skill.drive = {code : 90524, name : '비폭력', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_DRIVE, active : cons.ACTIVE_TYPE_SKILL_LOSE,
       cost : 0, chance : 1,
       effect : [{code : 'retGainLose'}],
-      tooltip : '상성 패배 시 [응보] 1. 상성 승리 시 50% 확률로 SP 10을 써서 2턴 간 [피스키퍼] ([피스키퍼] 중에는 다시 발동하지 않음). 전투 시작 시 [응보] 1<br><br>[응보] : 소모될 때 잃은 생명력의 8% 회복<br>[피스키퍼] : 응보를 얻을 때 하나 더. 생명력 50% 미만이면 물리·마법저항 +20%p',
+      tooltip : '상성 패배 시 [응보] 1. 상성 승리 시 50% 확률로 SP 10을 써서 3턴 간 [피스키퍼] ([피스키퍼] 중에는 다시 발동하지 않음). 전투 시작 시 [응보] 1<br><br>[응보] : 소모될 때 잃은 생명력의 8% 회복<br>[피스키퍼] : 응보를 얻을 때 하나 더. 생명력 50% 미만이면 물리·마법저항 +20%p',
       flavor : '때리지 않는다. 기억할 뿐이다.'};
   charZen.skill.special = {code : 90525, name : '스트레인지러브 프로토콜', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 180,
       effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 10793, buffDur : 3}],

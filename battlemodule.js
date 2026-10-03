@@ -2011,11 +2011,11 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
     } else if (eff.code === 'retGainLose') {   // 비폭력 드라이브: 상성 패배 시 응보 +1
       winner.lossCount = (winner.lossCount || 0) + 1;
       this.retGain(winner, 1, '비폭력');
-    } else if (eff.code === 'peacekeeperRoll') {   // 비폭력: 상성 승리 시 50%, SP 10으로 2턴 [피스키퍼] (피스키퍼 중엔 발동 안 함)
+    } else if (eff.code === 'peacekeeperRoll') {   // 비폭력: 상성 승리 시 50%, SP 10으로 3턴 [피스키퍼] (피스키퍼 중엔 발동 안 함)
       if ((winner.buffs || []).some(x => x.id === 10791)) continue;
       if (winner.curSp < 10 || !getRandom(0.5)) continue;
       winner.curSp -= 10;
-      const bo = buffMdl.getBuffData({ buffCode : 10791 }); bo.dur = 2; this.giveBuff(winner, winner, bo, false, '비폭력');
+      const bo = buffMdl.getBuffData({ buffCode : 10791 }); bo.dur = 3; this.giveBuff(winner, winner, bo, false, '비폭력');
     } else if (eff.code === 'echoTie') {   // 평화의 메아리: 무승부에도 응보 (비긴 카드가 가위 = 평화의 메아리)
       const tieSk = skill || (winner.skill && winner.skill.base && winner.skill.base[this.lastTieType]);   // TIE 훅은 비긴 스킬을 넘겨준다
       if (!tieSk || tieSk.code !== 90521) continue;
