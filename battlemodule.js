@@ -2787,13 +2787,16 @@ Battlemodule.prototype.retGain = function(c, n, src) {
   const extra = (c.buffs || []).some(x => x.id === 10791) ? n : 0;   // 피스키퍼: 하나 더
   const bo = buffMdl.getBuffData({ buffCode : 10790 }); bo.dur = null; bo.stack = n + extra;
   this.giveBuff(c, c, bo, false, src || '비폭력');
+  const now = retStacks(c);
+  this.result += '[ ' + (src || '비폭력') + ' ] 응보 +' + n + (extra ? ', [ 피스키퍼 ] 응보 +' + extra + ' 추가' : '') + ' (' + now + ')<br>';
 };
 Battlemodule.prototype.retConsume = function(c, opp, n, src) {   // 소모할 때마다 잃은 생명력의 8% 회복
   const b = (c.buffs || []).find(x => x.id === 10790); if (!b) return 0;
   const use = Math.min(n, b.stack || 1);
   b.stack = (b.stack || 1) - use; if (b.stack <= 0) removeBuff(b);
-  for (let k = 0; k < use; k++) { const lost = Math.max(0, c.stat.maxHp - c.curHp); const v = Math.round(lost * 0.08); if (v > 0) this.doHeal(c, opp, v); }
-  this.result += '[ ' + (src || '응보') + ' ] 응보 ' + use + ' 소모 (남은 ' + Math.max(0, b.stack || 0) + ')<br>';
+  let healed = 0;
+  for (let k = 0; k < use; k++) { const lost = Math.max(0, c.stat.maxHp - c.curHp); const v = Math.round(lost * 0.08); if (v > 0) { const h0 = c.curHp; this.doHeal(c, opp, v); healed += Math.round(c.curHp - h0); } }
+  this.result += '[ ' + (src || '응보') + ' ] 응보 ' + use + ' 소모' + (healed > 0 ? ' — 생명력 ' + healed + ' 회복' : '') + ' (남은 ' + Math.max(0, b.stack || 0) + ')<br>';
   return use;
 };
 // ===== 블러프 잭: 심볼 큐 =====
