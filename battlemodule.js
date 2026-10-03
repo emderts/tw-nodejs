@@ -101,7 +101,7 @@ Battlemodule.prototype.procBattleStart = function (left, right, flag) {
   this.charLeft = left;
   this.charRight = right;
   this._doBattleStart(flag);
-  for (const c of [left, right]) if (c && c.jackSlots) { c.buffs = c.buffs || []; jackInit(c); }
+  for (const c of [left, right]) if (c && c.jackSlots) { c.buffs = c.buffs || []; jackInit(c); this.result += '<div class="note-box">[ 슬롯머신 ] ' + c.name + '의 릴 — ' + c.jack.q.map(x => SYM[x]).join('') + '</div>'; }
   for (const c of [left, right]) if (c && c.zenisha) { const pb = buffMdl.getBuffData({ buffCode : 10792 }); pb.dur = null; c.buffs.push(pb); for (const e of pb.effect) e.buff = pb; const bo = buffMdl.getBuffData({ buffCode : 10790 }); bo.dur = null; bo.stack = 1; c.buffs.push(bo); for (const e of bo.effect) e.buff = bo; }
 
   return this.result;
@@ -1946,7 +1946,9 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
     } else if (eff.code === 'jackSpin') {   // 슬롯머신 드라이브: 맨 앞 심볼 사용 (앞의 둘이 같으면 둘 다 → 강화)
       jackInit(winner);
       const q = winner.jack.q;
-      const sym = q[0]; const dbl = q.length > 1 && q[1] === sym;
+      const sym = q[0];
+      const dblMap = { 90510 : 'c', 90511 : 'd', 90512 : 'b' };   // 스킬별 강화 심볼
+      const dbl = q.length > 1 && q[1] === sym && dblMap[winner.curSkillCode] === sym;
       q.splice(0, dbl ? 2 : 1);
       winner.jack.used[sym] += dbl ? 2 : 1;
       winner.jackSym = { sym, dbl, turn : this.turnCount };
@@ -2003,6 +2005,7 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
       if (ub >= 4) { const bb = buffMdl.getBuffData({ buffCode : 10785 }); bb.dur = null; this.giveBuff(winner, winner, bb, false, '잭팟'); }
       winner.jack.used = { c : 0, d : 0, b : 0 };
     } else if (eff.code === 'retGainLose') {   // 비폭력 드라이브: 상성 패배 시 응보 +1
+      winner.lossCount = (winner.lossCount || 0) + 1;
       this.retGain(winner, 1, '비폭력');
     } else if (eff.code === 'peacekeeperRoll') {   // 비폭력: 상성 승리 시 50%, SP 10으로 2턴 [피스키퍼] (피스키퍼 중엔 발동 안 함)
       if ((winner.buffs || []).some(x => x.id === 10791)) continue;
@@ -2025,8 +2028,8 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
     } else if (eff.code === 'peaceBonus') {   // 피스메이커: 응보가 있으면 소모하고 피격 횟수 × 0.2 추가 계수
       if (!damage || retStacks(winner) <= 0) continue;
       this.retConsume(winner, loser, 1, '피스메이커');
-      const add = (winner.hitsTaken || 0) * 0.2; damage.skillRat += add;
-      this.result += '[ 피스메이커 ] 피격 ' + (winner.hitsTaken || 0) + '회 — 계수 +' + add.toFixed(1) + '<br>';
+      const add = (winner.lossCount || 0) * 0.2; damage.skillRat += add;
+      this.result += '[ 피스메이커 ] 상성 패배 ' + (winner.lossCount || 0) + '회 — 계수 +' + add.toFixed(1) + '<br>';
     } else if (eff.code === 'peaceCounter') {   // 피스메이커: 패배 시 응보 3 이상이면 1 소모해 물리 1.2 반격
       if (retStacks(winner) < 3) continue;
       this.retConsume(winner, loser, 1, '피스메이커');

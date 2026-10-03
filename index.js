@@ -3869,7 +3869,7 @@ function floorState(t) {
     lastEKey: (typeof t.ePlayedKey === 'number') ? t.ePlayedKey : null,
     myName: L.name,
     manualSp: Object.values(L.items || {}).some(it => it && it.manualSpecial) && L.skill && L.skill.special ? { cost: L.skill.special.cost, sp: Math.round(L.curSp || 0), armed: !!L.specialArmed, name: L.skill.special.name } : null,
-    charUse: L.jackSlots ? { label: '릴 비틀기 (첫 심볼 ↔ 마지막 심볼)', ready: !(L.jack && L.jack.swapCd > ((t.bmod && t.bmod.turnCount) || 0)), cdLeft: L.jack ? Math.max(0, L.jack.swapCd - ((t.bmod && t.bmod.turnCount) || 0)) : 0 } : null,
+    charUse: L.jackSlots ? { label: '릴 비틀기', ready: !(L.jack && L.jack.swapCd > ((t.bmod && t.bmod.turnCount) || 0)), cdLeft: L.jack ? Math.max(0, L.jack.swapCd - ((t.bmod && t.bmod.turnCount) || 0)) : 0 } : null,
     uses: ['weapon', 'armor', 'subarmor', 'trinket', 'skillArtifact'].filter(k => L.items && L.items[k] && L.items[k].use).map(k => {
       const it = L.items[k], st = (t.useState && t.useState[k]) || { uses: 0, cd: 0 };
       return { slot: k, name: it.name, label: it.use.label, cd: st.cd, left: it.use.maxUses ? it.use.maxUses - st.uses : null };

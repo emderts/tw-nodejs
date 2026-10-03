@@ -1854,7 +1854,7 @@ const item = require('./items');
       calcEffect : [{code : 'peaceBonus', name : '피스메이커'}],
       effect : [],
       loseEffect : [{code : 'peaceCounter'}],
-      tooltip : '공격 성공 시 [응보]가 있으면 하나를 소모해 계수 +(이번 전투 피격 횟수 × 0.2). 상성 패배 시 [응보]가 3 이상이면 하나를 소모해 물리 1.2로 반격 (피격 보너스 없음)',
+      tooltip : '공격 성공 시 [응보]가 있으면 하나를 소모해 계수 +(이번 전투 상성 패배 횟수 × 0.2). 상성 패배 시 [응보]가 3 이상이면 하나를 소모해 물리 1.2로 반격 (패배 횟수 보너스 없음)',
       flavor : '창조주가 그에게 선물한 콜트 M1873을, 평화를 알아먹지 못하는 적에게 선사합니다.'});
   charZen.skill.drive = {code : 90524, name : '비폭력', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_DRIVE, active : cons.ACTIVE_TYPE_SKILL_LOSE,
       cost : 0, chance : 1,
