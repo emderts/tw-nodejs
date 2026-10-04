@@ -2051,10 +2051,10 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
       const target = { 90541 : 10820, 90542 : 10821, 90543 : 10822 }[winner.curSkillCode]; if (!target) continue;
       const bo = buffMdl.getBuffData({ buffCode : 10823 }); bo.dur = null; bo.stack = 1; this.giveBuff(winner, winner, bo, false, '불타는 분노');
       const n = ((winner.buffs || []).find(x => x.id === 10823) || {}).stack || 1;
-      this.result += '[ 불타는 분노 ] ' + n + '중첩 (변신 공격 계수 +' + (n * 0.05).toFixed(2) + ')<br>';
+      this.result += '[ 불타는 분노 ] ' + n + '중첩 (변신 공격 계수 +' + (n * 0.04).toFixed(2) + ')<br>';
     } else if (eff.code === 'stanceStrike') {   // 변신 공격: 턴 종료에 명중·치명을 굴리고, 적중하면 '공격 성공'으로 친다
       if ((winner.buffs || []).some(x => [4, 5, 12].includes(x.id))) { this.result += '[ ' + eff.name + ' ] 몸이 굳어 공격하지 못했다.<br>'; continue; }
-      const rage = ((winner.buffs || []).find(x => x.id === 10823) || {}).stack || 0; const bonus = rage * 0.05;
+      const rage = ((winner.buffs || []).find(x => x.id === 10823) || {}).stack || 0; const bonus = rage * 0.04;
       for (const [type, coef] of [[cons.DAMAGE_TYPE_PHYSICAL, eff.phy], [cons.DAMAGE_TYPE_MAGICAL, eff.mag]]) {
         if (!coef) continue;
         const sk = { name : eff.name, type, damage : coef + bonus, nameType : cons.NAME_KOR_END_CONS, effect : [] };
