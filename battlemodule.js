@@ -2116,8 +2116,8 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
       if (!damage || retStacks(winner) <= 0) continue;
       if (!(winner.lossCount > 0)) { this.result += '[ 피스메이커 ] 아직 진 적이 없다 — 응보를 아껴 둔다<br>'; continue; }   // 보너스가 0이면 응보를 쓰지 않는다
       this.retConsume(winner, loser, 1, '피스메이커');
-      const add = (winner.lossCount || 0) * 0.2; damage.skillRat += add;
-      this.result += '[ 피스메이커 ] 상성 패배 ' + (winner.lossCount || 0) + '회 — 계수 +' + add.toFixed(1) + '<br>';
+      const add = (winner.lossCount || 0) * 0.15; damage.skillRat += add;
+      this.result += '[ 피스메이커 ] 상성 패배 ' + (winner.lossCount || 0) + '회 — 계수 +' + add.toFixed(2) + '<br>';
     } else if (eff.code === 'peaceCounter') {   // 피스메이커: 패배 시 응보 3 이상이면 1 소모해 물리 1.2 반격
       if (retStacks(winner) < 3) continue;
       this.retConsume(winner, loser, 1, '피스메이커');

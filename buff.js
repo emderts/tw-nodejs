@@ -7460,8 +7460,8 @@ module.exports.getBuffData = function(eff) {
     retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_DAMAGE_RECEIVE, code : cons.EFFECT_TYPE_MULTIPLY_DAMAGE, anySkill : true, value : 0.5, removeBuff : true });
     break;
   case 10790 :   // 제니샤 [응보]
-    retObj.name = '응보'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 2; retObj.maxStack = 99; retObj.isDebuff = false; retObj.durOff = null; retObj.dispellable = false;
-    retObj.tooltip = '상성 패배 시 쌓인다. 평화의 메아리·영리한 평화는 응보가 있어야 공격하고, 소모될 때마다 잃은 생명력의 8%를 회복한다';
+    retObj.name = '응보'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 2; retObj.maxStack = 5; retObj.isDebuff = false; retObj.durOff = null; retObj.dispellable = false;
+    retObj.tooltip = '상성 패배 시 쌓인다. 평화의 메아리·영리한 평화는 응보가 있어야 공격하고, 소모될 때마다 잃은 생명력의 8%를 회복한다 (최대 5)';
     break;
   case 10791 :   // [피스키퍼]
     retObj.name = '피스키퍼'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 1; retObj.isDebuff = false;
