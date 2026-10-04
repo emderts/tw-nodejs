@@ -768,6 +768,7 @@ function eventPool(char) {
     options: equipped.map(x => ({
       label: SLOT_NAMES[x.t] + ' — ' + x.it.name + ' 을(를) 넣는다',
       effect: (ch) => {
+        if (!ch.items[x.k] || ch.items[x.k].name !== x.it.name) return '넣으려던 장비가 더 이상 그 자리에 없다. 가마가 식어 버렸다.';   // 도중에 장비를 바꾼 경우
         const r = Math.random(), rar = r < 0.3 ? 1 : r < 0.65 ? 2 : r < 0.9 ? 4 : 5;   // 언커먼 30 / 레어 35 / 유니크 25 / 에픽 10
         let it = null; for (let n = 0; n < 12 && !(it && it.name && !/^무형의/.test(it.name) && it.name !== x.it.name); n++) it = getItemSafe(ch.rank, rar, x.t);
         if (!it || !it.name) return '가마가 식어 버렸다. 아무 일도 없었다.';

@@ -937,6 +937,7 @@ async function procUseItem (req, res) {
             chara.items[itemType] = undefined;
             chara.inventory.push(curItem);              
           }
+          if (gearLocked(req.session)) { req.session.flash = '형태를 바꾸는 가마 앞에서는 장비를 바꿀 수 없다. 이벤트를 먼저 끝내자.'; res.redirect('/'); return; }
           if (tgtObj.quantum && !tgtObj.observed) {   // 하이젠베르크의 검: 관측하는 순간 공격력이 정해진다
             const lerp = (a, b, x) => Math.round(a + (b - a) * x);
             const tp = Math.random(), tm = Math.random();
@@ -1245,6 +1246,7 @@ async function procConfirmItem (req, res) {
 }
 
 async function procUnequip (req, res) {
+  if (gearLocked(req.session)) { req.session.flash = '형태를 바꾸는 가마 앞에서는 장비를 바꿀 수 없다. 이벤트를 먼저 끝내자.'; res.redirect('/'); return; }
   const client = await pool.connect();
   try {
     var chara;
@@ -4401,11 +4403,13 @@ async function procFloorCard (req, res) {
 }
 
 // 쓰러진 도전자 유품 — 전투 직후 결과 화면에서 고른다
+function gearLocked (sess) { return !!(sess && sess.floorEvent && sess.floorEvent.code === 'transmute' && !sess.floorEvent.done); }   // 형태를 바꾸는 가마 앞에서는 장비를 바꿀 수 없다
 // 자동 장착: 슬롯마다 인벤토리에서 (착용 가능한 범위의) 가장 높은 급수 → 가장 높은 등급을 낀다
 async function procAutoEquip (req, res) {
   try {
     const sess = req.session;
     if (!sess.userUid) { res.redirect('/login'); return; }
+    if (gearLocked(sess)) { sess.flash = '형태를 바꾸는 가마 앞에서는 장비를 바꿀 수 없다. 이벤트를 먼저 끝내자.'; res.redirect('/'); return; }
     const charRow = await getCharacter(sess.userUid);
     if (!charRow || !charRow.char_data) { res.redirect('/'); return; }
     const chara = JSON.parse(charRow.char_data);
