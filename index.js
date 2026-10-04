@@ -308,6 +308,11 @@ io.on('connection', (socket) => {
       persistBattle(t);
       return;
     }
+    const POT_BUFF = { atk: 10770, crit: 10771, evade: 10772, guard: 10773 };   // 같은 물약 버프는 중첩되지 않는다 — 이미 있으면 쓰지 않고 남긴다
+    if (POT_BUFF[it.code] && (t.leftChr.buffs || []).some(b => b.id === POT_BUFF[it.code])) {
+      socket.emit('floorSelectAck', (t.bmod.result || '') + '<div class="note-box" style="margin:6px 0">' + it.name + '의 효과가 이미 걸려 있다. (중첩되지 않음)</div>', floorState(t));
+      return;
+    }
     const before = t.bmod.result || '';
     t.bmod.result = '';
     const mods = { healBonus: run.runEffect(t.leftChr, 'healPotionBonus') || 0, statusBonus: run.runEffect(t.leftChr, 'statusPotionBonus') || 0 };
