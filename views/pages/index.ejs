@@ -359,7 +359,10 @@
 
     <div class="grid">
       <section class="panel">
-        <h2>장비</h2>
+        <h2 style="display:flex;justify-content:space-between;align-items:center">장비
+          <form action="/autoEquip" method="post" style="margin:0"><button type="submit" class="btn-sm" title="슬롯마다 인벤토리에서 가장 높은 급수, 그다음 가장 높은 등급의 장비를 낀다">자동 장착</button></form>
+        </h2>
+        <% if (typeof flash !== 'undefined' && flash) { %><div class="note-box" style="margin-bottom:8px"><%= flash %></div><% } %>
         <% var slots = [['weapon','무기'],['armor','갑옷'],['subarmor','보조방어구'],['trinket','장신구'],['skillArtifact','스킬 아티팩트']];
            for (const [slot, label] of slots) { const it = char.items[slot]; %>
           <% if (it) { %>

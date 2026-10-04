@@ -59,6 +59,7 @@ const app = express()
 .post('/focusSkill', procFocusSkill)
 .get('/hall', procHall)
 .get('/stats', procStats)
+.post('/autoEquip', procAutoEquip)
 .get('/fallenLoot', procFallenLootGet)
 .post('/fallenLoot', procFallenLootPost)
 .get('/stats/backfill', procStatsBackfill)
@@ -759,6 +760,7 @@ async function procIndex (req, res) {
         char: charObj,
         rv: (charObj && charObj.run) ? runView(charObj) : null,
         run_ASC: run.ASC_RULES,
+        flash: (() => { const f = sess.flash; delete sess.flash; return f || null; })(),
         patch: patchnotes[0] || null,
         actionPoint : charRow.actionPoint,
         news : news,
@@ -4390,6 +4392,42 @@ async function procFloorCard (req, res) {
 }
 
 // 쓰러진 도전자 유품 — 전투 직후 결과 화면에서 고른다
+// 자동 장착: 슬롯마다 인벤토리에서 (착용 가능한 범위의) 가장 높은 급수 → 가장 높은 등급을 낀다
+async function procAutoEquip (req, res) {
+  try {
+    const sess = req.session;
+    if (!sess.userUid) { res.redirect('/login'); return; }
+    const charRow = await getCharacter(sess.userUid);
+    if (!charRow || !charRow.char_data) { res.redirect('/'); return; }
+    const chara = JSON.parse(charRow.char_data);
+    const SLOT = { [cons.ITEM_TYPE_WEAPON]: 'weapon', [cons.ITEM_TYPE_ARMOR]: 'armor', [cons.ITEM_TYPE_SUBARMOR]: 'subarmor', [cons.ITEM_TYPE_TRINKET]: 'trinket', [cons.ITEM_TYPE_SKILL_ARTIFACT]: 'skillArtifact' };
+    const better = (a, b) => !b || a.rank < b.rank || (a.rank === b.rank && (a.rarity || 0) > (b.rarity || 0));   // 급수 숫자가 작을수록 높은 급
+    const changed = [];
+    for (const typeKey of Object.keys(SLOT)) {
+      const type = +typeKey, slot = SLOT[type];
+      let bestIdx = -1;
+      chara.inventory.forEach((it, i) => {
+        if (!it || it.type !== type || it.rank < chara.rank) return;
+        if (bestIdx < 0 || better(it, chara.inventory[bestIdx])) bestIdx = i;
+      });
+      if (bestIdx < 0) continue;
+      const cand = chara.inventory[bestIdx], cur = chara.items[slot];
+      if (cur && !better(cand, cur)) continue;
+      chara.inventory.splice(bestIdx, 1);
+      if (cur) chara.inventory.push(cur);
+      if (cand.quantum && !cand.observed) {   // 하이젠베르크의 검: 관측
+        const lerp = (a, b, x) => Math.round(a + (b - a) * x); const tp = Math.random(), tm = Math.random();
+        cand.stat = Object.assign({}, cand.stat, { phyAtkMin : lerp(12, 72, tp), phyAtkMax : lerp(15, 84, tp), magAtkMin : lerp(12, 72, tm), magAtkMax : lerp(15, 84, tm) });
+        cand.observed = true; cand.effectDesc = '관측되었다 — 물리 ' + Math.round(tp * 100) + '% · 마법 ' + Math.round(tm * 100) + '% (9급 유니크 0% ~ 4급 유니크 100%)'; cand.tooltip = makeTooltip(cand);
+      }
+      chara.items[slot] = cand;
+      changed.push(cand.name);
+    }
+    if (changed.length) { calcStats(chara); await saveChar(chara, charRow.uid); }
+    sess.flash = changed.length ? '자동 장착: ' + changed.join(', ') : '더 좋은 장비가 없다.';
+    res.redirect('/');
+  } catch (err) { console.error(err); res.send('내부 오류'); }
+}
 async function procFallenLootGet (req, res) {
   try {
     const ctx = await loadRunChar(req, res); if (!ctx) return;
