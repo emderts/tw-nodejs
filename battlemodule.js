@@ -2494,11 +2494,13 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
 Battlemodule.prototype.jackSwap = function(c) {   // 슬롯머신 [사용]: 첫 번째와 마지막 심볼 교환 (쿨 2턴)
   jackInit(c);
   if (c.jack.swapCd > this.turnCount) return false;
+  if ((c.curSp || 0) < 5) return false;   // 릴 비틀기는 SP 5
   const q = c.jack.q; if (q.length < 2) return false;
+  c.curSp -= 5;
   [q[0], q[q.length - 1]] = [q[q.length - 1], q[0]];
   c.jack.swapCd = this.turnCount + 2;
   jackShow(c);
-  this.result += '[ 슬롯머신 ] 릴을 비틀었다 — ' + q.map(x => SYM[x]).join('') + '<br>';
+  this.result += '[ 슬롯머신 ] SP 5로 릴을 비틀었다 — ' + q.map(x => SYM[x]).join('') + '<br>';
   return true;
 };
 Battlemodule.prototype.councilAccrue = function(council, attacker, amount) {

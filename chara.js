@@ -1819,9 +1819,9 @@ const item = require('./items');
       tooltip : '승패와 상관없이 물리 공격력만큼의 보호막 1턴<br>🍒 계수에 물리 공격력 적용 / 💎 다음 턴 적의 손패 공개 / 🔔 보호막 +1턴 / 🔔🔔 보호막 +2턴',
       flavor : '카드로 쌓은 벽은 바람에 약하지만, 한 턴은 버틴다.'});
   charJack.skill.drive = {code : 90513, name : '슬롯머신', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.SKILL_TYPE_DRIVE, active : cons.ACTIVE_TYPE_SKILL_WIN,
-      cost : 5, chance : 1,
+      cost : 0, chance : 1,
       effect : [{code : 'jackSpin'}],
-      tooltip : '기본 스킬로 상성 승리 시 맨 앞 심볼을 쓴다. 앞의 두 심볼이 같으면 둘 다 써서 강화. 처음이거나 다 쓰면 🍒💎🔔 중 5개를 새로 받는다 (같은 심볼 최대 2개, 연속 배치 없음)<br>[사용] 첫 번째와 마지막 심볼의 자리를 바꾼다 (쿨타임 2턴)',
+      tooltip : '기본 스킬로 상성 승리 시 맨 앞 심볼을 쓴다. 앞의 두 심볼이 같으면 둘 다 써서 강화. 처음이거나 다 쓰면 🍒💎🔔 중 5개를 새로 받는다 (같은 심볼 최대 2개, 연속 배치 없음)<br>[사용] SP 5를 써서 첫 번째와 마지막 심볼의 자리를 바꾼다 (쿨타임 2턴)',
       flavor : '릴은 늘 돈다. 멈추는 건 내가 정한다.'};
   charJack.skill.special = {code : 90514, name : '잭팟', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 100,
       effect : [{code : 'jackpot'}],
@@ -1861,7 +1861,7 @@ const item = require('./items');
       effect : [{code : 'retGainLose'}],
       tooltip : '상성 패배 시 [응보] 1. 상성 승리 시 50% 확률로 SP 10을 써서 3턴 간 [피스키퍼] ([피스키퍼] 중에는 다시 발동하지 않음). 전투 시작 시 [응보] 1<br><br>[응보] : 소모될 때 잃은 생명력의 8% 회복<br>[피스키퍼] : 응보를 얻을 때 하나 더. 생명력 50% 미만이면 물리·마법저항 +20%p',
       flavor : '때리지 않는다. 기억할 뿐이다.'};
-  charZen.skill.special = {code : 90525, name : '스트레인지러브 프로토콜', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 180,
+  charZen.skill.special = {code : 90525, name : '스트레인지러브 프로토콜', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 150,
       effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, buffCode : 10793, buffDur : 3}],
       tooltip : '3턴 간 [스트레인지러브 프로토콜]<br><br>[스트레인지러브 프로토콜] : 상성 패배 시 턴 종료에 피해 처리를 마친 뒤, 이 상태를 소거하고 [응보]를 하나씩 소모하며 이번 턴 입은 모든 피해를 마법 피해로 반사한다 (응보가 다할 때까지 반복). 3턴 동안 발동하지 않으면 SP 90 반환',
       flavor : '보복용 미사일 발사 코드를 가동합니다. 때로는 평화를 위해 힘이 필요한 법.'};

@@ -334,7 +334,7 @@ io.on('connection', (socket) => {
     t.bmod.result = t.bmod.result || '';
     const before = t.bmod.result.length;
     const ok = t.bmod.jackSwap(L);
-    const msg = ok ? t.bmod.result.slice(before) : '<div class="note-box">아직 릴을 비틀 수 없다.</div>';
+    const msg = ok ? t.bmod.result.slice(before) : '<div class="note-box">아직 릴을 비틀 수 없다 (쿨타임 또는 SP 부족).</div>';
     persistBattle(t);
     socket.emit('floorSelectAck', t.bmod.result + (ok ? '' : msg), floorState(t));
   }));
@@ -3869,7 +3869,7 @@ function floorState(t) {
     lastEKey: (typeof t.ePlayedKey === 'number') ? t.ePlayedKey : null,
     myName: L.name,
     manualSp: Object.values(L.items || {}).some(it => it && it.manualSpecial) && L.skill && L.skill.special ? { cost: L.skill.special.cost, sp: Math.round(L.curSp || 0), armed: !!L.specialArmed, name: L.skill.special.name } : null,
-    charUse: L.jackSlots ? { label: '릴 비틀기', ready: !(L.jack && L.jack.swapCd > ((t.bmod && t.bmod.turnCount) || 0)), cdLeft: L.jack ? Math.max(0, L.jack.swapCd - ((t.bmod && t.bmod.turnCount) || 0)) : 0 } : null,
+    charUse: L.jackSlots ? { label: '릴 비틀기 (SP 5)', ready: !(L.jack && L.jack.swapCd > ((t.bmod && t.bmod.turnCount) || 0)) && (L.curSp || 0) >= 5, cdLeft: L.jack ? Math.max(0, L.jack.swapCd - ((t.bmod && t.bmod.turnCount) || 0)) : 0 } : null,
     uses: ['weapon', 'armor', 'subarmor', 'trinket', 'skillArtifact'].filter(k => L.items && L.items[k] && L.items[k].use).map(k => {
       const it = L.items[k], st = (t.useState && t.useState[k]) || { uses: 0, cd: 0 };
       return { slot: k, name: it.name, label: it.use.label, cd: st.cd, left: it.use.maxUses ? it.use.maxUses - st.uses : null };
