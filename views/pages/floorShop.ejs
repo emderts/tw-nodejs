@@ -55,6 +55,19 @@
     </div>
   <% }); %>
   </div>
+  <section class="panel" style="margin-top:16px">
+    <h2>현재 장비</h2>
+    <div class="list">
+    <% [['weapon','무기'],['armor','갑옷'],['subarmor','보조방어구'],['trinket','장신구'],['skillArtifact','스킬 아티팩트']].forEach(function (s) { const it = char.items && char.items[s[0]]; %>
+      <div class="charItem"><button type="button" class="has-tip" style="text-align:left">
+        <span style="color:var(--ash);font-size:12px"><%= s[1] %></span>
+        <% if (it) { %> <span class="<%= 'rarity' + ['Common','Uncommon','Rare','Premium','Unique','Epic'][it.rarity || 0] %>"><%= it.name %></span> <small style="color:var(--ash)"><%= it.rank %>급</small>
+          <div class="itemTooltip"><%- makeTooltip(it) %></div>
+        <% } else { %> <span style="color:var(--ash)">없음</span><% } %>
+      </button></div>
+    <% }); %>
+    </div>
+  </section>
   <form action="/floorShop" method="post" class="backLink">
     <button type="submit" class="btn-primary" style="padding:12px 24px">상점을 나선다</button>
     <input type="hidden" name="action" value="leave">
