@@ -4318,7 +4318,7 @@ async function procHall (req, res) {
   const client = await pool.connect();
   try {
     const result = await client.query('select id, owner, char_name, char_data, date from hall order by date desc fetch first 50 rows only');
-    const list = result.rows.map(r => { let c = {}; try { c = JSON.parse(r.char_data); } catch (e) {} return { id: r.id, owner: r.owner, name: r.char_name, level: c.level, date: r.date, items: Object.values(c.items || {}).filter(x => x && x.name).map(x => x.name).join(', ') }; });
+    const list = result.rows.map(r => { let c = {}; try { c = JSON.parse(r.char_data); } catch (e) {} return { id: r.id, owner: r.owner, name: r.char_name, level: c.level, date: r.date, asc: (c.run && c.run.asc) || 0, deck: (() => { const d = [0, 0, 0]; for (const x of (c.deck || [])) if (x && d[x.type] !== undefined) d[x.type]++; return d; })(), items: Object.values(c.items || {}).filter(x => x && x.name).map(x => x.name).join(', ') }; });
     res.render('pages/hall', { list, error: null });
   } catch (e) { console.error(e); res.render('pages/hall', { list: [], error: '명예의 전당 테이블이 아직 없습니다.' }); }
   finally { client.release(); }
@@ -4328,7 +4328,8 @@ async function procHallView (req, res) {
   try {
     const result = await client.query('select char_data from hall where id = $1', [req.body.id]);
     if (!result.rows.length) { res.redirect('/hall'); return; }
-    res.render('pages/viewChar', { char: JSON.parse(result.rows[0].char_data) });
+    const hc = JSON.parse(result.rows[0].char_data);
+    res.render('pages/viewChar', { char: hc, hallInfo: { asc: (hc.run && hc.run.asc) || 0, deck: (hc.deck || []).map(x => x.type) } });
   } catch (e) { console.error(e); res.redirect('/hall'); }
   finally { client.release(); }
 }

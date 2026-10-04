@@ -132,6 +132,15 @@
   <header class="nameplate" style="--side: <%= char.raidSide == 0 ? 'var(--side-aris)' : (char.raidSide == 1 ? 'var(--side-mine)' : 'var(--brass)') %>">
     <div class="nameplate-main">
       <h1 class="name"><%= char.name %><small><%= char.title %></small></h1>
+      <% if (typeof hallInfo !== 'undefined' && hallInfo) { const D = ['가위', '바위', '보']; const cnt = [0, 0, 0]; hallInfo.deck.forEach(function (t) { cnt[t]++; }); %>
+      <div class="note-box" style="margin-top:8px">
+        <% if (hallInfo.asc) { %><b style="color:#c98bff">승천 <%= hallInfo.asc %></b> 정복 · <% } else { %>정복 · <% } %>
+        덱 <%= hallInfo.deck.length %>장 — 가위 <%= cnt[0] %> · 바위 <%= cnt[1] %> · 보 <%= cnt[2] %>
+        <div style="margin-top:6px;display:flex;flex-wrap:wrap;gap:4px">
+          <% hallInfo.deck.slice().sort().forEach(function (t) { %><span class="card-t<%= t %>" style="display:inline-block;padding:2px 8px;border-radius:4px;font-size:12px;border:1px solid var(--line)"><%= D[t] %> · <%= char.skill && char.skill.base && char.skill.base[t] ? char.skill.base[t].name : '' %></span><% }); %>
+        </div>
+      </div>
+      <% } %>
       <p class="sub"><%= char.rank %>급 <%= char.level %>레벨 · 경험치 <%= char.exp %> / <%= char.reqExp %><%= sideName ? ' · ' : '' %><b><%= sideName %></b></p>
     </div>
     <div class="nameplate-side"><%= char.battleCnt %>전 <%= char.winCnt %>승</div>

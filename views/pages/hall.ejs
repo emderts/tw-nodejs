@@ -24,7 +24,8 @@
     <div class="charItem">
       <form action="/hall" method="post">
         <input type="hidden" name="id" value="<%= h.id %>">
-        <button type="submit"><b><%= h.owner %>(<%= h.name %>)</b> <small style="color:var(--ash)">Lv <%= h.level %> · <%= new Date(h.date).toLocaleDateString('ko-KR') %></small><br><span style="color:var(--ash);font-size:12px"><%= h.items %></span></button>
+        <button type="submit"><b><%= h.owner %>(<%= h.name %>)</b> <small style="color:var(--ash)">Lv <%= h.level %><%= h.asc ? '' : '' %> · <%= new Date(h.date).toLocaleDateString('ko-KR', { timeZone: 'Asia/Seoul' }) %></small><% if (h.asc) { %> <span style="color:#c98bff;font-size:12px;font-weight:600">승천 <%= h.asc %></span><% } %>
+          <br><span style="font-size:12px">덱 <%= h.deck[0] + h.deck[1] + h.deck[2] %>장 — 가위 <%= h.deck[0] %> · 바위 <%= h.deck[1] %> · 보 <%= h.deck[2] %></span><br><span style="color:var(--ash);font-size:12px"><%= h.items %></span></button>
       </form>
     </div>
   <% }); %>
