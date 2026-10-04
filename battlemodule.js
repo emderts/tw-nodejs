@@ -898,7 +898,7 @@ Battlemodule.prototype.calcDamage = function(winner, loser, skill) {
     this.resolveEffects(winner, loser, getBuffEffects(winner, cons.ACTIVE_TYPE_DEAL_DAMAGE_CRIT));
   }
   if (skill.type !== cons.DAMAGE_TYPE_ABSOLUTE) {
-    damage -= loser.stat.dmgReduce;
+    damage -= loser.stat.dmgReduce * (1 - (skill.dmgReduceIgnore || 0));   // 피해감소 일부 무시 (김사범 연타 등)
     damage *= retObj.randDmg;
   }
   retObj.value = damage > 0 ? Math.round(damage) : 0;
@@ -2812,7 +2812,7 @@ Battlemodule.prototype.kimAdd = function(c, t, n, src) {
 Battlemodule.prototype.kimStrike = function(winner, loser, t, count, coef, perHit) {
   let landed = 0;
   for (let k = 0; k < count; k++) {
-    const rd = this.calcDamage(winner, loser, { name : '연타', type : t === 0 ? cons.DAMAGE_TYPE_MAGICAL : cons.DAMAGE_TYPE_PHYSICAL, damage : coef, nameType : cons.NAME_KOR_NO_END_CONS, effect : [] }); rd.noProc = true;
+    const rd = this.calcDamage(winner, loser, { name : '연타', type : t === 0 ? cons.DAMAGE_TYPE_MAGICAL : cons.DAMAGE_TYPE_PHYSICAL, damage : coef, nameType : cons.NAME_KOR_NO_END_CONS, effect : [], dmgReduceIgnore : 0.5 }); rd.noProc = true;
     if (!rd.hit) { this.result += '[ 연타 ] ' + KIM_TYPES[t] + ' ' + (k + 1) + '/' + count + ' — 빗나감<br>'; continue; }
     landed++; this.dealDamage(winner, loser, rd);
     this.result += '<span class="skillDamage">[ 연타 ] ' + KIM_TYPES[t] + ' ' + (k + 1) + '/' + count + ' — ' + rd.value + '대미지' + (rd.crit ? ' (치명타)' : '') + '</span><br>';

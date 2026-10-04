@@ -1891,9 +1891,9 @@ const item = require('./items');
   charKim.skill.drive = {code : 90534, name : '단련', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_DRIVE, active : cons.ACTIVE_TYPE_ATTACK,
       cost : 10, chance : 0.3,
       effect : [{code : 'kimTrain'}],
-      tooltip : '공격 성공 시 30% 확률로 발동. 가위·바위·보의 [연타]를 각각 2 늘린다<br><br>[연타] : 그 타입의 스킬이 적중하면 중첩 수만큼 0.2 계수의 연타가 따라붙는다 (연타마다 명중·치명 개별 판정). 소모되지 않는다',
+      tooltip : '공격 성공 시 30% 확률로 발동. 가위·바위·보의 [연타]를 각각 2 늘린다<br><br>[연타] : 그 타입의 스킬이 적중하면 중첩 수만큼 0.2 계수의 연타가 따라붙는다 (연타마다 명중·치명 개별 판정, 적의 피해감소 50% 무시). 소모되지 않는다',
       flavor : '두 대가 한 대보다 아프고, 열 대가 아홉 대보다 아프다.'};
-  charKim.skill.special = {code : 90535, name : '김사범스페셜', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 110,
+  charKim.skill.special = {code : 90535, name : '김사범스페셜', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 100,
       effect : [{code : 'kimSpecial'}],
       tooltip : '가위·바위·보의 [연타]를 각각 중첩 수만큼 전부 쏜다 (각 타입의 적중 효과 적용, 연타 +1은 적용하지 않음)',
       flavor : '김사범의 비기, 화려한 날아차기와 함께 김사범스페셜을 시전합니다.'};

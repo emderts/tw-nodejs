@@ -7487,7 +7487,7 @@ module.exports.getBuffData = function(eff) {
     break;
   case 10800 : case 10801 : case 10802 :   // 김사범 [연타 : 가위/바위/보]
     retObj.name = '연타 : ' + ['가위', '바위', '보'][eff.buffCode - 10800]; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 2; retObj.maxStack = 99; retObj.isDebuff = false; retObj.durOff = null; retObj.dispellable = false;
-    retObj.tooltip = '이 타입의 스킬이 적중하면 중첩 수만큼 0.2 계수의 연타가 따라붙는다 (연타마다 명중·치명 개별 판정). 소모되지 않는다';
+    retObj.tooltip = '이 타입의 스킬이 적중하면 중첩 수만큼 0.2 계수의 연타가 따라붙는다 (연타마다 명중·치명 개별 판정, 적의 피해감소 50% 무시). 소모되지 않는다';
     break;
   case 10803 :   // [돌려차기] 치명 중첩
     retObj.name = '돌려차기'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 2; retObj.maxStack = 99; retObj.isDebuff = false; retObj.durOff = null;
