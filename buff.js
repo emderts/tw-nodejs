@@ -7525,14 +7525,14 @@ module.exports.getBuffData = function(eff) {
     retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_DAMAGE, code : cons.EFFECT_TYPE_MULTIPLY_DAMAGE, anySkill : true, stackable : true, value : 0.1 });
     break;
   case 10820 : case 10821 : case 10822 :   // 틴드랄 [변신 - 화염의 전갈 / 화염의 표범 / 불의 매]
-    { const ST = { 10820 : ['화염의 전갈', 0.225, 0.225, '턴 종료에 물리 0.225와 마법 0.225로 공격'], 10821 : ['화염의 표범', 0.45, 0, '턴 종료에 물리 0.45로 공격'], 10822 : ['불의 매', 0, 0.45, '턴 종료에 마법 0.45로 공격'] }[eff.buffCode];
+    { const ST = { 10820 : ['화염의 전갈', 0.3, 0.3, '턴 종료에 물리 0.3과 마법 0.3으로 공격'], 10821 : ['화염의 표범', 0.6, 0, '턴 종료에 물리 0.6으로 공격'], 10822 : ['불의 매', 0, 0.6, '턴 종료에 마법 0.6으로 공격'] }[eff.buffCode];
     retObj.name = '변신 - ' + ST[0]; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 1; retObj.isDebuff = false; retObj.durOff = null; retObj.dispellable = false;
-    retObj.tooltip = ST[3] + ' (명중·치명 판정, 공격 성공으로 침. 기절·수면·빙결 중엔 멈춤). [불타는 분노] 중첩당 계수 +0.04';
+    retObj.tooltip = ST[3] + ' (명중·치명 판정, 공격 성공으로 침. 기절·수면·빙결 중엔 멈춤). [불타는 분노] 중첩당 계수 +0.03';
     retObj.effect.push({ active : cons.ACTIVE_TYPE_TURN_END, code : 'stanceStrike', phy : ST[1], mag : ST[2], name : ST[0] }); }
     break;
   case 10823 :   // [불타는 분노]
     retObj.name = '불타는 분노'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 2; retObj.maxStack = 99; retObj.isDebuff = false; retObj.durOff = null;
-    retObj.tooltip = '변신이 바뀔 때마다 1중첩. 중첩당 변신 공격 계수 +0.04';
+    retObj.tooltip = '변신이 바뀔 때마다 1중첩. 중첩당 변신 공격 계수 +0.03';
     break;
   case 10824 :   // [그슬림]
     retObj.name = '그슬림'; retObj.nameType = cons.NAME_KOR_END_CONS; retObj.stackType = 1; retObj.isDebuff = true;

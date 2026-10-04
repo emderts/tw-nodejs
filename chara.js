@@ -1911,17 +1911,17 @@ const item = require('./items');
   charTin.skill.base = [];
   charTin.skill.base.push({code : 90541, name : '화염의 전갈 변신', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 0, noAttack : true,
       effect : [{code : 'shift', stance : 10820, name : '화염의 전갈 변신'}],
-      tooltip : '[변신 - 화염의 전갈]로 바뀐다: 턴 종료에 물리 0.225와 마법 0.225로 각각 공격', flavor : '꼬리 끝의 불이 먼저 닿는다.'});
+      tooltip : '[변신 - 화염의 전갈]로 바뀐다: 턴 종료에 물리 0.3과 마법 0.3으로 각각 공격', flavor : '꼬리 끝의 불이 먼저 닿는다.'});
   charTin.skill.base.push({code : 90542, name : '화염의 표범 변신', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 0, noAttack : true,
       effect : [{code : 'shift', stance : 10821, name : '화염의 표범 변신'}],
-      tooltip : '[변신 - 화염의 표범]으로 바뀐다: 턴 종료에 물리 0.45로 공격', flavor : '불붙은 발톱은 소리를 내지 않는다.'});
+      tooltip : '[변신 - 화염의 표범]으로 바뀐다: 턴 종료에 물리 0.6으로 공격', flavor : '불붙은 발톱은 소리를 내지 않는다.'});
   charTin.skill.base.push({code : 90543, name : '불의 매 변신', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 0, noAttack : true,
       effect : [{code : 'shift', stance : 10822, name : '불의 매 변신'}],
-      tooltip : '[변신 - 불의 매]로 바뀐다: 턴 종료에 마법 0.45로 공격', flavor : '불길은 위에서 내려다볼 때 가장 넓다.'});
+      tooltip : '[변신 - 불의 매]로 바뀐다: 턴 종료에 마법 0.6으로 공격', flavor : '불길은 위에서 내려다볼 때 가장 넓다.'});
   charTin.skill.drive = {code : 90544, name : '불타는 분노', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.SKILL_TYPE_DRIVE, active : cons.ACTIVE_TYPE_SKILL_WIN,
       cost : 5, chance : 1, needShift : true,
       effect : [{code : 'rageIfShift'}],
-      tooltip : '변신이 다른 모습으로 바뀔 때마다 [불타는 분노] 1중첩 (중첩당 변신 공격 계수 +0.04). 전투는 표범 변신으로 시작한다. 변신 공격은 명중·치명을 굴리고 공격 성공으로 치며, 기절·수면·빙결 중엔 멈춘다',
+      tooltip : '변신이 다른 모습으로 바뀔 때마다 [불타는 분노] 1중첩 (중첩당 변신 공격 계수 +0.03). 전투는 표범 변신으로 시작한다. 변신 공격은 명중·치명을 굴리고 공격 성공으로 치며, 기절·수면·빙결 중엔 멈춘다',
       flavor : '모습을 바꿀 때마다 불은 더 뜨거워진다.'};
   charTin.skill.special = {code : 90545, name : '화염의 일격', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 45,
       effect : [{code : 'flameStrike'}],
