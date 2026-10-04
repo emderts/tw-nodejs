@@ -226,6 +226,16 @@ Battlemodule.prototype._checkRevive = function() {
     this.result += '<span class="skillDamage">[ 네크로멘시 ] 효과로 ' + me.name + '이(가) 생명력 ' + v + '로 되살아나 ' + opp.name + '에게 ' + dmg + ' 마법 피해!</span><br>';
   }
 };
+// 턴 밖(예: [사용] 장비)에서 쓰러졌을 때, 턴 종료에 일어나야 할 '다음 형태로 교체'(사천왕·레드의 포켓몬 등)를 바로 처리
+Battlemodule.prototype.resolveFormSwitch = function() {
+  for (const [me, opp] of [[this.charLeft, this.charRight], [this.charRight, this.charLeft]]) {
+    for (const act of [cons.ACTIVE_TYPE_TURN_END, cons.ACTIVE_TYPE_AFTER_TURN_END]) {   // 두 번째 이후 형태는 AFTER_TURN_END에 걸려 있다
+      if (me.curHp > 0) break;
+      const effs = getBuffEffects(me, act).filter(e => e.chkHp !== undefined);
+      if (effs.length) { this.resolveEffects(me, opp, effs); calcStats(me, opp); }
+    }
+  }
+};
 Battlemodule.prototype._doBattleEnd = function(flag) {
   var retObj = {};
   retObj.winnerLeft = (this.charLeft.curHp > 0);

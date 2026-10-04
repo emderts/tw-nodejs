@@ -356,9 +356,13 @@ io.on('connection', (socket) => {
     t.bmod.resolveEffects(L, t.rightChr, effs.filter(e => e.code !== 'resetUses'), null, null);
     st.uses++; st.cd = it.use.cooldown || 0;
     if (t.rightChr.curHp <= 0 && effs.some(e => e.code === 'timeSkip')) t.hourglassKill = true;
-    if (t.rightChr.curHp <= 0 || L.curHp <= 0) {   // 사용으로 전투가 끝난 경우
-      const res = t.bmod._doBattleEnd(1); t.result = res; socket.emit('floorSelectEnd', t.bmod.result, floorState(t)); return;
+    if (t.rightChr.curHp <= 0 || L.curHp <= 0) { t.bmod.resolveFormSwitch(); t.bmod._checkRevive(); }   // 다음 형태(사천왕·레드의 포켓몬)와 부활(텍터스·제세동기 등)을 먼저 처리
+    if (t.bmod._isBattleFinished()) {   // 사용으로 전투가 끝난 경우
+      const res = t.bmod._doBattleEnd(1); t.result = res;
+      try { pool.query("update characters set char_data = jsonb_set(char_data::jsonb, '{run,battle,ended}', to_jsonb($2::text))::text where uid = $1 and char_data::jsonb #> '{run,battle}' is not null", [t.leftUid, res && res.winnerLeft ? 'won' : 'lost']); } catch (e) {}
+      socket.emit('floorSelectEnd', t.bmod.result, floorState(t)); return;
     }
+    if (t.rightChr.curHp > 0 && t.hourglassKill) t.hourglassKill = false;   // 다음 형태로 넘어갔으면 '모래시계로 처치'가 아니다
     socket.emit('floorSelectAck', t.bmod.result, floorState(t));
     persistBattle(t);
   }));
