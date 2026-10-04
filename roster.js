@@ -6,7 +6,7 @@ const cons = require('./constant');
 const item = require('./items');
 
 const KEYS = ['seriers', 'gaius', 'kines', 'julius', 'psi', 'aeika', 'ruisun', 'aeohelm', 'dekaitz',
-              'bks', 'lunisha', 'illun', 'nux', 'lozic', 'kasien', 'marang', 'gabi', 'jay', 'senal', 'yeop', 'tirion', 'jack', 'zenisha', 'kim'];
+              'bks', 'lunisha', 'illun', 'nux', 'lozic', 'kasien', 'marang', 'gabi', 'jay', 'senal', 'yeop', 'tirion', 'jack', 'zenisha', 'kim', 'tindral'];
 
 function template(key) {
   return KEYS.includes(key) ? chara[key] : null;

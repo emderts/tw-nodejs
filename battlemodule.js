@@ -106,6 +106,7 @@ Battlemodule.prototype.procBattleStart = function (left, right, flag) {
     const sb = buffMdl.getBuffData({ buffCode : 10795 }); sb.dur = null; c.buffs = c.buffs || []; c.buffs.push(sb);
     this.result += '<div class="note-box">' + c.name + '의 덱은 매 턴 섞인다.</div>';
   }
+  for (const c of [left, right]) if (c && c.tindral) { const bo = buffMdl.getBuffData({ buffCode : 10821 }); bo.dur = null; c.buffs = c.buffs || []; c.buffs.push(bo); for (const e of bo.effect) e.buff = bo; this.result += '<div class="note-box">' + c.name + '의 불꽃이 표범의 모습을 한다.</div>'; }
   for (const c of [left, right]) if (c && c.zenisha) { const pb = buffMdl.getBuffData({ buffCode : 10792 }); pb.dur = null; c.buffs.push(pb); for (const e of pb.effect) e.buff = pb; const bo = buffMdl.getBuffData({ buffCode : 10790 }); bo.dur = null; bo.stack = 1; c.buffs.push(bo); for (const e of bo.effect) e.buff = bo; }
 
   return this.result;
@@ -2040,6 +2041,40 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
     } else if (eff.code === 'forceTie') {   // 블러프 잭의 숨긴 에이스: 이번 턴 상성을 무승부로
       winner.forceTie = true;
       this.result += '<span class="skillDamage">[ 블러프 잭의 숨긴 에이스 ] 소매에서 카드 한 장 — 이번 턴은 무승부가 된다</span><br>';
+    } else if (eff.code === 'shift') {   // 틴드랄 변신 전환 (같은 변신이면 아무 일 없음)
+      const cur = (winner.buffs || []).find(x => [10820, 10821, 10822].includes(x.id));
+      if (cur && cur.id === eff.stance) { this.result += '[ ' + eff.name + ' ] 이미 그 모습이다.<br>'; continue; }
+      if (cur) removeBuff(cur);
+      const bo = buffMdl.getBuffData({ buffCode : eff.stance }); bo.dur = null; this.giveBuff(winner, winner, bo, false, eff.name);
+      this.result += '[ ' + eff.name + ' ] 불꽃이 형태를 바꾼다 — ' + bo.name.replace('변신 - ', '') + '<br>';
+    } else if (eff.code === 'rageIfShift') {   // 불타는 분노 드라이브: 이번에 쓰는 스킬이 지금 변신과 다르면 중첩
+      const target = { 90541 : 10820, 90542 : 10821, 90543 : 10822 }[winner.curSkillCode]; if (!target) continue;
+      const bo = buffMdl.getBuffData({ buffCode : 10823 }); bo.dur = null; bo.stack = 1; this.giveBuff(winner, winner, bo, false, '불타는 분노');
+      const n = ((winner.buffs || []).find(x => x.id === 10823) || {}).stack || 1;
+      this.result += '[ 불타는 분노 ] ' + n + '중첩 (변신 공격 계수 +' + (n * 0.05).toFixed(2) + ')<br>';
+    } else if (eff.code === 'stanceStrike') {   // 변신 공격: 턴 종료에 명중·치명을 굴리고, 적중하면 '공격 성공'으로 친다
+      if ((winner.buffs || []).some(x => [4, 5, 12].includes(x.id))) { this.result += '[ ' + eff.name + ' ] 몸이 굳어 공격하지 못했다.<br>'; continue; }
+      const rage = ((winner.buffs || []).find(x => x.id === 10823) || {}).stack || 0; const bonus = rage * 0.05;
+      for (const [type, coef] of [[cons.DAMAGE_TYPE_PHYSICAL, eff.phy], [cons.DAMAGE_TYPE_MAGICAL, eff.mag]]) {
+        if (!coef) continue;
+        const sk = { name : eff.name, type, damage : coef + bonus, nameType : cons.NAME_KOR_END_CONS, effect : [] };
+        const rd = this.calcDamage(winner, loser, sk);
+        if (!rd.hit) { this.result += '[ ' + eff.name + ' ] 불꽃이 빗나갔다.<br>'; continue; }
+        this.result += '<span class="skillDamage">[ ' + eff.name + ' ] ' + (type === cons.DAMAGE_TYPE_PHYSICAL ? '물리' : '마법') + ' ' + rd.value + '대미지' + (rd.crit ? ' (치명타)' : '') + '</span><br>';
+        this.resolveEffects(winner, loser, getBuffEffects(winner, cons.ACTIVE_TYPE_ATTACK), rd, sk);
+        this.resolveEffects(winner, loser, getItemEffects(winner, cons.ACTIVE_TYPE_ATTACK), rd, sk);
+        this.dealDamage(winner, loser, rd);
+        this.resolveEffects(loser, winner, getBuffEffects(loser, cons.ACTIVE_TYPE_TAKE_HIT), rd, sk);
+        this.resolveEffects(loser, winner, getItemEffects(loser, cons.ACTIVE_TYPE_TAKE_HIT), rd, sk);
+      }
+    } else if (eff.code === 'flameStrike') {   // 화염의 일격: 현재 변신에 따라
+      const cur = (winner.buffs || []).find(x => [10820, 10821, 10822].includes(x.id)); if (!cur) { this.result += '[ 화염의 일격 ] 변신 상태가 아니다.<br>'; continue; }
+      const type = cur.id === 10822 ? cons.DAMAGE_TYPE_MAGICAL : cons.DAMAGE_TYPE_PHYSICAL, coef = cur.id === 10820 ? 0.5 : 1.0;
+      const rd = this.calcDamage(winner, loser, { name : '화염의 일격', type, damage : coef, nameType : cons.NAME_KOR_END_CONS, effect : [] }); rd.noProc = true;
+      if (rd.hit) { this.dealDamage(winner, loser, rd); this.result += '<span class="skillDamage">[ 화염의 일격 ] ' + rd.value + '대미지' + (rd.crit ? ' (치명타)' : '') + '</span><br>'; } else { this.result += '[ 화염의 일격 ] 빗나갔다.<br>'; continue; }
+      if (cur.id === 10820) { const bd = buffMdl.getBuffData({ buffCode : 1 }); bd.dur = 1; this.giveBuff(winner, loser, bd, true, '화염의 일격'); }
+      else if (cur.id === 10821) { const bd = buffMdl.getBuffData({ buffCode : 10824 }); bd.dur = 3; for (const e of bd.effect) e.value = -2 * (winner.level || 1); this.giveBuff(winner, loser, bd, true, '화염의 일격'); this.result += '[ 화염의 일격 ] 그슬림 — 피해감소 -' + 2 * (winner.level || 1) + ' (3턴)<br>'; }
+      else { let n = 0; for (const bb of (loser.buffs || [])) if (bb.id > 0 && bb.isDebuff && bb.dur !== null && bb.dur !== undefined) { bb.dur++; n++; } this.result += '[ 화염의 일격 ] 적의 해로운 효과 ' + n + '개가 1턴 길어졌다.<br>'; }
     } else if (eff.code === 'kimTrain') {   // 단련 드라이브: 세 타입 연타 +2
       for (let t = 0; t < 3; t++) this.kimAdd(winner, t, 2, '단련');
       this.result += '[ 단련 ] 연타가 늘어난다 — 가위 ' + kimStacks(winner, 0) + ' / 바위 ' + kimStacks(winner, 1) + ' / 보 ' + kimStacks(winner, 2) + '<br>';
@@ -2819,6 +2854,11 @@ Battlemodule.prototype.checkDrive = function(chara, active, arg) {
   if (chara.skill.drive.needShards) {   // 파편 재조립: 파편 합계가 기준 이상일 때만
     const tot = (chara.buffs || []).filter(b => [10750, 10751, 10752].includes(b.id)).reduce((a, b) => a + (b.stack || 1), 0);
     if (tot < chara.skill.drive.needShards) return false;
+  }
+  if (chara.skill.drive.needShift) {   // 불타는 분노: 변신이 실제로 바뀌는 승리에서만
+    const target = { 90541 : 10820, 90542 : 10821, 90543 : 10822 }[chara.curSkillCode];
+    const cur = (chara.buffs || []).find(x => [10820, 10821, 10822].includes(x.id));
+    if (!target || (cur && cur.id === target)) return false;
   }
   const dMul = hasDriveDouble(chara) ? 2 : 1;   // 용무녀의 도복
   return getRandom(chanceUsed) && chara.curSp >= chara.skill.drive.cost * dMul && findBuffByCode(chara, 10010).length == 0;
