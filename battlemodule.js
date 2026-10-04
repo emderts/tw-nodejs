@@ -2008,6 +2008,20 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
       if (ub) { const v = Math.round(winner.stat.maxHp * 0.02 * ub); this.doHeal(winner, loser, v); this.result += '[ 잭팟 ] 🔔×' + ub + ' — ' + v + ' 회복<br>'; }
       if (ub >= 4) { const bb = buffMdl.getBuffData({ buffCode : 10785 }); bb.dur = null; this.giveBuff(winner, winner, bb, false, '잭팟'); }
       winner.jack.used = { c : 0, d : 0, b : 0 };
+    } else if (eff.code === 'kimTrain') {   // 단련 드라이브: 세 타입 연타 +2
+      for (let t = 0; t < 3; t++) this.kimAdd(winner, t, 2, '단련');
+      this.result += '[ 단련 ] 연타가 늘어난다 — 가위 ' + kimStacks(winner, 0) + ' / 바위 ' + kimStacks(winner, 1) + ' / 보 ' + kimStacks(winner, 2) + '<br>';
+    } else if (eff.code === 'kimCombo') {   // 김사범 기본 스킬 적중: 본타 효과 → 연타 → 50% 다른 타입 연타 +1
+      const t = eff.t;
+      if (t === 0) { const v = Math.max(1, Math.round(winner.stat.maxHp * 0.03)); this.doHeal(winner, loser, v); this.result += '[ 정권 ] ' + v + ' 회복<br>'; }
+      else this.kimPerHit(winner, loser, t)(damage, -1);
+      const n = kimStacks(winner, t);
+      if (n > 0) this.kimStrike(winner, loser, t, n, 0.2, this.kimPerHit(winner, loser, t));
+      if (getRandom(0.5)) { const others = [0, 1, 2].filter(x => x !== t); const o = others[Math.floor(Math.random() * 2)]; this.kimAdd(winner, o, 1, KIM_TYPES[t]); this.result += '[ ' + eff.name + ' ] ' + KIM_TYPES[o] + ' 연타 +1 (' + kimStacks(winner, o) + ')<br>'; }
+    } else if (eff.code === 'kimSpecial') {   // 김사범스페셜: 세 타입 연타를 전부 (연타 +1 굴림 없음)
+      let total = 0;
+      for (let t = 0; t < 3; t++) { const n = kimStacks(winner, t); if (!n) continue; total += this.kimStrike(winner, loser, t, n, 0.2, this.kimPerHit(winner, loser, t)); }
+      this.result += '[ 김사범스페셜 ] 날아차기와 함께 ' + total + '발 적중!<br>';
     } else if (eff.code === 'retGainLose') {   // 비폭력 드라이브: 상성 패배 시 응보 +1
       winner.lossCount = (winner.lossCount || 0) + 1;
       this.retGain(winner, 1, '비폭력');
@@ -2785,6 +2799,31 @@ function equipVirtual(chara, slot, it) {
   for (const e of (it.effect || [])) e.item = it;
   chara.items[slot] = it;
 }
+// ===== 김사범: 연타 =====
+const KIM_TYPES = ['가위', '바위', '보'];
+function kimStacks(c, t) { const b = (c.buffs || []).find(x => x.id === 10800 + t); return b ? (b.stack || 1) : 0; }
+Battlemodule.prototype.kimAdd = function(c, t, n, src) {
+  const bo = buffMdl.getBuffData({ buffCode : 10800 + t }); bo.dur = null; bo.stack = n; this.giveBuff(c, c, bo, false, src);
+};
+// 한 타입의 연타를 count번 쏜다. perHit(rd, k) 으로 타입별 적중 효과
+Battlemodule.prototype.kimStrike = function(winner, loser, t, count, coef, perHit) {
+  let landed = 0;
+  for (let k = 0; k < count; k++) {
+    const rd = this.calcDamage(winner, loser, { name : '연타', type : t === 0 ? cons.DAMAGE_TYPE_MAGICAL : cons.DAMAGE_TYPE_PHYSICAL, damage : coef, nameType : cons.NAME_KOR_NO_END_CONS, effect : [] }); rd.noProc = true;
+    if (!rd.hit) { this.result += '[ 연타 ] ' + KIM_TYPES[t] + ' ' + (k + 1) + '/' + count + ' — 빗나감<br>'; continue; }
+    landed++; this.dealDamage(winner, loser, rd);
+    this.result += '<span class="skillDamage">[ 연타 ] ' + KIM_TYPES[t] + ' ' + (k + 1) + '/' + count + ' — ' + rd.value + '대미지' + (rd.crit ? ' (치명타)' : '') + '</span><br>';
+    if (perHit) perHit(rd, k);
+  }
+  if (landed) winner.landedThisTurn = true;
+  return landed;
+};
+// 타입별 적중 효과
+Battlemodule.prototype.kimPerHit = function(winner, loser, t) {
+  if (t === 0) return () => { const v = Math.max(1, Math.round(winner.stat.maxHp * 0.01)); this.doHeal(winner, loser, v); this.result += '[ 정권 ] 연타 적중 — ' + v + ' 회복<br>'; };
+  if (t === 1) return () => { if (!getRandom(0.1)) return; const pick = [12, 2, 1][Math.floor(Math.random() * 3)]; const bd = buffMdl.getBuffData({ buffCode : pick }); bd.dur = 1; this.giveBuff(winner, loser, bd, true, '하단차기'); };
+  return () => { const bo = buffMdl.getBuffData({ buffCode : 10803 }); bo.dur = null; bo.stack = 1; this.giveBuff(winner, winner, bo, false, '돌려차기'); };
+};
 // ===== 제니샤: 응보 =====
 function retStacks(c) { const b = (c.buffs || []).find(x => x.id === 10790); return b ? (b.stack || 1) : 0; }
 Battlemodule.prototype.retGain = function(c, n, src) {

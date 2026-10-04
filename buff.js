@@ -7485,6 +7485,15 @@ module.exports.getBuffData = function(eff) {
     retObj.name = '흐트러진 시간'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 1; retObj.isDebuff = false; retObj.durOff = null; retObj.dispellable = false;
     retObj.tooltip = '이 적의 덱은 매 턴 섞인다 (낸 카드도 바로 다시 덱으로 돌아간다)';
     break;
+  case 10800 : case 10801 : case 10802 :   // 김사범 [연타 : 가위/바위/보]
+    retObj.name = '연타 : ' + ['가위', '바위', '보'][eff.buffCode - 10800]; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 2; retObj.maxStack = 99; retObj.isDebuff = false; retObj.durOff = null; retObj.dispellable = false;
+    retObj.tooltip = '이 타입의 스킬이 적중하면 중첩 수만큼 0.2 계수의 연타가 따라붙는다 (연타마다 명중·치명 개별 판정). 소모되지 않는다';
+    break;
+  case 10803 :   // [돌려차기] 치명 중첩
+    retObj.name = '돌려차기'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 2; retObj.maxStack = 99; retObj.isDebuff = false; retObj.durOff = null;
+    retObj.tooltip = '중첩당 치명 +1%p (이번 전투)';
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'crit', value : 0.01 });
+    break;
   case 10620 :
     retObj.name = '소형 동물'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 2; retObj.maxStack = 10; retObj.isDebuff = false; retObj.durOff = null;
     retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'maxHp', value : 10 });

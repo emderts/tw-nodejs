@@ -1867,6 +1867,38 @@ const item = require('./items');
       flavor : '보복용 미사일 발사 코드를 가동합니다. 때로는 평화를 위해 힘이 필요한 법.'};
   charZen.base = JSON.parse(JSON.stringify(charZen.stat));
   module.exports.zenisha = charZen;
+
+  // ---- 김사범 ----
+  var charKim = {};
+  _initChar(charKim);
+  charKim.name = '김사범';
+  charKim.nameType = cons.NAME_KOR_END_CONS;
+  charKim.title = '무도가';
+  charKim.skill = {};
+  charKim.skill.base = [];
+  charKim.skill.base.push({code : 90531, name : '정권', nameType : cons.NAME_KOR_END_CONS, type : cons.DAMAGE_TYPE_MAGICAL, damage : 0.8,
+      effect : [{code : 'kimCombo', t : 0, name : '정권'}],
+      tooltip : '공격 성공 시 최대 생명력 3% 회복, [연타 : 가위] 수만큼 0.2 연타 (연타 적중마다 1% 추가 회복). 공격 성공 시 50% 확률로 바위·보 중 하나의 연타 +1',
+      flavor : '빠른 속도로 연속 정권을 날립니다.'});
+  charKim.skill.base.push({code : 90532, name : '하단차기', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 0.8,
+      effect : [{code : 'kimCombo', t : 1, name : '하단차기'}],
+      tooltip : '적중마다 10% 확률로 적에게 1턴 [빙결]·[중독]·[화상] 중 하나, [연타 : 바위] 수만큼 0.2 연타 (연타도 적중마다 굴림). 공격 성공 시 50% 확률로 가위·보 중 하나의 연타 +1',
+      flavor : '하단을 빠르게 연속으로 후려쳐 적의 중심을 무너뜨립니다.'});
+  charKim.skill.base.push({code : 90533, name : '돌려차기', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.DAMAGE_TYPE_PHYSICAL, damage : 0.8,
+      effect : [{code : 'kimCombo', t : 2, name : '돌려차기'}],
+      tooltip : '적중마다 이번 전투 치명 +1%p (중첩), [연타 : 보] 수만큼 0.2 연타 (연타 적중도 +1%p). 공격 성공 시 50% 확률로 가위·바위 중 하나의 연타 +1',
+      flavor : '화려한 연속 돌려차기로 치명적 공격을 가합니다.'});
+  charKim.skill.drive = {code : 90534, name : '단련', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_DRIVE, active : cons.ACTIVE_TYPE_ATTACK,
+      cost : 10, chance : 0.3,
+      effect : [{code : 'kimTrain'}],
+      tooltip : '공격 성공 시 30% 확률로 발동. 가위·바위·보의 [연타]를 각각 2 늘린다<br><br>[연타] : 그 타입의 스킬이 적중하면 중첩 수만큼 0.2 계수의 연타가 따라붙는다 (연타마다 명중·치명 개별 판정). 소모되지 않는다',
+      flavor : '두 대가 한 대보다 아프고, 열 대가 아홉 대보다 아프다.'};
+  charKim.skill.special = {code : 90535, name : '김사범스페셜', nameType : cons.NAME_KOR_END_CONS, type : cons.SKILL_TYPE_SPECIAL, cost : 110,
+      effect : [{code : 'kimSpecial'}],
+      tooltip : '가위·바위·보의 [연타]를 각각 중첩 수만큼 전부 쏜다 (각 타입의 적중 효과 적용, 연타 +1은 적용하지 않음)',
+      flavor : '김사범의 비기, 화려한 날아차기와 함께 김사범스페셜을 시전합니다.'};
+  charKim.base = JSON.parse(JSON.stringify(charKim.stat));
+  module.exports.kim = charKim;
   module.exports.senal = charSenal;
   module.exports.gabi = charGabi;
   module.exports.illun = charIllun;
