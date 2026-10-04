@@ -2047,6 +2047,7 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
       winner.pendingDraw = (winner.pendingDraw || 0) + 1; this.result += '[ 영리한 평화 ] 카드 한 장을 더 뽑는다.<br>';
     } else if (eff.code === 'peaceBonus') {   // 피스메이커: 응보가 있으면 소모하고 피격 횟수 × 0.2 추가 계수
       if (!damage || retStacks(winner) <= 0) continue;
+      if (!(winner.lossCount > 0)) { this.result += '[ 피스메이커 ] 아직 진 적이 없다 — 응보를 아껴 둔다<br>'; continue; }   // 보너스가 0이면 응보를 쓰지 않는다
       this.retConsume(winner, loser, 1, '피스메이커');
       const add = (winner.lossCount || 0) * 0.2; damage.skillRat += add;
       this.result += '[ 피스메이커 ] 상성 패배 ' + (winner.lossCount || 0) + '회 — 계수 +' + add.toFixed(1) + '<br>';
