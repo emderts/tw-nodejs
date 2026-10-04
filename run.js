@@ -132,7 +132,7 @@ function playCard(st, type) {
 }
 function handTypes(st) { return st.hand.map(c => c.type).sort((a, b) => a - b); }   // 가위-바위-보 순
 // 추가 드로우 (첫 턴 손패 보너스용)
-function drawExtra(st, n) { for (let i = 0; i < n; i++) { if (!st.draw.length) { if (!st.discard.length) break; st.draw = shuffle(st.discard); st.discard = []; } st.hand.push(st.draw.pop()); } return st.hand; }
+function drawExtra(st, n) { for (let i = 0; i < n; i++) { if (!st.draw.length) { if (!st.discard.length) break; st.draw = shuffle(st.discard); st.discard = []; st.shuffles = (st.shuffles || 0) + 1; } st.hand.push(st.draw.shift()); } return st.hand; }   // 다시 섞으면 shuffles 증가 → 상대 낸 패 집계가 초기화된다
 // 손패 교체: 지금 손패만 버리고 새로 뽑는다 (덱/버림은 그대로)
 function redrawHand(st) {
   st.discard = st.discard.concat(st.hand); st.hand = [];
