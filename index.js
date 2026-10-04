@@ -275,6 +275,7 @@ io.on('connection', (socket) => {
       t.bmod = (new battlemodule.bmodule());
       delete t.leftChr.curHp; delete t.leftChr.curSp; delete t.rightChr.curHp; delete t.rightChr.curSp;
       t.startHtml = t.bmod.procBattleStart(t.leftChr, t.rightChr, 1);
+      if (t.leftChr.items && t.leftChr.items.hammerBorrow) t.startHtml += '<div class="note-box">[ 티리온의 낙찰 망치 ] 지난 전투에서 낙찰한 <b>' + t.leftChr.items.hammerBorrow.name + '</b>을(를) 이번 전투 동안 덧입는다.</div>';
       if (run.ascOf(t.leftChr) >= 9) { t.rightChr.curSp = (t.rightChr.curSp || 0) + 40; t.startHtml += '<div class="note-box">승천 9 — 적이 SP 40을 모아 두었다.</div>'; }
       persistBattle(t);
     }
@@ -456,6 +457,7 @@ io.on('connection', (socket) => {
         st.uses++; st.cd = it.use.cooldown || 0;
       }
     }
+    if (t.leftChr.forceTie) { t.leftChr.forceTie = false; if (run.handTypes(t.edeck).includes(key)) eKey = key; else { eKey = key; t.forcedTieNoCard = true; } }   // 블러프 잭의 숨긴 에이스
     const result = t.bmod.procBattleTurn(key, eKey, 1);
     t.ePlayedKey = eKey;   // 연출용: 이번 턴 적이 낸 수
     t.rps = t.rps || { w: 0, l: 0, d: 0 };   // 실데이터 통계: 실제 상성 결과
@@ -4034,6 +4036,12 @@ async function procNextFloor (req, res) {
       if (run.applyEnemyDebuffs(char, enemy)) calcStats(enemy);
       const roomNum = curRoom++;
       const leftCopy = JSON.parse(JSON.stringify(char));
+      if (char.run && char.run.hammerGear) {   // 티리온의 낙찰 망치: 지난 전투에서 낙찰한 장비를 이번 전투 동안 덧입는다
+        const g = JSON.parse(JSON.stringify(char.run.hammerGear)); g.virtual = true;
+        for (const e of (g.effect || [])) e.item = g;
+        leftCopy.items = Object.assign({}, leftCopy.items, { hammerBorrow: g });
+        calcStats(leftCopy);
+      }
       const gb = run.runEffect(leftCopy, 'groupBuy');
       if (gb) {   // 공동구매: 최근 3시간 안에 페이지를 연 로그인 사용자 수
         let n = 1;
@@ -4575,6 +4583,26 @@ async function procFloorResult (req, res) {
     } catch (e) { console.log('battle log save failed', e.message); }
     const rv = runView(char);
     await recordBattleStat(sess.userUid, char, t, re);   // 실데이터 통계
+    { // 헌정 장비의 전투 후 처리
+      const L = t.leftChr;
+      if (re.winnerLeft && L.payslipGold) { char.gold += L.payslipGold; }   // 가비류이의 급여 명세서
+      if (L.trainLog && Object.values(char.items || {}).some(it => it && it.trainBook)) {   // 김사범의 수련 일지
+        char.run.train = char.run.train || [0, 0, 0];
+        L.trainLog.forEach((n, i) => {
+          const sk = char.skill.base[i]; if (!sk || !n) return;
+          const add = Math.min(0.15 - char.run.train[i], n * 0.01); if (add <= 0) return;
+          char.run.train[i] = Math.round((char.run.train[i] + add) * 100) / 100;
+          sk.damage = Math.round(((sk.damage || 0) + add) * 100) / 100;
+          sk.tooltip = (sk.tooltip || '').replace(/<br><br><span class="colorGold">수련 : 계수 \+[0-9.]+<\/span>$/, '') + '<br><br><span class="colorGold">수련 : 계수 +' + char.run.train[i].toFixed(2) + '</span>';
+        });
+        if (char.skillOri) char.skillOri = JSON.parse(JSON.stringify(char.skill));
+      }
+      char.run.hammerGear = null;   // 티리온의 낙찰 망치: 빌린 장비는 한 전투만
+      if (re.winnerLeft && Object.values(char.items || {}).some(it => it && it.hammer)) {
+        const cands = ['weapon', 'armor', 'subarmor', 'trinket'].map(k => t.rightChr.items && t.rightChr.items[k]).filter(x => x && !x.virtual && !x.use && !x.runEffect && !x.quantum);
+        if (cands.length) { const g = JSON.parse(JSON.stringify(cands[Math.floor(Math.random() * cands.length)], (k, v) => (k === 'item' || k === 'buff') ? undefined : v)); char.run.hammerGear = g; }
+      }
+    }
     // 드라우프니르: 착용 중 승리마다 10 → 20 → … (최대 320), 패배·해제 시 초기화
     let draupLine = null;
     if (run.runEffect(char, 'draupnir')) {

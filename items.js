@@ -2320,6 +2320,28 @@ itemList[1066] = { id : 1066, name : '크르시 - 영혼절단기', nameType : c
 itemList[1067] = { id : 1067, name : '로샨 - 공포의 현신', nameType : cons.NAME_KOR_END_CONS, type : cons.ITEM_TYPE_WEAPON, flavor : '검은색의 기운 그 자체가 형체를 갖춘 지팡이. 쥐는 순간 두려움이 손끝에서 심장으로 번진다. 강력한 힘을 내지만 그 사용자는 대가를 감내해야 할 것이다.', rank : 1, rarity : cons.ITEM_RARITY_UNIQUE, stat : { phyAtkMin : 130, phyAtkMax : 145, magAtkMin : 200, magAtkMax : 225, crit : 0.04 }, 
     effectDesc : '전투 시작 시 자신에게 [샤에 물듦] (준 피해의 10%만큼 자신도 절대 피해)', effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_BATTLE_START, chance : 1, buffCode : 10004, buffDur : null}] };
 
+// ---------- 헌정 장비 10종 (에오헬름 ~ 김사범) ----------
+itemList[1068] = { id : 1068, name : '에오헬름의 그림자 망토', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_SUBARMOR, flavor : '정상에 닿는 그림자는 언제나 먼저 움직인다.', rank : 7, rarity : cons.ITEM_RARITY_EPIC, stat : { maxHp : 75, evasion : 0.03 }, 
+    effectDesc : '전투 시작 후 2턴 동안 회피 +25%p. 처음으로 적중하는 공격의 피해 1.5배', effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_BATTLE_START, buffCode : 10810, buffDur : 2}, {code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_BATTLE_START, buffCode : 10811, buffDur : null}, {code : cons.EFFECT_TYPE_REMOVE_BUFF, active : cons.ACTIVE_TYPE_ATTACK, buffTarget : [10811], chkRealHit : true}] };
+itemList[1069] = { id : 1069, name : '데 카이츠의 예비 탄창', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '머신건을 다 비운 뒤에야 탄창이 하나 더 있었다는 걸 기억한다.', rank : 5, rarity : cons.ITEM_RARITY_UNIQUE, stat : { maxHp : 95, spCharge : 3 }, 
+    effectDesc : '스페셜 스킬을 쓰면 다음 턴 시작 시 SP 30', effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_USE_SPECIAL, buffCode : 10812, buffDur : null}] };
+itemList[1070] = { id : 1070, name : '이 눅스의 백도어', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '들어가는 길은 늘 하나 더 있다.', rank : 4, rarity : cons.ITEM_RARITY_EPIC, stat : { maxHp : 130, hit : 0.05 }, 
+    effectDesc : '적에게 해로운 효과를 걸 때마다 적의 SP -5', effect : [{code : 'spDrainOnDebuff', active : cons.ACTIVE_TYPE_GIVE_BUFF, value : 5}] };
+itemList[1071] = { id : 1071, name : '가비류이의 급여 명세서', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '반복해야 쌓인다. 월급도, 기술도.', rank : 6, rarity : cons.ITEM_RARITY_RARE, stat : { maxHp : 55, spRegen : 1 }, 
+    effectDesc : '같은 스킬로 연속해서 상성에서 이기면 골드 +5 (전투당 최대 30)', effect : [{code : 'payslip', active : cons.ACTIVE_TYPE_SKILL_WIN}] };
+itemList[1072] = { id : 1072, name : '세날의 씨앗 주머니', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '상처 위에 뿌리면, 다음에 맞을 자리가 단단해진다.', rank : 5, rarity : cons.ITEM_RARITY_EPIC, stat : { maxHp : 120, hpRegen : 3 }, 
+    effectDesc : '회복을 받을 때마다 1턴 간 [새싹] 1중첩 (받는 피해 -5%, 최대 3)', effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_DO_HEAL, buffCode : 10813, buffDur : 2, stack : 1}] };
+itemList[1073] = { id : 1073, name : '엽운학의 마른 붓', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_WEAPON, flavor : '먹이 마르기 전에 한 획이라도 더.', rank : 3, rarity : cons.ITEM_RARITY_UNIQUE, stat : { phyAtkMin : 85, phyAtkMax : 98, magAtkMin : 85, magAtkMax : 98 }, 
+    effectDesc : '스스로 버프를 얻을 때마다 [먹물] 1중첩 (다음 공격 피해 +8%, 최대 5). 공격이 적중하면 모두 소모', effect : [{code : 'brushInk', active : cons.ACTIVE_TYPE_RECEIVE_BUFF}, {code : 'consumeOld', active : cons.ACTIVE_TYPE_ATTACK, buffTarget : [10814], chkRealHit : true}] };
+itemList[1074] = { id : 1074, name : '티리온의 낙찰 망치', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_WEAPON, flavor : '켈투자드 앞에서도 두드렸다. 낙찰, 낙찰, 낙찰.', rank : 4, rarity : cons.ITEM_RARITY_EPIC, stat : { phyAtkMin : 72, phyAtkMax : 84, magAtkMin : 72, magAtkMax : 84 }, 
+    effectDesc : '전투에서 이기면 상대가 끼고 있던 장비 하나를 다음 전투 동안 덧입는다 (능력치와 효과 전부)', effect : [], hammer : true };
+itemList[1075] = { id : 1075, name : '블러프 잭의 숨긴 에이스', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '소매 속 카드 한 장이면 판이 다시 시작된다.', rank : 7, rarity : cons.ITEM_RARITY_EPIC, stat : { maxHp : 65, crit : 0.04 }, 
+    effectDesc : '[사용] 전투 중 1회, 이번 턴 가위바위보를 무승부로 만든다', effect : [], use : { label : '이번 턴 무승부', cooldown : 0, maxUses : 1, effect : [{code : 'forceTie'}] } };
+itemList[1076] = { id : 1076, name : '제니샤의 콜트 M1873', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_WEAPON, flavor : '평화를 알아먹지 못하는 자에게 주는 선물.', rank : 4, rarity : cons.ITEM_RARITY_EPIC, stat : { phyAtkMin : 72, phyAtkMax : 84, magAtkMin : 50, magAtkMax : 58 }, 
+    effectDesc : '상성에서 질 때마다 [평화의 표지] 1중첩. 다음에 적중하는 공격의 피해가 중첩당 +10% (적중하면 모두 소모)', effect : [{code : cons.EFFECT_TYPE_SELF_BUFF, active : cons.ACTIVE_TYPE_SKILL_LOSE, buffCode : 10815, buffDur : null, stack : 1}, {code : 'consumeOld', active : cons.ACTIVE_TYPE_ATTACK, buffTarget : [10815], chkRealHit : true}] };
+itemList[1077] = { id : 1077, name : '김사범의 수련 일지', nameType : cons.NAME_KOR_NO_END_CONS, type : cons.ITEM_TYPE_TRINKET, flavor : '단련은 쌓인다. 일지에 적힌 만큼.', rank : 5, rarity : cons.ITEM_RARITY_EPIC, stat : { maxHp : 110, hit : 0.04 }, 
+    effectDesc : '상성에서 이길 때마다 그 스킬의 기본 계수가 이번 모험 동안 +0.01 (스킬당 최대 +0.15)', effect : [{code : 'trainLog', active : cons.ACTIVE_TYPE_SKILL_WIN}], trainBook : true };
+
 // 아이템 pctStat의 공격력 % → 주는 피해 % (기본 공격력에만 곱해지던 문제)
 itemList.forEach(function(it) {
   if (!it || !it.pctStat || (it.pctStat.phyAtk === undefined && it.pctStat.magAtk === undefined)) return;

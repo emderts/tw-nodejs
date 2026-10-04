@@ -7494,6 +7494,36 @@ module.exports.getBuffData = function(eff) {
     retObj.tooltip = '중첩당 치명 +1%p (이번 전투)';
     retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'crit', value : 0.01 });
     break;
+  case 10810 :   // 에오헬름의 그림자 망토 [그림자 망토]
+    retObj.name = '그림자 망토'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 1; retObj.isDebuff = false;
+    retObj.tooltip = '회피 +25%p';
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'evasion', value : 0.25 });
+    break;
+  case 10811 :   // [그림자 일격] 첫 적중 1.5배
+    retObj.name = '그림자 일격'; retObj.nameType = cons.NAME_KOR_END_CONS; retObj.stackType = 1; retObj.isDebuff = false; retObj.durOff = null;
+    retObj.tooltip = '다음에 적중하는 공격의 피해 1.5배';
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_DAMAGE, code : cons.EFFECT_TYPE_MULTIPLY_DAMAGE, anySkill : true, value : 1.5 });
+    break;
+  case 10812 :   // 데 카이츠의 예비 탄창 [예비 탄창]
+    retObj.name = '예비 탄창'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 1; retObj.isDebuff = false; retObj.durOff = null;
+    retObj.tooltip = '다음 턴 시작 시 SP 30';
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_TURN_START, code : cons.EFFECT_TYPE_SELF_SP, value : 30, removeBuff : true });
+    break;
+  case 10813 :   // 세날의 씨앗 주머니 [새싹]
+    retObj.name = '새싹'; retObj.nameType = cons.NAME_KOR_END_CONS; retObj.stackType = 2; retObj.maxStack = 3; retObj.isDebuff = false;
+    retObj.tooltip = '중첩당 받는 피해 -5% (최대 3)';
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_DAMAGE_RECEIVE, code : cons.EFFECT_TYPE_MULTIPLY_DAMAGE, anySkill : true, stackable : true, value : -0.05 });
+    break;
+  case 10814 :   // 엽운학의 마른 붓 [먹물]
+    retObj.name = '먹물'; retObj.nameType = cons.NAME_KOR_END_CONS; retObj.stackType = 2; retObj.maxStack = 5; retObj.isDebuff = false; retObj.durOff = null;
+    retObj.tooltip = '중첩당 다음 공격 피해 +8% (최대 5, 적중하면 모두 소모)';
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_DAMAGE, code : cons.EFFECT_TYPE_MULTIPLY_DAMAGE, anySkill : true, stackable : true, value : 0.08 });
+    break;
+  case 10815 :   // 제니샤의 콜트 M1873 [평화의 표지]
+    retObj.name = '평화의 표지'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 2; retObj.maxStack = 9; retObj.isDebuff = false; retObj.durOff = null;
+    retObj.tooltip = '중첩당 다음 적중 공격 피해 +10% (적중하면 모두 소모)';
+    retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_DAMAGE, code : cons.EFFECT_TYPE_MULTIPLY_DAMAGE, anySkill : true, stackable : true, value : 0.1 });
+    break;
   case 10620 :
     retObj.name = '소형 동물'; retObj.nameType = cons.NAME_KOR_NO_END_CONS; retObj.stackType = 2; retObj.maxStack = 10; retObj.isDebuff = false; retObj.durOff = null;
     retObj.effect.push({ active : cons.ACTIVE_TYPE_CALC_STATS, code : cons.EFFECT_TYPE_STAT_ADD, key : 'maxHp', value : 10 });

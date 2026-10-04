@@ -2018,6 +2018,28 @@ Battlemodule.prototype.resolveEffects = function(winner, loser, effects, damage,
       if (ub) { const v = Math.round(winner.stat.maxHp * 0.02 * ub); this.doHeal(winner, loser, v); this.result += '[ 잭팟 ] 🔔×' + ub + ' — ' + v + ' 회복<br>'; }
       if (ub >= 4) { const bb = buffMdl.getBuffData({ buffCode : 10785 }); bb.dur = null; this.giveBuff(winner, winner, bb, false, '잭팟'); }
       winner.jack.used = { c : 0, d : 0, b : 0 };
+    } else if (eff.code === 'consumeOld') {   // 이번 턴 이전에 쌓인 버프만 소모 (같은 턴에 얻은 건 다음 공격용으로 남김)
+      for (const bb of (winner.buffs || []).filter(x => eff.buffTarget.includes(x.id))) if ((bb.gainTurn || 0) < this.turnCount) removeBuff(bb);
+    } else if (eff.code === 'spDrainOnDebuff') {   // 이 눅스의 백도어: 적에게 해로운 효과를 걸 때마다 적 SP -5
+      if (!damage || !damage.isDebuff || winner === loser) continue;
+      loser.curSp = Math.max(0, (loser.curSp || 0) - eff.value);
+      this.result += '[ 이 눅스의 백도어 ] ' + loser.name + '의 SP -' + eff.value + '<br>';
+    } else if (eff.code === 'payslip') {   // 가비류이의 급여 명세서: 같은 스킬로 연속 승리 시 골드 +5 (전투당 30)
+      const same = winner.lastWinSkill === winner.curSkillCode; winner.lastWinSkill = winner.curSkillCode;
+      if (!same) continue;
+      const before = winner.payslipGold || 0; if (before >= 30) continue;
+      winner.payslipGold = Math.min(30, before + 5);
+      this.result += '[ 가비류이의 급여 명세서 ] 반복 수당 +5 골드 (이번 전투 ' + winner.payslipGold + ')<br>';
+    } else if (eff.code === 'brushInk') {   // 엽운학의 마른 붓: 스스로 버프를 얻으면 [먹물]
+      if (!damage || damage.isDebuff || damage.id === 10814 || damage.id <= 0 || loser !== winner) continue;
+      const bo = buffMdl.getBuffData({ buffCode : 10814 }); bo.dur = null; bo.stack = 1; this.giveBuff(winner, winner, bo, false, '엽운학의 마른 붓');
+    } else if (eff.code === 'trainLog') {   // 김사범의 수련 일지: 상성 승리 기록 (런 종료 처리에서 계수 반영)
+      const idx = (winner.skill && winner.skill.base) ? winner.skill.base.findIndex(k => k && k.code === winner.curSkillCode) : -1;
+      if (idx < 0) continue;
+      winner.trainLog = winner.trainLog || [0, 0, 0]; winner.trainLog[idx]++;
+    } else if (eff.code === 'forceTie') {   // 블러프 잭의 숨긴 에이스: 이번 턴 상성을 무승부로
+      winner.forceTie = true;
+      this.result += '<span class="skillDamage">[ 블러프 잭의 숨긴 에이스 ] 소매에서 카드 한 장 — 이번 턴은 무승부가 된다</span><br>';
     } else if (eff.code === 'kimTrain') {   // 단련 드라이브: 세 타입 연타 +2
       for (let t = 0; t < 3; t++) this.kimAdd(winner, t, 2, '단련');
       this.result += '[ 단련 ] 연타가 늘어난다 — 가위 ' + kimStacks(winner, 0) + ' / 바위 ' + kimStacks(winner, 1) + ' / 보 ' + kimStacks(winner, 2) + '<br>';
