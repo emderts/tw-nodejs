@@ -43,6 +43,7 @@
     <span class="meta"><%= user.name %> · <a href="/logout">로그아웃</a></span>
   </div>
 
+  <% if (typeof notice !== 'undefined' && notice) { %><div class="note-box" style="border-color:var(--brass);color:var(--brass)"><%= notice %></div><% } %>
   <% if (firstPick) { %>
   <div class="note-box">처음 고른 캐릭터가 해금됩니다. 이후에는 런을 클리어할 때마다 새 캐릭터가 무작위로 해금돼요.</div>
   <% } else { %>

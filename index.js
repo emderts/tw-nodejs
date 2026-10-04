@@ -745,6 +745,8 @@ async function procIndex (req, res) {
       res.render('pages/login');
     } else if (!charRow.char_data) {
       // 진행 중인 캐릭터가 없음 → 캐릭터 선택 화면
+      let notice = null;
+      try { const a0 = await loadAcct(sess.userUid); if (a0.stats.cyc3BonusNotice) { notice = '[ 달빛이 비치는 층 ] 업적 보상으로 새로운 동료 ' + a0.stats.cyc3BonusNotice.length + '명이 합류했다 — ' + a0.stats.cyc3BonusNotice.join(', '); delete a0.stats.cyc3BonusNotice; await saveAcct(sess.userUid, a0); } } catch (e) {}
       const unlocked = await getUnlocked(sess.userUid);
       let ascOpen = 0; try { const acct = await loadAcct(sess.userUid); ascOpen = Math.min(run.ASC_MAX, (acct.stats.ascension === undefined ? -1 : acct.stats.ascension) + 1); if (!(acct.stats.clears > 0)) ascOpen = 0; } catch (e) {}
       res.render('pages/selectChar', {
@@ -752,7 +754,7 @@ async function procIndex (req, res) {
         roster: roster.all(),
         unlocked: unlocked,
         firstPick: unlocked.length === 0,
-        ascOpen: ascOpen, ascRules: run.ASC_RULES
+        ascOpen: ascOpen, ascRules: run.ASC_RULES, notice: notice
       });
     } else {
       const personalNews = await getPersonalNews(charRow.uid);
@@ -764,6 +766,7 @@ async function procIndex (req, res) {
       await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(char), sess.userUid]);
       }*/
       const charObj = charRow.char_data ? JSON.parse(charRow.char_data) : undefined;
+      try { const a0 = await loadAcct(sess.userUid); if (a0.stats.cyc3BonusNotice) { sess.flash = '[ 달빛이 비치는 층 ] 업적 보상으로 새로운 동료 ' + a0.stats.cyc3BonusNotice.length + '명이 합류했다 — ' + a0.stats.cyc3BonusNotice.join(', '); delete a0.stats.cyc3BonusNotice; await saveAcct(sess.userUid, a0); } } catch (e) {}
       if (charObj && charObj.run) { await checkAcctGeneral(sess.userUid, charObj); try { await client.query('update characters set char_data = $1 where uid = $2', [JSON.stringify(charObj), charRow.uid]); } catch (e) {} }
       res.render('pages/index', {
         itemNews : itemNews,
@@ -4257,9 +4260,34 @@ async function checkAcctGeneral (userId, char) {
     const unlocked = await getUnlocked(userId);
     const ids = achv.onStats(acct.stats, unlocked.length, roster.KEYS.length).concat(char && char.run ? achv.onProgress(char) : []);
     await grantAchv(userId, char, acct, ids);
+    const bonus = await grantCyc3Bonus(userId, acct);   // 3사이클 업적 보상: 캐릭터 5명 해금
     await saveAcct(userId, acct);
-  } catch (e) { console.log('[achv general]', e.message); }
+    return bonus;
+  } catch (e) { console.log('[achv general]', e.message); return []; }
 }
+// 첫 3사이클 도달 업적 보상: 잠긴 캐릭터 중 무작위 5명 해금 (계정당 1회)
+async function grantCyc3Bonus (userId, acct) {
+  if (!acct.achievements || !acct.achievements.cyc3 || acct.stats.cyc3Bonus) return [];
+  acct.stats.cyc3Bonus = true;
+  const got = [];
+  for (let k = 0; k < 5; k++) { const key = await unlockRandomChar(userId); if (!key) break; got.push((roster.template(key) || {}).name || key); }
+  return got;
+}
+// 서버 시작 시 한 번: 이미 3사이클 업적을 가진 계정에 보상 지급 (cyc3Bonus 표시로 중복 방지)
+async function backfillCyc3Bonus () {
+  try {
+    await ensureAcctCols();
+    const r = await pool.query("select id from users where achievements like '%\"cyc3\"%'");
+    let n = 0;
+    for (const row of r.rows) {
+      const acct = await loadAcct(row.id);
+      const got = await grantCyc3Bonus(row.id, acct);
+      if (got.length || acct.stats.cyc3Bonus) { if (got.length) { acct.stats.cyc3BonusNotice = got; n++; } await saveAcct(row.id, acct); }
+    }
+    if (n) console.log('[cyc3 bonus] ' + n + ' accounts got 5 unlocks');
+  } catch (e) { console.log('[cyc3 bonus backfill]', e.message); }
+}
+setTimeout(backfillCyc3Bonus, 5000);
 // 모험 포기: 캐릭터 삭제 (쓰러진 모험가로는 남기지 않는다)
 async function procAbandonRun (req, res) {
   const client = await pool.connect();
@@ -4702,7 +4730,8 @@ async function procFloorResult (req, res) {
         return;
       }
       char.run.pendingCard = pendingCard;
-      await checkAcctGeneral(sess.userUid, char);   // 사이클 도달·수집 업적
+      { const got = await checkAcctGeneral(sess.userUid, char);   // 사이클 도달·수집 업적
+        if (got && got.length) rewardLines.push('<span class="colorGold"><b>[ 달빛이 비치는 층 ] 달성!</b> 새로운 동료 ' + got.length + '명이 탑에 합류했다 — ' + got.join(', ') + '</span>'); }
       await saveChar(char, charRow.uid);
       res.render('pages/floorEnd', { title: (enemy.isBoss ? '보스 격파' : '전투 승리'), lines: rewardLines, result: re.result, dead: false, rv: runView(char), pendingCard: pendingCard });
     } else if ((char.run.lives === undefined ? 1 : char.run.lives) > 0) {
